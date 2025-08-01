@@ -18,17 +18,17 @@ export default function HowItWorks() {
         {/* Hero Section */}
         <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-6 mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            Turning Everyday Tasks Into Real Income
+            Get Paid for What You're Already Doing
           </h2>
           <p className="text-gray-600 mb-4">
-            TaskParent connects busy families with stay-at-home parents who can help with everyday tasks. 
-            Here's how we create value for everyone and sustain our platform.
+            TaskParent lets parents monetize their daily routines. Already cooking dinner? 
+            Grocery shopping? Organizing your closet? Share the benefit with neighbors and get paid!
           </p>
           <div className="bg-white rounded-lg p-4 border-l-4 border-green-500">
             <div className="flex items-center">
               <DollarSign className="text-green-600 mr-2" size={20} />
               <span className="font-semibold text-gray-900">
-                Parents earn $15-50 per task on average
+                Turn your daily tasks into $50-200 extra income per week
               </span>
             </div>
           </div>
@@ -107,17 +107,17 @@ export default function HowItWorks() {
           </div>
         </section>
 
-        {/* How Parents Get Paid */}
+        {/* How It Works */}
         <section className="mb-8">
           <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
             <Clock className="text-green-600 mr-2" size={24} />
-            How You Get Paid
+            How It Works
           </h3>
           
           <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl p-6 text-white mb-4">
-            <h4 className="font-bold text-lg mb-2">Fast & Secure Payments</h4>
+            <h4 className="font-bold text-lg mb-2">Turn Your Daily Routine Into Income</h4>
             <p className="text-sm opacity-90">
-              Payments are processed within 24 hours of task completion and approval.
+              Already doing it anyway? Share the benefit with neighbors and get paid!
             </p>
           </div>
 
@@ -126,19 +126,19 @@ export default function HowItWorks() {
               <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
                 1
               </div>
-              <span className="text-gray-800">Complete task and submit proof</span>
+              <span className="text-gray-800">Post what you're already planning to do</span>
             </div>
             <div className="flex items-center p-3 bg-white rounded-lg border border-gray-200">
               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
                 2
               </div>
-              <span className="text-gray-800">Customer reviews and approves work</span>
+              <span className="text-gray-800">Neighbors join and pay to share the benefit</span>
             </div>
             <div className="flex items-center p-3 bg-white rounded-lg border border-gray-200">
               <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
                 3
               </div>
-              <span className="text-gray-800">Payment released to your account</span>
+              <span className="text-gray-800">Do your task + earn money doing it</span>
             </div>
           </div>
         </section>
@@ -179,16 +179,16 @@ export default function HowItWorks() {
           <div className="space-y-4">
             <div className="bg-yellow-50 rounded-xl p-4 border-l-4 border-yellow-400">
               <p className="text-gray-700 text-sm mb-2">
-                "I've earned over $2,400 in my first 3 months just doing meal prep and organizing tasks. 
-                TaskParent helped me turn my daily routines into real income!"
+                "I was already meal prepping every Sunday. Now 4 neighbors join me and I earn $100 every week 
+                just doing what I was already doing for my family!"
               </p>
               <p className="text-yellow-700 font-medium text-sm">- Sarah M., Mom of 2</p>
             </div>
             
             <div className="bg-blue-50 rounded-xl p-4 border-l-4 border-blue-400">
               <p className="text-gray-700 text-sm mb-2">
-                "The flexible schedule is perfect. I can work around my kids' nap times and still 
-                contribute to our family income. Made $890 last month!"
+                "My Costco runs used to be a chore. Now I take orders from 6 families and make $90 
+                every trip. It's like getting paid to do my own shopping!"
               </p>
               <p className="text-blue-700 font-medium text-sm">- Maria L., Mom of 3</p>
             </div>

@@ -71,7 +71,7 @@ export default function HomePage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Good morning, {user?.firstName || "Parent"}! 👋
           </h2>
-          <p className="text-gray-600">Ready to turn your daily tasks into earnings?</p>
+          <p className="text-gray-600">Ready to get paid for what you're already doing?</p>
         </div>
         
         <EarningsOverview user={user} />

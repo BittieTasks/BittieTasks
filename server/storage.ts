@@ -108,33 +108,53 @@ export class MemStorage implements IStorage {
     // Create sample tasks
     const sampleTasks = [
       {
-        title: "Healthy Meal Prep Tutorial",
-        description: "Share your weekly meal prep routine",
+        title: "Weekly Meal Prep - Join Me!",
+        description: "I'm meal prepping 6 family dinners this Sunday. Join for $25 and get 3 ready-to-heat meals for your family!",
         payment: "25.00",
-        duration: 30,
+        duration: 180,
         difficulty: "Easy",
-        requirements: ["Good lighting and clear video quality", "Include ingredient list and costs", "Show complete cooking process", "Provide storage and reheating tips"],
+        requirements: ["Bring your own containers", "Pick up between 2-4pm Sunday", "Dietary restrictions noted in advance", "Payment due at pickup"],
         imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
         categoryName: "Cooking"
       },
       {
-        title: "Kid's Room Organization",
-        description: "Show before/after of toy organization",
-        payment: "32.00",
-        duration: 45,
+        title: "Costco Run - Add Your List",
+        description: "Making my monthly Costco trip Saturday morning. Add your items to my list for $15 + cost of your items.",
+        payment: "15.00",
+        duration: 120,
+        difficulty: "Easy",
+        requirements: ["Venmo/cash for your items", "Text your list by Friday 8pm", "Pickup Saturday 2-5pm", "Frozen/refrigerated items ready immediately"],
+        imageUrl: "https://images.unsplash.com/photo-1543083115-a1d7e38e97a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Organizing"
+      },
+      {
+        title: "Playdate & Childcare Swap",
+        description: "Watching 4 kids today anyway - can take 2 more for 3 hours while you run errands. $20/child.",
+        payment: "20.00",
+        duration: 180,
         difficulty: "Medium",
-        requirements: ["Before and after photos", "Organization tips", "Storage solutions", "Time-saving techniques"],
+        requirements: ["Ages 3-8 only", "Bring snacks and activities", "Emergency contact required", "Pick up by 5pm sharp"],
+        imageUrl: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Childcare"
+      },
+      {
+        title: "Garage Sale Prep Together",
+        description: "Organizing my garage sale this weekend - help me sort and price, then sell your stuff too! $30 space rental.",
+        payment: "30.00",
+        duration: 480,
+        difficulty: "Medium",
+        requirements: ["Bring your own items to sell", "Help with setup Friday evening", "Work Saturday morning shift", "Split any shared item sales 50/50"],
         imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
         categoryName: "Organizing"
       },
       {
-        title: "Creative Play Activities",
-        description: "Document fun learning activities for toddlers",
-        payment: "28.00",
-        duration: 60,
+        title: "Morning School Drop-off Route",
+        description: "I drive to Lincoln Elementary daily - can take 2 more kids for $10/week per child. Regular carpool commitment.",
+        payment: "10.00",
+        duration: 30,
         difficulty: "Easy",
-        requirements: ["Age-appropriate activities", "Safety considerations", "Educational value", "Materials list"],
-        imageUrl: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        requirements: ["Car seats/boosters if needed", "Kids ready by 7:45am", "Weekly payment in advance", "Backup plan for sick days"],
+        imageUrl: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
         categoryName: "Childcare"
       }
     ];

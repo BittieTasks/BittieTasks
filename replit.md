@@ -2,9 +2,9 @@
 
 ## Overview
 
-TaskParent is a mobile-first React web application designed as a task completion marketplace. The platform enables users to browse, complete, and earn money from various household and service tasks. Built with a modern TypeScript stack, it features a responsive mobile interface with bottom navigation, real-time task management, earnings tracking, and a comprehensive messaging system.
+TaskParent is a mobile-first React web application designed as a revolutionary "monetize your daily routine" marketplace. The platform enables parents to earn money by sharing the benefits of tasks they're already doing for themselves - like meal prepping, grocery shopping, organizing, and childcare. Built with a modern TypeScript stack, it features a responsive mobile interface with bottom navigation, real-time task management, earnings tracking, and a comprehensive messaging system.
 
-**Recent Update (Aug 2025)**: Added comprehensive monetization strategy and business model transparency to address user concerns about platform sustainability and payment guarantees.
+**Recent Update (Aug 2025)**: Pivoted to the groundbreaking model where parents monetize their existing daily routines rather than taking on new tasks. Added comprehensive monetization strategy and business model transparency.
 
 ## User Preferences
 
@@ -47,13 +47,16 @@ Preferred communication style: Simple, everyday language.
 - **Future-Ready**: Architecture prepared for JWT or OAuth integration
 
 ### Business Model and Monetization
+- **Core Innovation**: Parents monetize daily tasks they're already doing (meal prep, grocery runs, childcare)
 - **Revenue Streams**: Multiple sustainable income sources to ensure consistent parent payments
   - Platform service fee (15% of completed tasks)
   - Premium memberships ($9.99/month with enhanced features)
   - Corporate partnerships for employee services
   - Insurance and trust services
+- **Unique Value Proposition**: "Get paid for what you're already doing" - no additional time commitment required
 - **Transparency Features**: Dedicated "How It Works" page explaining revenue model
 - **Payment Security**: $1M liability coverage and secure escrow payment processing
+- **Market Advantage**: First platform to monetize existing parent routines rather than creating new work
 
 ## External Dependencies
 
