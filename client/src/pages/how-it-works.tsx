@@ -205,6 +205,100 @@ export default function HowItWorks() {
           </div>
         </section>
 
+        {/* Sponsored Task Approval Process */}
+        <section className="mb-8">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <Clock className="text-blue-600 mr-2" size={24} />
+            How Sponsored Tasks Get Approved
+          </h3>
+          
+          <div className="space-y-4">
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+              <div className="flex items-start">
+                <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-4 mt-1">1</div>
+                <div>
+                  <h4 className="font-bold text-blue-900 mb-2">Apply for Sponsored Task</h4>
+                  <p className="text-blue-800 text-sm">
+                    Choose a sponsored task that matches what you're already doing. Click "Apply" and tell us why you're perfect for it.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+              <div className="flex items-start">
+                <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-4 mt-1">2</div>
+                <div>
+                  <h4 className="font-bold text-green-900 mb-2">Quick Review (24-48 hours)</h4>
+                  <p className="text-green-800 text-sm">
+                    Our team reviews your profile and ensures you're a good match. We check your rating, completed tasks, and expertise area.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-purple-50 rounded-xl p-4 border border-purple-200">
+              <div className="flex items-start">
+                <div className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-4 mt-1">3</div>
+                <div>
+                  <h4 className="font-bold text-purple-900 mb-2">Complete & Document</h4>
+                  <p className="text-purple-800 text-sm">
+                    Once approved, do your normal routine and document it! Take photos, videos, share tips, and follow the specific requirements.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-orange-50 rounded-xl p-4 border border-orange-200">
+              <div className="flex items-start">
+                <div className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-4 mt-1">4</div>
+                <div>
+                  <h4 className="font-bold text-orange-900 mb-2">Quality Review & Payment</h4>
+                  <p className="text-orange-800 text-sm">
+                    We review your submission for quality and completeness. Once approved (usually within 48 hours), your guaranteed payment is released!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-4 border border-green-200">
+            <div className="flex items-center mb-2">
+              <Shield className="text-green-600 mr-2" size={20} />
+              <h4 className="font-bold text-gray-900">Payment Guarantee</h4>
+            </div>
+            <p className="text-gray-700 text-sm">
+              Unlike shared tasks, sponsored tasks have <strong>guaranteed payments</strong>. Once you're approved and submit quality content meeting the requirements, 
+              you <strong>will</strong> get paid - no neighbors needed, no cancellations possible!
+            </p>
+          </div>
+
+          <div className="mt-4 bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+            <div className="flex items-center mb-2">
+              <Star className="text-yellow-600 mr-2" size={20} />
+              <h4 className="font-bold text-gray-900">Approval Requirements</h4>
+            </div>
+            <div className="text-sm text-gray-700 space-y-1">
+              <div className="flex items-center">
+                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                4+ star rating on TaskParent
+              </div>
+              <div className="flex items-center">
+                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                At least 3 completed tasks
+              </div>
+              <div className="flex items-center">
+                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                Relevant experience in the task category
+              </div>
+              <div className="flex items-center">
+                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                Clear photos/videos showing your work
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Trust & Safety */}
         <section className="mb-8">
           <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
