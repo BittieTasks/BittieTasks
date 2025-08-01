@@ -4,7 +4,7 @@
 
 TaskParent is a mobile-first React web application designed as a revolutionary dual-income marketplace for parents. The platform enables parents to earn money in two ways: (1) Get paid directly by the app for doing their own daily tasks (laundry, cooking, cleaning), and (2) Share the benefits of tasks they're already doing with neighbors for additional income. Built with a modern TypeScript stack, it features a responsive mobile interface with bottom navigation, real-time task management, earnings tracking, and a comprehensive messaging system.
 
-**Recent Update (Aug 2025)**: Implemented groundbreaking dual earning model where parents get paid by the app for personal tasks AND can help neighbors for extra income. Added 100% self-sustaining app-based revenue model with earning potential up to $29,900/year. Phase 2 will add sponsored content opportunities for additional income.
+**Recent Update (Aug 2025)**: Implemented groundbreaking dual earning model where parents get paid by the app for personal tasks AND can help neighbors for extra income. Added revolutionary Self-Care category where parents get paid for taking care of themselves (workouts, coffee dates, spa time). Features 100% self-sustaining app-based revenue model with earning potential up to $29,900/year. Phase 2 will add sponsored content opportunities for additional income.
 
 ## User Preferences
 
@@ -35,8 +35,8 @@ Preferred communication style: Simple, everyday language.
 
 ### Database Schema Design
 - **Users**: Profile management with earnings, ratings, and skills tracking
-- **Task Categories**: Organized task types with icons and color coding
-- **Tasks**: Detailed task information including payment, difficulty, and requirements
+- **Task Categories**: Organized task types including revolutionary Self-Care category
+- **Tasks**: Detailed task information including payment, difficulty, and requirements with self-care tasks for parent wellness
 - **Task Completions**: Status tracking (pending/approved/rejected) with file attachments
 - **Messages**: User-to-user communication system with read status
 - **User Achievements**: Gamification system for user engagement

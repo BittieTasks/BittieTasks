@@ -90,7 +90,8 @@ export class MemStorage implements IStorage {
       { name: "Cooking", icon: "fa-utensils", color: "primary" },
       { name: "Cleaning", icon: "fa-broom", color: "secondary" },
       { name: "Childcare", icon: "fa-baby", color: "accent" },
-      { name: "Organizing", icon: "fa-boxes", color: "purple" }
+      { name: "Organizing", icon: "fa-boxes", color: "purple" },
+      { name: "Self-Care", icon: "fa-heart", color: "green" }
     ];
 
     categories.forEach(cat => {
@@ -206,6 +207,74 @@ export class MemStorage implements IStorage {
         requirements: ["Car seats/boosters if needed", "Kids ready by 7:45am", "Weekly payment in advance", "Backup plan for sick days"],
         imageUrl: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
         categoryName: "Childcare",
+        taskType: "shared"
+      },
+      // Self-Care Tasks - parents get paid for taking care of themselves!
+      {
+        title: "My Morning Workout Routine",
+        description: "Doing my 45-minute morning workout today! TaskParent pays me $20 to document my routine and share fitness tips for busy parents.",
+        payment: "20.00",
+        duration: 45,
+        difficulty: "Easy",
+        requirements: ["Document workout routine", "Share time-saving fitness tips", "Include modifications for home workouts", "Show energy boost results"],
+        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "personal"
+      },
+      {
+        title: "Coffee Date with My Best Friend",
+        description: "Taking 2 hours for coffee with my friend today - self-care is essential! TaskParent pays me $15 to share tips on maintaining friendships as a busy parent.",
+        payment: "15.00",
+        duration: 120,
+        difficulty: "Easy",
+        requirements: ["Share conversation topics for parent friends", "Document the mental health benefits", "Include tips for scheduling friend time", "Show how friendships energize you"],
+        imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "personal"
+      },
+      {
+        title: "My Weekly Solo Target Run",
+        description: "Taking 90 minutes to shop alone at Target - essential parent self-care! TaskParent pays me $18 to share tips for efficient solo shopping.",
+        payment: "18.00",
+        duration: 90,
+        difficulty: "Easy",
+        requirements: ["Document efficient shopping strategies", "Share how solo time reduces stress", "Include budget-friendly self-care finds", "Show the mental health benefits"],
+        imageUrl: "https://images.unsplash.com/photo-1441986300917-64400acb8c1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "personal"
+      },
+      {
+        title: "Evening Bath & Skincare Routine",
+        description: "My 60-minute evening wind-down routine with bath and skincare. TaskParent pays me $25 to share affordable self-care routines for parents!",
+        payment: "25.00",
+        duration: 60,
+        difficulty: "Easy",
+        requirements: ["Document affordable skincare routine", "Share relaxation techniques", "Include budget-friendly bath products", "Show the importance of evening self-care"],
+        imageUrl: "https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "personal"
+      },
+      // Shared Self-Care - parents supporting each other!
+      {
+        title: "Morning Walk Group - Join Me!",
+        description: "I walk for 45 minutes every morning - join me! $12 per person for accountability and motivation. Let's prioritize our health together!",
+        payment: "12.00",
+        duration: 45,
+        difficulty: "Easy",
+        requirements: ["Meet at park entrance 7am", "Comfortable walking shoes", "Water bottle", "Positive attitude and parent support"],
+        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "shared"
+      },
+      {
+        title: "Parent Coffee & Chat Session",
+        description: "Monthly parent support coffee meetup! Join me for 2 hours of adult conversation and mutual support. $20 per person includes coffee and snacks.",
+        payment: "20.00",
+        duration: 120,
+        difficulty: "Easy",
+        requirements: ["No kids - this is parent time", "Open to sharing and listening", "Venmo for coffee/snacks", "Commitment to monthly meetups"],
+        imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
         taskType: "shared"
       },
       // Premium shared tasks - higher payments for experienced parents

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Bell, Home, Plus, DollarSign, Users, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 import BottomNavigation from "@/components/ui/bottom-navigation";
 import TaskCard from "@/components/ui/task-card";
 import EarningsOverview from "@/components/ui/earnings-overview";
@@ -115,7 +116,7 @@ export default function HomePage() {
       {/* Task Categories */}
       <section className="px-4 py-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-3">Quick Categories</h3>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-4 gap-3 mb-4">
           {categories.map((category) => (
             <Link key={category.id} href={`/search?category=${category.id}`}>
               <div className="flex flex-col items-center p-3 bg-white rounded-xl shadow-sm border border-gray-100 task-card-hover cursor-pointer">
@@ -123,12 +124,14 @@ export default function HomePage() {
                   category.color === 'primary' ? 'bg-blue-100' :
                   category.color === 'secondary' ? 'bg-green-100' :
                   category.color === 'accent' ? 'bg-yellow-100' :
+                  category.color === 'green' ? 'bg-green-100' :
                   'bg-purple-100'
                 }`}>
                   <i className={`fas ${category.icon} ${
                     category.color === 'primary' ? 'text-blue-600' :
                     category.color === 'secondary' ? 'text-green-600' :
                     category.color === 'accent' ? 'text-yellow-600' :
+                    category.color === 'green' ? 'text-green-600' :
                     'text-purple-600'
                   }`}></i>
                 </div>
@@ -138,6 +141,26 @@ export default function HomePage() {
               </div>
             </Link>
           ))}
+        </div>
+        
+        {/* Self-Care Highlight */}
+        <div className="bg-gradient-to-r from-green-100 to-teal-100 rounded-xl p-4 border border-green-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-gray-900 flex items-center">
+                <span className="mr-2">🧘‍♀️</span>
+                New: Self-Care Tasks!
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Get paid for taking care of yourself - workouts, coffee dates, spa time!
+              </p>
+            </div>
+            <Link href="/search?category=Self-Care">
+              <Button size="sm" className="bg-green-500 hover:bg-green-600">
+                Try Now
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
