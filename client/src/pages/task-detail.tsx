@@ -143,6 +143,27 @@ export default function TaskDetailPage() {
         <h2 className="text-xl font-bold text-gray-900 mb-2">{task.title}</h2>
         <p className="text-gray-600 mb-4">{task.description}</p>
         
+        {/* Dual Earning Opportunity */}
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-4 mb-4">
+          <h4 className="font-semibold text-gray-900 mb-3">Dual Earning Opportunity</h4>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="bg-white rounded-lg p-3 border border-blue-200">
+              <span className="text-blue-600 font-medium">App pays you:</span>
+              <div className="font-bold text-blue-700 text-lg">${task.payment}</div>
+              <div className="text-xs text-gray-500">For your personal task</div>
+            </div>
+            <div className="bg-white rounded-lg p-3 border border-green-200">
+              <span className="text-green-600 font-medium">Neighbors can join:</span>
+              <div className="font-bold text-green-700 text-lg">+${(parseFloat(task.payment || "0") * 2).toFixed(2)}</div>
+              <div className="text-xs text-gray-500">When neighbors join you</div>
+            </div>
+          </div>
+          <div className="mt-3 pt-3 border-t border-gray-200 text-center">
+            <span className="text-gray-600">Total potential: </span>
+            <span className="font-bold text-gray-900 text-lg">${(parseFloat(task.payment || "0") * 3).toFixed(2)}</span>
+          </div>
+        </div>
+        
         {/* Task Metrics */}
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="bg-gray-50 rounded-lg p-3">

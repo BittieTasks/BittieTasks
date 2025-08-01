@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Edit, Star, Award, Calendar, Settings } from "lucide-react";
+import { ArrowLeft, Edit, Star, Award, Calendar, Settings, DollarSign, Users } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -70,70 +70,121 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <span className="text-green-600 font-bold text-lg">$</span>
+        {/* Dual Earning Stats */}
+        <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">Your Earning Model</h3>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="bg-white rounded-lg p-3 text-center border border-blue-200">
+              <div className="text-sm font-medium text-blue-700">App Pays</div>
+              <div className="text-lg font-bold text-blue-600">$180</div>
+              <div className="text-xs text-gray-500">per week</div>
             </div>
-            <p className="text-sm text-gray-600 mb-1">Total Earned</p>
-            <p className="font-bold text-gray-900">${user?.totalEarnings || "0.00"}</p>
+            <div className="bg-white rounded-lg p-3 text-center border border-green-200">
+              <div className="text-sm font-medium text-green-700">Neighbors Pay</div>
+              <div className="text-lg font-bold text-green-600">$395</div>
+              <div className="text-xs text-gray-500">per week</div>
+            </div>
           </div>
-
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <Star size={20} className="text-blue-600" />
-            </div>
-            <p className="text-sm text-gray-600 mb-1">Avg Rating</p>
-            <p className="font-bold text-gray-900">{user?.rating || "0.0"}</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-            <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <Award size={20} className="text-yellow-600" />
-            </div>
-            <p className="text-sm text-gray-600 mb-1">Streak</p>
-            <p className="font-bold text-gray-900">{user?.currentStreak || 0} days</p>
+          <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-lg p-2 text-white text-center">
+            <div className="text-sm opacity-90">Total Potential</div>
+            <div className="text-xl font-bold">$575/week</div>
           </div>
         </div>
 
-        {/* Skills */}
-        {user?.skills && user.skills.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Skills</h3>
-            <div className="flex flex-wrap gap-2">
-              {user.skills.map((skill, index) => (
-                <Badge key={index} variant="secondary" className="capitalize">
-                  {skill}
-                </Badge>
-              ))}
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
+            <div className="text-2xl font-bold text-gray-900">{user?.completedTasks || 0}</div>
+            <div className="text-xs text-gray-500">Tasks Done</div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
+            <div className="text-2xl font-bold text-green-600">${user?.totalEarnings || "0.00"}</div>
+            <div className="text-xs text-gray-500">Total Earned</div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
+            <div className="flex items-center justify-center">
+              <Star size={20} className="text-yellow-500 mr-1" />
+              <span className="text-2xl font-bold text-gray-900">{user?.rating || "0.0"}</span>
+            </div>
+            <div className="text-xs text-gray-500">Rating</div>
+          </div>
+        </div>
+
+        {/* Skills & Interests */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6">
+          <h4 className="font-medium text-gray-900 mb-3">Skills & Interests</h4>
+          <div className="flex flex-wrap gap-2">
+            {(user?.skills || ['Meal Prep', 'Childcare', 'Organization', 'Cleaning']).map((skill) => (
+              <Badge key={skill} variant="secondary" className="text-xs">
+                {skill}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        {/* About */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-medium text-gray-900">About</h4>
+            <Button variant="ghost" size="sm">
+              <Edit size={16} />
+            </Button>
+          </div>
+          <p className="text-sm text-gray-600">
+            {user?.bio || "Dedicated parent looking to help other families while earning extra income. I love organizing, meal prep, and creating efficient systems that make family life easier."}
+          </p>
+        </div>
+
+        {/* Achievement Badges */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6">
+          <h4 className="font-medium text-gray-900 mb-3">Achievements</h4>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Award className="text-yellow-600" size={20} />
+              </div>
+              <div className="text-xs font-medium text-gray-900">First Task</div>
+              <div className="text-xs text-gray-500">Completed</div>
+            </div>
+            
+            <div className="text-center opacity-50">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Star className="text-gray-400" size={20} />
+              </div>
+              <div className="text-xs font-medium text-gray-900">5-Star Pro</div>
+              <div className="text-xs text-gray-500">Locked</div>
+            </div>
+            
+            <div className="text-center opacity-50">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Calendar className="text-gray-400" size={20} />
+              </div>
+              <div className="text-xs font-medium text-gray-900">Weekly Hero</div>
+              <div className="text-xs text-gray-500">Locked</div>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Profile Actions */}
+        {/* Account Actions */}
         <div className="space-y-3">
-          <Button variant="outline" className="w-full justify-start h-12">
-            <Edit size={20} className="mr-3" />
+          <Button variant="outline" className="w-full justify-start">
+            <Edit className="mr-2" size={16} />
             Edit Profile
           </Button>
-
-          <Button variant="outline" className="w-full justify-start h-12">
-            <Award size={20} className="mr-3" />
-            Achievements
+          
+          <Link href="/earnings">
+            <Button variant="outline" className="w-full justify-start">
+              <Award className="mr-2" size={16} />
+              View Earnings
+            </Button>
+          </Link>
+          
+          <Button variant="outline" className="w-full justify-start">
+            <Settings className="mr-2" size={16} />
+            Account Settings
           </Button>
-
-          <Button variant="outline" className="w-full justify-start h-12">
-            <Calendar size={20} className="mr-3" />
-            Availability Settings
-          </Button>
-
-          <div className="pt-4 border-t border-gray-200">
-            <div className="text-sm text-gray-500 space-y-1">
-              <p>Member since {new Date(user?.createdAt || "").toLocaleDateString()}</p>
-              <p>Email: {user?.email}</p>
-            </div>
-          </div>
         </div>
       </div>
 

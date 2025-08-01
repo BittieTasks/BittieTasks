@@ -77,41 +77,37 @@ export default function HomePage() {
         <EarningsOverview user={user} />
       </section>
 
-      {/* How TaskParent Makes Money */}
+      {/* Dual Earning Model Highlight */}
       <section className="px-4 py-4 bg-white">
         <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl p-4 text-white mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-bold">How We Pay You</h3>
+            <h3 className="text-lg font-bold">Get Paid Twice!</h3>
             <DollarSign className="text-white" size={24} />
           </div>
           <p className="text-sm opacity-90 mb-3">
-            TaskParent generates revenue through service fees and partnerships, 
-            ensuring sustainable payments to parents like you.
+            Earn money from the app for your personal tasks, PLUS extra income when neighbors join you. 
+            Same work, double payment!
           </p>
           <Link href="/how-it-works" className="inline-flex items-center text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg transition-colors">
             <TrendingUp size={16} className="mr-2" />
-            Learn How It Works
+            See How It Works
           </Link>
         </div>
         
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="bg-green-50 rounded-lg p-3 text-center border border-green-200">
-            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
-              <span className="text-white text-sm font-bold">15%</span>
-            </div>
-            <span className="text-xs text-green-700 font-medium">Platform Fee</span>
-          </div>
+        <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-2">
+              <DollarSign className="text-white" size={16} />
+            </div>
+            <span className="text-xs text-blue-700 font-medium">App Pays You</span>
+            <div className="text-xs text-blue-600 mt-1">$180/week</div>
+          </div>
+          <div className="bg-green-50 rounded-lg p-3 text-center border border-green-200">
+            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
               <Users className="text-white" size={16} />
             </div>
-            <span className="text-xs text-blue-700 font-medium">Partnerships</span>
-          </div>
-          <div className="bg-yellow-50 rounded-lg p-3 text-center border border-yellow-200">
-            <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-2">
-              <Plus className="text-white" size={16} />
-            </div>
-            <span className="text-xs text-yellow-700 font-medium">Premium</span>
+            <span className="text-xs text-green-700 font-medium">Neighbors Pay</span>
+            <div className="text-xs text-green-600 mt-1">$395/week</div>
           </div>
         </div>
       </section>

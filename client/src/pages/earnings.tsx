@@ -75,131 +75,117 @@ export default function EarningsPage() {
             <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-gray-600">This Week</h3>
-                <TrendingUp size={16} className="text-green-500" />
+                <Calendar size={16} className="text-gray-400" />
               </div>
               <p className="text-xl font-bold text-gray-900">${thisWeekEarnings.toFixed(2)}</p>
+              <p className="text-xs text-gray-500">7 days</p>
             </div>
-
+            
             <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-gray-600">Pending</h3>
-                <Calendar size={16} className="text-yellow-500" />
+                <TrendingUp size={16} className="text-yellow-500" />
               </div>
-              <p className="text-xl font-bold text-gray-900">${pendingEarnings.toFixed(2)}</p>
+              <p className="text-xl font-bold text-yellow-600">${pendingEarnings.toFixed(2)}</p>
+              <p className="text-xs text-gray-500">Under review</p>
             </div>
           </div>
         </div>
 
-        {/* Recent Transactions */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+        {/* Dual Earning Breakdown */}
+        <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">Your Dual Earning Model</h3>
+          
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="bg-white rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center mb-2">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-2">
+                  <DollarSign className="text-white" size={12} />
+                </div>
+                <span className="text-sm font-medium text-gray-900">App Pays You</span>
+              </div>
+              <div className="text-lg font-bold text-blue-600">$180/week</div>
+              <div className="text-xs text-gray-500">Personal tasks</div>
+            </div>
+            
+            <div className="bg-white rounded-lg p-3 border border-green-200">
+              <div className="flex items-center mb-2">
+                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-2">
+                  <Users className="text-white" size={12} />
+                </div>
+                <span className="text-sm font-medium text-gray-900">Neighbors Pay</span>
+              </div>
+              <div className="text-lg font-bold text-green-600">$395/week</div>
+              <div className="text-xs text-gray-500">Shared tasks</div>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-lg p-3 text-white text-center">
+            <div className="text-sm opacity-90">Combined Potential</div>
+            <div className="text-2xl font-bold">$575/week</div>
+            <div className="text-xs opacity-80">$29,900/year</div>
+          </div>
+        </div>
+
+        {/* How It Works Info */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6">
+          <div className="flex items-start space-x-3">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <Info className="text-blue-600" size={16} />
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-1">How You Get Paid</h4>
+              <p className="text-sm text-gray-600 mb-2">
+                TaskParent pays you directly for personal tasks, plus you earn extra when neighbors join your activities.
+              </p>
+              <Link href="/how-it-works">
+                <Button variant="outline" size="sm">
+                  Learn More
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
           
           {completions.length === 0 ? (
-            <div className="text-center py-8">
-              <DollarSign size={48} className="text-gray-300 mx-auto mb-4" />
-              <h4 className="text-lg font-medium text-gray-900 mb-2">No earnings yet</h4>
-              <p className="text-gray-600 mb-4">Start completing tasks to see your earnings here!</p>
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 text-center">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Star className="text-gray-400" size={24} />
+              </div>
+              <h4 className="font-medium text-gray-900 mb-2">No tasks completed yet</h4>
+              <p className="text-sm text-gray-600 mb-4">
+                Start earning by completing your first task! Remember, you get paid both by the app and neighbors.
+              </p>
               <Link href="/">
                 <Button>Browse Tasks</Button>
               </Link>
             </div>
           ) : (
-            <div className="space-y-3">
-              {completions
-                .sort((a, b) => new Date(b.completedAt || "").getTime() - new Date(a.completedAt || "").getTime())
-                .map((completion) => (
-                  <div key={completion.id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">Task Completion</h4>
-                        <p className="text-sm text-gray-600">
-                          {new Date(completion.completedAt || "").toLocaleDateString()}
-                        </p>
-                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium mt-1 ${
-                          completion.status === "approved" 
-                            ? "bg-green-100 text-green-800"
-                            : completion.status === "pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                        }`}>
-                          {completion.status.charAt(0).toUpperCase() + completion.status.slice(1)}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <p className={`font-bold ${
-                          completion.status === "approved" ? "text-green-600" : "text-gray-900"
-                        }`}>
-                          ${completion.earnings || "0.00"}
-                        </p>
-                        {completion.rating && (
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Star size={12} className="mr-1" />
-                            {completion.rating}/5
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
+            completions.slice(0, 5).map((completion) => (
+              <div key={completion.id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-medium text-gray-900">Task Completed</h4>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    completion.status === "approved" ? "bg-green-100 text-green-700" :
+                    completion.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+                    "bg-red-100 text-red-700"
+                  }`}>
+                    {completion.status}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm text-gray-600">
+                  <span>{new Date(completion.completedAt || "").toLocaleDateString()}</span>
+                  <span className="font-medium text-gray-900">
+                    ${completion.earnings || "0.00"}
+                  </span>
+                </div>
+              </div>
+            ))
           )}
-
-          {/* How TaskParent Sustains Payments */}
-          <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
-            <div className="flex items-center mb-3">
-              <Info className="text-blue-600 mr-2" size={20} />
-              <h3 className="font-bold text-gray-900">How We Ensure Your Payments</h3>
-            </div>
-            <p className="text-sm text-gray-700 mb-4">
-              TaskParent uses multiple revenue streams to guarantee sustainable payments to parents:
-            </p>
-            
-            <div className="space-y-3">
-              <div className="flex items-start">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                  <span className="text-white text-xs font-bold">15%</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Platform Service Fee</p>
-                  <p className="text-xs text-gray-600">Small fee covers payment processing, insurance, and support</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start">
-                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                  <Users className="text-white" size={14} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Corporate Partnerships</p>
-                  <p className="text-xs text-gray-600">Companies pay for employee meal prep and eldercare services</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start">
-                <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                  <Star className="text-white" size={14} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Premium Memberships</p>
-                  <p className="text-xs text-gray-600">Pro users pay $9.99/month for priority access and lower fees</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start">
-                <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                  <Shield className="text-white" size={14} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Insurance & Trust</p>
-                  <p className="text-xs text-gray-600">$1M liability coverage and secure payment processing</p>
-                </div>
-              </div>
-            </div>
-            
-            <Link href="/how-it-works" className="inline-block mt-4 text-blue-600 text-sm font-medium hover:underline">
-              Learn more about our business model →
-            </Link>
-          </div>
         </div>
       </div>
 
