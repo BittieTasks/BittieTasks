@@ -377,12 +377,18 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
     const user: User = { 
-      ...insertUser, 
-      id, 
-      totalEarnings: "0.00",
-      rating: "0.00",
-      completedTasks: 0,
-      currentStreak: 0,
+      id,
+      username: insertUser.username,
+      email: insertUser.email,
+      firstName: insertUser.firstName,
+      lastName: insertUser.lastName,
+      profilePicture: insertUser.profilePicture || null,
+      totalEarnings: insertUser.totalEarnings || "0.00",
+      rating: insertUser.rating || "5.0",
+      completedTasks: insertUser.completedTasks || 0,
+      currentStreak: insertUser.currentStreak || 0,
+      skills: insertUser.skills || [],
+      availability: insertUser.availability || { weekdays: true, weekends: true, mornings: true, afternoons: true },
       createdAt: new Date()
     };
     this.users.set(id, user);
@@ -404,7 +410,13 @@ export class MemStorage implements IStorage {
 
   async createTaskCategory(insertCategory: InsertTaskCategory): Promise<TaskCategory> {
     const id = randomUUID();
-    const category: TaskCategory = { ...insertCategory, id };
+    const category: TaskCategory = { 
+      id,
+      name: insertCategory.name,
+      icon: insertCategory.icon,
+      color: insertCategory.color,
+      description: insertCategory.description || null
+    };
     this.taskCategories.set(id, category);
     return category;
   }
@@ -424,11 +436,20 @@ export class MemStorage implements IStorage {
   async createTask(insertTask: InsertTask): Promise<Task> {
     const id = randomUUID();
     const task: Task = { 
-      ...insertTask, 
-      id, 
+      id,
+      title: insertTask.title,
+      description: insertTask.description,
+      categoryId: insertTask.categoryId || null,
+      payment: insertTask.payment,
+      duration: insertTask.duration || null,
+      difficulty: insertTask.difficulty,
+      requirements: insertTask.requirements || null,
+      imageUrl: insertTask.imageUrl || null,
       rating: "0.00",
       completions: 0,
       isActive: true,
+      taskType: insertTask.taskType || "shared",
+      sponsorInfo: insertTask.sponsorInfo || null,
       createdAt: new Date()
     };
     this.tasks.set(id, task);
@@ -442,8 +463,15 @@ export class MemStorage implements IStorage {
   async createTaskCompletion(insertCompletion: InsertTaskCompletion): Promise<TaskCompletion> {
     const id = randomUUID();
     const completion: TaskCompletion = { 
-      ...insertCompletion, 
-      id, 
+      id,
+      userId: insertCompletion.userId || null,
+      taskId: insertCompletion.taskId || null,
+      status: insertCompletion.status,
+      submissionNotes: insertCompletion.submissionNotes || null,
+      reviewNotes: insertCompletion.reviewNotes || null,
+      rating: insertCompletion.rating || null,
+      earnings: insertCompletion.earnings || null,
+      proofFiles: insertCompletion.proofFiles || null,
       completedAt: new Date()
     };
     this.taskCompletions.set(id, completion);
@@ -468,8 +496,10 @@ export class MemStorage implements IStorage {
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
     const id = randomUUID();
     const message: Message = { 
-      ...insertMessage, 
-      id, 
+      id,
+      fromUserId: insertMessage.fromUserId || null,
+      toUserId: insertMessage.toUserId || null,
+      content: insertMessage.content,
       isRead: false,
       createdAt: new Date()
     };
@@ -492,8 +522,10 @@ export class MemStorage implements IStorage {
   async createUserAchievement(insertAchievement: InsertUserAchievement): Promise<UserAchievement> {
     const id = randomUUID();
     const achievement: UserAchievement = { 
-      ...insertAchievement, 
-      id, 
+      id,
+      userId: insertAchievement.userId || null,
+      achievementType: insertAchievement.achievementType,
+      achievementData: insertAchievement.achievementData || null,
       earnedAt: new Date()
     };
     this.userAchievements.set(id, achievement);
