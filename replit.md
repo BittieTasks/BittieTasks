@@ -2,9 +2,9 @@
 
 ## Overview
 
-TaskParent is a mobile-first React web application designed as a revolutionary "monetize your daily routine" marketplace. The platform enables parents to earn money by sharing the benefits of tasks they're already doing for themselves - like meal prepping, grocery shopping, organizing, and childcare. Built with a modern TypeScript stack, it features a responsive mobile interface with bottom navigation, real-time task management, earnings tracking, and a comprehensive messaging system.
+TaskParent is a mobile-first React web application designed as a revolutionary dual-income marketplace for parents. The platform enables parents to earn money in two ways: (1) Get paid directly by the app for doing their own daily tasks (laundry, cooking, cleaning), and (2) Share the benefits of tasks they're already doing with neighbors for additional income. Built with a modern TypeScript stack, it features a responsive mobile interface with bottom navigation, real-time task management, earnings tracking, and a comprehensive messaging system.
 
-**Recent Update (Aug 2025)**: Pivoted to the groundbreaking model where parents monetize their existing daily routines rather than taking on new tasks. Added comprehensive monetization strategy with 100% app-based revenue model and premium task tiers for higher earnings.
+**Recent Update (Aug 2025)**: Implemented groundbreaking dual earning model where parents get paid by the app for personal tasks AND can help neighbors for extra income. Added 100% self-sustaining app-based revenue model with earning potential up to $29,900/year.
 
 ## User Preferences
 
@@ -47,17 +47,21 @@ Preferred communication style: Simple, everyday language.
 - **Future-Ready**: Architecture prepared for JWT or OAuth integration
 
 ### Business Model and Monetization
-- **Core Innovation**: Parents monetize daily tasks they're already doing (meal prep, grocery runs, childcare)
+- **Core Innovation**: Dual earning model for parents
+  1. **App-Direct Payments**: Parents get paid directly by TaskParent for doing personal tasks (own laundry, cooking, cleaning)
+  2. **Neighbor Payments**: Parents earn additional income by sharing tasks with neighbors who pay to join
 - **100% Self-Sustaining Revenue Model**: Complete independence from external sponsors or brand partnerships
   - Platform service fee (15% of completed tasks, 10% for Pro members)
   - TaskParent Pro premium memberships ($9.99/month with enhanced features)
   - Corporate partnerships for employee benefit programs
   - Premium features and advanced business tools for power users
-- **Premium Task System**: High-performing parents can unlock premium task categories with higher payment rates
-- **Unique Value Proposition**: "Get paid for what you're already doing" - no additional time commitment required
-- **Transparency Features**: Dedicated "How It Works" page explaining complete revenue model transparency
+- **Earning Potential**: Up to $575/week ($29,900/year) combining both income streams
+  - App payments: $180/week for personal tasks
+  - Neighbor payments: $395/week for shared tasks
+- **Unique Value Proposition**: "Get paid twice for what you're already doing" - app pays you, neighbors pay you too
+- **Transparency Features**: Dedicated "How It Works" page explaining complete dual earning model
 - **Payment Security**: $1M liability coverage and secure escrow payment processing
-- **Market Advantage**: First platform to monetize existing parent routines with sustainable app-based revenue
+- **Market Advantage**: First platform to offer dual income streams from existing parent routines
 
 ## External Dependencies
 

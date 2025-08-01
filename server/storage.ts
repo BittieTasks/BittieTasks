@@ -107,6 +107,52 @@ export class MemStorage implements IStorage {
 
     // Create sample tasks
     const sampleTasks = [
+      // Personal tasks - paid directly by app
+      {
+        title: "Do My Family's Laundry",
+        description: "I'm doing 3 loads of laundry for my family today. TaskParent pays me $15 to document my process and share laundry tips!",
+        payment: "15.00",
+        duration: 120,
+        difficulty: "Easy",
+        requirements: ["Document sorting process", "Show stain removal techniques", "Share folding tips", "Include before/after photos"],
+        imageUrl: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Cleaning",
+        taskType: "personal"
+      },
+      {
+        title: "Cook Dinner for My Family",
+        description: "Making tonight's family dinner - pasta with homemade sauce! TaskParent pays me $25 to share the recipe and cooking process.",
+        payment: "25.00",
+        duration: 90,
+        difficulty: "Easy",
+        requirements: ["Share complete recipe", "Document cooking steps", "Include ingredient costs", "Show plating techniques"],
+        imageUrl: "https://images.unsplash.com/photo-1551782450-17144efb9c50?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Cooking",
+        taskType: "personal"
+      },
+      {
+        title: "Clean My Living Room",
+        description: "Deep cleaning my living room today! TaskParent pays me $20 to document my cleaning routine and share organization tips.",
+        payment: "20.00",
+        duration: 60,
+        difficulty: "Easy",
+        requirements: ["Show before/after photos", "Document cleaning products used", "Share time-saving tips", "Include organization hacks"],
+        imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Cleaning",
+        taskType: "personal"
+      },
+      {
+        title: "My Weekly Meal Prep",
+        description: "Prepping meals for my family's week ahead. TaskParent pays me $35 to document my meal prep system and share planning tips!",
+        payment: "35.00",
+        duration: 180,
+        difficulty: "Medium",
+        requirements: ["Show meal planning process", "Document prep techniques", "Share storage solutions", "Include budget breakdown"],
+        imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Cooking",
+        taskType: "personal"
+      },
+      // Shared tasks - neighbors pay to join
       {
         title: "Weekly Meal Prep - Join Me!",
         description: "I'm meal prepping 6 family dinners this Sunday. Join for $35 and get 3 ready-to-heat meals for your family!",

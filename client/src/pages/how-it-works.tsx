@@ -1,4 +1,4 @@
-import { ArrowLeft, DollarSign, Users, Shield, TrendingUp, Percent, Award, Clock, Star } from "lucide-react";
+import { ArrowLeft, DollarSign, Users, Shield, TrendingUp, Percent, Award, Clock, Star, Home } from "lucide-react";
 import { Link } from "wouter";
 
 export default function HowItWorks() {
@@ -33,6 +33,84 @@ export default function HowItWorks() {
             </div>
           </div>
         </div>
+
+        {/* Dual Earning Model */}
+        <section className="mb-8">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <Home className="text-green-600 mr-2" size={24} />
+            Two Ways to Earn Money
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+              <h4 className="font-bold text-blue-800 mb-3 flex items-center">
+                <DollarSign className="text-blue-600 mr-2" size={20} />
+                Get Paid by the App
+              </h4>
+              <p className="text-gray-700 mb-4 text-sm">
+                Earn money directly from TaskParent for doing your own daily tasks. 
+                Just document what you're already doing!
+              </p>
+              
+              <div className="space-y-2 text-sm text-blue-700">
+                <div className="flex items-center justify-between">
+                  <span>• Do your own laundry</span>
+                  <span className="font-medium">$15</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>• Cook family dinner</span>
+                  <span className="font-medium">$25</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>• Clean your living room</span>
+                  <span className="font-medium">$20</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>• Meal prep for your family</span>
+                  <span className="font-medium">$35</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+              <h4 className="font-bold text-green-800 mb-3 flex items-center">
+                <Users className="text-green-600 mr-2" size={20} />
+                Help Other Parents
+              </h4>
+              <p className="text-gray-700 mb-4 text-sm">
+                Share your tasks with neighbors and earn extra income. They pay you 
+                to join what you're already doing!
+              </p>
+              
+              <div className="space-y-2 text-sm text-green-700">
+                <div className="flex items-center justify-between">
+                  <span>• 3 families join meal prep</span>
+                  <span className="font-medium">$105</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>• Costco run for 2 neighbors</span>
+                  <span className="font-medium">$50</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>• Group childcare (4 kids)</span>
+                  <span className="font-medium">$140</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>• Organization consulting</span>
+                  <span className="font-medium">$85</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-xl p-4 text-white text-center">
+            <h4 className="font-bold mb-2">Complete Example: Sunday Meal Prep</h4>
+            <div className="text-sm opacity-90">
+              App pays you <strong>$35</strong> for doing your own meal prep + 
+              3 neighbors pay <strong>$35 each</strong> to join = <strong>$140 total</strong> for one task!
+            </div>
+          </div>
+        </section>
 
         {/* Revenue Model */}
         <section className="mb-8">
@@ -333,46 +411,54 @@ export default function HowItWorks() {
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-              <h4 className="font-bold text-green-800 mb-3">Weekly Shared Tasks</h4>
-              <div className="space-y-2 text-sm text-green-700">
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+              <h4 className="font-bold text-blue-800 mb-3">Weekly App-Paid Tasks</h4>
+              <div className="space-y-2 text-sm text-blue-700">
                 <div className="flex justify-between">
-                  <span>2 Meal prep sessions ($35 each)</span>
-                  <span className="font-medium">$70</span>
+                  <span>Personal meal prep ($35)</span>
+                  <span className="font-medium">$35</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>1 Costco run ($25)</span>
-                  <span className="font-medium">$25</span>
+                  <span>Family dinner cooking ($25 × 3)</span>
+                  <span className="font-medium">$75</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>3 Childcare sessions ($35 each)</span>
-                  <span className="font-medium">$105</span>
+                  <span>Room cleaning ($20 × 2)</span>
+                  <span className="font-medium">$40</span>
                 </div>
-                <div className="border-t border-green-300 pt-2 flex justify-between font-bold">
+                <div className="flex justify-between">
+                  <span>Family laundry ($15 × 2)</span>
+                  <span className="font-medium">$30</span>
+                </div>
+                <div className="border-t border-blue-300 pt-2 flex justify-between font-bold">
                   <span>Weekly Total:</span>
-                  <span>$200</span>
+                  <span>$180</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-purple-50 rounded-xl p-4 border border-purple-200">
-              <h4 className="font-bold text-purple-800 mb-3">Weekly Premium Tasks</h4>
-              <div className="space-y-2 text-sm text-purple-700">
+            <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+              <h4 className="font-bold text-green-800 mb-3">Weekly Neighbor-Paid Tasks</h4>
+              <div className="space-y-2 text-sm text-green-700">
                 <div className="flex justify-between">
-                  <span>Premium meal prep service ($75)</span>
-                  <span className="font-medium">$75</span>
+                  <span>3 families join meal prep ($35 × 3)</span>
+                  <span className="font-medium">$105</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Professional childcare ($50)</span>
+                  <span>2 Costco runs ($25 × 2)</span>
                   <span className="font-medium">$50</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Organization consulting ($120)</span>
-                  <span className="font-medium">$120</span>
+                  <span>4 kids childcare ($35 × 4)</span>
+                  <span className="font-medium">$140</span>
                 </div>
-                <div className="border-t border-purple-300 pt-2 flex justify-between font-bold">
+                <div className="flex justify-between">
+                  <span>Organization consulting ($85)</span>
+                  <span className="font-medium">$100</span>
+                </div>
+                <div className="border-t border-green-300 pt-2 flex justify-between font-bold">
                   <span>Weekly Total:</span>
-                  <span>$245</span>
+                  <span>$395</span>
                 </div>
               </div>
             </div>
@@ -380,8 +466,8 @@ export default function HowItWorks() {
 
           <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-xl p-6 text-white text-center">
             <h4 className="font-bold text-xl mb-2">Combined Weekly Earning Potential</h4>
-            <div className="text-3xl font-bold mb-2">$445/week</div>
-            <div className="text-lg opacity-90">= $1,780/month = $23,140/year</div>
+            <div className="text-3xl font-bold mb-2">$575/week</div>
+            <div className="text-lg opacity-90">= $2,300/month = $29,900/year</div>
             <p className="text-sm opacity-80 mt-3">
               All while doing tasks you're already doing for your own family!
             </p>
