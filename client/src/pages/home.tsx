@@ -57,6 +57,11 @@ export default function HomePage() {
                 3
               </span>
             </div>
+            <Link href="/auth">
+              <Button variant="outline" size="sm" className="mr-2">
+                Sign Up
+              </Button>
+            </Link>
             <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-medium">
                 {user?.firstName?.[0] || "U"}

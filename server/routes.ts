@@ -31,12 +31,76 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication routes
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { firstName, lastName, email, password } = req.body;
+      
+      if (!firstName || !lastName || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // Check if user already exists
+      const existingUsers = await storage.getUsers();
+      const userExists = existingUsers.some(user => user.email === email);
+      
+      if (userExists) {
+        return res.status(400).json({ message: "User already exists with this email" });
+      }
+
+      // Create new user
+      const newUser = await storage.createUser({
+        username: `${firstName.toLowerCase()}_${lastName.toLowerCase()}`,
+        email,
+        firstName,
+        lastName,
+        profilePicture: null,
+        totalEarnings: "0.00",
+        rating: "5.0",
+        completedTasks: 0,
+        currentStreak: 0,
+        skills: [],
+        availability: { weekdays: true, weekends: true, mornings: true, afternoons: true },
+      });
+
+      res.json({ message: "Account created successfully", user: newUser });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create account" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+
+      // Find user by email
+      const users = await storage.getUsers();
+      const user = users.find(u => u.email === email);
+      
+      if (!user) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      // In a real app, you'd verify the password hash here
+      // For demo purposes, we'll accept any password
+      
+      res.json({ message: "Login successful", user });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to login" });
+    }
+  });
+
   // Get current user (mock authentication)
   app.get("/api/user/current", async (req, res) => {
     try {
       // In a real app, this would get the user from session/JWT
-      const users = await storage.getTaskCategories(); // Get any user for demo
-      const user = Array.from(await storage["users"].values())[0]; // Access the first user
+      // For now, return the first user as demo
+      const users = await storage.getUsers();
+      const user = users[0];
       res.json(user);
     } catch (error) {
       res.status(500).json({ message: "Failed to get current user" });

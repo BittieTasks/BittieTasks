@@ -11,11 +11,13 @@ import Profile from "@/pages/profile";
 import Messages from "@/pages/messages";
 import Search from "@/pages/search";
 import HowItWorks from "@/pages/how-it-works";
+import Auth from "@/pages/auth";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/auth" component={Auth} />
       <Route path="/task/:id" component={TaskDetail} />
       <Route path="/earnings" component={Earnings} />
       <Route path="/profile" component={Profile} />
