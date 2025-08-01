@@ -143,158 +143,124 @@ export default function HowItWorks() {
           </div>
         </section>
 
-        {/* Sponsored Tasks - New Feature */}
+        {/* Premium Tasks - New Feature */}
         <section className="mb-8">
           <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-            <Star className="text-yellow-600 mr-2" size={24} />
-            NEW: Sponsored Tasks - Guaranteed Money!
+            <Star className="text-purple-600 mr-2" size={24} />
+            NEW: Premium Tasks - Higher Earnings!
           </h3>
           
-          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-6 text-white mb-4">
-            <h4 className="font-bold text-lg mb-2">Get Paid Even Without Neighbors!</h4>
+          <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl p-6 text-white mb-4">
+            <h4 className="font-bold text-lg mb-2">Scale Your Existing Tasks for Higher Pay!</h4>
             <p className="text-sm opacity-90">
-              Document your daily routines and share tips with other parents. Brands sponsor these tasks, 
-              so you get paid guaranteed money regardless of neighbor participation.
+              Turn your successful shared tasks into premium services. When you prove your expertise, 
+              you can charge higher rates and serve more families with the same routine.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-              <h5 className="font-bold text-yellow-800 mb-2">Example Sponsored Tasks</h5>
-              <div className="space-y-2 text-sm text-yellow-700">
+            <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+              <h5 className="font-bold text-purple-800 mb-2">Premium Task Examples</h5>
+              <div className="space-y-2 text-sm text-purple-700">
                 <div className="flex items-center">
-                  <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                  Document meal prep routine - $55
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                  Premium meal prep service - $75/family
                 </div>
                 <div className="flex items-center">
-                  <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                  Show kids' learning activities - $45
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                  Professional childcare hub - $50/child
                 </div>
                 <div className="flex items-center">
-                  <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                  Complete home makeover - $120
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                  Complete organization service - $120
                 </div>
                 <div className="flex items-center">
-                  <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                  Budget & meal planning system - $85
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                  Family budget consulting - $85
                 </div>
               </div>
             </div>
 
             <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-              <h5 className="font-bold text-green-800 mb-2">Why Brands Sponsor</h5>
+              <h5 className="font-bold text-green-800 mb-2">How to Unlock Premium</h5>
               <div className="space-y-2 text-sm text-green-700">
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  Authentic parent content
+                  4.5+ star average rating
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  Real family insights
+                  10+ completed tasks
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  Community building
+                  Positive neighbor reviews
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  Support parent income
+                  Category expertise verified
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Sponsored Task Approval Process */}
+        {/* Revenue Model Section */}
         <section className="mb-8">
           <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-            <Clock className="text-blue-600 mr-2" size={24} />
-            How Sponsored Tasks Get Approved
+            <Percent className="text-blue-600 mr-2" size={24} />
+            How TaskParent Makes Money (So You Get Paid!)
           </h3>
           
-          <div className="space-y-4">
-            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-              <div className="flex items-start">
-                <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-4 mt-1">1</div>
-                <div>
-                  <h4 className="font-bold text-blue-900 mb-2">Apply for Sponsored Task</h4>
-                  <p className="text-blue-800 text-sm">
-                    Choose a sponsored task that matches what you're already doing. Click "Apply" and tell us why you're perfect for it.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-              <div className="flex items-start">
-                <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-4 mt-1">2</div>
-                <div>
-                  <h4 className="font-bold text-green-900 mb-2">Quick Review (24-48 hours)</h4>
-                  <p className="text-green-800 text-sm">
-                    Our team reviews your profile and ensures you're a good match. We check your rating, completed tasks, and expertise area.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-purple-50 rounded-xl p-4 border border-purple-200">
-              <div className="flex items-start">
-                <div className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-4 mt-1">3</div>
-                <div>
-                  <h4 className="font-bold text-purple-900 mb-2">Complete & Document</h4>
-                  <p className="text-purple-800 text-sm">
-                    Once approved, do your normal routine and document it! Take photos, videos, share tips, and follow the specific requirements.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-orange-50 rounded-xl p-4 border border-orange-200">
-              <div className="flex items-start">
-                <div className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-4 mt-1">4</div>
-                <div>
-                  <h4 className="font-bold text-orange-900 mb-2">Quality Review & Payment</h4>
-                  <p className="text-orange-800 text-sm">
-                    We review your submission for quality and completeness. Once approved (usually within 48 hours), your guaranteed payment is released!
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-4 border border-green-200">
-            <div className="flex items-center mb-2">
-              <Shield className="text-green-600 mr-2" size={20} />
-              <h4 className="font-bold text-gray-900">Payment Guarantee</h4>
-            </div>
-            <p className="text-gray-700 text-sm">
-              Unlike shared tasks, sponsored tasks have <strong>guaranteed payments</strong>. Once you're approved and submit quality content meeting the requirements, 
-              you <strong>will</strong> get paid - no neighbors needed, no cancellations possible!
+          <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+            <p className="text-gray-700 mb-4">
+              We believe in full transparency about how our business works. TaskParent is 100% self-sustaining through app-based revenue - 
+              no dependence on external brands or sponsors needed!
             </p>
-          </div>
-
-          <div className="mt-4 bg-yellow-50 rounded-xl p-4 border border-yellow-200">
-            <div className="flex items-center mb-2">
-              <Star className="text-yellow-600 mr-2" size={20} />
-              <h4 className="font-bold text-gray-900">Approval Requirements</h4>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white rounded-lg p-4 border border-blue-200">
+                <h4 className="font-bold text-blue-900 mb-2">Platform Service Fee</h4>
+                <p className="text-blue-800 text-sm mb-2">15% commission on completed tasks</p>
+                <p className="text-gray-600 text-xs">
+                  We take a small percentage to maintain the platform, handle payments, provide customer support, and ensure safety.
+                </p>
+              </div>
+              
+              <div className="bg-white rounded-lg p-4 border border-blue-200">
+                <h4 className="font-bold text-blue-900 mb-2">TaskParent Pro</h4>
+                <p className="text-blue-800 text-sm mb-2">$9.99/month premium membership</p>
+                <p className="text-gray-600 text-xs">
+                  Reduced fees (10%), priority task placement, advanced analytics, unlimited task posts, and premium customer support.
+                </p>
+              </div>
+              
+              <div className="bg-white rounded-lg p-4 border border-blue-200">
+                <h4 className="font-bold text-blue-900 mb-2">Corporate Partnerships</h4>
+                <p className="text-blue-800 text-sm mb-2">Employee benefit programs</p>
+                <p className="text-gray-600 text-xs">
+                  Companies pay us to offer TaskParent as an employee benefit, helping working parents in their workforce earn extra income.
+                </p>
+              </div>
+              
+              <div className="bg-white rounded-lg p-4 border border-blue-200">
+                <h4 className="font-bold text-blue-900 mb-2">Premium Features & Tools</h4>
+                <p className="text-blue-800 text-sm mb-2">Enhanced platform capabilities</p>
+                <p className="text-gray-600 text-xs">
+                  Advanced scheduling tools, bulk task management, earnings analytics, tax reporting, and business tools for power users.
+                </p>
+              </div>
             </div>
-            <div className="text-sm text-gray-700 space-y-1">
-              <div className="flex items-center">
-                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                4+ star rating on TaskParent
+            
+            <div className="mt-4 bg-green-100 rounded-lg p-4 border border-green-300">
+              <div className="flex items-center mb-2">
+                <Shield className="text-green-600 mr-2" size={20} />
+                <h4 className="font-bold text-green-800">100% Self-Sustaining Model</h4>
               </div>
-              <div className="flex items-center">
-                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                At least 3 completed tasks
-              </div>
-              <div className="flex items-center">
-                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                Relevant experience in the task category
-              </div>
-              <div className="flex items-center">
-                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                Clear photos/videos showing your work
-              </div>
+              <p className="text-green-700 text-sm">
+                Our app-based revenue streams ensure complete independence from external sponsors. This means reliable platform operation, 
+                consistent payments to parents, and continuous feature development - all funded by the value we create for our community.
+              </p>
             </div>
           </div>
         </section>
@@ -349,12 +315,12 @@ export default function HowItWorks() {
               <p className="text-blue-700 font-medium text-sm">- Maria L., Mom of 3</p>
             </div>
             
-            <div className="bg-yellow-50 rounded-xl p-4 border-l-4 border-yellow-400">
+            <div className="bg-purple-50 rounded-xl p-4 border-l-4 border-purple-400">
               <p className="text-gray-700 text-sm mb-2">
-                "Sponsored tasks are amazing! I earned $270 last week just documenting my normal routines - 
-                meal prep system ($55), kids' activities ($45), and a complete home organization makeover ($120). No neighbors needed!"
+                "I upgraded to premium tasks after building my reputation! Now I earn $270 per week with my premium meal prep service ($75 × 3 families) 
+                plus my regular organization services ($120). Same work, higher pay!"
               </p>
-              <p className="text-yellow-700 font-medium text-sm">- Jessica R., Mom of 1</p>
+              <p className="text-purple-700 font-medium text-sm">- Jessica R., Mom of 1</p>
             </div>
           </div>
         </section>
@@ -389,24 +355,24 @@ export default function HowItWorks() {
               </div>
             </div>
 
-            <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
-              <h4 className="font-bold text-yellow-800 mb-3">Weekly Sponsored Tasks</h4>
-              <div className="space-y-2 text-sm text-yellow-700">
+            <div className="bg-purple-50 rounded-xl p-4 border border-purple-200">
+              <h4 className="font-bold text-purple-800 mb-3">Weekly Premium Tasks</h4>
+              <div className="space-y-2 text-sm text-purple-700">
                 <div className="flex justify-between">
-                  <span>Meal prep documentation ($55)</span>
-                  <span className="font-medium">$55</span>
+                  <span>Premium meal prep service ($75)</span>
+                  <span className="font-medium">$75</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Kids' activities ($45)</span>
-                  <span className="font-medium">$45</span>
+                  <span>Professional childcare ($50)</span>
+                  <span className="font-medium">$50</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Budget planning system ($85)</span>
-                  <span className="font-medium">$85</span>
+                  <span>Organization consulting ($120)</span>
+                  <span className="font-medium">$120</span>
                 </div>
-                <div className="border-t border-yellow-300 pt-2 flex justify-between font-bold">
+                <div className="border-t border-purple-300 pt-2 flex justify-between font-bold">
                   <span>Weekly Total:</span>
-                  <span>$185</span>
+                  <span>$245</span>
                 </div>
               </div>
             </div>
@@ -414,8 +380,8 @@ export default function HowItWorks() {
 
           <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-xl p-6 text-white text-center">
             <h4 className="font-bold text-xl mb-2">Combined Weekly Earning Potential</h4>
-            <div className="text-3xl font-bold mb-2">$385/week</div>
-            <div className="text-lg opacity-90">= $1,540/month = $20,020/year</div>
+            <div className="text-3xl font-bold mb-2">$445/week</div>
+            <div className="text-lg opacity-90">= $1,780/month = $23,140/year</div>
             <p className="text-sm opacity-80 mt-3">
               All while doing tasks you're already doing for your own family!
             </p>

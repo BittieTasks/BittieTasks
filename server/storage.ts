@@ -162,46 +162,9 @@ export class MemStorage implements IStorage {
         categoryName: "Childcare",
         taskType: "shared"
       },
-      // Sponsored tasks - parents get paid regardless of neighbor participation
+      // Premium shared tasks - higher payments for experienced parents
       {
-        title: "Sponsored: Document Your Meal Prep",
-        description: "Show your weekly meal prep routine! Get paid $55 to document and share your process - no neighbors needed!",
-        payment: "55.00",
-        duration: 45,
-        difficulty: "Easy",
-        requirements: ["Film clear before/after shots", "Include ingredient costs", "Share 3 family-friendly recipes", "Show storage tips"],
-        imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-        categoryName: "Cooking",
-        taskType: "sponsored",
-        sponsorInfo: "Sponsored by FoodPrep App"
-      },
-      {
-        title: "Sponsored: Your Kids' Learning Activities",
-        description: "Get paid $45 to document fun educational activities you do with your kids - help other parents learn!",
-        payment: "45.00",
-        duration: 60,
-        difficulty: "Easy",
-        requirements: ["Age-appropriate activities (2-6 years)", "Show materials needed", "Explain learning benefits", "Safety considerations"],
-        imageUrl: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-        categoryName: "Childcare",
-        taskType: "sponsored",
-        sponsorInfo: "Sponsored by KidsLearn Platform"
-      },
-      {
-        title: "Sponsored: Organization Transformation",
-        description: "Earn $65 organizing any room in your house! Document the process and inspire other parents.",
-        payment: "65.00",
-        duration: 120,
-        difficulty: "Medium",
-        requirements: ["Before and after photos", "List products used", "Time-saving tips", "Budget breakdown"],
-        imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-        categoryName: "Organizing",
-        taskType: "sponsored",
-        sponsorInfo: "Sponsored by HomeOrg Solutions"
-      },
-      // High-value shared tasks
-      {
-        title: "Weekend Meal Prep Service - 5 Families",
+        title: "Premium Meal Prep Service - 5 Families",
         description: "I'm scaling up my meal prep! Join 4 other families for premium meal prep service. $75 per family for 6 complete meals.",
         payment: "75.00",
         duration: 300,
@@ -212,7 +175,7 @@ export class MemStorage implements IStorage {
         taskType: "shared"
       },
       {
-        title: "After School Care Hub - Premium Service",
+        title: "Professional After School Care Hub",
         description: "Professional after-school care for 6 kids ages 5-12. Homework help, snacks, activities. $50/child for 3-hour daily care.",
         payment: "50.00",
         duration: 180,
@@ -222,30 +185,38 @@ export class MemStorage implements IStorage {
         categoryName: "Childcare",
         taskType: "shared"
       },
-      // Premium sponsored tasks
       {
-        title: "Sponsored: Complete Home Organization Makeover",
-        description: "Transform your entire home organization system! Document the full process for $120. Share tips, products, and before/after results.",
+        title: "Complete Home Organization Service",
+        description: "Transform your entire home organization system! I'll help organize multiple rooms in your house using proven systems and premium products.",
         payment: "120.00",
         duration: 480,
         difficulty: "Hard",
-        requirements: ["Multiple rooms documentation", "Product recommendations", "Time-lapse videos", "Cost breakdown analysis", "30-day follow-up"],
+        requirements: ["Multiple rooms included", "Professional organization products", "Before/after documentation", "Maintenance system setup", "30-day follow-up included"],
         imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
         categoryName: "Organizing",
-        taskType: "sponsored",
-        sponsorInfo: "Sponsored by HomeMax Solutions"
+        taskType: "shared"
       },
       {
-        title: "Sponsored: Weekly Family Budget & Meal Planning",
-        description: "Show how you plan meals and budget for a family of 4. Get paid $85 to share your complete system and money-saving strategies.",
+        title: "Family Budget & Meal Planning Consultation",
+        description: "I'll help you plan meals and budget for your family of 4. Get my complete system and money-saving strategies that save $200+ monthly.",
         payment: "85.00",
         duration: 120,
         difficulty: "Medium",
-        requirements: ["Budget spreadsheet template", "Weekly meal plan examples", "Grocery shopping strategy", "Cost-saving tips", "Family-friendly recipes"],
+        requirements: ["Custom budget spreadsheet", "4-week meal plan examples", "Grocery shopping strategy", "Cost-saving techniques", "Family-friendly recipe collection"],
         imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
         categoryName: "Organizing",
-        taskType: "sponsored",
-        sponsorInfo: "Sponsored by FamilyFinance Pro"
+        taskType: "shared"
+      },
+      {
+        title: "Premium Kids' Learning Activities Package",
+        description: "Join my weekly educational activities for kids 2-6 years old. Includes materials, activities, and learning objectives. $45 per child per session.",
+        payment: "45.00",
+        duration: 120,
+        difficulty: "Medium",
+        requirements: ["Age-appropriate activities (2-6 years)", "All materials provided", "Learning objectives explained", "Safety protocols followed", "Progress tracking included"],
+        imageUrl: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Childcare",
+        taskType: "shared"
       }
     ];
 
