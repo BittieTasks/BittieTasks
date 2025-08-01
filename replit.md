@@ -4,7 +4,7 @@
 
 TaskParent is a mobile-first React web application designed as a revolutionary "monetize your daily routine" marketplace. The platform enables parents to earn money by sharing the benefits of tasks they're already doing for themselves - like meal prepping, grocery shopping, organizing, and childcare. Built with a modern TypeScript stack, it features a responsive mobile interface with bottom navigation, real-time task management, earnings tracking, and a comprehensive messaging system.
 
-**Recent Update (Aug 2025)**: Pivoted to the groundbreaking model where parents monetize their existing daily routines rather than taking on new tasks. Added comprehensive monetization strategy and business model transparency.
+**Recent Update (Aug 2025)**: Pivoted to the groundbreaking model where parents monetize their existing daily routines rather than taking on new tasks. Added comprehensive monetization strategy, business model transparency, and sponsored tasks feature for guaranteed income.
 
 ## User Preferences
 

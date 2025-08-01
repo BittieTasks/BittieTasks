@@ -1,4 +1,4 @@
-import { ArrowLeft, DollarSign, Users, Shield, TrendingUp, Percent, Award, Clock } from "lucide-react";
+import { ArrowLeft, DollarSign, Users, Shield, TrendingUp, Percent, Award, Clock, Star } from "lucide-react";
 import { Link } from "wouter";
 
 export default function HowItWorks() {
@@ -143,6 +143,68 @@ export default function HowItWorks() {
           </div>
         </section>
 
+        {/* Sponsored Tasks - New Feature */}
+        <section className="mb-8">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <Star className="text-yellow-600 mr-2" size={24} />
+            NEW: Sponsored Tasks - Guaranteed Money!
+          </h3>
+          
+          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-6 text-white mb-4">
+            <h4 className="font-bold text-lg mb-2">Get Paid Even Without Neighbors!</h4>
+            <p className="text-sm opacity-90">
+              Document your daily routines and share tips with other parents. Brands sponsor these tasks, 
+              so you get paid guaranteed money regardless of neighbor participation.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+              <h5 className="font-bold text-yellow-800 mb-2">Example Sponsored Tasks</h5>
+              <div className="space-y-2 text-sm text-yellow-700">
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                  Document meal prep routine - $35
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                  Show kids' learning activities - $25
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                  Organization transformation - $40
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                  Share parenting hacks - $20
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+              <h5 className="font-bold text-green-800 mb-2">Why Brands Sponsor</h5>
+              <div className="space-y-2 text-sm text-green-700">
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  Authentic parent content
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  Real family insights
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  Community building
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  Support parent income
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Trust & Safety */}
         <section className="mb-8">
           <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
@@ -191,6 +253,14 @@ export default function HowItWorks() {
                 every trip. It's like getting paid to do my own shopping!"
               </p>
               <p className="text-blue-700 font-medium text-sm">- Maria L., Mom of 3</p>
+            </div>
+            
+            <div className="bg-yellow-50 rounded-xl p-4 border-l-4 border-yellow-400">
+              <p className="text-gray-700 text-sm mb-2">
+                "Sponsored tasks are amazing! I earned $140 last week just documenting my normal routines - 
+                meal prep, kids' activities, and organizing my pantry. No neighbors needed!"
+              </p>
+              <p className="text-yellow-700 font-medium text-sm">- Jessica R., Mom of 1</p>
             </div>
           </div>
         </section>

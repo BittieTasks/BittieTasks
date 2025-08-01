@@ -23,11 +23,18 @@ export default function TaskCard({ task }: TaskCardProps) {
     <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 task-card-hover">
       <div className="flex items-start space-x-3">
         {task.imageUrl && (
-          <img 
-            src={task.imageUrl} 
-            alt={task.title}
-            className="w-16 h-16 rounded-lg object-cover" 
-          />
+          <div className="relative">
+            <img 
+              src={task.imageUrl} 
+              alt={task.title}
+              className="w-16 h-16 rounded-lg object-cover" 
+            />
+            {(task as any).taskType === 'sponsored' && (
+              <div className="absolute -top-1 -right-1 bg-yellow-500 text-white px-1 py-0.5 rounded text-xs font-bold">
+                💰
+              </div>
+            )}
+          </div>
         )}
         
         <div className="flex-1">
@@ -35,6 +42,13 @@ export default function TaskCard({ task }: TaskCardProps) {
             <div>
               <h4 className="font-semibold text-gray-900 mb-1">{task.title}</h4>
               <p className="text-sm text-gray-600 mb-2 line-clamp-2">{task.description}</p>
+              {(task as any).taskType === 'sponsored' && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-2 mb-2">
+                  <p className="text-yellow-800 text-xs font-medium">
+                    ⭐ Guaranteed Payment - No customers needed!
+                  </p>
+                </div>
+              )}
               <div className="flex items-center space-x-4 text-xs text-gray-500">
                 <span className="flex items-center">
                   <Clock size={12} className="mr-1" />
@@ -52,7 +66,9 @@ export default function TaskCard({ task }: TaskCardProps) {
             </div>
             <div className="text-right">
               <span className="text-lg font-bold text-green-600">${task.payment}</span>
-              <p className="text-xs text-gray-500">per task</p>
+              <p className="text-xs text-gray-500">
+                {(task as any).taskType === 'sponsored' ? 'guaranteed' : 'per task'}
+              </p>
             </div>
           </div>
         </div>
@@ -61,9 +77,15 @@ export default function TaskCard({ task }: TaskCardProps) {
       <div className="mt-4 pt-3 border-t border-gray-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Badge variant="outline" className={`text-${categoryColor}-700 border-${categoryColor}-200`}>
-              Task
-            </Badge>
+            {(task as any).taskType === 'sponsored' ? (
+              <Badge variant="outline" className="text-yellow-700 border-yellow-200 bg-yellow-50">
+                Sponsored
+              </Badge>
+            ) : (
+              <Badge variant="outline" className={`text-${categoryColor}-700 border-${categoryColor}-200`}>
+                Shared Task
+              </Badge>
+            )}
             <Badge variant="outline" className="text-gray-700">
               {task.completions || 0} completed
             </Badge>

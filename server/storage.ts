@@ -115,7 +115,8 @@ export class MemStorage implements IStorage {
         difficulty: "Easy",
         requirements: ["Bring your own containers", "Pick up between 2-4pm Sunday", "Dietary restrictions noted in advance", "Payment due at pickup"],
         imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-        categoryName: "Cooking"
+        categoryName: "Cooking",
+        taskType: "shared"
       },
       {
         title: "Costco Run - Add Your List",
@@ -125,7 +126,8 @@ export class MemStorage implements IStorage {
         difficulty: "Easy",
         requirements: ["Venmo/cash for your items", "Text your list by Friday 8pm", "Pickup Saturday 2-5pm", "Frozen/refrigerated items ready immediately"],
         imageUrl: "https://images.unsplash.com/photo-1543083115-a1d7e38e97a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-        categoryName: "Organizing"
+        categoryName: "Organizing",
+        taskType: "shared"
       },
       {
         title: "Playdate & Childcare Swap",
@@ -135,7 +137,8 @@ export class MemStorage implements IStorage {
         difficulty: "Medium",
         requirements: ["Ages 3-8 only", "Bring snacks and activities", "Emergency contact required", "Pick up by 5pm sharp"],
         imageUrl: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-        categoryName: "Childcare"
+        categoryName: "Childcare",
+        taskType: "shared"
       },
       {
         title: "Garage Sale Prep Together",
@@ -145,7 +148,8 @@ export class MemStorage implements IStorage {
         difficulty: "Medium",
         requirements: ["Bring your own items to sell", "Help with setup Friday evening", "Work Saturday morning shift", "Split any shared item sales 50/50"],
         imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-        categoryName: "Organizing"
+        categoryName: "Organizing",
+        taskType: "shared"
       },
       {
         title: "Morning School Drop-off Route",
@@ -155,7 +159,45 @@ export class MemStorage implements IStorage {
         difficulty: "Easy",
         requirements: ["Car seats/boosters if needed", "Kids ready by 7:45am", "Weekly payment in advance", "Backup plan for sick days"],
         imageUrl: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-        categoryName: "Childcare"
+        categoryName: "Childcare",
+        taskType: "shared"
+      },
+      // Sponsored tasks - parents get paid regardless of neighbor participation
+      {
+        title: "Sponsored: Document Your Meal Prep",
+        description: "Show your weekly meal prep routine! Get paid $35 to document and share your process - no neighbors needed!",
+        payment: "35.00",
+        duration: 45,
+        difficulty: "Easy",
+        requirements: ["Film clear before/after shots", "Include ingredient costs", "Share 3 family-friendly recipes", "Show storage tips"],
+        imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Cooking",
+        taskType: "sponsored",
+        sponsorInfo: "Sponsored by FoodPrep App"
+      },
+      {
+        title: "Sponsored: Your Kids' Learning Activities",
+        description: "Get paid $25 to document fun educational activities you do with your kids - help other parents learn!",
+        payment: "25.00",
+        duration: 60,
+        difficulty: "Easy",
+        requirements: ["Age-appropriate activities (2-6 years)", "Show materials needed", "Explain learning benefits", "Safety considerations"],
+        imageUrl: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Childcare",
+        taskType: "sponsored",
+        sponsorInfo: "Sponsored by KidsLearn Platform"
+      },
+      {
+        title: "Sponsored: Organization Transformation",
+        description: "Earn $40 organizing any room in your house! Document the process and inspire other parents.",
+        payment: "40.00",
+        duration: 120,
+        difficulty: "Medium",
+        requirements: ["Before and after photos", "List products used", "Time-saving tips", "Budget breakdown"],
+        imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Organizing",
+        taskType: "sponsored",
+        sponsorInfo: "Sponsored by HomeOrg Solutions"
       }
     ];
 
@@ -176,6 +218,8 @@ export class MemStorage implements IStorage {
           rating: "4.8",
           completions: Math.floor(Math.random() * 50) + 10,
           isActive: true,
+          taskType: (taskData as any).taskType || "shared",
+          sponsorInfo: (taskData as any).sponsorInfo || null,
           createdAt: new Date()
         };
         this.tasks.set(id, task);
