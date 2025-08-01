@@ -34,82 +34,52 @@ export default function HowItWorks() {
           </div>
         </div>
 
-        {/* Dual Earning Model */}
+        {/* Community Earning Model */}
         <section className="mb-8">
           <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-            <Home className="text-green-600 mr-2" size={24} />
-            Two Ways to Earn Money
+            <Users className="text-green-600 mr-2" size={24} />
+            How You Earn Money
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-              <h4 className="font-bold text-blue-800 mb-3 flex items-center">
-                <DollarSign className="text-blue-600 mr-2" size={20} />
-                Get Paid by the App
-              </h4>
-              <p className="text-gray-700 mb-4 text-sm">
-                Earn money directly from TaskParent for doing your own daily tasks. 
-                Just document what you're already doing!
-              </p>
-              
-              <div className="space-y-2 text-sm text-blue-700">
-                <div className="flex items-center justify-between">
-                  <span>• Do your own laundry</span>
-                  <span className="font-medium">$15</span>
+          <div className="bg-green-50 rounded-xl p-6 border border-green-200 mb-6">
+            <h4 className="font-bold text-green-800 mb-3 flex items-center">
+              <DollarSign className="text-green-600 mr-2" size={20} />
+              Get Paid by Neighbors
+            </h4>
+            <p className="text-gray-700 mb-4 text-sm">
+              Share tasks you're already doing with neighbors who pay to join. 
+              You do the same work, but earn money from people who benefit!
+            </p>
+            
+            <div className="space-y-3 text-sm">
+              <div className="bg-white rounded-lg p-3 border border-green-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-gray-900">• Grocery shopping trip</span>
+                  <span className="font-bold text-green-600">$10 per neighbor</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span>• Cook family dinner</span>
-                  <span className="font-medium">$25</span>
+                <p className="text-gray-600 text-xs">Going to Costco anyway? Let 3 neighbors join for $30 total</p>
+              </div>
+              <div className="bg-white rounded-lg p-3 border border-green-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-gray-900">• Meal prep Sunday</span>
+                  <span className="font-bold text-green-600">$25 per neighbor</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span>• Clean your living room</span>
-                  <span className="font-medium">$20</span>
+                <p className="text-gray-600 text-xs">Cooking big batches? Share with 2 families for $50</p>
+              </div>
+              <div className="bg-white rounded-lg p-3 border border-green-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-gray-900">• Kid playdate organizing</span>
+                  <span className="font-bold text-green-600">$15 per family</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span>• Meal prep for your family</span>
-                  <span className="font-medium">$35</span>
-                </div>
+                <p className="text-gray-600 text-xs">Planning activities? Other parents pay to join</p>
               </div>
             </div>
-
-            <div className="bg-green-50 rounded-xl p-6 border border-green-200">
-              <h4 className="font-bold text-green-800 mb-3 flex items-center">
-                <Users className="text-green-600 mr-2" size={20} />
-                Help Other Parents
-              </h4>
-              <p className="text-gray-700 mb-4 text-sm">
-                Share your tasks with neighbors and earn extra income. They pay you 
-                to join what you're already doing!
-              </p>
-              
-              <div className="space-y-2 text-sm text-green-700">
-                <div className="flex items-center justify-between">
-                  <span>• 3 families join meal prep</span>
-                  <span className="font-medium">$105</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>• Costco run for 2 neighbors</span>
-                  <span className="font-medium">$50</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>• Group childcare (4 kids)</span>
-                  <span className="font-medium">$140</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>• Organization consulting</span>
-                  <span className="font-medium">$85</span>
-                </div>
-              </div>
-            </div>
-
-
           </div>
 
-          <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-xl p-4 text-white text-center">
-            <h4 className="font-bold mb-2">Complete Example: Sunday Meal Prep</h4>
+          <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl p-4 text-white text-center">
+            <h4 className="font-bold mb-2">Real Example: Sunday Meal Prep</h4>
             <div className="text-sm opacity-90">
-              App pays you <strong>$35</strong> for doing your own meal prep + 
-              3 neighbors pay <strong>$35 each</strong> to join = <strong>$140 total</strong> for one task!
+              You cook big batches anyway. 3 neighbors pay <strong>$25 each</strong> to join your meal prep = <strong>$75 total</strong> for sharing what you're already doing!
             </div>
           </div>
         </section>

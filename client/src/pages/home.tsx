@@ -77,22 +77,22 @@ export default function HomePage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Good morning, {user?.firstName || "Parent"}! 👋
           </h2>
-          <p className="text-gray-600">Ready to get paid for what you're already doing?</p>
+          <p className="text-gray-600">Ready to earn money from your daily routines?</p>
         </div>
         
         <EarningsOverview user={user} />
       </section>
 
-      {/* Dual Earning Model Highlight */}
+      {/* Community Earning Model Highlight */}
       <section className="px-4 py-4 bg-white">
         <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl p-4 text-white mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-bold">Get Paid Twice!</h3>
+            <h3 className="text-lg font-bold">Earn From Your Community!</h3>
             <DollarSign className="text-white" size={24} />
           </div>
           <p className="text-sm opacity-90 mb-3">
-            Earn money from the app for your personal tasks, PLUS extra income when neighbors join you. 
-            Same work, double payment!
+            Share tasks you're already doing with neighbors who pay to join. 
+            Turn your daily routines into income opportunities!
           </p>
           <Link href="/how-it-works" className="inline-flex items-center text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg transition-colors">
             <TrendingUp size={16} className="mr-2" />
@@ -100,20 +100,24 @@ export default function HomePage() {
           </Link>
         </div>
         
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-2">
-              <DollarSign className="text-white" size={16} />
-            </div>
-            <span className="text-xs text-blue-700 font-medium">App Pays You</span>
-            <div className="text-xs text-blue-600 mt-1">$180/week</div>
+        <div className="bg-white rounded-lg p-4 border border-green-200">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-semibold text-gray-900">Earning Potential</h4>
+            <DollarSign className="text-green-600" size={20} />
           </div>
-          <div className="bg-green-50 rounded-lg p-3 text-center border border-green-200">
-            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
-              <Users className="text-white" size={16} />
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Grocery run (3 neighbors)</span>
+              <span className="font-medium text-green-600">$30</span>
             </div>
-            <span className="text-xs text-green-700 font-medium">Neighbors Pay</span>
-            <div className="text-xs text-green-600 mt-1">$395/week</div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Meal prep sharing (2 families)</span>
+              <span className="font-medium text-green-600">$50</span>
+            </div>
+            <div className="border-t pt-2 flex justify-between font-semibold">
+              <span>Weekly potential</span>
+              <span className="text-green-600">$200-600</span>
+            </div>
           </div>
         </div>
       </section>
