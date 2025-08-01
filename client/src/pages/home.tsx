@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, Home, Plus, DollarSign, Users, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -6,9 +6,12 @@ import BottomNavigation from "@/components/ui/bottom-navigation";
 import TaskCard from "@/components/ui/task-card";
 import EarningsOverview from "@/components/ui/earnings-overview";
 import ProgressRing from "@/components/ui/progress-ring";
+import { apiRequest } from "@/lib/queryClient";
 import type { User, TaskCategory, Task } from "@shared/schema";
 
 export default function HomePage() {
+  const queryClient = useQueryClient();
+  
   const { data: user, isLoading: userLoading } = useQuery<User>({
     queryKey: ["/api/user/current"]
   });
@@ -57,11 +60,26 @@ export default function HomePage() {
                 3
               </span>
             </div>
-            <Link href="/auth">
-              <Button variant="outline" size="sm" className="mr-2">
-                Sign Up
+            {user?.firstName ? (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mr-2" 
+                onClick={async () => {
+                  await apiRequest("POST", "/api/auth/logout");
+                  queryClient.invalidateQueries({ queryKey: ['/api/user/current'] });
+                  window.location.reload();
+                }}
+              >
+                Logout
               </Button>
-            </Link>
+            ) : (
+              <Link href="/auth">
+                <Button variant="outline" size="sm" className="mr-2">
+                  Sign Up
+                </Button>
+              </Link>
+            )}
             <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-medium">
                 {user?.firstName?.[0] || "U"}

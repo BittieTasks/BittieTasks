@@ -31,6 +31,12 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Logout route
+  app.post("/api/auth/logout", (req, res) => {
+    (req.session as any).userId = null;
+    res.json({ message: "Logged out successfully" });
+  });
+
   // Authentication routes
   app.post("/api/auth/signup", async (req, res) => {
     try {
@@ -63,6 +69,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         availability: { weekdays: true, weekends: true, mornings: true, afternoons: true },
       });
 
+      // Store user ID in session
+      (req.session as any).userId = newUser.id;
+
       res.json({ message: "Account created successfully", user: newUser });
     } catch (error) {
       res.status(500).json({ message: "Failed to create account" });
@@ -88,19 +97,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // In a real app, you'd verify the password hash here
       // For demo purposes, we'll accept any password
       
+      // Store user ID in session
+      (req.session as any).userId = user.id;
+      
       res.json({ message: "Login successful", user });
     } catch (error) {
       res.status(500).json({ message: "Failed to login" });
     }
   });
 
-  // Get current user (mock authentication)
+  // Get current user
   app.get("/api/user/current", async (req, res) => {
     try {
-      // In a real app, this would get the user from session/JWT
-      // For now, return the first user as demo
-      const users = await storage.getUsers();
-      const user = users[0];
+      const userId = (req.session as any)?.userId;
+      
+      if (!userId) {
+        // Return demo user if no session
+        const users = await storage.getUsers();
+        const demoUser = users[0];
+        return res.json(demoUser);
+      }
+
+      // Get the logged-in user
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
       res.json(user);
     } catch (error) {
       res.status(500).json({ message: "Failed to get current user" });
