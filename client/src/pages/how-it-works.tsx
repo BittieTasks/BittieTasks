@@ -34,14 +34,14 @@ export default function HowItWorks() {
           </div>
         </div>
 
-        {/* Triple Earning Model */}
+        {/* Dual Earning Model */}
         <section className="mb-8">
           <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
             <Home className="text-green-600 mr-2" size={24} />
-            Three Ways to Earn Money
+            Two Ways to Earn Money
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
               <h4 className="font-bold text-blue-800 mb-3 flex items-center">
                 <DollarSign className="text-blue-600 mr-2" size={20} />
@@ -102,42 +102,14 @@ export default function HowItWorks() {
               </div>
             </div>
 
-            <div className="bg-yellow-50 rounded-xl p-6 border border-yellow-200">
-              <h4 className="font-bold text-yellow-800 mb-3 flex items-center">
-                <Star className="text-yellow-600 mr-2" size={20} />
-                Sponsored Content
-              </h4>
-              <p className="text-gray-700 mb-4 text-sm">
-                Share your expertise through sponsored content creation. 
-                Brands pay for authentic parent insights and tutorials!
-              </p>
-              
-              <div className="space-y-2 text-sm text-yellow-700">
-                <div className="flex items-center justify-between">
-                  <span>• Meal prep tutorial video</span>
-                  <span className="font-medium">$55</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>• Kids' activity guide</span>
-                  <span className="font-medium">$45</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>• Organization makeover</span>
-                  <span className="font-medium">$65</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>• Budget planning system</span>
-                  <span className="font-medium">$85</span>
-                </div>
-              </div>
-            </div>
+
           </div>
 
           <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-xl p-4 text-white text-center">
             <h4 className="font-bold mb-2">Complete Example: Sunday Meal Prep</h4>
             <div className="text-sm opacity-90">
-              App pays you <strong>$35</strong> + 3 neighbors pay <strong>$35 each</strong> + 
-              Sponsored tutorial <strong>$55</strong> = <strong>$195 total</strong> for one task!
+              App pays you <strong>$35</strong> for doing your own meal prep + 
+              3 neighbors pay <strong>$35 each</strong> to join = <strong>$140 total</strong> for one task!
             </div>
           </div>
         </section>
@@ -493,37 +465,13 @@ export default function HowItWorks() {
               </div>
             </div>
 
-            <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
-              <h4 className="font-bold text-yellow-800 mb-3">Weekly Sponsored Content</h4>
-              <div className="space-y-2 text-sm text-yellow-700">
-                <div className="flex justify-between">
-                  <span>Meal prep tutorial ($55)</span>
-                  <span className="font-medium">$55</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Kids' activity guide ($45)</span>
-                  <span className="font-medium">$45</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Organization makeover ($65)</span>
-                  <span className="font-medium">$65</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Budget planning system ($85)</span>
-                  <span className="font-medium">$85</span>
-                </div>
-                <div className="border-t border-yellow-300 pt-2 flex justify-between font-bold">
-                  <span>Weekly Total:</span>
-                  <span>$250</span>
-                </div>
-              </div>
-            </div>
+
           </div>
 
           <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-xl p-6 text-white text-center">
             <h4 className="font-bold text-xl mb-2">Combined Weekly Earning Potential</h4>
-            <div className="text-3xl font-bold mb-2">$825/week</div>
-            <div className="text-lg opacity-90">= $3,300/month = $42,900/year</div>
+            <div className="text-3xl font-bold mb-2">$575/week</div>
+            <div className="text-lg opacity-90">= $2,300/month = $29,900/year</div>
             <p className="text-sm opacity-80 mt-3">
               All while doing tasks you're already doing for your own family!
             </p>
