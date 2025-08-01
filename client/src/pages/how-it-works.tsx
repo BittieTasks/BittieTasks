@@ -28,7 +28,7 @@ export default function HowItWorks() {
             <div className="flex items-center">
               <DollarSign className="text-green-600 mr-2" size={20} />
               <span className="font-semibold text-gray-900">
-                Turn your daily tasks into $50-200 extra income per week
+                Turn your daily tasks into $200-600 extra income per week
               </span>
             </div>
           </div>
@@ -164,19 +164,19 @@ export default function HowItWorks() {
               <div className="space-y-2 text-sm text-yellow-700">
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                  Document meal prep routine - $35
+                  Document meal prep routine - $55
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                  Show kids' learning activities - $25
+                  Show kids' learning activities - $45
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                  Organization transformation - $40
+                  Complete home makeover - $120
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                  Share parenting hacks - $20
+                  Budget & meal planning system - $85
                 </div>
               </div>
             </div>
@@ -241,7 +241,7 @@ export default function HowItWorks() {
           <div className="space-y-4">
             <div className="bg-yellow-50 rounded-xl p-4 border-l-4 border-yellow-400">
               <p className="text-gray-700 text-sm mb-2">
-                "I was already meal prepping every Sunday. Now 4 neighbors join me and I earn $100 every week 
+                "I was already meal prepping every Sunday. Now 4 families join my premium service and I earn $300 every week 
                 just doing what I was already doing for my family!"
               </p>
               <p className="text-yellow-700 font-medium text-sm">- Sarah M., Mom of 2</p>
@@ -249,7 +249,7 @@ export default function HowItWorks() {
             
             <div className="bg-blue-50 rounded-xl p-4 border-l-4 border-blue-400">
               <p className="text-gray-700 text-sm mb-2">
-                "My Costco runs used to be a chore. Now I take orders from 6 families and make $90 
+                "My Costco runs used to be a chore. Now I take orders from 6 families and make $150 
                 every trip. It's like getting paid to do my own shopping!"
               </p>
               <p className="text-blue-700 font-medium text-sm">- Maria L., Mom of 3</p>
@@ -257,11 +257,74 @@ export default function HowItWorks() {
             
             <div className="bg-yellow-50 rounded-xl p-4 border-l-4 border-yellow-400">
               <p className="text-gray-700 text-sm mb-2">
-                "Sponsored tasks are amazing! I earned $140 last week just documenting my normal routines - 
-                meal prep, kids' activities, and organizing my pantry. No neighbors needed!"
+                "Sponsored tasks are amazing! I earned $270 last week just documenting my normal routines - 
+                meal prep system ($55), kids' activities ($45), and a complete home organization makeover ($120). No neighbors needed!"
               </p>
               <p className="text-yellow-700 font-medium text-sm">- Jessica R., Mom of 1</p>
             </div>
+          </div>
+        </section>
+
+        {/* Income Potential Breakdown */}
+        <section className="mb-8">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <DollarSign className="text-green-600 mr-2" size={24} />
+            Your Earning Potential
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+              <h4 className="font-bold text-green-800 mb-3">Weekly Shared Tasks</h4>
+              <div className="space-y-2 text-sm text-green-700">
+                <div className="flex justify-between">
+                  <span>2 Meal prep sessions ($35 each)</span>
+                  <span className="font-medium">$70</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>1 Costco run ($25)</span>
+                  <span className="font-medium">$25</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>3 Childcare sessions ($35 each)</span>
+                  <span className="font-medium">$105</span>
+                </div>
+                <div className="border-t border-green-300 pt-2 flex justify-between font-bold">
+                  <span>Weekly Total:</span>
+                  <span>$200</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+              <h4 className="font-bold text-yellow-800 mb-3">Weekly Sponsored Tasks</h4>
+              <div className="space-y-2 text-sm text-yellow-700">
+                <div className="flex justify-between">
+                  <span>Meal prep documentation ($55)</span>
+                  <span className="font-medium">$55</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Kids' activities ($45)</span>
+                  <span className="font-medium">$45</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Budget planning system ($85)</span>
+                  <span className="font-medium">$85</span>
+                </div>
+                <div className="border-t border-yellow-300 pt-2 flex justify-between font-bold">
+                  <span>Weekly Total:</span>
+                  <span>$185</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-xl p-6 text-white text-center">
+            <h4 className="font-bold text-xl mb-2">Combined Weekly Earning Potential</h4>
+            <div className="text-3xl font-bold mb-2">$385/week</div>
+            <div className="text-lg opacity-90">= $1,540/month = $20,020/year</div>
+            <p className="text-sm opacity-80 mt-3">
+              All while doing tasks you're already doing for your own family!
+            </p>
           </div>
         </section>
 

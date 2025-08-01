@@ -75,9 +75,9 @@ export class MemStorage implements IStorage {
       firstName: "Sarah",
       lastName: "Miller",
       profilePicture: null,
-      totalEarnings: "47.50",
+      totalEarnings: "347.50",
       rating: "4.8",
-      completedTasks: 12,
+      completedTasks: 28,
       currentStreak: 5,
       skills: ["cooking", "organizing", "childcare"],
       availability: { weekdays: true, weekends: true, mornings: true, afternoons: true },
@@ -109,8 +109,8 @@ export class MemStorage implements IStorage {
     const sampleTasks = [
       {
         title: "Weekly Meal Prep - Join Me!",
-        description: "I'm meal prepping 6 family dinners this Sunday. Join for $25 and get 3 ready-to-heat meals for your family!",
-        payment: "25.00",
+        description: "I'm meal prepping 6 family dinners this Sunday. Join for $35 and get 3 ready-to-heat meals for your family!",
+        payment: "35.00",
         duration: 180,
         difficulty: "Easy",
         requirements: ["Bring your own containers", "Pick up between 2-4pm Sunday", "Dietary restrictions noted in advance", "Payment due at pickup"],
@@ -120,8 +120,8 @@ export class MemStorage implements IStorage {
       },
       {
         title: "Costco Run - Add Your List",
-        description: "Making my monthly Costco trip Saturday morning. Add your items to my list for $15 + cost of your items.",
-        payment: "15.00",
+        description: "Making my monthly Costco trip Saturday morning. Add your items to my list for $25 + cost of your items.",
+        payment: "25.00",
         duration: 120,
         difficulty: "Easy",
         requirements: ["Venmo/cash for your items", "Text your list by Friday 8pm", "Pickup Saturday 2-5pm", "Frozen/refrigerated items ready immediately"],
@@ -131,8 +131,8 @@ export class MemStorage implements IStorage {
       },
       {
         title: "Playdate & Childcare Swap",
-        description: "Watching 4 kids today anyway - can take 2 more for 3 hours while you run errands. $20/child.",
-        payment: "20.00",
+        description: "Watching 4 kids today anyway - can take 2 more for 3 hours while you run errands. $35/child.",
+        payment: "35.00",
         duration: 180,
         difficulty: "Medium",
         requirements: ["Ages 3-8 only", "Bring snacks and activities", "Emergency contact required", "Pick up by 5pm sharp"],
@@ -142,8 +142,8 @@ export class MemStorage implements IStorage {
       },
       {
         title: "Garage Sale Prep Together",
-        description: "Organizing my garage sale this weekend - help me sort and price, then sell your stuff too! $30 space rental.",
-        payment: "30.00",
+        description: "Organizing my garage sale this weekend - help me sort and price, then sell your stuff too! $45 space rental.",
+        payment: "45.00",
         duration: 480,
         difficulty: "Medium",
         requirements: ["Bring your own items to sell", "Help with setup Friday evening", "Work Saturday morning shift", "Split any shared item sales 50/50"],
@@ -153,8 +153,8 @@ export class MemStorage implements IStorage {
       },
       {
         title: "Morning School Drop-off Route",
-        description: "I drive to Lincoln Elementary daily - can take 2 more kids for $10/week per child. Regular carpool commitment.",
-        payment: "10.00",
+        description: "I drive to Lincoln Elementary daily - can take 2 more kids for $25/week per child. Regular carpool commitment.",
+        payment: "25.00",
         duration: 30,
         difficulty: "Easy",
         requirements: ["Car seats/boosters if needed", "Kids ready by 7:45am", "Weekly payment in advance", "Backup plan for sick days"],
@@ -165,8 +165,8 @@ export class MemStorage implements IStorage {
       // Sponsored tasks - parents get paid regardless of neighbor participation
       {
         title: "Sponsored: Document Your Meal Prep",
-        description: "Show your weekly meal prep routine! Get paid $35 to document and share your process - no neighbors needed!",
-        payment: "35.00",
+        description: "Show your weekly meal prep routine! Get paid $55 to document and share your process - no neighbors needed!",
+        payment: "55.00",
         duration: 45,
         difficulty: "Easy",
         requirements: ["Film clear before/after shots", "Include ingredient costs", "Share 3 family-friendly recipes", "Show storage tips"],
@@ -177,8 +177,8 @@ export class MemStorage implements IStorage {
       },
       {
         title: "Sponsored: Your Kids' Learning Activities",
-        description: "Get paid $25 to document fun educational activities you do with your kids - help other parents learn!",
-        payment: "25.00",
+        description: "Get paid $45 to document fun educational activities you do with your kids - help other parents learn!",
+        payment: "45.00",
         duration: 60,
         difficulty: "Easy",
         requirements: ["Age-appropriate activities (2-6 years)", "Show materials needed", "Explain learning benefits", "Safety considerations"],
@@ -189,8 +189,8 @@ export class MemStorage implements IStorage {
       },
       {
         title: "Sponsored: Organization Transformation",
-        description: "Earn $40 organizing any room in your house! Document the process and inspire other parents.",
-        payment: "40.00",
+        description: "Earn $65 organizing any room in your house! Document the process and inspire other parents.",
+        payment: "65.00",
         duration: 120,
         difficulty: "Medium",
         requirements: ["Before and after photos", "List products used", "Time-saving tips", "Budget breakdown"],
@@ -198,6 +198,54 @@ export class MemStorage implements IStorage {
         categoryName: "Organizing",
         taskType: "sponsored",
         sponsorInfo: "Sponsored by HomeOrg Solutions"
+      },
+      // High-value shared tasks
+      {
+        title: "Weekend Meal Prep Service - 5 Families",
+        description: "I'm scaling up my meal prep! Join 4 other families for premium meal prep service. $75 per family for 6 complete meals.",
+        payment: "75.00",
+        duration: 300,
+        difficulty: "Medium",
+        requirements: ["Minimum 4 families to proceed", "Premium organic ingredients", "Custom dietary accommodations", "Professional meal containers included"],
+        imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Cooking",
+        taskType: "shared"
+      },
+      {
+        title: "After School Care Hub - Premium Service",
+        description: "Professional after-school care for 6 kids ages 5-12. Homework help, snacks, activities. $50/child for 3-hour daily care.",
+        payment: "50.00",
+        duration: 180,
+        difficulty: "Hard",
+        requirements: ["Background check verified", "Educational activities provided", "Homework supervision", "Healthy snacks included", "Weekly progress reports"],
+        imageUrl: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Childcare",
+        taskType: "shared"
+      },
+      // Premium sponsored tasks
+      {
+        title: "Sponsored: Complete Home Organization Makeover",
+        description: "Transform your entire home organization system! Document the full process for $120. Share tips, products, and before/after results.",
+        payment: "120.00",
+        duration: 480,
+        difficulty: "Hard",
+        requirements: ["Multiple rooms documentation", "Product recommendations", "Time-lapse videos", "Cost breakdown analysis", "30-day follow-up"],
+        imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Organizing",
+        taskType: "sponsored",
+        sponsorInfo: "Sponsored by HomeMax Solutions"
+      },
+      {
+        title: "Sponsored: Weekly Family Budget & Meal Planning",
+        description: "Show how you plan meals and budget for a family of 4. Get paid $85 to share your complete system and money-saving strategies.",
+        payment: "85.00",
+        duration: 120,
+        difficulty: "Medium",
+        requirements: ["Budget spreadsheet template", "Weekly meal plan examples", "Grocery shopping strategy", "Cost-saving tips", "Family-friendly recipes"],
+        imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Organizing",
+        taskType: "sponsored",
+        sponsorInfo: "Sponsored by FamilyFinance Pro"
       }
     ];
 

@@ -170,11 +170,11 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold mb-1">Weekly Goal</h4>
               <p className="text-sm opacity-90">
-                ${user?.totalEarnings || "0.00"} of $150 earned
+                ${user?.totalEarnings || "0.00"} of $400 earned this week
               </p>
             </div>
             <ProgressRing 
-              progress={Math.min((parseFloat(user?.totalEarnings || "0") / 150) * 100, 100)} 
+              progress={Math.min((parseFloat(user?.totalEarnings || "0") / 400) * 100, 100)} 
             />
           </div>
         </div>
