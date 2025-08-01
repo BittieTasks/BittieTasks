@@ -1,6 +1,6 @@
-import { Clock, Star, User } from "lucide-react";
+import { Clock, Star, DollarSign } from "lucide-react";
 import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Task } from "@shared/schema";
 
@@ -9,94 +9,83 @@ interface TaskCardProps {
 }
 
 export default function TaskCard({ task }: TaskCardProps) {
-  const getCategoryColor = (categoryId: string) => {
-    // This would ideally be derived from the category data
-    // For now, using a simple hash-based approach
-    const colors = ["blue", "green", "yellow", "purple"];
-    const index = categoryId.length % colors.length;
-    return colors[index];
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty.toLowerCase()) {
+      case 'easy': return 'bg-green-100 text-green-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'hard': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const categoryColor = getCategoryColor(task.categoryId || "");
+  const getTaskTypeColor = (taskType: string) => {
+    switch (taskType) {
+      case 'personal': return 'bg-purple-100 text-purple-800';
+      case 'shared': return 'bg-blue-100 text-blue-800';
+      case 'sponsored': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 task-card-hover">
-      <div className="flex items-start space-x-3">
-        {task.imageUrl && (
-          <div className="relative">
-            <img 
-              src={task.imageUrl} 
-              alt={task.title}
-              className="w-16 h-16 rounded-lg object-cover" 
-            />
-            {(task as any).taskType === 'sponsored' && (
-              <div className="absolute -top-1 -right-1 bg-yellow-500 text-white px-1 py-0.5 rounded text-xs font-bold">
-                💰
+    <Link href={`/task/${task.id}`}>
+      <Card className="cursor-pointer hover:shadow-md transition-shadow">
+        <CardContent className="p-4">
+          {task.imageUrl && (
+            <div className="w-full h-32 mb-3 rounded-lg overflow-hidden">
+              <img 
+                src={task.imageUrl} 
+                alt={task.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          <div className="space-y-2">
+            <div className="flex items-start justify-between">
+              <h3 className="font-semibold text-gray-900 text-sm flex-1 overflow-hidden">
+                {task.title}
+              </h3>
+              <div className="flex items-center text-green-600 font-bold text-sm ml-2">
+                <DollarSign size={14} />
+                {task.payment}
               </div>
-            )}
-          </div>
-        )}
-        
-        <div className="flex-1">
-          <div className="flex items-start justify-between">
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-1">{task.title}</h4>
-              <p className="text-sm text-gray-600 mb-2 line-clamp-2">{task.description}</p>
-              {(task as any).taskType === 'sponsored' && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded p-2 mb-2">
-                  <p className="text-yellow-800 text-xs font-medium">
-                    ⭐ Guaranteed Payment - No customers needed!
-                  </p>
-                </div>
-              )}
-              <div className="flex items-center space-x-4 text-xs text-gray-500">
-                <span className="flex items-center">
+            </div>
+            
+            <p className="text-xs text-gray-600 overflow-hidden h-8">
+              {task.description}
+            </p>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center text-gray-500 text-xs">
                   <Clock size={12} className="mr-1" />
-                  {task.duration} min
-                </span>
-                <span className="flex items-center">
-                  <Star size={12} className="mr-1" />
+                  {task.duration}min
+                </div>
+                <div className="flex items-center text-gray-500 text-xs">
+                  <Star size={12} className="mr-1 fill-current text-yellow-400" />
                   {task.rating}
-                </span>
-                <span className="flex items-center">
-                  <User size={12} className="mr-1" />
+                </div>
+              </div>
+              
+              <div className="flex space-x-1">
+                <Badge 
+                  variant="secondary" 
+                  className={`text-xs px-2 py-1 ${getDifficultyColor(task.difficulty)}`}
+                >
                   {task.difficulty}
-                </span>
+                </Badge>
+                <Badge 
+                  variant="secondary" 
+                  className={`text-xs px-2 py-1 ${getTaskTypeColor(task.taskType)}`}
+                >
+                  {task.taskType}
+                </Badge>
               </div>
             </div>
-            <div className="text-right">
-              <span className="text-lg font-bold text-green-600">${task.payment}</span>
-              <p className="text-xs text-gray-500">
-                {(task as any).taskType === 'sponsored' ? 'guaranteed' : 'per task'}
-              </p>
-            </div>
           </div>
-        </div>
-      </div>
-      
-      <div className="mt-4 pt-3 border-t border-gray-100">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {(task as any).taskType === 'sponsored' ? (
-              <Badge variant="outline" className="text-yellow-700 border-yellow-200 bg-yellow-50">
-                Sponsored
-              </Badge>
-            ) : (
-              <Badge variant="outline" className={`text-${categoryColor}-700 border-${categoryColor}-200`}>
-                Shared Task
-              </Badge>
-            )}
-            <Badge variant="outline" className="text-gray-700">
-              {task.completions || 0} completed
-            </Badge>
-          </div>
-          <Link href={`/task/${task.id}`}>
-            <Button className="bg-blue-500 hover:bg-blue-600 text-white">
-              View Details
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }

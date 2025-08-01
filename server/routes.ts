@@ -178,7 +178,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/tasks/:id/complete", upload.array("proofFiles", 5), async (req, res) => {
     try {
       const taskId = req.params.id;
-      const { submissionNotes, userId } = req.body;
+      const { submissionNotes } = req.body;
+      
+      // Get user from session
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
       
       const task = await storage.getTask(taskId);
       if (!task) {
@@ -191,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const completionData = {
         taskId,
-        userId: userId || "default-user-id", // In real app, get from auth
+        userId,
         status: "pending" as const,
         submissionNotes,
         proofFiles,

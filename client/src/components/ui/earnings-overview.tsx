@@ -1,4 +1,5 @@
-import { TrendingUp } from "lucide-react";
+import { DollarSign, TrendingUp, Calendar } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import type { User } from "@shared/schema";
 
 interface EarningsOverviewProps {
@@ -6,33 +7,41 @@ interface EarningsOverviewProps {
 }
 
 export default function EarningsOverview({ user }: EarningsOverviewProps) {
-  const todayEarnings = user?.totalEarnings || "0.00";
-  const yesterdayEarnings = "35.00"; // Mock data - in real app, calculate from completions
+  const totalEarnings = user?.totalEarnings ? parseFloat(user.totalEarnings) : 0;
+  const completedTasks = user?.completedTasks || 0;
+  const currentStreak = user?.currentStreak || 0;
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-medium text-gray-500">Today's Earnings</span>
-        <TrendingUp className="text-green-500" size={16} />
-      </div>
-      <div className="flex items-end space-x-4">
-        <div>
-          <span className="text-3xl font-bold text-gray-900">${todayEarnings}</span>
-          <p className="text-sm text-green-600 font-medium">
-            +${(parseFloat(todayEarnings) - parseFloat(yesterdayEarnings)).toFixed(2)} from yesterday
-          </p>
-        </div>
-        <div className="flex-1">
-          {/* Simple earnings visualization */}
-          <div className="flex items-end space-x-1 h-8">
-            <div className="w-2 bg-green-200 rounded-t h-3"></div>
-            <div className="w-2 bg-green-300 rounded-t h-5"></div>
-            <div className="w-2 bg-green-400 rounded-t h-4"></div>
-            <div className="w-2 bg-green-500 rounded-t h-8"></div>
-            <div className="w-2 bg-green-600 rounded-t h-6"></div>
+    <div className="grid grid-cols-3 gap-3">
+      <Card className="bg-white">
+        <CardContent className="p-3 text-center">
+          <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full mx-auto mb-2">
+            <DollarSign size={16} className="text-green-600" />
           </div>
-        </div>
-      </div>
+          <p className="text-lg font-bold text-gray-900">${totalEarnings.toFixed(0)}</p>
+          <p className="text-xs text-gray-600">Total Earned</p>
+        </CardContent>
+      </Card>
+      
+      <Card className="bg-white">
+        <CardContent className="p-3 text-center">
+          <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mx-auto mb-2">
+            <TrendingUp size={16} className="text-blue-600" />
+          </div>
+          <p className="text-lg font-bold text-gray-900">{completedTasks}</p>
+          <p className="text-xs text-gray-600">Tasks Done</p>
+        </CardContent>
+      </Card>
+      
+      <Card className="bg-white">
+        <CardContent className="p-3 text-center">
+          <div className="flex items-center justify-center w-8 h-8 bg-orange-100 rounded-full mx-auto mb-2">
+            <Calendar size={16} className="text-orange-600" />
+          </div>
+          <p className="text-lg font-bold text-gray-900">{currentStreak}</p>
+          <p className="text-xs text-gray-600">Day Streak</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

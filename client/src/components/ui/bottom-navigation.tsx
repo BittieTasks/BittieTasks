@@ -1,39 +1,38 @@
-import { Home, Search, DollarSign, MessageCircle, User } from "lucide-react";
+import { Home, Search, DollarSign, MessageSquare, User } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { cn } from "@/lib/utils";
 
-interface BottomNavigationProps {
-  currentPath: string;
-}
+const navigation = [
+  { name: 'Home', href: '/', icon: Home },
+  { name: 'Search', href: '/search', icon: Search },
+  { name: 'Earnings', href: '/earnings', icon: DollarSign },
+  { name: 'Messages', href: '/messages', icon: MessageSquare },
+  { name: 'Profile', href: '/profile', icon: User },
+];
 
-export default function BottomNavigation({ currentPath }: BottomNavigationProps) {
+export default function BottomNavigation() {
   const [location] = useLocation();
 
-  const navItems = [
-    { path: "/", icon: Home, label: "Home" },
-    { path: "/search", icon: Search, label: "Search" },
-    { path: "/earnings", icon: DollarSign, label: "Earnings" },
-    { path: "/messages", icon: MessageCircle, label: "Messages" },
-    { path: "/profile", icon: User, label: "Profile" },
-  ];
-
   return (
-    <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-200 px-4 py-2">
-      <div className="flex items-center justify-around">
-        {navItems.map(({ path, icon: Icon, label }) => {
-          const isActive = location === path;
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 max-w-md mx-auto">
+      <div className="grid grid-cols-5 gap-1">
+        {navigation.map((item) => {
+          const isActive = location === item.href;
+          const Icon = item.icon;
+          
           return (
-            <Link key={path} href={path}>
-              <button
-                className={`flex flex-col items-center py-2 px-3 relative ${
-                  isActive ? "text-blue-600" : "text-gray-400"
-                }`}
-              >
-                <Icon size={20} className="mb-1" />
-                <span className="text-xs font-medium">{label}</span>
-                {label === "Messages" && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-yellow-500 rounded-full"></span>
-                )}
-              </button>
+            <Link
+              key={item.name}
+              href={item.href}
+              className={cn(
+                "flex flex-col items-center justify-center py-2 px-1 text-xs font-medium transition-colors",
+                isActive
+                  ? "text-blue-600 bg-blue-50"
+                  : "text-gray-500 hover:text-gray-700"
+              )}
+            >
+              <Icon size={20} className="mb-1" />
+              <span className="text-[10px]">{item.name}</span>
             </Link>
           );
         })}

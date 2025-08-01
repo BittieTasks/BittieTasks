@@ -28,7 +28,7 @@ export default function TaskDetailPage() {
     mutationFn: async (data: { submissionNotes: string; proofFiles: File[] }) => {
       const formData = new FormData();
       formData.append("submissionNotes", data.submissionNotes);
-      formData.append("userId", "default-user-id"); // In real app, get from auth
+      // Don't send userId - let backend get it from session
       
       data.proofFiles.forEach((file) => {
         formData.append("proofFiles", file);
@@ -37,6 +37,7 @@ export default function TaskDetailPage() {
       const response = await fetch(`/api/tasks/${taskId}/complete`, {
         method: "POST",
         body: formData,
+        credentials: "include", // Include session cookies
       });
 
       if (!response.ok) {
@@ -227,9 +228,9 @@ export default function TaskDetailPage() {
               Proof of Completion (Photos/Videos)
             </label>
             <FileUpload
+              files={proofFiles}
               onFilesChange={setProofFiles}
               accept="image/*,video/*"
-              multiple
               maxFiles={5}
             />
           </div>

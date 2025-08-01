@@ -1,52 +1,22 @@
 import { useState, useRef } from "react";
-import { Upload, X, FileImage, FileVideo } from "lucide-react";
+import { Upload, X, Image, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface FileUploadProps {
+  files: File[];
   onFilesChange: (files: File[]) => void;
-  accept?: string;
-  multiple?: boolean;
   maxFiles?: number;
-  maxSize?: number; // in MB
+  accept?: string;
 }
 
-export default function FileUpload({
-  onFilesChange,
-  accept = "image/*,video/*",
-  multiple = true,
-  maxFiles = 5,
-  maxSize = 10
+export default function FileUpload({ 
+  files, 
+  onFilesChange, 
+  maxFiles = 5, 
+  accept = "image/*,video/*" 
 }: FileUploadProps) {
-  const [files, setFiles] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFiles = (newFiles: FileList | null) => {
-    if (!newFiles) return;
-
-    const fileArray = Array.from(newFiles);
-    const validFiles = fileArray.filter(file => {
-      // Check file size
-      if (file.size > maxSize * 1024 * 1024) {
-        alert(`File ${file.name} is too large. Maximum size is ${maxSize}MB.`);
-        return false;
-      }
-      return true;
-    });
-
-    const updatedFiles = multiple 
-      ? [...files, ...validFiles].slice(0, maxFiles)
-      : validFiles.slice(0, 1);
-
-    setFiles(updatedFiles);
-    onFilesChange(updatedFiles);
-  };
-
-  const removeFile = (index: number) => {
-    const updatedFiles = files.filter((_, i) => i !== index);
-    setFiles(updatedFiles);
-    onFilesChange(updatedFiles);
-  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -62,57 +32,90 @@ export default function FileUpload({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    handleFiles(e.dataTransfer.files);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFiles(Array.from(e.dataTransfer.files));
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      handleFiles(Array.from(e.target.files));
+    }
+  };
+
+  const handleFiles = (newFiles: File[]) => {
+    const validFiles = newFiles.filter(file => {
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
+      return isImage || isVideo;
+    });
+
+    const totalFiles = [...files, ...validFiles];
+    if (totalFiles.length <= maxFiles) {
+      onFilesChange(totalFiles);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    const newFiles = files.filter((_, i) => i !== index);
+    onFilesChange(newFiles);
+  };
+
+  const openFileExplorer = () => {
+    inputRef.current?.click();
   };
 
   const getFileIcon = (file: File) => {
-    if (file.type.startsWith('video/')) {
-      return <FileVideo size={24} className="text-purple-500" />;
+    if (file.type.startsWith('image/')) {
+      return <Image size={20} className="text-blue-500" />;
+    } else if (file.type.startsWith('video/')) {
+      return <Video size={20} className="text-purple-500" />;
     }
-    return <FileImage size={24} className="text-blue-500" />;
+    return <Upload size={20} className="text-gray-500" />;
   };
 
   return (
-    <div className="space-y-4">
+    <div className="w-full">
       <div
-        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+        className={`relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
           dragActive
-            ? "border-blue-500 bg-blue-50"
+            ? "border-blue-400 bg-blue-50"
             : "border-gray-300 hover:border-gray-400"
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
+        onClick={openFileExplorer}
       >
-        <Upload size={32} className="mx-auto text-gray-400 mb-2" />
-        <p className="text-sm text-gray-600 mb-2">
+        <input
+          ref={inputRef}
+          type="file"
+          multiple
+          accept={accept}
+          onChange={handleChange}
+          className="hidden"
+        />
+        
+        <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+        <p className="text-sm font-medium text-gray-900 mb-2">
+          Upload photos or videos
+        </p>
+        <p className="text-xs text-gray-500">
           Drag and drop files here, or click to select
         </p>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => inputRef.current?.click()}
-        >
-          Choose Files
-        </Button>
-        <p className="text-xs text-gray-500 mt-2">
-          Max {maxFiles} files, {maxSize}MB each
+        <p className="text-xs text-gray-400 mt-2">
+          Maximum {maxFiles} files, images and videos only
         </p>
       </div>
 
-      <input
-        ref={inputRef}
-        type="file"
-        accept={accept}
-        multiple={multiple}
-        onChange={(e) => handleFiles(e.target.files)}
-        className="hidden"
-      />
-
       {files.length > 0 && (
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium text-gray-700">Selected Files:</h4>
+        <div className="mt-4 space-y-2">
+          <p className="text-sm font-medium text-gray-900">
+            Selected Files ({files.length}/{maxFiles})
+          </p>
           {files.map((file, index) => (
             <div
               key={index}
@@ -121,7 +124,7 @@ export default function FileUpload({
               <div className="flex items-center space-x-3">
                 {getFileIcon(file)}
                 <div>
-                  <p className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                  <p className="text-sm font-medium text-gray-900 truncate max-w-48">
                     {file.name}
                   </p>
                   <p className="text-xs text-gray-500">
@@ -130,11 +133,13 @@ export default function FileUpload({
                 </div>
               </div>
               <Button
-                type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => removeFile(index)}
-                className="text-red-500 hover:text-red-700"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeFile(index);
+                }}
+                className="h-8 w-8 p-0 text-gray-400 hover:text-red-500"
               >
                 <X size={16} />
               </Button>

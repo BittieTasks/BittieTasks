@@ -261,7 +261,7 @@ export default function HomePage() {
         <Plus size={20} />
       </button>
 
-      <BottomNavigation currentPath="/" />
+      <BottomNavigation />
     </div>
   );
 }
