@@ -117,10 +117,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = (req.session as any)?.userId;
       
       if (!userId) {
-        // Return demo user if no session
-        const users = await storage.getUsers();
-        const demoUser = users[0];
-        return res.json(demoUser);
+        // Return 401 if no session - no demo user fallback
+        return res.status(401).json({ message: "Not authenticated" });
       }
 
       // Get the logged-in user
