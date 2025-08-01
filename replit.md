@@ -4,6 +4,8 @@
 
 TaskParent is a mobile-first React web application designed as a task completion marketplace. The platform enables users to browse, complete, and earn money from various household and service tasks. Built with a modern TypeScript stack, it features a responsive mobile interface with bottom navigation, real-time task management, earnings tracking, and a comprehensive messaging system.
 
+**Recent Update (Aug 2025)**: Added comprehensive monetization strategy and business model transparency to address user concerns about platform sustainability and payment guarantees.
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -43,6 +45,15 @@ Preferred communication style: Simple, everyday language.
 - **Current Implementation**: Mock authentication with session-based user identification
 - **Session Management**: Express sessions with PostgreSQL session store (connect-pg-simple)
 - **Future-Ready**: Architecture prepared for JWT or OAuth integration
+
+### Business Model and Monetization
+- **Revenue Streams**: Multiple sustainable income sources to ensure consistent parent payments
+  - Platform service fee (15% of completed tasks)
+  - Premium memberships ($9.99/month with enhanced features)
+  - Corporate partnerships for employee services
+  - Insurance and trust services
+- **Transparency Features**: Dedicated "How It Works" page explaining revenue model
+- **Payment Security**: $1M liability coverage and secure escrow payment processing
 
 ## External Dependencies
 

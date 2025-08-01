@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, DollarSign, TrendingUp, Calendar } from "lucide-react";
+import { ArrowLeft, DollarSign, TrendingUp, Calendar, Star, Info, Users, Shield } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import BottomNavigation from "@/components/ui/bottom-navigation";
@@ -143,6 +143,63 @@ export default function EarningsPage() {
                 ))}
             </div>
           )}
+
+          {/* How TaskParent Sustains Payments */}
+          <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
+            <div className="flex items-center mb-3">
+              <Info className="text-blue-600 mr-2" size={20} />
+              <h3 className="font-bold text-gray-900">How We Ensure Your Payments</h3>
+            </div>
+            <p className="text-sm text-gray-700 mb-4">
+              TaskParent uses multiple revenue streams to guarantee sustainable payments to parents:
+            </p>
+            
+            <div className="space-y-3">
+              <div className="flex items-start">
+                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                  <span className="text-white text-xs font-bold">15%</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Platform Service Fee</p>
+                  <p className="text-xs text-gray-600">Small fee covers payment processing, insurance, and support</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                  <Users className="text-white" size={14} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Corporate Partnerships</p>
+                  <p className="text-xs text-gray-600">Companies pay for employee meal prep and eldercare services</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                  <Star className="text-white" size={14} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Premium Memberships</p>
+                  <p className="text-xs text-gray-600">Pro users pay $9.99/month for priority access and lower fees</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                  <Shield className="text-white" size={14} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Insurance & Trust</p>
+                  <p className="text-xs text-gray-600">$1M liability coverage and secure payment processing</p>
+                </div>
+              </div>
+            </div>
+            
+            <Link href="/how-it-works" className="inline-block mt-4 text-blue-600 text-sm font-medium hover:underline">
+              Learn more about our business model →
+            </Link>
+          </div>
         </div>
       </div>
 

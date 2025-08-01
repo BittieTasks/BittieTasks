@@ -10,6 +10,7 @@ import Earnings from "@/pages/earnings";
 import Profile from "@/pages/profile";
 import Messages from "@/pages/messages";
 import Search from "@/pages/search";
+import HowItWorks from "@/pages/how-it-works";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/profile" component={Profile} />
       <Route path="/messages" component={Messages} />
       <Route path="/search" component={Search} />
+      <Route path="/how-it-works" component={HowItWorks} />
       <Route component={NotFound} />
     </Switch>
   );
