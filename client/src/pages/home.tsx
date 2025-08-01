@@ -60,15 +60,19 @@ export default function HomePage() {
                 3
               </span>
             </div>
-            {user?.firstName ? (
+            {user?.email && !user?.email.includes("example.com") ? (
               <Button 
                 variant="outline" 
                 size="sm" 
                 className="mr-2" 
                 onClick={async () => {
-                  await apiRequest("POST", "/api/auth/logout");
-                  queryClient.invalidateQueries({ queryKey: ['/api/user/current'] });
-                  window.location.reload();
+                  try {
+                    await apiRequest("POST", "/api/auth/logout");
+                    queryClient.clear();
+                    window.location.reload();
+                  } catch (error) {
+                    console.error("Logout failed:", error);
+                  }
                 }}
               >
                 Logout

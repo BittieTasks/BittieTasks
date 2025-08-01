@@ -33,8 +33,13 @@ const upload = multer({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Logout route
   app.post("/api/auth/logout", (req, res) => {
-    (req.session as any).userId = null;
-    res.json({ message: "Logged out successfully" });
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Could not log out" });
+      }
+      res.clearCookie('connect.sid');
+      res.json({ message: "Logged out successfully" });
+    });
   });
 
   // Authentication routes
