@@ -1,6 +1,44 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { DollarSign, Users, Calendar, Star, Shield, TrendingUp } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+
+function DemoLoginButton() {
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const demoLoginMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/auth/demo", {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/current"] });
+      toast({
+        title: "Demo Access Granted",
+        description: "Exploring TaskParent features with demo account",
+      });
+      setLocation("/");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Demo Login Failed",
+        description: error.message || "Unable to start demo",
+        variant: "destructive",
+      });
+    },
+  });
+
+  return (
+    <Button
+      onClick={() => demoLoginMutation.mutate()}
+      disabled={demoLoginMutation.isPending}
+      className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3"
+    >
+      {demoLoginMutation.isPending ? "Loading Demo..." : "🎯 Try Demo (No Signup)"}
+    </Button>
+  );
+}
 
 export default function LandingPage() {
   return (
@@ -91,6 +129,7 @@ export default function LandingPage() {
 
         {/* Call to Action */}
         <div className="space-y-3">
+          <DemoLoginButton />
           <Link href="/auth">
             <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3">
               Get Started - Create Account

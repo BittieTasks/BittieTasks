@@ -52,6 +52,9 @@ const apiLimiter = rateLimit({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Set trust proxy for rate limiting
+  app.set('trust proxy', true);
+  
   // Apply security middleware
   app.use(helmet({
     contentSecurityPolicy: {
@@ -193,17 +196,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Demo login endpoint
+  app.post("/api/auth/demo", async (req, res) => {
+    try {
+      // Create or get demo user
+      const demoUser = {
+        id: "demo-user-id",
+        firstName: "Demo",
+        lastName: "User",
+        email: "demo@taskparent.com",
+        phone: "(555) 123-4567",
+        bio: "Demo account for exploring TaskParent features",
+        skills: ["Cooking", "Cleaning", "Organizing"],
+        rating: 4.8,
+        completedTasks: 45,
+        earnings: 1250.75,
+        joinedAt: "2024-01-15",
+        verified: true,
+        profileImage: null,
+        location: "Demo City, ST",
+        availability: "Weekdays 9am-5pm",
+      };
+
+      // Store demo user in session
+      (req.session as any).userId = demoUser.id;
+      (req.session as any).isDemo = true;
+
+      res.json({ message: "Demo login successful", user: demoUser });
+    } catch (error) {
+      res.status(500).json({ message: "Demo login failed" });
+    }
+  });
+
   // Get current user
   app.get("/api/user/current", async (req, res) => {
     try {
       const userId = (req.session as any)?.userId;
+      const isDemo = (req.session as any)?.isDemo;
       
       if (!userId) {
-        // Return 401 if no session - no demo user fallback
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      // Get the logged-in user
+      // Handle demo user
+      if (isDemo && userId === "demo-user-id") {
+        const demoUser = {
+          id: "demo-user-id",
+          firstName: "Demo",
+          lastName: "User",
+          email: "demo@taskparent.com",
+          phone: "(555) 123-4567",
+          bio: "Demo account for exploring TaskParent features",
+          skills: ["Cooking", "Cleaning", "Organizing"],
+          rating: 4.8,
+          completedTasks: 45,
+          earnings: 1250.75,
+          joinedAt: "2024-01-15",
+          verified: true,
+          profileImage: null,
+          location: "Demo City, ST",
+          availability: "Weekdays 9am-5pm",
+        };
+        return res.json(demoUser);
+      }
+
+      // Get regular user
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
