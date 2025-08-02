@@ -161,6 +161,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create new task
+  app.post("/api/tasks", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const { title, description, categoryId, payment, duration, difficulty, requirements, taskType } = req.body;
+      
+      if (!title || !description || !categoryId || !payment) {
+        return res.status(400).json({ message: "Title, description, category, and payment are required" });
+      }
+
+      const taskData = {
+        title,
+        description,
+        categoryId,
+        payment,
+        duration,
+        difficulty: difficulty || "easy",
+        requirements,
+        taskType: taskType || "shared",
+        imageUrl: null,
+        sponsorInfo: null
+      };
+
+      const task = await storage.createTask(taskData);
+      res.json(task);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create task" });
+    }
+  });
+
   // Get specific task
   app.get("/api/tasks/:id", async (req, res) => {
     try {

@@ -116,10 +116,16 @@ export default function HomePage() {
             Share tasks you're already doing with neighbors who pay to join. 
             Turn your daily routines into income opportunities!
           </p>
-          <Link href="/how-it-works" className="inline-flex items-center text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg transition-colors">
-            <TrendingUp size={16} className="mr-2" />
-            See How It Works
-          </Link>
+          <div className="flex space-x-2">
+            <Link href="/create-task" className="inline-flex items-center text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg transition-colors">
+              <Plus size={16} className="mr-2" />
+              Create Task
+            </Link>
+            <Link href="/how-it-works" className="inline-flex items-center text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg transition-colors">
+              <TrendingUp size={16} className="mr-2" />
+              How It Works
+            </Link>
+          </div>
         </div>
         
         <div className="bg-white rounded-lg p-4 border border-green-200">
@@ -257,9 +263,11 @@ export default function HomePage() {
       </section>
 
       {/* Floating Action Button */}
-      <button className="floating-action w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110">
-        <Plus size={20} />
-      </button>
+      <Link href="/create-task">
+        <button className="floating-action w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110">
+          <Plus size={20} />
+        </button>
+      </Link>
 
       <BottomNavigation />
     </div>

@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Landing from "@/pages/landing";
 import TaskDetail from "@/pages/task-detail";
+import CreateTask from "@/pages/create-task";
 import Earnings from "@/pages/earnings";
 import Profile from "@/pages/profile";
 import Messages from "@/pages/messages";
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/" component={() => <AuthenticatedRoute component={Home} />} />
       <Route path="/auth" component={Auth} />
       <Route path="/task/:id" component={() => <AuthenticatedRoute component={TaskDetail} />} />
+      <Route path="/create-task" component={() => <AuthenticatedRoute component={CreateTask} />} />
       <Route path="/earnings" component={() => <AuthenticatedRoute component={Earnings} />} />
       <Route path="/profile" component={() => <AuthenticatedRoute component={Profile} />} />
       <Route path="/messages" component={() => <AuthenticatedRoute component={Messages} />} />
