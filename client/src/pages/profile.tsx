@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Edit, Star, Award, Calendar, Settings, DollarSign, Users } from "lucide-react";
+import { ArrowLeft, Edit, Star, Award, Calendar, Settings, DollarSign, Users, Shield } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -178,6 +178,13 @@ export default function ProfilePage() {
             <Button variant="outline" className="w-full justify-start">
               <Award className="mr-2" size={16} />
               View Earnings
+            </Button>
+          </Link>
+          
+          <Link href="/compliance">
+            <Button variant="outline" className="w-full justify-start">
+              <Shield className="mr-2" size={16} />
+              Legal Compliance
             </Button>
           </Link>
           
