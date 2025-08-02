@@ -7,6 +7,7 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   profilePicture: text("profile_picture"),
@@ -16,6 +17,14 @@ export const users = pgTable("users", {
   currentStreak: integer("current_streak").default(0),
   skills: text("skills").array().default([]),
   availability: jsonb("availability"),
+  isEmailVerified: boolean("is_email_verified").default(false),
+  emailVerificationToken: text("email_verification_token"),
+  passwordResetToken: text("password_reset_token"),
+  passwordResetExpires: timestamp("password_reset_expires"),
+  lastLogin: timestamp("last_login"),
+  failedLoginAttempts: integer("failed_login_attempts").default(0),
+  accountLocked: boolean("account_locked").default(false),
+  lockUntil: timestamp("lock_until"),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
 });
 

@@ -1,10 +1,13 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertTaskCompletionSchema, insertMessageSchema } from "@shared/schema";
+import { insertTaskCompletionSchema, insertMessageSchema, insertUserSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import bcrypt from "bcryptjs";
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
 // Configure multer for file uploads
 const uploadDir = "uploads";
@@ -30,7 +33,38 @@ const upload = multer({
   },
 });
 
+// Security middleware
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 login requests per windowMs
+  message: { error: 'Too many login attempts, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { error: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Apply security middleware
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:", "blob:"],
+      },
+    },
+  }));
+  
+  app.use(apiLimiter);
+
   // Logout route
   app.post("/api/auth/logout", (req, res) => {
     req.session.destroy((err) => {
@@ -43,12 +77,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Authentication routes
-  app.post("/api/auth/signup", async (req, res) => {
+  app.post("/api/auth/signup", loginLimiter, async (req, res) => {
     try {
       const { firstName, lastName, email, password } = req.body;
       
       if (!firstName || !lastName || !email || !password) {
         return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email format" });
+      }
+
+      // Validate password strength
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+      if (!/[A-Z]/.test(password)) {
+        return res.status(400).json({ message: "Password must contain at least one uppercase letter" });
+      }
+      if (!/[a-z]/.test(password)) {
+        return res.status(400).json({ message: "Password must contain at least one lowercase letter" });
+      }
+      if (!/\d/.test(password)) {
+        return res.status(400).json({ message: "Password must contain at least one number" });
+      }
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        return res.status(400).json({ message: "Password must contain at least one special character" });
       }
 
       // Check if user already exists
@@ -59,10 +116,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "User already exists with this email" });
       }
 
+      // Hash password before storing
+      const hashedPassword = await bcrypt.hash(password, 12);
+
       // Create new user
       const newUser = await storage.createUser({
         username: `${firstName.toLowerCase()}_${lastName.toLowerCase()}`,
         email,
+        passwordHash: hashedPassword,
         firstName,
         lastName,
         profilePicture: null,
@@ -83,7 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/auth/login", async (req, res) => {
+  app.post("/api/auth/login", loginLimiter, async (req, res) => {
     try {
       const { email, password } = req.body;
       
@@ -99,8 +160,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      // In a real app, you'd verify the password hash here
-      // For demo purposes, we'll accept any password
+      // Verify password hash
+      if (!user.passwordHash) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+      
+      const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
       
       // Store user ID in session
       (req.session as any).userId = user.id;

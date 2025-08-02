@@ -15,6 +15,7 @@ import {
   type InsertAchievementDefinition
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import bcrypt from "bcryptjs";
 
 export interface IStorage {
   // User methods
@@ -791,4 +792,149 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Security enhancement: Using PostgreSQL database for production security
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+import { users, tasks, taskCategories, taskCompletions, messages, userAchievements, achievementDefinitions } from "@shared/schema";
+
+export class DatabaseStorage implements IStorage {
+  async getUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async getTaskCategories(): Promise<TaskCategory[]> {
+    return await db.select().from(taskCategories);
+  }
+
+  async createTaskCategory(category: InsertTaskCategory): Promise<TaskCategory> {
+    const [newCategory] = await db
+      .insert(taskCategories)
+      .values(category)
+      .returning();
+    return newCategory;
+  }
+
+  async getTasks(): Promise<Task[]> {
+    return await db.select().from(tasks);
+  }
+
+  async getTask(id: string): Promise<Task | undefined> {
+    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+    return task || undefined;
+  }
+
+  async getTasksByCategory(categoryId: string): Promise<Task[]> {
+    return await db.select().from(tasks).where(eq(tasks.categoryId, categoryId));
+  }
+
+  async createTask(task: InsertTask): Promise<Task> {
+    const [newTask] = await db
+      .insert(tasks)
+      .values(task)
+      .returning();
+    return newTask;
+  }
+
+  async getTaskCompletions(userId: string): Promise<TaskCompletion[]> {
+    return await db.select().from(taskCompletions).where(eq(taskCompletions.userId, userId));
+  }
+
+  async createTaskCompletion(completion: InsertTaskCompletion): Promise<TaskCompletion> {
+    const [newCompletion] = await db
+      .insert(taskCompletions)
+      .values(completion)
+      .returning();
+    return newCompletion;
+  }
+
+  async updateTaskCompletion(id: string, updates: Partial<TaskCompletion>): Promise<TaskCompletion | undefined> {
+    const [completion] = await db
+      .update(taskCompletions)
+      .set(updates)
+      .where(eq(taskCompletions.id, id))
+      .returning();
+    return completion || undefined;
+  }
+
+  async getMessages(userId: string): Promise<Message[]> {
+    return await db.select().from(messages).where(eq(messages.toUserId, userId));
+  }
+
+  async createMessage(message: InsertMessage): Promise<Message> {
+    const [newMessage] = await db
+      .insert(messages)
+      .values(message)
+      .returning();
+    return newMessage;
+  }
+
+  async markMessageAsRead(id: string): Promise<void> {
+    await db
+      .update(messages)
+      .set({ isRead: true })
+      .where(eq(messages.id, id));
+  }
+
+  async getUserAchievements(userId: string): Promise<UserAchievement[]> {
+    return await db.select().from(userAchievements).where(eq(userAchievements.userId, userId));
+  }
+
+  async createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement> {
+    const [newAchievement] = await db
+      .insert(userAchievements)
+      .values(achievement)
+      .returning();
+    return newAchievement;
+  }
+
+  async getAchievementDefinitions(): Promise<AchievementDefinition[]> {
+    return await db.select().from(achievementDefinitions);
+  }
+
+  async createAchievementDefinition(definition: InsertAchievementDefinition): Promise<AchievementDefinition> {
+    const [newDefinition] = await db
+      .insert(achievementDefinitions)
+      .values(definition)
+      .returning();
+    return newDefinition;
+  }
+
+  async updateUserAchievementProgress(userId: string, achievementType: string, progress: number): Promise<UserAchievement | undefined> {
+    const [achievement] = await db
+      .update(userAchievements)
+      .set({ progress })
+      .where(eq(userAchievements.userId, userId))
+      .returning();
+    return achievement || undefined;
+  }
+}
+
+// Using secure database storage for production
+export const storage = new DatabaseStorage();
