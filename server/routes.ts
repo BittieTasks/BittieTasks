@@ -286,15 +286,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get user achievements
-  app.get("/api/user/:userId/achievements", async (req, res) => {
+  // Achievement routes
+  app.get('/api/achievements/user', async (req, res) => {
     try {
-      const achievements = await storage.getUserAchievements(req.params.userId);
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+      
+      const achievements = await storage.getUserAchievements(userId);
       res.json(achievements);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch achievements" });
+      console.error('Error fetching user achievements:', error);
+      res.status(500).json({ message: 'Error fetching achievements' });
     }
   });
+
+  app.get('/api/achievements/definitions', async (req, res) => {
+    try {
+      const definitions = await storage.getAchievementDefinitions();
+      res.json(definitions);
+    } catch (error) {
+      console.error('Error fetching achievement definitions:', error);
+      res.status(500).json({ message: 'Error fetching achievement definitions' });
+    }
+  });
+
+  app.post('/api/achievements/check', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+
+      // Check and award achievements based on user activity
+      const userTasks = await storage.getTaskCompletions(userId);
+      const newAchievements = [];
+
+      // Check for first dollar achievement
+      if (userTasks.length === 1 && !await hasAchievement(userId, 'first_dollar')) {
+        const achievement = await storage.createUserAchievement({
+          userId,
+          achievementType: 'first_dollar',
+          achievementData: { earnedAmount: userTasks[0].earnings },
+          isVisible: true,
+          progress: 1,
+          maxProgress: 1
+        });
+        newAchievements.push(achievement);
+      }
+
+      res.json({ newAchievements });
+    } catch (error) {
+      console.error('Error checking achievements:', error);
+      res.status(500).json({ message: 'Error checking achievements' });
+    }
+  });
+
+  async function hasAchievement(userId: string, achievementType: string): Promise<boolean> {
+    const achievements = await storage.getUserAchievements(userId);
+    return achievements.some(a => a.achievementType === achievementType);
+  }
 
   // Serve uploaded files
   app.use("/uploads", (req, res, next) => {

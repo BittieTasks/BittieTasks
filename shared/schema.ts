@@ -70,9 +70,26 @@ export const messages = pgTable("messages", {
 export const userAchievements = pgTable("user_achievements", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
-  achievementType: text("achievement_type").notNull(),
-  achievementData: jsonb("achievement_data"),
-  earnedAt: timestamp("earned_at").default(sql`CURRENT_TIMESTAMP`)
+  achievementType: text("achievement_type").notNull(), // wellness_streak, self_care_champion, community_builder, etc.
+  achievementData: jsonb("achievement_data"), // badge details, progress, unlock criteria
+  earnedAt: timestamp("earned_at").default(sql`CURRENT_TIMESTAMP`),
+  isVisible: boolean("is_visible").default(true), // user can hide/show badges
+  progress: integer("progress").default(0), // current progress toward achievement
+  maxProgress: integer("max_progress").default(1) // total needed to unlock
+});
+
+export const achievementDefinitions = pgTable("achievement_definitions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  type: text("type").notNull().unique(), // wellness_streak_7, self_care_warrior, etc.
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  icon: text("icon").notNull(), // emoji or icon class
+  color: text("color").notNull(), // badge color theme
+  category: text("category").notNull(), // wellness, community, earnings, etc.
+  criteria: jsonb("criteria").notNull(), // unlock requirements
+  rarity: text("rarity").notNull().default("common"), // common, rare, epic, legendary
+  rewardPoints: integer("reward_points").default(0), // bonus points for earning badge
+  isActive: boolean("is_active").default(true)
 });
 
 // Insert schemas
@@ -105,6 +122,10 @@ export const insertUserAchievementSchema = createInsertSchema(userAchievements).
   earnedAt: true
 });
 
+export const insertAchievementDefinitionSchema = createInsertSchema(achievementDefinitions).omit({
+  id: true
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -123,3 +144,6 @@ export type Message = typeof messages.$inferSelect;
 
 export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
 export type UserAchievement = typeof userAchievements.$inferSelect;
+
+export type InsertAchievementDefinition = z.infer<typeof insertAchievementDefinitionSchema>;
+export type AchievementDefinition = typeof achievementDefinitions.$inferSelect;

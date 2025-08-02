@@ -10,7 +10,9 @@ import {
   type Message,
   type InsertMessage,
   type UserAchievement,
-  type InsertUserAchievement
+  type InsertUserAchievement,
+  type AchievementDefinition,
+  type InsertAchievementDefinition
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -45,6 +47,9 @@ export interface IStorage {
   // Achievement methods
   getUserAchievements(userId: string): Promise<UserAchievement[]>;
   createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
+  getAchievementDefinitions(): Promise<AchievementDefinition[]>;
+  createAchievementDefinition(definition: InsertAchievementDefinition): Promise<AchievementDefinition>;
+  updateUserAchievementProgress(userId: string, achievementType: string, progress: number): Promise<UserAchievement | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -54,6 +59,7 @@ export class MemStorage implements IStorage {
   private taskCompletions: Map<string, TaskCompletion>;
   private messages: Map<string, Message>;
   private userAchievements: Map<string, UserAchievement>;
+  private achievementDefinitions: Map<string, AchievementDefinition>;
 
   constructor() {
     this.users = new Map();
@@ -62,8 +68,10 @@ export class MemStorage implements IStorage {
     this.taskCompletions = new Map();
     this.messages = new Map();
     this.userAchievements = new Map();
+    this.achievementDefinitions = new Map();
     
     this.initializeDefaultData();
+    this.initializeAchievementDefinitions();
   }
 
   private initializeDefaultData() {
@@ -578,10 +586,208 @@ export class MemStorage implements IStorage {
       userId: insertAchievement.userId || null,
       achievementType: insertAchievement.achievementType,
       achievementData: insertAchievement.achievementData || null,
-      earnedAt: new Date()
+      earnedAt: new Date(),
+      isVisible: insertAchievement.isVisible ?? true,
+      progress: insertAchievement.progress || 0,
+      maxProgress: insertAchievement.maxProgress || 1
     };
     this.userAchievements.set(id, achievement);
     return achievement;
+  }
+
+  async getAchievementDefinitions(): Promise<AchievementDefinition[]> {
+    return Array.from(this.achievementDefinitions.values()).filter(def => def.isActive);
+  }
+
+  async createAchievementDefinition(insertDefinition: InsertAchievementDefinition): Promise<AchievementDefinition> {
+    const id = randomUUID();
+    const definition: AchievementDefinition = {
+      id,
+      type: insertDefinition.type,
+      name: insertDefinition.name,
+      description: insertDefinition.description,
+      icon: insertDefinition.icon,
+      color: insertDefinition.color,
+      category: insertDefinition.category,
+      criteria: insertDefinition.criteria,
+      rarity: insertDefinition.rarity || "common",
+      rewardPoints: insertDefinition.rewardPoints || 0,
+      isActive: insertDefinition.isActive ?? true
+    };
+    this.achievementDefinitions.set(id, definition);
+    return definition;
+  }
+
+  async updateUserAchievementProgress(userId: string, achievementType: string, progress: number): Promise<UserAchievement | undefined> {
+    const achievement = Array.from(this.userAchievements.values()).find(
+      a => a.userId === userId && a.achievementType === achievementType
+    );
+    
+    if (achievement) {
+      achievement.progress = progress;
+      this.userAchievements.set(achievement.id, achievement);
+      return achievement;
+    }
+    return undefined;
+  }
+
+  private async initializeAchievementDefinitions() {
+    const achievementDefinitions = [
+      // Wellness Achievements
+      {
+        type: "wellness_streak_3",
+        name: "Wellness Warrior",
+        description: "Complete 3 self-care tasks in a row",
+        icon: "💪",
+        color: "#10b981",
+        category: "wellness",
+        criteria: { requiredCount: 3, taskCategory: "Self-Care" },
+        rarity: "common",
+        rewardPoints: 50
+      },
+      {
+        type: "wellness_streak_7",
+        name: "Self-Care Champion",
+        description: "Complete self-care tasks for 7 days straight",
+        icon: "🏆",
+        color: "#f59e0b",
+        category: "wellness",
+        criteria: { requiredCount: 7, taskCategory: "Self-Care", consecutive: true },
+        rarity: "rare",
+        rewardPoints: 150
+      },
+      {
+        type: "morning_routine_master",
+        name: "Morning Routine Master",
+        description: "Complete 5 morning self-care activities",
+        icon: "🌅",
+        color: "#06b6d4",
+        category: "wellness",
+        criteria: { requiredCount: 5, timeOfDay: "morning" },
+        rarity: "common",
+        rewardPoints: 75
+      },
+      {
+        type: "wellness_perfectionist",
+        name: "Wellness Perfectionist",
+        description: "Complete 30 self-care tasks without missing a day",
+        icon: "✨",
+        color: "#8b5cf6",
+        category: "wellness",
+        criteria: { requiredCount: 30, taskCategory: "Self-Care", consecutive: true },
+        rarity: "legendary",
+        rewardPoints: 500
+      },
+      
+      // Community Achievements
+      {
+        type: "community_helper",
+        name: "Community Helper",
+        description: "Share 5 tasks with neighbors",
+        icon: "🤝",
+        color: "#3b82f6",
+        category: "community",
+        criteria: { requiredCount: 5, taskType: "shared" },
+        rarity: "common",
+        rewardPoints: 100
+      },
+      {
+        type: "neighbor_favorite",
+        name: "Neighbor's Favorite",
+        description: "Receive 10 five-star ratings from neighbors",
+        icon: "⭐",
+        color: "#f59e0b",
+        category: "community",
+        criteria: { requiredCount: 10, minRating: 5 },
+        rarity: "rare",
+        rewardPoints: 200
+      },
+      {
+        type: "community_leader",
+        name: "Community Leader",
+        description: "Help 50 neighbors with shared tasks",
+        icon: "👑",
+        color: "#8b5cf6",
+        category: "community",
+        criteria: { requiredCount: 50, taskType: "shared" },
+        rarity: "epic",
+        rewardPoints: 300
+      },
+      
+      // Earnings Achievements  
+      {
+        type: "first_dollar",
+        name: "First Dollar Earned",
+        description: "Complete your first paid task",
+        icon: "💰",
+        color: "#10b981",
+        category: "earnings",
+        criteria: { requiredCount: 1, minEarnings: 1 },
+        rarity: "common",
+        rewardPoints: 25
+      },
+      {
+        type: "hundred_club",
+        name: "Hundred Club",
+        description: "Earn $100 through TaskParent",
+        icon: "💵",
+        color: "#059669",
+        category: "earnings",
+        criteria: { totalEarnings: 100 },
+        rarity: "rare",
+        rewardPoints: 150
+      },
+      {
+        type: "thousand_achiever",
+        name: "Thousand Achiever",
+        description: "Earn $1,000 through TaskParent",
+        icon: "🎯",
+        color: "#dc2626",
+        category: "earnings",
+        criteria: { totalEarnings: 1000 },
+        rarity: "legendary",
+        rewardPoints: 1000
+      },
+      
+      // Engagement Achievements
+      {
+        type: "brand_partner",
+        name: "Brand Partner",
+        description: "Complete 3 sponsored brand tasks",
+        icon: "🏢",
+        color: "#7c3aed",
+        category: "engagement",
+        criteria: { requiredCount: 3, taskType: "sponsored" },
+        rarity: "rare",
+        rewardPoints: 125
+      },
+      {
+        type: "social_butterfly",
+        name: "Social Butterfly",
+        description: "Send 20 messages to other parents",
+        icon: "🦋",
+        color: "#ec4899",
+        category: "engagement",
+        criteria: { requiredCount: 20, messagesSent: true },
+        rarity: "common",
+        rewardPoints: 50
+      },
+      {
+        type: "task_creator",
+        name: "Task Creator",
+        description: "Create 10 tasks for the community",
+        icon: "✏️",
+        color: "#f97316",
+        category: "engagement",
+        criteria: { requiredCount: 10, tasksCreated: true },
+        rarity: "rare",
+        rewardPoints: 175
+      }
+    ];
+
+    for (const defData of achievementDefinitions) {
+      await this.createAchievementDefinition(defData);
+    }
   }
 }
 

@@ -14,6 +14,7 @@ import Messages from "@/pages/messages";
 import Search from "@/pages/search";
 import HowItWorks from "@/pages/how-it-works";
 import Auth from "@/pages/auth";
+import Achievements from "@/pages/achievements";
 import type { User } from "@shared/schema";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -48,6 +49,7 @@ function Router() {
       <Route path="/profile" component={() => <AuthenticatedRoute component={Profile} />} />
       <Route path="/messages" component={() => <AuthenticatedRoute component={Messages} />} />
       <Route path="/search" component={() => <AuthenticatedRoute component={Search} />} />
+      <Route path="/achievements" component={() => <AuthenticatedRoute component={Achievements} />} />
       <Route path="/how-it-works" component={HowItWorks} />
       <Route component={NotFound} />
     </Switch>

@@ -1,4 +1,4 @@
-import { Home, Search, Wallet, MessageCircle, User } from "lucide-react";
+import { Home, Search, Wallet, MessageCircle, User, Trophy } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 
@@ -53,6 +53,15 @@ export default function BottomNavigation() {
             {unreadCount && unreadCount.count > 0 && (
               <span className="absolute top-1 right-1 w-2 h-2 bg-accent-500 rounded-full"></span>
             )}
+          </button>
+        </Link>
+        
+        <Link href="/achievements">
+          <button className={`flex flex-col items-center py-2 px-3 ${
+            isActive("/achievements") ? "text-primary-600" : "text-gray-400"
+          }`}>
+            <Trophy size={20} className="mb-1" />
+            <span className="text-xs font-medium">Awards</span>
           </button>
         </Link>
         
