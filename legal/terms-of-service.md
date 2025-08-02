@@ -16,11 +16,10 @@ By accessing or using TaskParent ("Platform"), you agree to be bound by these Te
 
 ### Background Check Requirements
 All Task Providers must complete and pass:
-- FBI criminal background check
-- State criminal background check
-- Sex offender registry check
-- Child abuse registry check
-- Motor vehicle record check (where applicable)
+- Basic criminal background check (felony convictions in past 7 years)
+- Motor vehicle record check (for transportation-related tasks only)
+
+Note: Background checks are job-related and proportionate to household task services. More extensive checks are not required since our platform does not involve childcare or vulnerable populations.
 
 ### Geographic Restrictions
 Services are currently available only in the United States. International use is prohibited.
@@ -55,29 +54,40 @@ TaskParent serves as a marketplace platform connecting users. We:
 
 ### Platform Disclaimers
 TaskParent DOES NOT:
-- Employ Task Providers (they are independent contractors)
-- Supervise or control how tasks are performed
-- Guarantee the quality, safety, or legality of any services
-- Provide insurance coverage for task-related incidents
+- Employ Task Providers (they are independent contractors operating their own businesses)
+- Control, supervise, or dictate how tasks are performed
+- Guarantee the quality, safety, legality, or results of any services
+- Provide insurance coverage for task-related incidents, property damage, or personal injury
+- Assume liability for disputes between users
 - Permit or facilitate any childcare services
-- Act as a childcare agency, babysitting service, or employment agency
+- Act as an employment agency, childcare agency, or service provider
+
+**IMPORTANT DISCLAIMERS:**
+- ALL SERVICES PROVIDED "AS-IS" WITHOUT WARRANTIES
+- USERS ASSUME ALL RISKS OF PROPERTY DAMAGE AND PERSONAL INJURY
+- PLATFORM SERVES AS MARKETPLACE ONLY - NOT SERVICE PROVIDER
+- USERS MUST MAINTAIN APPROPRIATE INSURANCE COVERAGE
 
 ## 5. USER RESPONSIBILITIES
 
 ### Task Provider Obligations
-- Maintain current background check clearance
+- Operate as independent contractors running their own businesses
+- Maintain current background check clearance as required
 - Comply with all applicable state and local laws
-- Obtain required licenses and certifications
-- Maintain appropriate insurance coverage
-- Report safety incidents immediately
-- Follow all safety protocols and guidelines
+- Obtain any required business licenses and certifications
+- Maintain appropriate general liability and property damage insurance
+- Set their own prices, methods, and service standards
+- Handle their own tax obligations and business expenses
+- Report safety incidents immediately through platform incident system
 
 ### Task Requester Obligations
-- Verify Task Provider credentials before hiring
+- Verify Task Provider credentials and insurance before hiring
 - Ensure safe working conditions in their home
-- Supervise all interactions involving minors
+- Maintain appropriate homeowner's/renter's insurance coverage
+- Take reasonable precautions to protect personal property
 - Report safety concerns or violations immediately
 - Pay agreed amounts promptly through the Platform
+- Resolve disputes directly with Task Provider or through Platform dispute resolution
 
 ## 6. SAFETY AND INCIDENT REPORTING
 

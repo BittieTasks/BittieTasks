@@ -12,7 +12,11 @@ import {
   type UserAchievement,
   type InsertUserAchievement,
   type AchievementDefinition,
-  type InsertAchievementDefinition
+  type InsertAchievementDefinition,
+  type DailyChallenge,
+  type InsertDailyChallenge,
+  type UserChallenge,
+  type InsertUserChallenge
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
@@ -51,6 +55,14 @@ export interface IStorage {
   getAchievementDefinitions(): Promise<AchievementDefinition[]>;
   createAchievementDefinition(definition: InsertAchievementDefinition): Promise<AchievementDefinition>;
   updateUserAchievementProgress(userId: string, achievementType: string, progress: number): Promise<UserAchievement | undefined>;
+
+  // Daily Challenges
+  getDailyChallenges(): Promise<DailyChallenge[]>;
+  createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge>;
+  getUserChallenges(userId: string, date?: Date): Promise<UserChallenge[]>;
+  assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge>;
+  completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined>;
+  getTodaysChallenges(userId: string): Promise<UserChallenge[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -61,6 +73,8 @@ export class MemStorage implements IStorage {
   private messages: Map<string, Message>;
   private userAchievements: Map<string, UserAchievement>;
   private achievementDefinitions: Map<string, AchievementDefinition>;
+  private dailyChallenges: Map<string, DailyChallenge>;
+  private userChallenges: Map<string, UserChallenge>;
 
   constructor() {
     this.users = new Map();
@@ -70,9 +84,12 @@ export class MemStorage implements IStorage {
     this.messages = new Map();
     this.userAchievements = new Map();
     this.achievementDefinitions = new Map();
+    this.dailyChallenges = new Map();
+    this.userChallenges = new Map();
     
     this.initializeDefaultData();
     this.initializeAchievementDefinitions();
+    this.initializeDailyChallenges();
   }
 
   private initializeDefaultData() {
@@ -813,8 +830,8 @@ export class MemStorage implements IStorage {
 
 // Security enhancement: Using PostgreSQL database for production security
 import { db } from "./db";
-import { eq } from "drizzle-orm";
-import { users, tasks, taskCategories, taskCompletions, messages, userAchievements, achievementDefinitions } from "@shared/schema";
+import { eq, and, gte, lt, sql } from "drizzle-orm";
+import { users, tasks, taskCategories, taskCompletions, messages, userAchievements, achievementDefinitions, dailyChallenges, userChallenges } from "@shared/schema";
 
 export class DatabaseStorage implements IStorage {
   async getUsers(): Promise<User[]> {
@@ -952,6 +969,232 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userAchievements.userId, userId))
       .returning();
     return achievement || undefined;
+  }
+
+  // Daily Challenge Methods
+  async getDailyChallenges(): Promise<DailyChallenge[]> {
+    return await db.select().from(dailyChallenges).where(eq(dailyChallenges.isActive, true));
+  }
+
+  async createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge> {
+    const [newChallenge] = await db
+      .insert(dailyChallenges)
+      .values(challenge)
+      .returning();
+    return newChallenge;
+  }
+
+  async getUserChallenges(userId: string, date?: Date): Promise<UserChallenge[]> {
+    if (!date) {
+      return await db.select().from(userChallenges).where(eq(userChallenges.userId, userId));
+    }
+    
+    const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+    
+    return await db
+      .select()
+      .from(userChallenges)
+      .where(
+        and(
+          eq(userChallenges.userId, userId),
+          gte(userChallenges.assignedDate, startOfDay),
+          lt(userChallenges.assignedDate, endOfDay)
+        )
+      );
+  }
+
+  async assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge> {
+    const [newUserChallenge] = await db
+      .insert(userChallenges)
+      .values({
+        userId,
+        challengeId,
+        status: "assigned"
+      })
+      .returning();
+    return newUserChallenge;
+  }
+
+  async completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined> {
+    const [updatedChallenge] = await db
+      .update(userChallenges)
+      .set({
+        status: "completed",
+        completedAt: sql`CURRENT_TIMESTAMP`,
+        reflection: reflection || null
+      })
+      .where(eq(userChallenges.id, userChallengeId))
+      .returning();
+    
+    if (updatedChallenge) {
+      // Get challenge details to award points
+      const [challenge] = await db
+        .select()
+        .from(dailyChallenges)
+        .where(eq(dailyChallenges.id, updatedChallenge.challengeId));
+      
+      if (challenge) {
+        // Update points earned in user challenge
+        await db
+          .update(userChallenges)
+          .set({ pointsEarned: challenge.rewardPoints })
+          .where(eq(userChallenges.id, userChallengeId));
+        
+        // Update user's total points
+        await db
+          .update(users)
+          .set({ 
+            totalPoints: sql`COALESCE(total_points, 0) + ${challenge.rewardPoints}` 
+          })
+          .where(eq(users.id, updatedChallenge.userId));
+      }
+    }
+    
+    return updatedChallenge || undefined;
+  }
+
+  async getTodaysChallenges(userId: string): Promise<UserChallenge[]> {
+    const today = new Date();
+    let todaysChallenges = await this.getUserChallenges(userId, today);
+    
+    // If no challenges assigned for today, assign random ones
+    if (todaysChallenges.length === 0) {
+      const allChallenges = await this.getDailyChallenges();
+      const randomChallenges = allChallenges
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3); // Assign 3 random challenges
+
+      for (const challenge of randomChallenges) {
+        const assigned = await this.assignDailyChallenge(userId, challenge.id);
+        todaysChallenges.push(assigned);
+      }
+    }
+    
+    return todaysChallenges;
+  }
+
+  // Initialize sample daily challenges
+  async initializeDailyChallenges(): Promise<void> {
+    const existingChallenges = await this.getDailyChallenges();
+    if (existingChallenges.length > 0) return; // Already initialized
+
+    const sampleChallenges = [
+      {
+        title: "Morning Mindfulness",
+        description: "Take 5 minutes to practice deep breathing or meditation before starting your day",
+        category: "wellness",
+        difficulty: "easy",
+        rewardPoints: 10,
+        icon: "🧘‍♀️",
+        color: "#8b5cf6",
+        estimatedMinutes: 5,
+        isActive: true
+      },
+      {
+        title: "Tidy Up One Room",
+        description: "Choose one room in your home and spend 15 minutes organizing or cleaning it",
+        category: "productivity",
+        difficulty: "easy",
+        rewardPoints: 15,
+        icon: "🏠",
+        color: "#06b6d4",
+        estimatedMinutes: 15,
+        isActive: true
+      },
+      {
+        title: "Connect with a Friend",
+        description: "Send a thoughtful message, make a call, or schedule time with someone you care about",
+        category: "social",
+        difficulty: "easy",
+        rewardPoints: 10,
+        icon: "💝",
+        color: "#ec4899",
+        estimatedMinutes: 10,
+        isActive: true
+      },
+      {
+        title: "Hydration Check",
+        description: "Drink a full glass of water and track your hydration throughout the day",
+        category: "health",
+        difficulty: "easy",
+        rewardPoints: 5,
+        icon: "💧",
+        color: "#3b82f6",
+        estimatedMinutes: 2,
+        isActive: true
+      },
+      {
+        title: "Gratitude Practice",
+        description: "Write down three things you're grateful for today",
+        category: "wellness",
+        difficulty: "easy",
+        rewardPoints: 10,
+        icon: "🙏",
+        color: "#f59e0b",
+        estimatedMinutes: 5,
+        isActive: true
+      },
+      {
+        title: "Quick Exercise",
+        description: "Do 10 jumping jacks, stretch for 5 minutes, or take a short walk",
+        category: "health",
+        difficulty: "easy",
+        rewardPoints: 15,
+        icon: "🏃‍♀️",
+        color: "#10b981",
+        estimatedMinutes: 10,
+        isActive: true
+      },
+      {
+        title: "Creative Break",
+        description: "Spend 15 minutes on a creative activity: drawing, writing, or crafting",
+        category: "creativity",
+        difficulty: "medium",
+        rewardPoints: 20,
+        icon: "🎨",
+        color: "#f97316",
+        estimatedMinutes: 15,
+        isActive: true
+      },
+      {
+        title: "Learn Something New",
+        description: "Watch an educational video, read an article, or practice a new skill for 10 minutes",
+        category: "growth",
+        difficulty: "medium",
+        rewardPoints: 20,
+        icon: "📚",
+        color: "#6366f1",
+        estimatedMinutes: 10,
+        isActive: true
+      },
+      {
+        title: "Random Act of Kindness",
+        description: "Do something kind for someone else, whether big or small",
+        category: "social",
+        difficulty: "medium",
+        rewardPoints: 25,
+        icon: "❤️",
+        color: "#ef4444",
+        estimatedMinutes: 20,
+        isActive: true
+      },
+      {
+        title: "Digital Detox",
+        description: "Put your phone aside for 30 minutes and focus on being present",
+        category: "wellness",
+        difficulty: "hard",
+        rewardPoints: 30,
+        icon: "📱",
+        color: "#64748b",
+        estimatedMinutes: 30,
+        isActive: true
+      }
+    ];
+
+    for (const challengeData of sampleChallenges) {
+      await this.createDailyChallenge(challengeData);
+    }
   }
 }
 

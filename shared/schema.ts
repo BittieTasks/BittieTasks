@@ -101,6 +101,31 @@ export const achievementDefinitions = pgTable("achievement_definitions", {
   isActive: boolean("is_active").default(true)
 });
 
+export const dailyChallenges = pgTable("daily_challenges", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(), // wellness, productivity, social, mindfulness
+  difficulty: text("difficulty").notNull(), // easy, medium, hard
+  rewardPoints: integer("reward_points").default(5),
+  icon: text("icon").notNull(),
+  color: text("color").notNull(),
+  estimatedMinutes: integer("estimated_minutes").default(5),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
+});
+
+export const userChallenges = pgTable("user_challenges", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  challengeId: varchar("challenge_id").references(() => dailyChallenges.id),
+  assignedDate: timestamp("assigned_date").default(sql`CURRENT_TIMESTAMP`),
+  completedAt: timestamp("completed_at"),
+  status: text("status").notNull().default("assigned"), // assigned, completed, skipped
+  reflection: text("reflection"), // user's reflection on completing the challenge
+  pointsEarned: integer("points_earned").default(0)
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -135,6 +160,16 @@ export const insertAchievementDefinitionSchema = createInsertSchema(achievementD
   id: true
 });
 
+export const insertDailyChallengeSchema = createInsertSchema(dailyChallenges).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertUserChallengeSchema = createInsertSchema(userChallenges).omit({
+  id: true,
+  assignedDate: true
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -156,3 +191,9 @@ export type UserAchievement = typeof userAchievements.$inferSelect;
 
 export type InsertAchievementDefinition = z.infer<typeof insertAchievementDefinitionSchema>;
 export type AchievementDefinition = typeof achievementDefinitions.$inferSelect;
+
+export type InsertDailyChallenge = z.infer<typeof insertDailyChallengeSchema>;
+export type DailyChallenge = typeof dailyChallenges.$inferSelect;
+
+export type InsertUserChallenge = z.infer<typeof insertUserChallengeSchema>;
+export type UserChallenge = typeof userChallenges.$inferSelect;

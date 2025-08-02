@@ -66,6 +66,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.use(apiLimiter);
 
+  // Initialize daily challenges on startup
+  try {
+    if (storage instanceof DatabaseStorage) {
+      await storage.initializeDailyChallenges();
+      console.log("Daily challenges initialized successfully");
+    }
+  } catch (error) {
+    console.error("Error initializing daily challenges:", error);
+  }
+
   // Legal compliance routes
   app.use('/api/legal', legalRoutes);
 
@@ -419,6 +429,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const achievements = await storage.getUserAchievements(userId);
     return achievements.some(a => a.achievementType === achievementType);
   }
+
+  // Daily Challenges API Routes
+  app.get("/api/challenges", async (req, res) => {
+    try {
+      const challenges = await storage.getDailyChallenges();
+      res.json(challenges);
+    } catch (error) {
+      console.error("Error fetching challenges:", error);
+      res.status(500).json({ message: "Failed to fetch challenges" });
+    }
+  });
+
+  app.get("/api/challenges/today/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const todaysChallenges = await storage.getTodaysChallenges(userId);
+      
+      // Enrich with challenge details
+      const enrichedChallenges = await Promise.all(
+        todaysChallenges.map(async (userChallenge) => {
+          const challenges = await storage.getDailyChallenges();
+          const challenge = challenges.find(c => c.id === userChallenge.challengeId);
+          return {
+            ...userChallenge,
+            challenge
+          };
+        })
+      );
+      
+      res.json(enrichedChallenges);
+    } catch (error) {
+      console.error("Error fetching today's challenges:", error);
+      res.status(500).json({ message: "Failed to fetch today's challenges" });
+    }
+  });
+
+  app.post("/api/challenges/:userChallengeId/complete", async (req, res) => {
+    try {
+      const { userChallengeId } = req.params;
+      const { reflection } = req.body;
+      
+      const completedChallenge = await storage.completeChallenge(userChallengeId, reflection);
+      
+      if (!completedChallenge) {
+        return res.status(404).json({ message: "Challenge not found" });
+      }
+      
+      res.json(completedChallenge);
+    } catch (error) {
+      console.error("Error completing challenge:", error);
+      res.status(500).json({ message: "Failed to complete challenge" });
+    }
+  });
+
+  app.get("/api/user/:userId/challenges", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { date } = req.query;
+      
+      const targetDate = date ? new Date(date as string) : undefined;
+      const userChallenges = await storage.getUserChallenges(userId, targetDate);
+      
+      res.json(userChallenges);
+    } catch (error) {
+      console.error("Error fetching user challenges:", error);
+      res.status(500).json({ message: "Failed to fetch user challenges" });
+    }
+  });
 
   // Serve uploaded files
   app.use("/uploads", (req, res, next) => {

@@ -1,12 +1,12 @@
-import { Home, Search, DollarSign, MessageSquare, User } from "lucide-react";
+import { Home, Search, DollarSign, MessageSquare, User, Zap } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Search', href: '/search', icon: Search },
+  { name: 'Daily', href: '/challenges', icon: Zap },
   { name: 'Earnings', href: '/earnings', icon: DollarSign },
-  { name: 'Messages', href: '/messages', icon: MessageSquare },
   { name: 'Profile', href: '/profile', icon: User },
 ];
 
