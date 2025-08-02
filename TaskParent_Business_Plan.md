@@ -20,16 +20,26 @@ TaskParent is a mobile-first platform that empowers stay-at-home parents to mone
 - Parents crave community connection while earning income
 
 **Our Solution**
-TaskParent enables parents to earn $200-600 weekly by sharing activities they're already doing:
+TaskParent enables parents to earn $200-600 weekly through three income streams:
+
+**Community Sharing Tasks:**
 - **Grocery runs:** $30 for shopping with 3 neighbors
 - **Meal prep sharing:** $50 for cooking with 2 families  
 - **Childcare swaps:** $35/child for group playdates
-- **Self-care monetization:** Get paid for documenting wellness routines
+
+**Self-Care Monetization:**
+- Get paid for documenting wellness routines and self-care activities
+
+**Brand Partnership Tasks (NEW):**
+- **Premium sponsored activities:** $40-60 for participating in brand-sponsored community events
+- **Product testing:** $25-45 for trying new products with neighbors and providing feedback
+- **Community engagement:** Special rewards like coupons, samples, and exclusive access
 
 **Business Model**
 - **Platform service fee:** 15% of completed tasks (10% for Pro members)
-- **TaskParent Pro:** $9.99/month premium membership
-- **Corporate partnerships:** Employee benefit programs
+- **TaskParent Pro:** $9.99/month premium membership with priority access to sponsored tasks
+- **Brand partnership revenue:** 25-40% commission from sponsored task payments
+- **Corporate partnerships:** Employee benefit programs and enterprise sponsorships
 - **Premium features:** Advanced business tools for power users
 
 **Market Opportunity**
@@ -37,11 +47,11 @@ TaskParent enables parents to earn $200-600 weekly by sharing activities they're
 - **Serviceable Addressable Market:** $12 billion (tech-savvy parents)
 - **Target Market:** 28 million stay-at-home parents in the US
 
-**Financial Projections (5-Year)**
-- Year 1: $2.5M revenue, 50K users
-- Year 3: $45M revenue, 800K users  
-- Year 5: $180M revenue, 2.5M users
-- Path to profitability: Month 18
+**Financial Projections (5-Year) - Updated with Brand Partnerships**
+- Year 1: $3.2M revenue, 50K users (28% from brand partnerships)
+- Year 3: $58M revenue, 800K users (35% from brand partnerships)
+- Year 5: $240M revenue, 2.5M users (40% from enterprise sponsorships)
+- Path to profitability: Month 15 (accelerated by higher-margin brand revenue)
 
 **Funding Request**
 Seeking $8 million Series A to achieve market leadership and expand nationally.
@@ -174,14 +184,18 @@ TaskParent is a mobile-first React web application with a comprehensive backend 
 - Essential safety features
 - iOS/Android PWA optimization
 
-**Phase 2 (Months 7-12): Community Features**
+**Phase 2 (Months 7-12): Community Features & Brand Partnerships**
 - Advanced matching algorithms
 - Reputation and verification systems
+- **Brand partnership platform and sponsor onboarding (NEW)**
+- **Sponsored task creation and management tools (NEW)**
 - Insurance partnership integration
 - Corporate pilot programs
 
 **Phase 3 (Months 13-18): Scale & Intelligence**
 - AI-powered task recommendations
+- **Brand partnership performance analytics and ROI tracking (NEW)**
+- **Enterprise sponsorship dashboard for brands (NEW)**
 - Advanced analytics dashboard
 - Multi-market expansion
 - Premium business tools
@@ -242,18 +256,39 @@ TaskParent is a mobile-first React web application with a comprehensive backend 
 - Corporate childcare provider relationships
 - Financial planning service partnerships
 
-### Revenue Streams
+### Revenue Streams - Updated with Brand Partnerships
 
-**Primary Revenue (70% of total):**
+**Primary Revenue (75% of total):**
 - Platform transaction fees: 15% standard, 10% for Pro members
-- Monthly recurring revenue from Pro subscriptions
+- **Brand partnership commissions: 25-40% on sponsored tasks (NEW)**
+- Monthly recurring revenue from Pro subscriptions with sponsored task access
 - Payment processing margin (2.9% + $0.30 per transaction)
 
-**Secondary Revenue (30% of total):**
+**Secondary Revenue (25% of total):**
 - Premium feature upgrades and business tools
 - Corporate partnership and white-label licensing
-- Advertising from family-focused brands
+- **Enterprise brand sponsorship packages (NEW)**
 - Financial services partnerships (insurance, banking)
+
+### Brand Partnership Revenue Model - New Strategic Focus
+
+**Sponsored Task Categories:**
+- **Community Engagement Tasks:** Brands sponsor local community activities (coffee tastings, cooking classes)
+- **Product Testing Programs:** Neighbors try new products together and provide feedback
+- **Shopping Group Sponsorships:** Retailers sponsor community shopping experiences
+- **Family Activity Partnerships:** Brands sponsor family-friendly community events
+
+**Revenue Sharing Structure:**
+- TaskParent takes 25-40% commission from brand payments to parents
+- Higher margins than regular platform fees (15%)
+- Volume discounts for enterprise brand partners
+- Performance bonuses based on engagement metrics
+
+**Target Brand Partners by Industry:**
+- **Food & Beverage:** Starbucks, Whole Foods, local restaurants (32% of partnerships)
+- **Retail:** Target, Walmart, Amazon (28% of partnerships) 
+- **Family Products:** P&G, Johnson & Johnson, toy companies (25% of partnerships)
+- **Technology:** Family apps, smart home brands (15% of partnerships)
 
 ---
 
@@ -352,42 +387,42 @@ TaskParent is a mobile-first React web application with a comprehensive backend 
 - Estimated Pro adoption: 25% of active users
 - Annual Pro revenue per user: $119.88
 
-### 5-Year Financial Projections
+### 5-Year Financial Projections - Updated with Brand Partnerships
 
 **Year 1 (2025):**
 - Users: 50,000 total, 15,000 monthly active
-- Tasks completed: 180,000 annually
-- Revenue: $2.5M (80% transaction fees, 20% subscriptions)
-- Expenses: $4.2M (heavy investment in growth)
-- Net Loss: $(1.7M)
+- Tasks completed: 180,000 annually (15% sponsored)
+- Revenue: $3.2M (55% transaction fees, 28% brand partnerships, 17% subscriptions)
+- Expenses: $4.2M (heavy investment in growth + brand platform development)
+- Net Loss: $(1.0M) - Improved by brand revenue
 
 **Year 2 (2026):**
 - Users: 200,000 total, 80,000 monthly active
-- Tasks completed: 960,000 annually
-- Revenue: $12.8M (75% transaction fees, 25% subscriptions)
+- Tasks completed: 960,000 annually (22% sponsored)
+- Revenue: $16.6M (50% transaction fees, 32% brand partnerships, 18% subscriptions)
 - Expenses: $15.6M (continued growth investment)
-- Net Loss: $(2.8M)
+- Net Income: $1.0M - Profitability accelerated by brand revenue
 
 **Year 3 (2027):**
 - Users: 800,000 total, 400,000 monthly active
-- Tasks completed: 4.8M annually
-- Revenue: $45.2M (70% transaction fees, 30% subscriptions)
+- Tasks completed: 4.8M annually (30% sponsored)
+- Revenue: $58.7M (45% transaction fees, 35% brand partnerships, 20% subscriptions)
 - Expenses: $38.1M (approaching operational efficiency)
-- Net Income: $7.1M (First profitable year)
+- Net Income: $20.6M - Significant profit growth
 
 **Year 4 (2028):**
 - Users: 1.8M total, 900,000 monthly active
-- Tasks completed: 10.8M annually
-- Revenue: $98.7M (65% transaction fees, 35% subscriptions)
+- Tasks completed: 10.8M annually (35% sponsored)
+- Revenue: $128.3M (40% transaction fees, 38% brand partnerships, 22% subscriptions)
 - Expenses: $71.4M (scaled operations)
-- Net Income: $27.3M
+- Net Income: $56.9M - 108% increase from brand partnerships
 
 **Year 5 (2029):**
 - Users: 3.2M total, 1.8M monthly active
-- Tasks completed: 21.6M annually
-- Revenue: $180.4M (60% transaction fees, 40% subscriptions)
+- Tasks completed: 21.6M annually (40% sponsored)
+- Revenue: $240.5M (35% transaction fees, 40% brand partnerships, 25% subscriptions)
 - Expenses: $126.8M (mature operational model)
-- Net Income: $53.6M
+- Net Income: $113.7M - Brand partnerships drive 112% more profit
 
 ### Key Financial Metrics
 - **Customer Acquisition Cost (CAC):** $45 blended, $35 organic referral
@@ -412,6 +447,7 @@ TaskParent is a mobile-first React web application with a comprehensive backend 
 
 **Technology Development (35% - $2.8M):**
 - Engineering team expansion (12 additional developers)
+- **Brand partnership platform and analytics dashboard ($800K)**
 - Mobile app development for iOS/Android native versions
 - Advanced matching algorithms and AI recommendation engine
 - Enhanced security and fraud prevention systems
@@ -419,6 +455,7 @@ TaskParent is a mobile-first React web application with a comprehensive backend 
 
 **Marketing & User Acquisition (30% - $2.4M):**
 - Digital advertising campaigns across parent-focused platforms
+- **Brand partnership sales team and business development ($600K)**
 - Community outreach and local market penetration
 - Influencer partnerships and content marketing
 - Referral program incentives and bonuses
