@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { ArrowLeft, Plus, DollarSign, Clock, Users } from "lucide-react";
+import { ArrowLeft, Plus, DollarSign, Clock, Users, AlertTriangle } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -145,6 +146,15 @@ export default function CreateTaskPage() {
 
       {/* Form */}
       <div className="p-4 space-y-6">
+        {/* Childcare Prohibition Notice */}
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="font-medium">
+            <strong>Important:</strong> TaskParent does not allow any childcare services, babysitting, or child supervision activities. 
+            Our platform is exclusively for household tasks between adults (cleaning, cooking, errands, organization).
+          </AlertDescription>
+        </Alert>
+
         {/* Info Card */}
         <Card>
           <CardHeader className="pb-3">

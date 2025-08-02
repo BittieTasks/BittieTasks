@@ -82,6 +82,7 @@ export class MemStorage implements IStorage {
       id: userId,
       username: "sarah_parent",
       email: "sarah@example.com",
+      passwordHash: "demo_hash",
       firstName: "Sarah",
       lastName: "Miller",
       profilePicture: null,
@@ -89,8 +90,16 @@ export class MemStorage implements IStorage {
       rating: "4.8",
       completedTasks: 28,
       currentStreak: 5,
-      skills: ["cooking", "organizing", "childcare"],
+      skills: ["cooking", "organizing", "cleaning", "meal-prep"],
       availability: { weekdays: true, weekends: true, mornings: true, afternoons: true },
+      isEmailVerified: true,
+      emailVerificationToken: null,
+      passwordResetToken: null,
+      passwordResetExpires: null,
+      lastLogin: new Date(),
+      failedLoginAttempts: 0,
+      accountLocked: false,
+      lockUntil: null,
       createdAt: new Date()
     };
     this.users.set(userId, defaultUser);
@@ -99,9 +108,10 @@ export class MemStorage implements IStorage {
     const categories = [
       { name: "Cooking", icon: "fa-utensils", color: "primary" },
       { name: "Cleaning", icon: "fa-broom", color: "secondary" },
-      { name: "Childcare", icon: "fa-baby", color: "accent" },
       { name: "Organizing", icon: "fa-boxes", color: "purple" },
-      { name: "Self-Care", icon: "fa-heart", color: "green" }
+      { name: "Self-Care", icon: "fa-heart", color: "green" },
+      { name: "Errands", icon: "fa-shopping-cart", color: "blue" },
+      { name: "Outdoor Tasks", icon: "fa-leaf", color: "emerald" }
     ];
 
     categories.forEach(cat => {
@@ -441,6 +451,7 @@ export class MemStorage implements IStorage {
       id,
       username: insertUser.username,
       email: insertUser.email,
+      passwordHash: insertUser.passwordHash,
       firstName: insertUser.firstName,
       lastName: insertUser.lastName,
       profilePicture: insertUser.profilePicture || null,
@@ -450,6 +461,14 @@ export class MemStorage implements IStorage {
       currentStreak: insertUser.currentStreak || 0,
       skills: insertUser.skills || [],
       availability: insertUser.availability || { weekdays: true, weekends: true, mornings: true, afternoons: true },
+      isEmailVerified: insertUser.isEmailVerified || false,
+      emailVerificationToken: insertUser.emailVerificationToken || null,
+      passwordResetToken: insertUser.passwordResetToken || null,
+      passwordResetExpires: insertUser.passwordResetExpires || null,
+      lastLogin: insertUser.lastLogin || null,
+      failedLoginAttempts: insertUser.failedLoginAttempts || 0,
+      accountLocked: insertUser.accountLocked || false,
+      lockUntil: insertUser.lockUntil || null,
       createdAt: new Date()
     };
     this.users.set(id, user);

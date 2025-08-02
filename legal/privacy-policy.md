@@ -37,11 +37,8 @@ TaskParent ("we," "us," or "our") respects your privacy and is committed to prot
 - **Limited Data Collection**: Minimal data collection for minor users
 - **No Behavioral Advertising**: No targeted advertising to minors
 
-### Child Safety Measures
-- Background checks for all adults interacting with minors
-- Incident reporting for child safety concerns
-- Mandatory reporter training for relevant users
-- Secure handling of any child-related information
+### Platform Service Limitations
+**IMPORTANT**: TaskParent does not provide or facilitate childcare services of any kind. Our platform is exclusively for household task marketplace services (cleaning, cooking, errands, organization). All data collection and safety measures are designed for adult-to-adult household service transactions only.
 
 ## 4. HOW WE USE YOUR INFORMATION
 

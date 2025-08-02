@@ -28,13 +28,13 @@ Services are currently available only in the United States. International use is
 ## 3. PROHIBITED ACTIVITIES
 
 ### Strictly Prohibited Services
-- Unlicensed childcare or babysitting
+TaskParent is a household task marketplace and explicitly prohibits all childcare services:
+- **ALL childcare services including babysitting, child supervision, or child-related activities**
+- **Transportation of minors under any circumstances**
+- **Child pickup/dropoff from school or activities**
 - Medical care or administration of medication
-- Transportation of minors without proper licensing
-- Overnight supervision of children
-- Care of children under 6 months old
 - Services in homes without working smoke detectors
-- Swimming or water-related supervision
+- Swimming or water-related supervision that could involve children
 - Use of personal vehicles for task completion
 
 ### Prohibited User Conduct
@@ -59,7 +59,8 @@ TaskParent DOES NOT:
 - Supervise or control how tasks are performed
 - Guarantee the quality, safety, or legality of any services
 - Provide insurance coverage for task-related incidents
-- Act as a childcare agency or employment agency
+- Permit or facilitate any childcare services
+- Act as a childcare agency, babysitting service, or employment agency
 
 ## 5. USER RESPONSIBILITIES
 
