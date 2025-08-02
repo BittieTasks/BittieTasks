@@ -16,11 +16,9 @@ TaskParent ("we," "us," or "our") respects your privacy and is committed to prot
 - **Financial Information**: Bank account details, payment card information (tokenized)
 
 ### Background Check Information
-- Criminal history records
-- Sex offender registry status
-- Child abuse registry status
-- Motor vehicle records
-- Previous employment verification
+- Criminal history records (job-related felonies only)
+- Motor vehicle records (for transportation tasks only)
+- Identity verification records
 
 ### Usage Information
 - Platform activity and interactions
@@ -29,16 +27,15 @@ TaskParent ("we," "us," or "our") respects your privacy and is committed to prot
 - Device information and IP addresses
 - Location data (when using location features)
 
-## 3. SPECIAL PROTECTIONS FOR CHILDREN
+## 3. ADULT-ONLY PLATFORM
 
-### COPPA Compliance
-- **No Users Under 13**: Platform prohibits registration by children under 13
-- **Parental Consent**: Required for users aged 13-17
-- **Limited Data Collection**: Minimal data collection for minor users
-- **No Behavioral Advertising**: No targeted advertising to minors
+### Age Requirements
+- **Platform Restriction**: TaskParent is designed for users 18 years and older only
+- **No Child Data**: We do not knowingly collect personal information from children under 18
+- **Adult Services Only**: Platform exclusively facilitates household task services between adults
 
-### Platform Service Limitations
-**IMPORTANT**: TaskParent does not provide or facilitate childcare services of any kind. Our platform is exclusively for household task marketplace services (cleaning, cooking, errands, organization). All data collection and safety measures are designed for adult-to-adult household service transactions only.
+### Service Focus
+TaskParent does not provide or facilitate childcare services of any kind. Our platform is exclusively for household task marketplace services (cleaning, cooking, errands, organization) performed by and for adults.
 
 ## 4. HOW WE USE YOUR INFORMATION
 

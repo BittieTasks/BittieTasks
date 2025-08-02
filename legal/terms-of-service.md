@@ -10,16 +10,16 @@ By accessing or using TaskParent ("Platform"), you agree to be bound by these Te
 ## 2. ELIGIBILITY AND AGE REQUIREMENTS
 
 ### User Age Requirements
-- **Task Providers**: Must be 18 years or older
-- **Task Requesters**: Must be 18 years or older  
-- **Minors**: Users under 18 may only use the Platform with explicit parental consent and supervision
+- **All Users**: Must be 18 years or older
+- **No Minors**: Platform does not permit users under 18 years of age
+- **Adult Services Only**: All tasks and services are designed for adult-to-adult transactions
 
 ### Background Check Requirements
-All Task Providers must complete and pass:
-- Basic criminal background check (felony convictions in past 7 years)
+All Task Providers must complete and pass job-related background screening:
+- Basic criminal background check (felony convictions directly related to household services in past 7 years)
 - Motor vehicle record check (for transportation-related tasks only)
 
-Note: Background checks are job-related and proportionate to household task services. More extensive checks are not required since our platform does not involve childcare or vulnerable populations.
+**Important**: Background checks are limited to job-related criminal history only. We do not require FBI checks, child abuse registry checks, or sex offender registry checks as our platform exclusively serves adult household tasks without childcare services.
 
 ### Geographic Restrictions
 Services are currently available only in the United States. International use is prohibited.
@@ -53,14 +53,22 @@ TaskParent serves as a marketplace platform connecting users. We:
 - Maintain basic safety standards and background check requirements
 
 ### Platform Disclaimers
-TaskParent DOES NOT:
+TaskParent operates as a marketplace platform only and DOES NOT:
 - Employ Task Providers (they are independent contractors operating their own businesses)
-- Control, supervise, or dictate how tasks are performed
+- Control, supervise, or dictate HOW tasks are performed (providers set their own methods)
+- Set work schedules, hours, or provide equipment or tools
 - Guarantee the quality, safety, legality, or results of any services
 - Provide insurance coverage for task-related incidents, property damage, or personal injury
 - Assume liability for disputes between users
 - Permit or facilitate any childcare services
 - Act as an employment agency, childcare agency, or service provider
+
+**Independent Contractor Relationship**: Task Providers are independent business operators who:
+- Set their own rates and availability
+- Use their own methods and tools to complete tasks
+- May work for multiple platforms or clients
+- Are responsible for their own taxes, insurance, and business expenses
+- Have the right to refuse any task without penalty
 
 **IMPORTANT DISCLAIMERS:**
 - ALL SERVICES PROVIDED "AS-IS" WITHOUT WARRANTIES
@@ -71,8 +79,14 @@ TaskParent DOES NOT:
 ## 5. USER RESPONSIBILITIES
 
 ### Task Provider Obligations
-- Operate as independent contractors running their own businesses
+As independent contractors operating your own business, you must:
 - Maintain current background check clearance as required
+- Set your own rates, schedules, and service methods
+- Provide your own tools, equipment, and supplies (unless specifically requested by client)
+- Maintain appropriate business insurance and licenses
+- Handle your own tax obligations and business expenses
+- Deliver services according to your professional standards and client agreements
+- Communicate directly with clients regarding task requirements and completion
 - Comply with all applicable state and local laws
 - Obtain any required business licenses and certifications
 - Maintain appropriate general liability and property damage insurance
@@ -103,13 +117,23 @@ Users must immediately report:
 - Contact Platform safety hotline: 1-800-SAFETY-1
 - Submit incident reports within 24 hours
 
-## 7. PAYMENT AND BILLING
+## 7. PAYMENT OPTIONS AND BILLING
 
-### Payment Processing
-- All payments processed through secure third-party processors
-- Platform fee: 15% of task completion amount
+### Multiple Payment Methods Available
+**Platform Payment Processing** (Optional):
+- Platform fee: 15% of task completion amount (10% for TaskParent Pro members)
 - Payments held in escrow until task completion confirmation
-- Refunds processed according to Platform refund policy
+- Dispute resolution services included
+- Automatic transaction records for tax purposes
+
+**Direct Payment Arrangements** (Permitted):
+- Task Providers and Requesters may arrange payment directly outside the platform
+- Cash, check, Venmo, PayPal, or other payment methods allowed by both parties
+- No platform fees for direct payments
+- Users assume all risks and responsibilities for direct payment arrangements
+
+### Payment Method Choice
+TaskParent operates as a marketplace platform and does not control or require exclusive use of platform payment processing. Users have the freedom to negotiate payment terms and methods directly with each other.
 
 ### Tax Responsibilities
 - Users responsible for all applicable taxes
@@ -125,11 +149,10 @@ We collect only information necessary for:
 - Platform functionality and improvement
 - Legal compliance requirements
 
-### Child Privacy Protection
-- No users under 13 permitted on Platform
-- Parental consent required for users 13-17
-- Special protections for any child-related data
-- Compliance with COPPA and state privacy laws
+### Adult-Only Platform
+- Platform restricted to users 18 years and older
+- No child data collection as platform serves adults exclusively
+- All services designed for adult-to-adult household task transactions
 
 ## 9. INTELLECTUAL PROPERTY
 

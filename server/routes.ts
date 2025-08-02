@@ -68,7 +68,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Initialize daily challenges on startup
   try {
-    if (storage instanceof DatabaseStorage) {
+    if (typeof storage.initializeDailyChallenges === 'function') {
       await storage.initializeDailyChallenges();
       console.log("Daily challenges initialized successfully");
     }
