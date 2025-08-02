@@ -52,9 +52,6 @@ const apiLimiter = rateLimit({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Set trust proxy for rate limiting
-  app.set('trust proxy', true);
-  
   // Apply security middleware
   app.use(helmet({
     contentSecurityPolicy: {
@@ -67,7 +64,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     },
   }));
   
-  app.use(apiLimiter);
+  // Apply rate limiting only to login endpoints
+  app.use("/api/auth/login", loginLimiter);
+  app.use("/api/auth/signup", loginLimiter);
 
   // Initialize daily challenges on startup
   try {
@@ -94,7 +93,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Authentication routes
-  app.post("/api/auth/signup", loginLimiter, async (req, res) => {
+  app.post("/api/auth/signup", async (req, res) => {
     try {
       const { firstName, lastName, email, password } = req.body;
       
@@ -161,7 +160,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/auth/login", loginLimiter, async (req, res) => {
+  app.post("/api/auth/login", async (req, res) => {
     try {
       const { email, password } = req.body;
       

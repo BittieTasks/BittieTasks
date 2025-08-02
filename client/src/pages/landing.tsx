@@ -12,15 +12,20 @@ function DemoLoginButton() {
 
   const demoLoginMutation = useMutation({
     mutationFn: () => apiRequest("POST", "/api/auth/demo", {}),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user/current"] });
-      toast({
-        title: "Demo Access Granted",
-        description: "Exploring TaskParent features with demo account",
-      });
-      setLocation("/");
+    onSuccess: (response) => {
+      console.log("Demo login success:", response);
+      // Wait a moment for cookies to be set, then invalidate queries
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["/api/user/current"] });
+        toast({
+          title: "Demo Access Granted",
+          description: "Exploring TaskParent features with demo account",
+        });
+        setLocation("/");
+      }, 100);
     },
     onError: (error: any) => {
+      console.error("Demo login error:", error);
       toast({
         title: "Demo Login Failed",
         description: error.message || "Unable to start demo",
