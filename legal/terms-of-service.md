@@ -107,10 +107,10 @@ As independent contractors operating your own business, you must:
 
 ### Mandatory Reporting
 Users must immediately report:
-- Any suspected child abuse or neglect
-- Safety incidents or injuries
+- Safety incidents or injuries during task completion
 - Property damage during task completion
 - Inappropriate behavior or violations of Terms
+- Suspected fraudulent activity
 
 ### Emergency Procedures
 - Call 911 for immediate emergencies
@@ -132,13 +132,26 @@ Users must immediately report:
 - No platform fees for direct payments
 - Users assume all risks and responsibilities for direct payment arrangements
 
-### Payment Method Choice
+### Payment Method Choice and Money Transmission Compliance
 TaskParent operates as a marketplace platform and does not control or require exclusive use of platform payment processing. Users have the freedom to negotiate payment terms and methods directly with each other.
 
-### Tax Responsibilities
-- Users responsible for all applicable taxes
-- 1099 forms issued for payments over $600 annually
-- Users must provide accurate tax identification information
+**Money Transmission Compliance**: 
+- Platform payment processing operates under applicable state money transmission licenses where required
+- Payment processing provided by licensed third-party processors (Stripe, etc.)
+- Consumer protection disclosures: Users have right to dispute charges and request refunds per processor policies
+
+### Payment Disputes and Chargebacks
+- **Platform Payments**: Disputes handled through payment processor (Stripe) dispute resolution
+- **Chargeback Rights**: Users may request chargebacks through their credit card company or bank
+- **Direct Payments**: TaskParent not responsible for disputes over direct payments between users
+- **Refund Policy**: Platform fees non-refundable except for proven platform error
+
+### Tax Responsibilities and Reporting
+- **User Responsibility**: Users responsible for all applicable federal, state, and local taxes
+- **1099 Reporting**: TaskParent issues 1099 forms for platform payments over $600 annually
+- **Tax Information**: Users must provide accurate Social Security Number or Tax ID
+- **Business License**: Task Providers responsible for obtaining required business licenses
+- **Sales Tax**: Users responsible for applicable sales tax in their jurisdiction
 
 ## 8. PRIVACY AND DATA PROTECTION
 
@@ -162,17 +175,30 @@ All Platform content, features, and functionality are owned by TaskParent and pr
 ### User-Generated Content
 Users retain ownership of content they submit but grant TaskParent a license to use, display, and distribute such content for Platform operations.
 
-## 10. LIABILITY LIMITATIONS
+## 10. LIABILITY LIMITATIONS AND DISCLAIMERS
 
-### Limitation of Liability
-TO THE MAXIMUM EXTENT PERMITTED BY LAW, TASKPARENT'S LIABILITY IS LIMITED TO THE AMOUNT OF FEES PAID BY THE USER IN THE 12 MONTHS PRECEDING THE CLAIM.
+### Comprehensive Liability Limitation
+TO THE MAXIMUM EXTENT PERMITTED BY LAW:
+- TASKPARENT'S TOTAL LIABILITY IS LIMITED TO THE LESSER OF $100 OR THE AMOUNT OF FEES PAID BY THE USER IN THE 12 MONTHS PRECEDING THE CLAIM
+- PLATFORM PROVIDES NO WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED
+- ALL SERVICES PROVIDED ON AN "AS-IS" AND "AS-AVAILABLE" BASIS
 
-### Excluded Damages
-TaskParent is not liable for:
-- Indirect, incidental, or consequential damages
-- Personal injury or property damage during tasks
-- Actions or omissions of Task Providers or Requesters
-- Technical issues or Platform downtime
+### Excluded Damages and Responsibilities
+TaskParent is NOT LIABLE for:
+- **Property Damage**: Any damage to personal property, real estate, or belongings during task completion
+- **Personal Injury**: Any injuries, accidents, or health issues occurring during tasks
+- **Service Quality**: Task completion quality, timeliness, or professional standards
+- **User Disputes**: Conflicts between Task Providers and Requesters
+- **Financial Losses**: Lost income, business opportunities, or financial damages
+- **Data Loss**: Loss of user data, photos, or task-related information
+- **Third-Party Actions**: Actions or omissions of Task Providers, Requesters, or other users
+- **Technical Issues**: Platform downtime, bugs, or technical malfunctions
+- **Force Majeure**: Natural disasters, pandemics, or other unforeseeable events
+
+### Required Insurance Coverage
+- **Task Providers**: Must maintain general liability insurance of at least $1 million
+- **Task Requesters**: Must maintain homeowner's or renter's insurance covering task-related activities
+- **Platform Disclaimer**: TaskParent does not provide any insurance coverage for users
 
 ## 11. INDEMNIFICATION
 
@@ -184,14 +210,37 @@ Users agree to indemnify and hold harmless TaskParent from any claims, damages, 
 
 ## 12. DISPUTE RESOLUTION
 
-### Arbitration Agreement
-All disputes must be resolved through binding arbitration rather than court proceedings, except for:
-- Small claims court matters under $5,000
-- Injunctive relief requests
-- Intellectual property disputes
+### Mandatory Binding Arbitration
+ALL DISPUTES ARISING FROM OR RELATING TO THE PLATFORM MUST BE RESOLVED THROUGH BINDING ARBITRATION, including but not limited to:
+- Contract disputes between users and TaskParent
+- Property damage claims
+- Personal injury claims
+- Service quality disputes
+- Payment disputes
+- Privacy violations
+- Discrimination claims
 
-### Class Action Waiver
-Users waive the right to participate in class action lawsuits against TaskParent.
+### Arbitration Rules
+- **Arbitrator**: Single arbitrator through American Arbitration Association (AAA)
+- **Location**: Arbitration conducted in Delaware
+- **Costs**: Each party bears their own costs; TaskParent pays arbitration fees for claims under $10,000
+- **Discovery**: Limited discovery as determined by arbitrator
+- **Appeal**: No right to appeal arbitration decisions
+
+### Exceptions to Arbitration
+- Small claims court matters under $5,000 (if within small claims jurisdiction)
+- Injunctive relief for intellectual property violations
+- Emergency court orders for immediate harm prevention
+
+### Class Action and Jury Trial Waiver
+- **NO CLASS ACTIONS**: Users waive all rights to participate in class action lawsuits, class arbitrations, or representative actions
+- **NO JURY TRIALS**: Users waive all rights to jury trials
+- **INDIVIDUAL CLAIMS ONLY**: All disputes must be brought individually
+
+### Dispute Resolution Process for User-to-User Conflicts
+1. **Direct Resolution**: Users must first attempt direct resolution
+2. **Platform Mediation**: TaskParent may offer voluntary mediation services
+3. **Final Resolution**: Unresolved disputes subject to arbitration clause above
 
 ## 13. TERMINATION
 
