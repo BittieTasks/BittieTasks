@@ -169,7 +169,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const { title, description, categoryId, payment, duration, difficulty, requirements, taskType } = req.body;
+      const { title, description, categoryId, payment, duration, difficulty, requirements, taskType, sponsorInfo } = req.body;
       
       if (!title || !description || !categoryId || !payment) {
         return res.status(400).json({ message: "Title, description, category, and payment are required" });
@@ -185,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         requirements,
         taskType: taskType || "shared",
         imageUrl: null,
-        sponsorInfo: null
+        sponsorInfo: sponsorInfo || null
       };
 
       const task = await storage.createTask(taskData);

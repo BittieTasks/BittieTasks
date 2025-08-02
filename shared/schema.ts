@@ -41,7 +41,7 @@ export const tasks = pgTable("tasks", {
   completions: integer("completions").default(0),
   isActive: boolean("is_active").default(true),
   taskType: text("task_type").notNull().default("shared"), // shared, sponsored, community
-  sponsorInfo: text("sponsor_info"), // For sponsored tasks
+  sponsorInfo: jsonb("sponsor_info"), // For sponsored tasks - {brandName, brandLogo, brandColor, specialReward}
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
 });
 

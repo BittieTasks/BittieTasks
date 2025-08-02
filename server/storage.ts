@@ -333,6 +333,58 @@ export class MemStorage implements IStorage {
         imageUrl: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
         categoryName: "Childcare",
         taskType: "shared"
+      },
+      // Sponsored tasks - brands pay extra for community engagement
+      {
+        title: "Try New Starbucks Holiday Drinks",
+        description: "Starbucks is sponsoring a community coffee tasting! Join me to try their new holiday menu items and rate them. Each participant gets a free drink voucher and 20% off coupon.",
+        payment: "25.00",
+        duration: 60,
+        difficulty: "Easy",
+        requirements: ["Must be 16+ years old", "Bring your phone to rate drinks", "Stay for full tasting session", "Complete feedback survey"],
+        imageUrl: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "sponsored",
+        sponsorInfo: {
+          brandName: "Starbucks",
+          brandDescription: "Community taste testing event sponsored by Starbucks to gather feedback on new holiday menu items",
+          specialReward: "Free drink voucher + 20% off coupon for future visits",
+          brandColor: "#00704A"
+        }
+      },
+      {
+        title: "Target Neighborhood Shopping Group",
+        description: "Target is sponsoring community shopping groups! Join our weekly Target run and get exclusive coupons. Perfect for household essentials, groceries, and seasonal items.",
+        payment: "20.00",
+        duration: 120,
+        difficulty: "Easy",
+        requirements: ["Bring reusable bags", "RedCard members get extra discount", "Minimum $50 purchase to qualify", "Share shopping tips with group"],
+        imageUrl: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Organizing",
+        taskType: "sponsored",
+        sponsorInfo: {
+          brandName: "Target",
+          brandDescription: "Official Target Community Shopping Program - earn cashback and get exclusive member deals",
+          specialReward: "$5 Target gift card + exclusive weekly coupons",
+          brandColor: "#CC0000"
+        }
+      },
+      {
+        title: "Whole Foods Family Cooking Class",
+        description: "Whole Foods is hosting a family-friendly cooking demonstration! Learn to make healthy meals together while kids get hands-on cooking experience. Includes take-home recipe cards and samples.",
+        payment: "40.00",
+        duration: 90,
+        difficulty: "Easy",
+        requirements: ["Families with kids 5-12 welcome", "Bring aprons", "Stay for full class", "Share photos on social media"],
+        imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Cooking",
+        taskType: "sponsored",
+        sponsorInfo: {
+          brandName: "Whole Foods Market",
+          brandDescription: "Interactive family cooking class sponsored by Whole Foods to promote healthy family cooking",
+          specialReward: "Free ingredient starter kit + 15% off next grocery order",
+          brandColor: "#00A04E"
+        }
       }
     ];
 

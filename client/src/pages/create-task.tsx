@@ -26,7 +26,10 @@ export default function CreateTaskPage() {
     duration: "",
     difficulty: "easy" as "easy" | "medium" | "hard",
     requirements: "",
-    taskType: "shared" as "shared" | "solo"
+    taskType: "shared" as "shared" | "sponsored",
+    brandName: "",
+    brandDescription: "",
+    specialReward: ""
   });
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<TaskCategory[]>({
@@ -67,6 +70,22 @@ export default function CreateTaskPage() {
       return;
     }
 
+    if (formData.taskType === "sponsored" && !formData.brandName.trim()) {
+      toast({
+        title: "Missing Brand Information",
+        description: "Please provide the brand/company name for sponsored tasks.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const sponsorInfo = formData.taskType === "sponsored" ? {
+      brandName: formData.brandName.trim(),
+      brandDescription: formData.brandDescription.trim() || null,
+      specialReward: formData.specialReward.trim() || null,
+      brandColor: "#6366f1" // Default purple for brand tasks
+    } : null;
+
     const taskData: InsertTask = {
       title: formData.title.trim(),
       description: formData.description.trim(),
@@ -77,7 +96,7 @@ export default function CreateTaskPage() {
       requirements: formData.requirements.trim() ? [formData.requirements.trim()] : null,
       taskType: formData.taskType,
       imageUrl: null,
-      sponsorInfo: null
+      sponsorInfo
     };
 
     createTaskMutation.mutate(taskData);
@@ -254,11 +273,64 @@ export default function CreateTaskPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="shared">Shared - Neighbors join me</SelectItem>
-                <SelectItem value="solo">Solo - I do this alone but share the benefit</SelectItem>
+                <SelectItem value="shared">Community Task - Share with neighbors</SelectItem>
+                <SelectItem value="sponsored">Brand Partnership - Sponsored by a company</SelectItem>
               </SelectContent>
             </Select>
           </div>
+
+          {/* Brand Partnership Fields */}
+          {formData.taskType === "sponsored" && (
+            <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center">
+                  <span className="mr-2">🏢</span>
+                  Brand Partnership Details
+                </CardTitle>
+                <CardDescription>
+                  Add information about the brand sponsoring this task for higher earnings!
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="brandName">Brand/Company Name *</Label>
+                  <Input
+                    id="brandName"
+                    placeholder="e.g., Whole Foods, Target, Starbucks"
+                    value={formData.brandName}
+                    onChange={(e) => handleInputChange("brandName", e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="brandDescription">Brand Partnership Description</Label>
+                  <Textarea
+                    id="brandDescription"
+                    placeholder="Describe the brand partnership, special offers, or why this brand is involved..."
+                    value={formData.brandDescription}
+                    onChange={(e) => handleInputChange("brandDescription", e.target.value)}
+                    className="min-h-[80px]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="specialReward">Special Brand Reward/Bonus</Label>
+                  <Input
+                    id="specialReward"
+                    placeholder="e.g., 10% discount coupon, free sample, loyalty points"
+                    value={formData.specialReward}
+                    onChange={(e) => handleInputChange("specialReward", e.target.value)}
+                  />
+                </div>
+
+                <div className="bg-purple-100 rounded-lg p-3">
+                  <p className="text-sm text-purple-800">
+                    <strong>Brand partnerships earn 25% more!</strong> Sponsored tasks typically pay higher rates and often include additional rewards like coupons, samples, or loyalty points.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Requirements */}
           <div className="space-y-2">

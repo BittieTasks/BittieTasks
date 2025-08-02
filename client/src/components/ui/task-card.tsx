@@ -1,4 +1,4 @@
-import { Clock, Star, DollarSign } from "lucide-react";
+import { Clock, Star, DollarSign, Award, Building2 } from "lucide-react";
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,14 +22,18 @@ export default function TaskCard({ task }: TaskCardProps) {
     switch (taskType) {
       case 'personal': return 'bg-purple-100 text-purple-800';
       case 'shared': return 'bg-blue-100 text-blue-800';
-      case 'sponsored': return 'bg-orange-100 text-orange-800';
+      case 'sponsored': return 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
+  // Check if task is sponsored and has brand info
+  const isSponsored = task.taskType === 'sponsored' && task.sponsorInfo;
+  const sponsorInfo = typeof task.sponsorInfo === 'object' && task.sponsorInfo ? task.sponsorInfo as any : null;
+
   return (
     <Link href={`/task/${task.id}`}>
-      <Card className="cursor-pointer hover:shadow-md transition-shadow">
+      <Card className={`cursor-pointer hover:shadow-md transition-shadow ${isSponsored ? 'border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50' : ''}`}>
         <CardContent className="p-4">
           {task.imageUrl && (
             <div className="w-full h-32 mb-3 rounded-lg overflow-hidden">
@@ -42,13 +46,30 @@ export default function TaskCard({ task }: TaskCardProps) {
           )}
           
           <div className="space-y-2">
+            {/* Brand info for sponsored tasks */}
+            {isSponsored && sponsorInfo?.brandName && (
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="flex items-center space-x-1 bg-purple-100 px-2 py-1 rounded-full">
+                  <Building2 size={12} className="text-purple-600" />
+                  <span className="text-xs font-medium text-purple-700">{sponsorInfo.brandName}</span>
+                </div>
+                {sponsorInfo?.specialReward && (
+                  <div className="flex items-center space-x-1 bg-yellow-100 px-2 py-1 rounded-full">
+                    <Award size={12} className="text-yellow-600" />
+                    <span className="text-xs font-medium text-yellow-700">Bonus Reward</span>
+                  </div>
+                )}
+              </div>
+            )}
+            
             <div className="flex items-start justify-between">
               <h3 className="font-semibold text-gray-900 text-sm flex-1 overflow-hidden">
                 {task.title}
               </h3>
-              <div className="flex items-center text-green-600 font-bold text-sm ml-2">
+              <div className={`flex items-center font-bold text-sm ml-2 ${isSponsored ? 'text-purple-600' : 'text-green-600'}`}>
                 <DollarSign size={14} />
                 {task.payment}
+                {isSponsored && <span className="text-xs ml-1">+bonus</span>}
               </div>
             </div>
             
