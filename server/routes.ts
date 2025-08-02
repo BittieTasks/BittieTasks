@@ -8,6 +8,7 @@ import fs from "fs";
 import bcrypt from "bcryptjs";
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import legalRoutes from './routes/legal';
 
 // Configure multer for file uploads
 const uploadDir = "uploads";
@@ -64,6 +65,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }));
   
   app.use(apiLimiter);
+
+  // Legal compliance routes
+  app.use('/api/legal', legalRoutes);
 
   // Logout route
   app.post("/api/auth/logout", (req, res) => {
