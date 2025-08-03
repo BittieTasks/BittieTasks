@@ -20,6 +20,7 @@ import DailyChallenges from "@/pages/DailyChallenges";
 import AdminDashboard from "@/pages/admin-simple";
 import Verification from "@/pages/verification";
 import SecurityDemo from "@/pages/security-demo";
+import AdminLogin from "@/pages/admin-login";
 import type { User } from "@shared/schema";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -79,6 +80,7 @@ function Router() {
           <Route path="/verification" component={() => <AuthenticatedRoute component={Verification} />} />
           <Route path="/security-demo" component={() => <AuthenticatedRoute component={SecurityDemo} />} />
           <Route path="/admin" component={() => <AuthenticatedRoute component={AdminDashboard} />} />
+          <Route path="/admin-login" component={AdminLogin} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />
         </Switch>

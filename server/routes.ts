@@ -235,6 +235,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin login endpoint
+  app.post("/api/auth/admin", async (req, res) => {
+    try {
+      const adminUser = {
+        id: "admin-user-id",
+        firstName: "Platform",
+        lastName: "Admin",
+        email: "admin@taskparent.com",
+        phone: "(555) 000-0001",
+        bio: "TaskParent Platform Administrator",
+        skills: ["Platform Management", "Security", "Analytics"],
+        rating: 5.0,
+        completedTasks: 0,
+        earnings: 0,
+        joinedAt: "2024-01-01",
+        verified: true,
+        profileImage: null,
+        location: "Platform HQ",
+        availability: "24/7 Platform Monitoring",
+        totalEarnings: "0.00",
+        currentStreak: 365,
+        totalPoints: 10000,
+        isAdmin: true
+      };
+      
+      // Store admin session
+      (req.session as any).userId = "admin-user-id";
+      (req.session as any).isAdmin = true;
+      
+      res.json({
+        message: "Admin login successful",
+        user: adminUser
+      });
+    } catch (error) {
+      console.error("Admin login error:", error);
+      res.status(500).json({ message: "Failed to admin login" });
+    }
+  });
+
   // Get current user
   app.get("/api/user/current", async (req, res) => {
     try {
@@ -265,6 +304,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
           availability: "Weekdays 9am-5pm",
         };
         return res.json(demoUser);
+      }
+
+      // Handle admin user
+      if (userId === "admin-user-id") {
+        const adminUser = {
+          id: "admin-user-id",
+          firstName: "Platform",
+          lastName: "Admin",
+          email: "admin@taskparent.com",
+          phone: "(555) 000-0001",
+          bio: "TaskParent Platform Administrator",
+          skills: ["Platform Management", "Security", "Analytics"],
+          rating: 5.0,
+          completedTasks: 0,
+          earnings: 0,
+          joinedAt: "2024-01-01",
+          verified: true,
+          profileImage: null,
+          location: "Platform HQ",
+          availability: "24/7 Platform Monitoring",
+          totalEarnings: "0.00",
+          currentStreak: 365,
+          totalPoints: 10000,
+          isAdmin: true
+        };
+        return res.json(adminUser);
       }
 
       // Get regular user
