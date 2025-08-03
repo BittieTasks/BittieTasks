@@ -1,25 +1,41 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Users, 
   DollarSign, 
   TrendingUp, 
   Clock,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  Bot,
+  Zap,
+  Settings
 } from "lucide-react";
 
 export default function AdminDashboard() {
-  // Mock data for demo - shows what the owner would see
-  const stats = {
-    totalUsers: 1247,
-    activeUsers: 892,
-    totalTasks: 156,
-    pendingApprovals: 8,
-    totalRevenue: 28450.75,
-    platformFees: 4267.61, // 15% of total revenue
-    monthlyGrowth: 23
-  };
+  // Fetch real platform statistics
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ['/api/admin/stats'],
+    refetchInterval: 30000 // Refresh every 30 seconds
+  });
+
+  // Fetch AI approval statistics  
+  const { data: aiStats, isLoading: aiLoading } = useQuery({
+    queryKey: ['/api/admin/ai-stats'],
+    refetchInterval: 30000
+  });
+
+  if (isLoading || aiLoading) {
+    return (
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
@@ -65,26 +81,26 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tasks Needing Approval</CardTitle>
+            <CardTitle className="text-sm font-medium">Manual Approvals Needed</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.pendingApprovals}</div>
+            <div className="text-2xl font-bold">{stats?.pendingApprovals || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Require your review to pay users
+              {aiStats?.aiApproved || 0} auto-approved by AI today
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Growth Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">AI Automation</CardTitle>
+            <Bot className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+{stats.monthlyGrowth}%</div>
+            <div className="text-2xl font-bold">{aiStats?.aiApprovalRate || 0}%</div>
             <p className="text-xs text-muted-foreground">
-              Month over month user growth
+              Solo tasks auto-approved by AI
             </p>
           </CardContent>
         </Card>
@@ -101,9 +117,9 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div className="flex items-center space-x-3">
                 <CheckCircle className="h-5 w-5 text-green-600" />
-                <span className="font-medium">Approve Completed Tasks</span>
+                <span className="font-medium">Manual Task Approvals</span>
               </div>
-              <span className="text-sm text-gray-600">8 pending</span>
+              <span className="text-sm text-gray-600">{stats?.pendingApprovals || 0} pending</span>
             </div>
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div className="flex items-center space-x-3">
@@ -182,13 +198,65 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-lg font-semibold">Total Monthly Revenue: ${((stats.platformFees) + 2470 + 5200).toLocaleString()}</p>
-            <p className="text-sm text-gray-600">Projected annual revenue: ${(((stats.platformFees) + 2470 + 5200) * 12).toLocaleString()}</p>
+            <p className="text-lg font-semibold">Total Monthly Revenue: ${(((stats?.platformFees || 0) + 2470 + 5200)).toLocaleString()}</p>
+            <p className="text-sm text-gray-600">Projected annual revenue: ${((((stats?.platformFees || 0) + 2470 + 5200) * 12)).toLocaleString()}</p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Usage Monitoring */}
+      {/* AI Automation System */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Bot className="h-5 w-5 text-blue-600" />
+            <span>AI Task Approval System</span>
+            <Badge variant="outline" className="ml-2">ACTIVE</Badge>
+          </CardTitle>
+          <CardDescription>Automated approval for low-risk solo tasks</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 border rounded-lg bg-green-50">
+              <div className="flex items-center space-x-2 mb-2">
+                <Zap className="h-5 w-5 text-green-600" />
+                <span className="font-semibold text-green-800">Auto-Approved</span>
+              </div>
+              <div className="text-2xl font-bold text-green-800">{aiStats?.aiApproved || 0}</div>
+              <p className="text-sm text-green-700">Solo self-care tasks</p>
+            </div>
+            
+            <div className="p-4 border rounded-lg bg-blue-50">
+              <div className="flex items-center space-x-2 mb-2">
+                <Clock className="h-5 w-5 text-blue-600" />
+                <span className="font-semibold text-blue-800">Time Saved</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-800">{aiStats?.timeSavedHours || 0}h</div>
+              <p className="text-sm text-blue-700">{aiStats?.timeSavedMinutes || 0} minutes total</p>
+            </div>
+            
+            <div className="p-4 border rounded-lg bg-purple-50">
+              <div className="flex items-center space-x-2 mb-2">
+                <Settings className="h-5 w-5 text-purple-600" />
+                <span className="font-semibold text-purple-800">Efficiency</span>
+              </div>
+              <div className="text-2xl font-bold text-purple-800">{aiStats?.automationEfficiency || 0}%</div>
+              <p className="text-sm text-purple-700">Tasks automated</p>
+            </div>
+          </div>
+          
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="font-semibold text-blue-900 mb-2">How AI Approval Works:</h4>
+            <ul className="text-sm text-blue-800 space-y-1">
+              <li>• ✅ <strong>Auto-approves:</strong> Solo self-care tasks under $50 with photo proof + detailed notes</li>
+              <li>• 🔍 <strong>Manual review:</strong> Shared tasks, high-value tasks, or missing documentation</li>
+              <li>• 💰 <strong>Instant payment:</strong> Users get paid immediately for AI-approved tasks</li>
+              <li>• 🛡️ <strong>Safety first:</strong> All multi-person tasks require your manual approval</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Platform Health */}
       <Card>
         <CardHeader>
           <CardTitle>Platform Health</CardTitle>
@@ -209,8 +277,8 @@ export default function AdminDashboard() {
               <div className="text-sm text-gray-600">Payment Success</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">156</div>
-              <div className="text-sm text-gray-600">Active Communities</div>
+              <div className="text-2xl font-bold text-orange-600">{stats?.totalTasks || 0}</div>
+              <div className="text-sm text-gray-600">Total Tasks</div>
             </div>
           </div>
         </CardContent>
