@@ -197,3 +197,43 @@ export type DailyChallenge = typeof dailyChallenges.$inferSelect;
 
 export type InsertUserChallenge = z.infer<typeof insertUserChallengeSchema>;
 export type UserChallenge = typeof userChallenges.$inferSelect;
+
+// Affiliate Products table for brand integrations in tasks
+export const affiliateProducts = pgTable("affiliate_products", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  imageUrl: varchar("image_url", { length: 500 }),
+  affiliateUrl: varchar("affiliate_url", { length: 500 }).notNull(),
+  brand: varchar("brand", { length: 100 }).notNull(),
+  category: varchar("category", { length: 100 }).notNull(),
+  commissionRate: decimal("commission_rate", { precision: 5, scale: 2 }).notNull(),
+  rating: decimal("rating", { precision: 3, scale: 2 }).default("0"),
+  reviewCount: integer("review_count").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Task-Product relationships for affiliate marketing
+export const taskProducts = pgTable("task_products", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  taskId: varchar("task_id").references(() => tasks.id, { onDelete: "cascade" }).notNull(),
+  productId: integer("product_id").references(() => affiliateProducts.id, { onDelete: "cascade" }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAffiliateProductSchema = createInsertSchema(affiliateProducts).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertTaskProductSchema = createInsertSchema(taskProducts).omit({
+  id: true,
+  createdAt: true
+});
+
+export type InsertAffiliateProduct = z.infer<typeof insertAffiliateProductSchema>;
+export type AffiliateProduct = typeof affiliateProducts.$inferSelect;
+export type InsertTaskProduct = z.infer<typeof insertTaskProductSchema>;
+export type TaskProduct = typeof taskProducts.$inferSelect;

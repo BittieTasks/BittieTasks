@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import affiliateProductsRouter from "./routes/affiliate-products";
 import { insertTaskCompletionSchema, insertMessageSchema, insertUserSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
@@ -80,6 +81,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Legal compliance routes
   app.use('/api/legal', legalRoutes);
+  
+  // Affiliate products routes
+  app.use("/api/affiliate-products", affiliateProductsRouter);
 
   // Logout route
   app.post("/api/auth/logout", (req, res) => {
