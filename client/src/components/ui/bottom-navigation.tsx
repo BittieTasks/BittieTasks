@@ -1,4 +1,4 @@
-import { Home, Search, DollarSign, MessageSquare, User, Zap } from "lucide-react";
+import { Home, Search, DollarSign, MessageSquare, User, Zap, Shield } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 
@@ -7,7 +7,7 @@ const navigation = [
   { name: 'Search', href: '/search', icon: Search },
   { name: 'Daily', href: '/challenges', icon: Zap },
   { name: 'Earnings', href: '/earnings', icon: DollarSign },
-  { name: 'Profile', href: '/profile', icon: User },
+  { name: 'Admin', href: '/admin-access', icon: Shield },
 ];
 
 export default function BottomNavigation() {

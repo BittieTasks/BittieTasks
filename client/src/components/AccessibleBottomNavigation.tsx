@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, Plus, MessageCircle, User, Trophy } from "lucide-react";
+import { Home, Search, Plus, MessageCircle, User, Trophy, Shield } from "lucide-react";
 import { ARIA_LABELS } from "@/lib/accessibility";
 
 const AccessibleBottomNavigation = () => {
@@ -37,10 +37,10 @@ const AccessibleBottomNavigation = () => {
       ariaLabel: "View wellness achievements"
     },
     { 
-      path: "/profile", 
-      icon: User, 
-      label: "Profile",
-      ariaLabel: "View profile"
+      path: "/admin-access", 
+      icon: Shield, 
+      label: "Admin",
+      ariaLabel: "Access admin controls"
     }
   ];
 
