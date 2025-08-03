@@ -16,12 +16,13 @@ import {
   type DailyChallenge,
   type InsertDailyChallenge,
   type UserChallenge,
-  type InsertUserChallenge
+  type InsertUserChallenge,
+  type UserActivity
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and, gte } from "drizzle-orm";
 import { 
   users, 
   tasks, 
@@ -31,7 +32,8 @@ import {
   userAchievements, 
   achievementDefinitions, 
   dailyChallenges, 
-  userChallenges 
+  userChallenges,
+  userActivity
 } from "@shared/schema";
 
 export interface IStorage {
@@ -73,6 +75,10 @@ export interface IStorage {
   getDailyChallenges(): Promise<DailyChallenge[]>;
   createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge>;
   getUserChallenges(userId: string, date?: Date): Promise<UserChallenge[]>;
+  
+  // Security and verification methods
+  getUserActivity(userId: string, hours: number): Promise<any[]>;
+  logSuspiciousActivity(userId: string, activity: any): Promise<void>;
   assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge>;
   completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined>;
   getTodaysChallenges(userId: string): Promise<UserChallenge[]>;
@@ -1376,6 +1382,27 @@ class DatabaseStorageImpl implements IStorage {
   async assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge> { throw new Error('Not implemented'); }
   async completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined> { return undefined; }
   async getTodaysChallenges(userId: string): Promise<UserChallenge[]> { return []; }
+  
+  // Security and verification methods implementation for demo
+  async getUserActivity(userId: string, hours: number): Promise<UserActivity[]> {
+    // In demo mode, return simulated activity data
+    return [
+      {
+        id: 1,
+        userId: userId,
+        activityType: "login",
+        metadata: { ip: "192.168.1.1", userAgent: "Chrome" },
+        riskScore: 0,
+        flagged: false,
+        createdAt: new Date()
+      }
+    ] as UserActivity[];
+  }
+
+  async logSuspiciousActivity(userId: string, activity: any): Promise<void> {
+    // In demo mode, just log to console
+    console.warn(`Suspicious activity logged for user ${userId}:`, activity);
+  }
 }
 */
 

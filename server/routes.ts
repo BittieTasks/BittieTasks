@@ -84,6 +84,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Affiliate products routes
   app.use("/api/affiliate-products", affiliateProductsRouter);
+  
+  // Verification routes
+  const verificationRouter = await import("./routes/verification");
+  app.use("/api/verification", verificationRouter.default);
 
   // Logout route
   app.post("/api/auth/logout", (req, res) => {

@@ -18,6 +18,7 @@ import Achievements from "@/pages/achievements";
 import Compliance from "@/pages/Compliance";
 import DailyChallenges from "@/pages/DailyChallenges";
 import AdminDashboard from "@/pages/admin-simple";
+import Verification from "@/pages/verification";
 import type { User } from "@shared/schema";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {

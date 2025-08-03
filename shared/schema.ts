@@ -18,6 +18,15 @@ export const users = pgTable("users", {
   skills: text("skills").array().default([]),
   availability: jsonb("availability"),
   isEmailVerified: boolean("is_email_verified").default(false),
+  isPhoneVerified: boolean("is_phone_verified").default(false),
+  isIdentityVerified: boolean("is_identity_verified").default(false),
+  isBackgroundChecked: boolean("is_background_checked").default(false),
+  phoneNumber: text("phone_number"),
+  phoneVerificationCode: text("phone_verification_code"),
+  phoneVerificationExpires: timestamp("phone_verification_expires"),
+  identityDocuments: text("identity_documents").array().default([]),
+  trustScore: integer("trust_score").default(0),
+  riskScore: integer("risk_score").default(0),
   emailVerificationToken: text("email_verification_token"),
   passwordResetToken: text("password_reset_token"),
   passwordResetExpires: timestamp("password_reset_expires"),
@@ -237,3 +246,65 @@ export type InsertAffiliateProduct = z.infer<typeof insertAffiliateProductSchema
 export type AffiliateProduct = typeof affiliateProducts.$inferSelect;
 export type InsertTaskProduct = z.infer<typeof insertTaskProductSchema>;
 export type TaskProduct = typeof taskProducts.$inferSelect;
+
+// User activity tracking for fraud prevention
+export const userActivity = pgTable("user_activity", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  activityType: text("activity_type").notNull(), // login, task_creation, payment, message, etc.
+  metadata: jsonb("metadata"), // IP, user agent, additional data
+  riskScore: integer("risk_score").default(0),
+  flagged: boolean("flagged").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Identity verification documents
+export const verificationDocuments = pgTable("verification_documents", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  documentType: text("document_type").notNull(), // drivers_license, passport, utility_bill, etc.
+  documentUrl: text("document_url").notNull(),
+  verificationStatus: text("verification_status").notNull().default("pending"), // pending, approved, rejected
+  verificationNotes: text("verification_notes"),
+  submittedAt: timestamp("submitted_at").defaultNow(),
+  reviewedAt: timestamp("reviewed_at"),
+  reviewedBy: varchar("reviewed_by"),
+});
+
+// Trust and safety reports
+export const safetyReports = pgTable("safety_reports", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  reporterUserId: varchar("reporter_user_id").references(() => users.id).notNull(),
+  reportedUserId: varchar("reported_user_id").references(() => users.id).notNull(),
+  reportType: text("report_type").notNull(), // fraud, harassment, inappropriate_behavior, etc.
+  description: text("description").notNull(),
+  evidence: text("evidence").array().default([]), // URLs to uploaded evidence
+  status: text("status").notNull().default("pending"), // pending, investigating, resolved, dismissed
+  priority: text("priority").notNull().default("medium"), // low, medium, high, urgent
+  assignedTo: varchar("assigned_to"),
+  resolution: text("resolution"),
+  createdAt: timestamp("created_at").defaultNow(),
+  resolvedAt: timestamp("resolved_at"),
+});
+
+export const insertUserActivitySchema = createInsertSchema(userActivity).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertVerificationDocumentSchema = createInsertSchema(verificationDocuments).omit({
+  id: true,
+  submittedAt: true
+});
+
+export const insertSafetyReportSchema = createInsertSchema(safetyReports).omit({
+  id: true,
+  createdAt: true
+});
+
+export type InsertUserActivity = z.infer<typeof insertUserActivitySchema>;
+export type UserActivity = typeof userActivity.$inferSelect;
+export type InsertVerificationDocument = z.infer<typeof insertVerificationDocumentSchema>;
+export type VerificationDocument = typeof verificationDocuments.$inferSelect;
+export type InsertSafetyReport = z.infer<typeof insertSafetyReportSchema>;
+export type SafetyReport = typeof safetyReports.$inferSelect;
