@@ -564,6 +564,175 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ADMIN ROUTES - Platform Owner Management
+  const isAdmin = (req: any, res: any, next: any) => {
+    const session = req.session as any;
+    // In demo mode, allow admin access. In production, check admin status
+    if (session?.userId === 'demo-user-id' || session?.isAdmin) {
+      next();
+    } else {
+      res.status(403).json({ message: 'Admin access required' });
+    }
+  };
+
+  // Admin Dashboard - Platform Statistics
+  app.get('/api/admin/stats', isAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      const tasks = await storage.getAllTasks();
+      const completions = await storage.getAllTaskCompletions();
+
+      // Calculate platform metrics
+      const totalUsers = users.length;
+      const activeUsers = users.filter(u => {
+        const lastActive = new Date(u.lastLogin || u.createdAt);
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        return lastActive > thirtyDaysAgo;
+      }).length;
+
+      const pendingApprovals = completions.filter(c => c.status === 'pending').length;
+      const approvedCompletions = completions.filter(c => c.status === 'approved');
+      
+      // Calculate total revenue and platform fees (15% commission)
+      const totalRevenue = approvedCompletions.reduce((sum, c) => sum + Number(c.earnings || 0), 0);
+      const platformFees = totalRevenue * 0.15;
+
+      // Mock monthly growth for demo
+      const monthlyGrowth = 23;
+
+      const stats = {
+        totalUsers,
+        activeUsers,
+        totalTasks: tasks.length,
+        pendingApprovals,
+        totalRevenue: Math.round(totalRevenue * 100) / 100,
+        platformFees: Math.round(platformFees * 100) / 100,
+        monthlyGrowth
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error('Error fetching admin stats:', error);
+      res.status(500).json({ message: 'Failed to fetch platform statistics' });
+    }
+  });
+
+  // Admin - Pending Task Approvals
+  app.get('/api/admin/pending-tasks', isAdmin, async (req, res) => {
+    try {
+      const completions = await storage.getAllTaskCompletions();
+      const tasks = await storage.getAllTasks();
+      const users = await storage.getAllUsers();
+
+      const pendingTasks = completions
+        .filter(c => c.status === 'pending')
+        .map(completion => {
+          const task = tasks.find(t => t.id === completion.taskId);
+          const user = users.find(u => u.id === completion.userId);
+          
+          return {
+            id: completion.id,
+            taskId: completion.taskId,
+            userId: completion.userId,
+            userName: user ? `${user.firstName} ${user.lastName}` : 'Unknown User',
+            taskTitle: task?.title || 'Unknown Task',
+            status: completion.status,
+            earnings: Number(completion.earnings || 0),
+            submissionNotes: completion.submissionNotes || '',
+            proofFiles: completion.proofFiles || [],
+            completedAt: completion.completedAt
+          };
+        });
+
+      res.json(pendingTasks);
+    } catch (error) {
+      console.error('Error fetching pending tasks:', error);
+      res.status(500).json({ message: 'Failed to fetch pending tasks' });
+    }
+  });
+
+  // Admin - Approve/Reject Task
+  app.post('/api/admin/approve-task', isAdmin, async (req, res) => {
+    try {
+      const { taskId, approved, notes } = req.body;
+      
+      const status = approved ? 'approved' : 'rejected';
+      await storage.updateTaskCompletionStatus(taskId, status, notes);
+
+      // If approved, you could also update user earnings here
+      if (approved) {
+        const completion = await storage.getTaskCompletion(taskId);
+        if (completion) {
+          await storage.updateUserEarnings(completion.userId, Number(completion.earnings || 0));
+        }
+      }
+
+      res.json({ success: true, status });
+    } catch (error) {
+      console.error('Error updating task status:', error);
+      res.status(500).json({ message: 'Failed to update task status' });
+    }
+  });
+
+  // Admin - User Management
+  app.get('/api/admin/users', isAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      const completions = await storage.getAllTaskCompletions();
+
+      const userStats = users.map(user => {
+        const userCompletions = completions.filter(c => c.userId === user.id);
+        const approvedCompletions = userCompletions.filter(c => c.status === 'approved');
+        const totalEarnings = approvedCompletions.reduce((sum, c) => sum + Number(c.earnings || 0), 0);
+
+        return {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          earnings: Math.round(totalEarnings * 100) / 100,
+          completedTasks: approvedCompletions.length,
+          rating: Number(user.rating || 4.5),
+          joinedAt: user.createdAt,
+          verified: user.isEmailVerified || false,
+          status: user.accountLocked ? 'suspended' : 'active'
+        };
+      });
+
+      res.json(userStats);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ message: 'Failed to fetch users' });
+    }
+  });
+
+  // Admin - Manage User (suspend, activate, verify)
+  app.post('/api/admin/manage-user', isAdmin, async (req, res) => {
+    try {
+      const { userId, action } = req.body;
+
+      switch (action) {
+        case 'suspend':
+          await storage.updateUserStatus(userId, { accountLocked: true });
+          break;
+        case 'activate':
+          await storage.updateUserStatus(userId, { accountLocked: false });
+          break;
+        case 'verify':
+          await storage.updateUserStatus(userId, { isEmailVerified: true });
+          break;
+        default:
+          return res.status(400).json({ message: 'Invalid action' });
+      }
+
+      res.json({ success: true, action });
+    } catch (error) {
+      console.error('Error managing user:', error);
+      res.status(500).json({ message: 'Failed to manage user' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

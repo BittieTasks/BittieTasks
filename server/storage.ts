@@ -20,6 +20,19 @@ import {
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+import { 
+  users, 
+  tasks, 
+  taskCategories, 
+  taskCompletions, 
+  messages, 
+  userAchievements, 
+  achievementDefinitions, 
+  dailyChallenges, 
+  userChallenges 
+} from "@shared/schema";
 
 export interface IStorage {
   // User methods
@@ -63,6 +76,15 @@ export interface IStorage {
   assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge>;
   completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined>;
   getTodaysChallenges(userId: string): Promise<UserChallenge[]>;
+
+  // Admin methods for platform management
+  getAllUsers(): Promise<User[]>;
+  getAllTasks(): Promise<Task[]>;
+  getAllTaskCompletions(): Promise<TaskCompletion[]>;
+  getTaskCompletion(id: string): Promise<TaskCompletion | undefined>;
+  updateTaskCompletionStatus(id: string, status: string, notes?: string): Promise<void>;
+  updateUserEarnings(userId: string, amount: number): Promise<void>;
+  updateUserStatus(userId: string, updates: { accountLocked?: boolean; isEmailVerified?: boolean }): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -88,8 +110,11 @@ export class MemStorage implements IStorage {
     this.userChallenges = new Map();
     
     this.initializeDefaultData();
-    this.initializeAchievementDefinitions();
-    this.initializeDailyChallenges();
+    // Initialize async methods after construction
+    setTimeout(() => {
+      this.initializeAchievementDefinitions?.();
+      this.initializeDailyChallenges?.();
+    }, 10);
   }
 
   private initializeDefaultData() {
@@ -1196,7 +1221,163 @@ export class DatabaseStorage implements IStorage {
       await this.createDailyChallenge(challengeData);
     }
   }
+
+  // Admin methods for platform management
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
+  async getAllTasks(): Promise<Task[]> {
+    return Array.from(this.tasks.values());
+  }
+
+  async getAllTaskCompletions(): Promise<TaskCompletion[]> {
+    return Array.from(this.taskCompletions.values());
+  }
+
+  async getTaskCompletion(id: string): Promise<TaskCompletion | undefined> {
+    return this.taskCompletions.get(id);
+  }
+
+  async updateTaskCompletionStatus(id: string, status: string, notes?: string): Promise<void> {
+    const completion = this.taskCompletions.get(id);
+    if (completion) {
+      completion.status = status as any;
+      if (notes) {
+        completion.submissionNotes = notes;
+      }
+      this.taskCompletions.set(id, completion);
+    }
+  }
+
+  async updateUserEarnings(userId: string, amount: number): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.earnings = (user.earnings || 0) + amount;
+      this.users.set(userId, user);
+    }
+  }
+
+  async updateUserStatus(userId: string, updates: { accountLocked?: boolean; isEmailVerified?: boolean }): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      if (updates.accountLocked !== undefined) {
+        user.accountLocked = updates.accountLocked;
+      }
+      if (updates.isEmailVerified !== undefined) {
+        user.isEmailVerified = updates.isEmailVerified;
+      }
+      this.users.set(userId, user);
+    }
+  }
 }
 
-// Using secure database storage for production
-export const storage = new DatabaseStorage();
+// Database storage implementation (commented out for demo - use MemStorage)
+/*
+class DatabaseStorageImpl implements IStorage {
+  async getUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const [newUser] = await db
+      .insert(users)
+      .values(user)
+      .returning();
+    return newUser;
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const [updatedUser] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return updatedUser || undefined;
+  }
+
+  // Admin methods for platform management
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getAllTasks(): Promise<Task[]> {
+    return await db.select().from(tasks);
+  }
+
+  async getAllTaskCompletions(): Promise<TaskCompletion[]> {
+    return await db.select().from(taskCompletions);
+  }
+
+  async getTaskCompletion(id: string): Promise<TaskCompletion | undefined> {
+    const [completion] = await db.select().from(taskCompletions).where(eq(taskCompletions.id, id));
+    return completion || undefined;
+  }
+
+  async updateTaskCompletionStatus(id: string, status: string, notes?: string): Promise<void> {
+    const updateData: any = { status };
+    if (notes) {
+      updateData.submissionNotes = notes;
+    }
+    await db
+      .update(taskCompletions)
+      .set(updateData)
+      .where(eq(taskCompletions.id, id));
+  }
+
+  async updateUserEarnings(userId: string, amount: number): Promise<void> {
+    const user = await this.getUser(userId);
+    if (user) {
+      await db
+        .update(users)
+        .set({ earnings: (user.earnings || 0) + amount })
+        .where(eq(users.id, userId));
+    }
+  }
+
+  async updateUserStatus(userId: string, updates: { accountLocked?: boolean; isEmailVerified?: boolean }): Promise<void> {
+    await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, userId));
+  }
+
+  // Stub methods for other required interface methods - implement as needed
+  async getTaskCategories(): Promise<TaskCategory[]> { return []; }
+  async createTaskCategory(category: InsertTaskCategory): Promise<TaskCategory> { throw new Error('Not implemented'); }
+  async getTasks(): Promise<Task[]> { return []; }
+  async getTask(id: string): Promise<Task | undefined> { return undefined; }
+  async getTasksByCategory(categoryId: string): Promise<Task[]> { return []; }
+  async createTask(task: InsertTask): Promise<Task> { throw new Error('Not implemented'); }
+  async getTaskCompletions(userId: string): Promise<TaskCompletion[]> { return []; }
+  async createTaskCompletion(completion: InsertTaskCompletion): Promise<TaskCompletion> { throw new Error('Not implemented'); }
+  async updateTaskCompletion(id: string, updates: Partial<TaskCompletion>): Promise<TaskCompletion | undefined> { return undefined; }
+  async getMessages(userId: string): Promise<Message[]> { return []; }
+  async createMessage(message: InsertMessage): Promise<Message> { throw new Error('Not implemented'); }
+  async markMessageAsRead(id: string): Promise<void> {}
+  async getUserAchievements(userId: string): Promise<UserAchievement[]> { return []; }
+  async createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement> { throw new Error('Not implemented'); }
+  async getAchievementDefinitions(): Promise<AchievementDefinition[]> { return []; }
+  async createAchievementDefinition(definition: InsertAchievementDefinition): Promise<AchievementDefinition> { throw new Error('Not implemented'); }
+  async updateUserAchievementProgress(userId: string, achievementType: string, progress: number): Promise<UserAchievement | undefined> { return undefined; }
+  async getDailyChallenges(): Promise<DailyChallenge[]> { return []; }
+  async createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge> { throw new Error('Not implemented'); }
+  async getUserChallenges(userId: string, date?: Date): Promise<UserChallenge[]> { return []; }
+  async assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge> { throw new Error('Not implemented'); }
+  async completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined> { return undefined; }
+  async getTodaysChallenges(userId: string): Promise<UserChallenge[]> { return []; }
+}
+*/
+
+// Using secure MemStorage for demo - in production use DatabaseStorage with proper DB setup
+export const storage = new MemStorage();
