@@ -24,6 +24,7 @@ import AdminLogin from "@/pages/admin-login";
 import AdminAccess from "@/pages/admin-access";
 import QuickAdmin from "@/pages/quick-admin";
 import SimpleAdmin from "@/pages/simple-admin";
+import AdminTest from "@/pages/admin-test";
 import type { User } from "@shared/schema";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -87,6 +88,7 @@ function Router() {
           <Route path="/admin-access" component={() => <AuthenticatedRoute component={AdminAccess} />} />
           <Route path="/quick-admin" component={QuickAdmin} />
           <Route path="/simple-admin" component={SimpleAdmin} />
+          <Route path="/admin-test" component={AdminTest} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />
         </Switch>
