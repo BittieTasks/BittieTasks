@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { registerSubscriptionRoutes } from "./routes/subscription";
 import { storage } from "./storage";
 import affiliateProductsRouter from "./routes/affiliate-products";
 import { insertTaskCompletionSchema, insertMessageSchema, insertUserSchema } from "@shared/schema";
@@ -960,6 +961,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Failed to manage user' });
     }
   });
+
+  // Register subscription routes
+  registerSubscriptionRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;

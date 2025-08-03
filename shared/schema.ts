@@ -34,7 +34,20 @@ export const users = pgTable("users", {
   failedLoginAttempts: integer("failed_login_attempts").default(0),
   accountLocked: boolean("account_locked").default(false),
   lockUntil: timestamp("lock_until"),
-  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+  // Subscription fields
+  subscriptionTier: text("subscription_tier").default("free"), // free, pro, premium
+  subscriptionStatus: text("subscription_status").default("active"), // active, cancelled, expired
+  subscriptionStartDate: timestamp("subscription_start_date"),
+  subscriptionEndDate: timestamp("subscription_end_date"),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  monthlyTaskLimit: integer("monthly_task_limit").default(5), // Free tier limit
+  monthlyTasksCompleted: integer("monthly_tasks_completed").default(0),
+  lastMonthlyReset: timestamp("last_monthly_reset").default(sql`CURRENT_TIMESTAMP`),
+  prioritySupport: boolean("priority_support").default(false),
+  adFree: boolean("ad_free").default(false),
+  premiumBadge: boolean("premium_badge").default(false)
 });
 
 export const taskCategories = pgTable("task_categories", {

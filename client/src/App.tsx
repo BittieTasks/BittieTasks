@@ -25,6 +25,7 @@ import AdminAccess from "@/pages/admin-access";
 import QuickAdmin from "@/pages/quick-admin";
 import SimpleAdmin from "@/pages/simple-admin";
 import AdminTest from "@/pages/admin-test";
+import SubscriptionPage from "@/pages/subscription";
 import type { User } from "@shared/schema";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -89,6 +90,7 @@ function Router() {
           <Route path="/quick-admin" component={QuickAdmin} />
           <Route path="/simple-admin" component={SimpleAdmin} />
           <Route path="/admin-test" component={AdminTest} />
+          <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />
         </Switch>

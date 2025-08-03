@@ -7,6 +7,7 @@ import AccessibleBottomNavigation from "@/components/AccessibleBottomNavigation"
 import TaskCard from "@/components/ui/task-card";
 import EarningsOverview from "@/components/ui/earnings-overview";
 import ProgressRing from "@/components/ui/progress-ring";
+import SubscriptionBanner from "@/components/SubscriptionBanner";
 import { apiRequest } from "@/lib/queryClient";
 import type { User, TaskCategory, Task } from "@shared/schema";
 
@@ -59,6 +60,9 @@ export default function HomePage() {
         Skip to navigation
       </a>
       
+      {/* Subscription Banner */}
+      {user && <SubscriptionBanner user={user} />}
+
       {/* Header Navigation */}
       <header 
         className="glass-effect sticky top-0 z-40 px-4 py-3 border-b border-gray-100"

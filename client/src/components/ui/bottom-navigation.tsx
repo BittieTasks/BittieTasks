@@ -2,12 +2,14 @@ import { Home, Search, DollarSign, MessageSquare, User, Zap, Shield } from "luci
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 
+import { Crown } from "lucide-react";
+
 const navigation = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Search', href: '/search', icon: Search },
   { name: 'Daily', href: '/challenges', icon: Zap },
   { name: 'Earnings', href: '/earnings', icon: DollarSign },
-  { name: 'Admin', href: '/admin-access', icon: Shield },
+  { name: 'Pro', href: '/subscription', icon: Crown },
 ];
 
 export default function BottomNavigation() {
