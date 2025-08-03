@@ -2,6 +2,194 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ADA Compliance and Accessibility Styles */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Skip links for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #000;
+  color: #fff;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 9999;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+    --border: #000000;
+    --ring: #000000;
+  }
+  
+  .dark {
+    --background: #000000;
+    --foreground: #ffffff;
+    --border: #ffffff;
+    --ring: #ffffff;
+  }
+  
+  /* Ensure all interactive elements have visible borders */
+  button, input, select, textarea, [role="button"] {
+    border: 2px solid currentColor !important;
+  }
+  
+  /* Ensure sufficient contrast for all text */
+  * {
+    color: var(--foreground) !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus management */
+*:focus {
+  outline: 2px solid #0079f2;
+  outline-offset: 2px;
+}
+
+/* Ensure interactive elements are large enough (44px minimum) */
+button, 
+[role="button"], 
+input[type="submit"], 
+input[type="button"], 
+.clickable {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Improve text readability */
+body {
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.3;
+}
+
+/* Ensure sufficient color contrast */
+:root {
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a5568;
+  --background-primary: #ffffff;
+  --background-secondary: #f7fafc;
+  --border-color: #e2e8f0;
+  --focus-color: #0079f2;
+  --error-color: #e53e3e;
+  --success-color: #38a169;
+  --warning-color: #d69e2e;
+}
+
+.dark {
+  --text-primary: #f7fafc;
+  --text-secondary: #cbd5e0;
+  --background-primary: #1a202c;
+  --background-secondary: #2d3748;
+  --border-color: #4a5568;
+}
+
+/* Accessible form styles */
+.form-error {
+  color: var(--error-color);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.form-field-required::after {
+  content: " *";
+  color: var(--error-color);
+  font-weight: bold;
+}
+
+/* Loading states */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Ensure interactive states are clearly visible */
+button:hover, 
+[role="button"]:hover {
+  background-color: rgba(0, 121, 242, 0.1);
+}
+
+button:active, 
+[role="button"]:active {
+  background-color: rgba(0, 121, 242, 0.2);
+}
+
+/* Make sure disabled states are obvious */
+button:disabled, 
+[role="button"][aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Accessible table styles */
+table {
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: var(--background-secondary);
+  font-weight: bold;
+}
+
+/* Print styles for accessibility */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    color: black !important;
+    background: white !important;
+  }
+}
+
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(20, 14.3%, 4.1%);

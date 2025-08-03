@@ -28,8 +28,17 @@ function AuthenticatedRoute({ component: Component }: { component: React.Compone
 
   if (isLoading) {
     return (
-      <div className="max-w-md mx-auto bg-white shadow-xl min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      <div 
+        className="max-w-md mx-auto bg-white shadow-xl min-h-screen flex items-center justify-center"
+        role="status"
+        aria-live="polite"
+        aria-label="Loading TaskParent application"
+      >
+        <div 
+          className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"
+          aria-hidden="true"
+        />
+        <span className="sr-only">Loading application, please wait...</span>
       </div>
     );
   }
@@ -43,22 +52,34 @@ function AuthenticatedRoute({ component: Component }: { component: React.Compone
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={() => <AuthenticatedRoute component={Home} />} />
-      <Route path="/auth" component={Auth} />
-      <Route path="/task/:id" component={() => <AuthenticatedRoute component={TaskDetail} />} />
-      <Route path="/create-task" component={() => <AuthenticatedRoute component={CreateTask} />} />
-      <Route path="/earnings" component={() => <AuthenticatedRoute component={Earnings} />} />
-      <Route path="/profile" component={() => <AuthenticatedRoute component={Profile} />} />
-      <Route path="/messages" component={() => <AuthenticatedRoute component={Messages} />} />
-      <Route path="/search" component={() => <AuthenticatedRoute component={Search} />} />
-      <Route path="/achievements" component={() => <AuthenticatedRoute component={Achievements} />} />
-      <Route path="/challenges" component={() => <AuthenticatedRoute component={DailyChallenges} />} />
-      <Route path="/compliance" component={() => <AuthenticatedRoute component={Compliance} />} />
-      <Route path="/admin" component={() => <AuthenticatedRoute component={AdminDashboard} />} />
-      <Route path="/how-it-works" component={HowItWorks} />
-      <Route component={NotFound} />
-    </Switch>
+    <div>
+      {/* Skip links for keyboard navigation */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      <a href="#bottom-navigation" className="skip-link">
+        Skip to navigation
+      </a>
+      
+      <main role="main" id="main-content">
+        <Switch>
+          <Route path="/" component={() => <AuthenticatedRoute component={Home} />} />
+          <Route path="/auth" component={Auth} />
+          <Route path="/task/:id" component={() => <AuthenticatedRoute component={TaskDetail} />} />
+          <Route path="/create-task" component={() => <AuthenticatedRoute component={CreateTask} />} />
+          <Route path="/earnings" component={() => <AuthenticatedRoute component={Earnings} />} />
+          <Route path="/profile" component={() => <AuthenticatedRoute component={Profile} />} />
+          <Route path="/messages" component={() => <AuthenticatedRoute component={Messages} />} />
+          <Route path="/search" component={() => <AuthenticatedRoute component={Search} />} />
+          <Route path="/achievements" component={() => <AuthenticatedRoute component={Achievements} />} />
+          <Route path="/challenges" component={() => <AuthenticatedRoute component={DailyChallenges} />} />
+          <Route path="/compliance" component={() => <AuthenticatedRoute component={Compliance} />} />
+          <Route path="/admin" component={() => <AuthenticatedRoute component={AdminDashboard} />} />
+          <Route path="/how-it-works" component={HowItWorks} />
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+    </div>
   );
 }
 

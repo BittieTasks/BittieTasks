@@ -3,6 +3,7 @@ import { Bell, Home, Plus, DollarSign, Users, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import BottomNavigation from "@/components/ui/bottom-navigation";
+import AccessibleBottomNavigation from "@/components/AccessibleBottomNavigation";
 import TaskCard from "@/components/ui/task-card";
 import EarningsOverview from "@/components/ui/earnings-overview";
 import ProgressRing from "@/components/ui/progress-ring";
@@ -26,40 +27,65 @@ export default function HomePage() {
 
   if (userLoading || categoriesLoading || tasksLoading) {
     return (
-      <div className="max-w-md mx-auto bg-white shadow-xl min-h-screen">
+      <div 
+        className="max-w-md mx-auto bg-white shadow-xl min-h-screen"
+        role="status"
+        aria-live="polite"
+        aria-label="Loading TaskParent home page"
+      >
         <div className="animate-pulse">
-          <div className="h-16 bg-gray-200 rounded mb-4"></div>
+          <div className="h-16 bg-gray-200 rounded mb-4" aria-hidden="true"></div>
           <div className="space-y-4 p-4">
-            <div className="h-32 bg-gray-200 rounded"></div>
+            <div className="h-32 bg-gray-200 rounded" aria-hidden="true"></div>
             <div className="grid grid-cols-4 gap-3">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-20 bg-gray-200 rounded"></div>
+                <div key={i} className="h-20 bg-gray-200 rounded" aria-hidden="true"></div>
               ))}
             </div>
           </div>
         </div>
+        <span className="sr-only">Loading your dashboard, please wait...</span>
       </div>
     );
   }
 
   return (
     <div className="max-w-md mx-auto bg-white shadow-xl min-h-screen relative">
+      {/* Skip links for keyboard navigation */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      <a href="#bottom-navigation" className="skip-link">
+        Skip to navigation
+      </a>
+      
       {/* Header Navigation */}
-      <header className="glass-effect sticky top-0 z-40 px-4 py-3 border-b border-gray-100">
+      <header 
+        className="glass-effect sticky top-0 z-40 px-4 py-3 border-b border-gray-100"
+        role="banner"
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-              <Home className="text-white" size={16} />
+              <Home className="text-white" size={16} aria-hidden="true" />
             </div>
             <h1 className="text-lg font-semibold text-gray-900">TaskParent</h1>
           </div>
           <div className="flex items-center space-x-3">
-            <div className="relative">
-              <Bell className="text-gray-400" size={20} />
-              <span className="absolute -top-2 -right-2 w-5 h-5 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center">
+            <button
+              className="relative p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="View notifications (3 unread)"
+              aria-describedby="notification-count"
+            >
+              <Bell className="text-gray-400" size={20} aria-hidden="true" />
+              <span 
+                id="notification-count"
+                className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center"
+                aria-label="3 unread notifications"
+              >
                 3
               </span>
-            </div>
+            </button>
             {user?.email && !user?.email.includes("example.com") ? (
               <Button 
                 variant="outline" 
@@ -94,61 +120,79 @@ export default function HomePage() {
       </header>
 
       {/* Welcome Section */}
-      <section className="px-4 py-6 bg-gradient-to-br from-blue-50 to-green-50">
-        <div className="mb-4">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Good morning, {user?.firstName || "Parent"}! 👋
-          </h2>
-          <p className="text-gray-600">Ready to earn money from your daily routines?</p>
-        </div>
-        
-        <EarningsOverview user={user} />
-      </section>
+      <main id="main-content" role="main">
+        <section 
+          className="px-4 py-6 bg-gradient-to-br from-blue-50 to-green-50"
+          aria-labelledby="welcome-heading"
+        >
+          <div className="mb-4">
+            <h2 id="welcome-heading" className="text-2xl font-bold text-gray-900 mb-2">
+              Good morning, {user?.firstName || "Parent"}!
+            </h2>
+            <p className="text-gray-600">Ready to earn money from your daily routines?</p>
+          </div>
+          
+          <div aria-labelledby="earnings-overview">
+            <h3 id="earnings-overview" className="sr-only">Your earnings overview</h3>
+            <EarningsOverview user={user} />
+          </div>
+        </section>
 
-      {/* Community Earning Model Highlight */}
-      <section className="px-4 py-4 bg-white">
-        <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl p-4 text-white mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-bold">Earn From Your Community!</h3>
-            <DollarSign className="text-white" size={24} />
-          </div>
-          <p className="text-sm opacity-90 mb-3">
-            Share tasks you're already doing with neighbors who pay to join. 
-            Turn your daily routines into income opportunities!
-          </p>
-          <div className="flex space-x-2">
-            <Link href="/create-task" className="inline-flex items-center text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg transition-colors">
-              <Plus size={16} className="mr-2" />
-              Create Task
-            </Link>
-            <Link href="/how-it-works" className="inline-flex items-center text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg transition-colors">
-              <TrendingUp size={16} className="mr-2" />
-              How It Works
-            </Link>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg p-4 border border-green-200">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="font-semibold text-gray-900">Earning Potential</h4>
-            <DollarSign className="text-green-600" size={20} />
-          </div>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Grocery run (3 neighbors)</span>
-              <span className="font-medium text-green-600">$30</span>
+        {/* Community Earning Model Highlight */}
+        <section 
+          className="px-4 py-4 bg-white"
+          aria-labelledby="community-earning-heading"
+        >
+          <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl p-4 text-white mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 id="community-earning-heading" className="text-lg font-bold">Earn From Your Community!</h3>
+              <DollarSign className="text-white" size={24} aria-hidden="true" />
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Meal prep sharing (2 families)</span>
-              <span className="font-medium text-green-600">$50</span>
-            </div>
-            <div className="border-t pt-2 flex justify-between font-semibold">
-              <span>Weekly potential</span>
-              <span className="text-green-600">$200-600</span>
+            <p className="text-sm opacity-90 mb-3">
+              Share tasks you're already doing with neighbors who pay to join. 
+              Turn your daily routines into income opportunities!
+            </p>
+            <div className="flex space-x-2" role="group" aria-label="Quick actions">
+              <Link 
+                href="/create-task" 
+                className="inline-flex items-center text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-500"
+                aria-label="Create a new task to share with neighbors"
+              >
+                <Plus size={16} className="mr-2" aria-hidden="true" />
+                Create Task
+              </Link>
+              <Link 
+                href="/how-it-works" 
+                className="inline-flex items-center text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-500"
+                aria-label="Learn how TaskParent works"
+              >
+                <TrendingUp size={16} className="mr-2" aria-hidden="true" />
+                How It Works
+              </Link>
             </div>
           </div>
-        </div>
-      </section>
+          
+          <div className="bg-white rounded-lg p-4 border border-green-200">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-semibold text-gray-900">Earning Potential</h4>
+              <DollarSign className="text-green-600" size={20} aria-hidden="true" />
+            </div>
+            <div className="space-y-2 text-sm" role="table" aria-label="Earning examples">
+              <div className="flex justify-between" role="row">
+                <span className="text-gray-600" role="cell">Grocery run (3 neighbors)</span>
+                <span className="font-medium text-green-600" role="cell">$30</span>
+              </div>
+              <div className="flex justify-between" role="row">
+                <span className="text-gray-600" role="cell">Meal prep sharing (2 families)</span>
+                <span className="font-medium text-green-600" role="cell">$50</span>
+              </div>
+              <div className="border-t pt-2 flex justify-between font-semibold" role="row">
+                <span role="cell">Weekly potential</span>
+                <span className="text-green-600" role="cell">$200-600</span>
+              </div>
+            </div>
+          </div>
+        </section>
 
       {/* Task Categories */}
       <section className="px-4 py-4">
@@ -269,7 +313,9 @@ export default function HomePage() {
         </button>
       </Link>
 
-      <BottomNavigation />
+      </main>
+      
+      <AccessibleBottomNavigation />
     </div>
   );
 }
