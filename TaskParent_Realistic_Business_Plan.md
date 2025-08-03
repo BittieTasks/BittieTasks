@@ -200,10 +200,10 @@ TaskParent is a hyperlocal community platform enabling parents to share househol
 **1. Safety & Liability Concerns**
 - **Risk**: Personal injury, property damage during shared tasks
 - **Mitigation**: 
-  - Required general liability insurance ($300K minimum, not $1M)
+  - Platform-provided liability insurance covering all users ($150K annually)
   - Task category restrictions (no electrical, plumbing, heavy lifting)
   - Clear safety guidelines and user education
-  - Partnership with insurance provider for discounted coverage
+  - Escrow payment system with security deposits for property access tasks
 
 **2. Regulatory Compliance**
 - **Risk**: State licensing requirements, worker classification
@@ -269,6 +269,8 @@ TaskParent is a hyperlocal community platform enabling parents to share househol
 - Identity verification through driver's license scanning
 - Reference system within parent communities  
 - Incident reporting and response procedures
+- Platform liability insurance covering all user activities
+- Escrow payment system with damage protection
 
 **Payment Processing**
 - Stripe integration for payment processing
