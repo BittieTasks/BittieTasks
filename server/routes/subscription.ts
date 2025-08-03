@@ -8,7 +8,7 @@ export function registerSubscriptionRoutes(app: Express) {
       const plans = [
         {
           id: "free",
-          name: "TaskParent Free",
+          name: "BittieTasks Free",
           price: 0,
           monthlyTaskLimit: 5,
           platformFee: 0.10,
@@ -16,7 +16,7 @@ export function registerSubscriptionRoutes(app: Express) {
         },
         {
           id: "pro",
-          name: "TaskParent Pro",
+          name: "BittieTasks Pro",
           price: 9.99,
           monthlyTaskLimit: 50,
           platformFee: 0.07,
@@ -24,7 +24,7 @@ export function registerSubscriptionRoutes(app: Express) {
         },
         {
           id: "premium",
-          name: "TaskParent Premium",
+          name: "BittieTasks Premium",
           price: 19.99,
           monthlyTaskLimit: -1, // unlimited
           platformFee: 0.05,

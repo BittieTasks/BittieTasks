@@ -20,7 +20,7 @@ export default function SubscriptionPage() {
   const subscriptionPlans = [
     {
       id: "free",
-      name: "TaskParent Free",
+      name: "BittieTasks Free",
       price: "$0",
       period: "forever",
       description: "Perfect for getting started with community tasks",
@@ -44,7 +44,7 @@ export default function SubscriptionPage() {
     },
     {
       id: "pro",
-      name: "TaskParent Pro",
+      name: "BittieTasks Pro",
       price: "$9.99",
       period: "per month",
       description: "For active parents earning regular income",
@@ -66,7 +66,7 @@ export default function SubscriptionPage() {
     },
     {
       id: "premium",
-      name: "TaskParent Premium",
+      name: "BittieTasks Premium",
       price: "$19.99",
       period: "per month",
       description: "For power users maximizing their earnings",

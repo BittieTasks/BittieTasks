@@ -10,7 +10,7 @@ export default function HowItWorks() {
           <Link href="/" className="p-2 hover:bg-gray-100 rounded-full">
             <ArrowLeft className="text-gray-600" size={20} />
           </Link>
-          <h1 className="text-lg font-semibold text-gray-900">How TaskParent Works</h1>
+          <h1 className="text-lg font-semibold text-gray-900">How BittieTasks Works</h1>
         </div>
       </header>
 
@@ -21,7 +21,7 @@ export default function HowItWorks() {
             Get Paid for What You're Already Doing
           </h2>
           <p className="text-gray-600 mb-4">
-            TaskParent lets parents monetize their daily routines. Already cooking dinner? 
+            BittieTasks lets parents monetize their daily routines. Already cooking dinner? 
             Grocery shopping? Organizing your closet? Share the benefit with neighbors and get paid!
           </p>
           <div className="bg-white rounded-lg p-4 border-l-4 border-green-500">
@@ -122,7 +122,7 @@ export default function HowItWorks() {
                 <div className="flex-1">
                   <h4 className="font-semibold text-gray-900 mb-2">Premium Memberships</h4>
                   <p className="text-gray-600 text-sm mb-2">
-                    TaskParent Pro ($9.99/month) offers enhanced features:
+                    BittieTasks Pro ($9.99/month) offers enhanced features:
                   </p>
                   <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
                     <li>Priority access to high-paying tasks</li>

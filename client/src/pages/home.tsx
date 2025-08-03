@@ -32,7 +32,7 @@ export default function HomePage() {
         className="max-w-md mx-auto bg-white shadow-xl min-h-screen"
         role="status"
         aria-live="polite"
-        aria-label="Loading TaskParent home page"
+        aria-label="Loading BittieTasks home page"
       >
         <div className="animate-pulse">
           <div className="h-16 bg-gray-200 rounded mb-4" aria-hidden="true"></div>
@@ -73,7 +73,7 @@ export default function HomePage() {
             <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
               <Home className="text-white" size={16} aria-hidden="true" />
             </div>
-            <h1 className="text-lg font-semibold text-gray-900">TaskParent</h1>
+            <h1 className="text-lg font-semibold text-gray-900">BittieTasks</h1>
           </div>
           <div className="flex items-center space-x-3">
             <button

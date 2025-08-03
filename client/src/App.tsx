@@ -42,7 +42,7 @@ function AuthenticatedRoute({ component: Component }: { component: React.Compone
         className="max-w-md mx-auto bg-white shadow-xl min-h-screen flex items-center justify-center"
         role="status"
         aria-live="polite"
-        aria-label="Loading TaskParent application"
+        aria-label="Loading BittieTasks application"
       >
         <div 
           className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"

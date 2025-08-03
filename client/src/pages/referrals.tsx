@@ -64,22 +64,22 @@ export default function ReferralsPage() {
     {
       name: "Text Message",
       action: () => {
-        const message = `Join TaskParent and earn money for daily tasks! Use my referral code ${referralStats?.referralCode} to get $5 bonus: ${referralStats?.referralLink}`;
+        const message = `Join BittieTasks and earn money for daily tasks! Use my referral code ${referralStats?.referralCode} to get $5 bonus: ${referralStats?.referralLink}`;
         window.open(`sms:?body=${encodeURIComponent(message)}`);
       }
     },
     {
       name: "Email",
       action: () => {
-        const subject = "Join TaskParent - Get $5 Bonus!";
-        const body = `Hi! I've been using TaskParent to earn money from daily household tasks and thought you'd love it too.\n\nUse my referral code ${referralStats?.referralCode} when you sign up to get a $5 bonus after your first completed task!\n\nSign up here: ${referralStats?.referralLink}\n\nTaskParent lets parents earn $200-600/week by sharing routine tasks like grocery runs and meal prep with neighbors. It's been amazing for our family's budget!\n\nLet me know if you have any questions!`;
+        const subject = "Join BittieTasks - Get $5 Bonus!";
+        const body = `Hi! I've been using BittieTasks to earn money from daily household tasks and thought you'd love it too.\n\nUse my referral code ${referralStats?.referralCode} when you sign up to get a $5 bonus after your first completed task!\n\nSign up here: ${referralStats?.referralLink}\n\nBittieTasks lets parents earn $200-600/week by sharing routine tasks like grocery runs and meal prep with neighbors. It's been amazing for our family's budget!\n\nLet me know if you have any questions!`;
         window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
       }
     },
     {
       name: "Social Media",
       action: () => {
-        const message = `Just discovered TaskParent - earning money for daily tasks I'm already doing! 💰✨ Use code ${referralStats?.referralCode} for $5 bonus: ${referralStats?.referralLink} #TaskParent #MomHustle #ExtraIncome`;
+        const message = `Just discovered BittieTasks - earning money for daily tasks I'm already doing! 💰✨ Use code ${referralStats?.referralCode} for $5 bonus: ${referralStats?.referralLink} #BittieTasks #MomHustle #ExtraIncome`;
         copyToClipboard(message);
       }
     }
@@ -105,7 +105,7 @@ export default function ReferralsPage() {
             Refer Friends & Earn More
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Share TaskParent with friends and family. You both earn money when they join!
+            Share BittieTasks with friends and family. You both earn money when they join!
           </p>
         </div>
 
@@ -235,7 +235,7 @@ export default function ReferralsPage() {
                       <Users className="h-8 w-8 text-green-600" />
                     </div>
                     <h3 className="font-semibold mb-2">2. They Sign Up</h3>
-                    <p className="text-sm text-gray-600">They join TaskParent using your code and get $5 bonus</p>
+                    <p className="text-sm text-gray-600">They join BittieTasks using your code and get $5 bonus</p>
                   </div>
                   
                   <div className="text-center">
@@ -254,7 +254,7 @@ export default function ReferralsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Share Your Code</CardTitle>
-                  <CardDescription>Choose how you'd like to share TaskParent with others</CardDescription>
+                  <CardDescription>Choose how you'd like to share BittieTasks with others</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

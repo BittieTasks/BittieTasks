@@ -19,7 +19,7 @@ function DemoLoginButton() {
         queryClient.invalidateQueries({ queryKey: ["/api/user/current"] });
         toast({
           title: "Demo Access Granted",
-          description: "Exploring TaskParent features with demo account",
+          description: "Exploring BittieTasks features with demo account",
         });
         setLocation("/");
       }, 100);
@@ -53,7 +53,7 @@ export default function LandingPage() {
         <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
           <DollarSign className="text-white" size={32} />
         </div>
-        <h1 className="text-2xl font-bold mb-2">TaskParent</h1>
+        <h1 className="text-2xl font-bold mb-2">BittieTasks</h1>
         <p className="text-blue-100">Turn your daily routines into income</p>
       </header>
 

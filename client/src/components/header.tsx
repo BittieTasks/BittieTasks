@@ -18,7 +18,7 @@ export default function Header() {
           <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
             <Home className="text-white text-sm" size={16} />
           </div>
-          <h1 className="text-lg font-semibold text-gray-900">TaskParent</h1>
+          <h1 className="text-lg font-semibold text-gray-900">BittieTasks</h1>
         </div>
         <div className="flex items-center space-x-3">
           <div className="relative">
