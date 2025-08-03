@@ -49,7 +49,37 @@ export function registerSubscriptionRoutes(app: Express) {
         return res.status(400).json({ message: "Invalid plan ID" });
       }
 
-      // Get current user
+      // For demo user, always work regardless of session
+      if (userId === "demo-user-id") {
+        const demoSubscriptionInfo = {
+          subscriptionTier: planId,
+          subscriptionStatus: "active",
+          subscriptionStartDate: new Date().toISOString(),
+          subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          prioritySupport: planId !== "free",
+          adFree: planId !== "free",
+          premiumBadge: planId === "premium",
+          monthlyTaskLimit: planId === "free" ? 5 : planId === "pro" ? 50 : 999,
+          monthlyTasksCompleted: 3
+        };
+
+        // Store in session for demo purposes (initialize session if needed)
+        if (!req.session) {
+          (req as any).session = {};
+        }
+        (req as any).session.demoSubscription = demoSubscriptionInfo;
+
+        console.log("Demo subscription upgrade:", demoSubscriptionInfo);
+
+        return res.json({
+          message: "Subscription updated successfully",
+          user: { ...demoSubscriptionInfo },
+          plan: planId,
+          savings: planId === "pro" ? "Save 3% on platform fees" : planId === "premium" ? "Save 5% on platform fees" : null
+        });
+      }
+
+      // Regular user handling
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -60,7 +90,7 @@ export function registerSubscriptionRoutes(app: Express) {
         subscriptionTier: planId,
         subscriptionStatus: "active",
         subscriptionStartDate: new Date(),
-        subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         prioritySupport: planId !== "free",
         adFree: planId !== "free",
         premiumBadge: planId === "premium"
@@ -72,16 +102,22 @@ export function registerSubscriptionRoutes(app: Express) {
       } else if (planId === "pro") {
         updates.monthlyTaskLimit = 50;
       } else if (planId === "premium") {
-        updates.monthlyTaskLimit = 999; // Effectively unlimited
+        updates.monthlyTaskLimit = 999;
       }
 
-      const updatedUser = await storage.updateUser(userId, updates);
-      
-      res.json({
-        message: "Subscription updated successfully",
-        user: updatedUser,
-        plan: planId
-      });
+      if (storage.updateUser) {
+        const updatedUser = await storage.updateUser(userId, updates);
+        res.json({
+          message: "Subscription updated successfully",
+          user: updatedUser,
+          plan: planId
+        });
+      } else {
+        res.json({
+          message: "Subscription updated successfully (demo mode)",
+          plan: planId
+        });
+      }
     } catch (error) {
       console.error("Error upgrading subscription:", error);
       res.status(500).json({ message: "Failed to upgrade subscription" });
@@ -92,6 +128,32 @@ export function registerSubscriptionRoutes(app: Express) {
   app.get('/api/subscription/task-limits/:userId', async (req, res) => {
     try {
       const { userId } = req.params;
+      
+      // For demo user, always return demo data regardless of session
+      if (userId === "demo-user-id") {
+        const demoSubscription = (req as any).session?.demoSubscription || {
+          subscriptionTier: "free",
+          monthlyTaskLimit: 5,
+          monthlyTasksCompleted: 3
+        };
+
+        const canCompleteTask = demoSubscription.subscriptionTier === "premium" || 
+                               (demoSubscription.monthlyTasksCompleted || 0) < (demoSubscription.monthlyTaskLimit || 5);
+
+        console.log("Demo subscription data:", demoSubscription);
+
+        return res.json({
+          tier: demoSubscription.subscriptionTier || "free",
+          monthlyLimit: demoSubscription.monthlyTaskLimit || 5,
+          completed: demoSubscription.monthlyTasksCompleted || 3,
+          remaining: demoSubscription.subscriptionTier === "premium" ? "unlimited" : 
+                    Math.max(0, (demoSubscription.monthlyTaskLimit || 5) - (demoSubscription.monthlyTasksCompleted || 3)),
+          canCompleteTask,
+          platformFee: demoSubscription.subscriptionTier === "premium" ? 0.05 : 
+                      demoSubscription.subscriptionTier === "pro" ? 0.07 : 0.10
+        });
+      }
+
       const user = await storage.getUser(userId);
       
       if (!user) {
@@ -102,7 +164,7 @@ export function registerSubscriptionRoutes(app: Express) {
       const lastResetMonth = user.lastMonthlyReset ? new Date(user.lastMonthlyReset).getMonth() : -1;
 
       // Reset monthly count if it's a new month
-      if (currentMonth !== lastResetMonth) {
+      if (currentMonth !== lastResetMonth && storage.updateUser) {
         await storage.updateUser(userId, {
           monthlyTasksCompleted: 0,
           lastMonthlyReset: new Date()
