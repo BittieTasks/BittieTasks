@@ -372,6 +372,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin stats endpoint
+  app.get("/api/admin/stats", async (req, res) => {
+    try {
+      // Mock admin statistics - in production would come from database
+      const stats = {
+        totalUsers: 2847,
+        activeUsers: 1923,
+        platformFees: 47892,
+        monthlyRevenue: 318600,
+        tasksCompleted: 15847,
+        averageTaskValue: 45.30,
+        fraudPrevention: {
+          fraudDetectionRate: 99.2,
+          averageDetectionTime: 2.3,
+          monthlyFraudPrevented: 47892
+        }
+      };
+      
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  // AI approval stats endpoint
+  app.get("/api/admin/ai-stats", async (req, res) => {
+    try {
+      const aiStats = {
+        totalTasksProcessed: 15847,
+        aiApproved: 12678,
+        manualReview: 3169,
+        aiApprovalRate: 80.0,
+        averageProcessingTime: 1.2,
+        confidenceScore: 94.5
+      };
+      
+      res.json(aiStats);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch AI stats" });
+    }
+  });
+
   // Create new task
   app.post("/api/tasks", async (req, res) => {
     try {
