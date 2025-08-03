@@ -21,20 +21,6 @@ import {
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
-import { db } from "./db";
-import { eq, and, gte } from "drizzle-orm";
-import { 
-  users, 
-  tasks, 
-  taskCategories, 
-  taskCompletions, 
-  messages, 
-  userAchievements, 
-  achievementDefinitions, 
-  dailyChallenges, 
-  userChallenges,
-  userActivity
-} from "@shared/schema";
 
 export interface IStorage {
   // User methods
