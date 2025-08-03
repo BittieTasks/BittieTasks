@@ -70,13 +70,8 @@ export interface IStorage {
   getTodaysChallenges(userId: string): Promise<UserChallenge[]>;
 
   // Admin methods for platform management
-  getAllUsers(): Promise<User[]>;
-  getAllTasks(): Promise<Task[]>;
-  getAllTaskCompletions(): Promise<TaskCompletion[]>;
   getTaskCompletion(id: string): Promise<TaskCompletion | undefined>;
-  updateTaskCompletionStatus(id: string, status: string, notes?: string): Promise<void>;
-  updateUserEarnings(userId: string, amount: number): Promise<void>;
-  updateUserStatus(userId: string, updates: { accountLocked?: boolean; isEmailVerified?: boolean }): Promise<void>;
+  initializeDailyChallenges(): void;
 }
 
 export class MemStorage implements IStorage {
@@ -104,8 +99,8 @@ export class MemStorage implements IStorage {
     this.initializeDefaultData();
     // Initialize async methods after construction
     setTimeout(() => {
-      this.initializeAchievementDefinitions?.();
-      this.initializeDailyChallenges?.();
+      this.initializeAchievementDefinitions();
+      this.initializeDailyChallenges();
     }, 10);
   }
 
@@ -134,7 +129,12 @@ export class MemStorage implements IStorage {
       failedLoginAttempts: 0,
       accountLocked: false,
       lockUntil: null,
-      createdAt: new Date()
+      createdAt: new Date(),
+      isPhoneVerified: true,
+      isIdentityVerified: true,
+      isBackgroundChecked: true,
+      phoneNumber: "+1234567890",
+      identityScore: 95
     };
     this.users.set(userId, defaultUser);
 
@@ -842,6 +842,115 @@ export class MemStorage implements IStorage {
     for (const defData of achievementDefinitions) {
       await this.createAchievementDefinition(defData);
     }
+  }
+
+  async getDailyChallenges(): Promise<DailyChallenge[]> {
+    return Array.from(this.dailyChallenges.values());
+  }
+
+  async createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge> {
+    const id = randomUUID();
+    const newChallenge: DailyChallenge = {
+      id,
+      ...challenge,
+      createdAt: new Date()
+    };
+    this.dailyChallenges.set(id, newChallenge);
+    return newChallenge;
+  }
+
+  async getUserChallenges(userId: string, date?: Date): Promise<UserChallenge[]> {
+    const challenges = Array.from(this.userChallenges.values())
+      .filter(challenge => challenge.userId === userId);
+    
+    if (date) {
+      const targetDate = date.toDateString();
+      return challenges.filter(challenge => 
+        challenge.assignedAt.toDateString() === targetDate
+      );
+    }
+    
+    return challenges;
+  }
+
+  async getUserActivity(userId: string, hours: number): Promise<any[]> {
+    return [];
+  }
+
+  async logSuspiciousActivity(userId: string, activity: any): Promise<void> {
+    console.warn(`Suspicious activity detected for user ${userId}:`, activity);
+  }
+
+  async assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge> {
+    const id = randomUUID();
+    const challenge: UserChallenge = {
+      id,
+      userId,
+      challengeId,
+      status: 'assigned',
+      assignedAt: new Date(),
+      completedAt: null,
+      reflection: null,
+      pointsEarned: 0
+    };
+    this.userChallenges.set(id, challenge);
+    return challenge;
+  }
+
+  async completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined> {
+    const challenge = this.userChallenges.get(userChallengeId);
+    if (challenge) {
+      challenge.status = 'completed';
+      challenge.completedAt = new Date();
+      challenge.reflection = reflection || null;
+      challenge.pointsEarned = 25;
+      return challenge;
+    }
+    return undefined;
+  }
+
+  async getTodaysChallenges(userId: string): Promise<UserChallenge[]> {
+    const today = new Date().toDateString();
+    return Array.from(this.userChallenges.values())
+      .filter(challenge => 
+        challenge.userId === userId && 
+        challenge.assignedAt.toDateString() === today
+      );
+  }
+
+  async getTaskCompletion(id: string): Promise<TaskCompletion | undefined> {
+    return this.taskCompletions.get(id);
+  }
+
+  initializeDailyChallenges(): void {
+    const challenges = [
+      {
+        title: "Morning Meditation",
+        description: "Start your day with 10 minutes of mindfulness",
+        category: "wellness",
+        pointsReward: 25,
+        difficulty: "easy",
+        estimatedMinutes: 10
+      },
+      {
+        title: "Healthy Breakfast", 
+        description: "Prepare a nutritious breakfast for your family",
+        category: "cooking",
+        pointsReward: 30,
+        difficulty: "easy",
+        estimatedMinutes: 20
+      }
+    ];
+
+    challenges.forEach(challengeData => {
+      const id = randomUUID();
+      const challenge: DailyChallenge = {
+        id,
+        ...challengeData,
+        createdAt: new Date()
+      };
+      this.dailyChallenges.set(id, challenge);
+    });
   }
 }
 

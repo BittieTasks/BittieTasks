@@ -12,10 +12,7 @@ export default function AdminLogin() {
 
   const adminLoginMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest("/api/auth/admin", {
-        method: "POST",
-        body: JSON.stringify({}),
-      });
+      return apiRequest("POST", "/api/auth/admin", {});
     },
     onSuccess: () => {
       toast({
