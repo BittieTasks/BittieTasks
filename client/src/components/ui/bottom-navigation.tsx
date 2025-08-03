@@ -4,11 +4,13 @@ import { cn } from "@/lib/utils";
 
 import { Crown } from "lucide-react";
 
+import { Users2 } from "lucide-react";
+
 const navigation = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Search', href: '/search', icon: Search },
   { name: 'Daily', href: '/challenges', icon: Zap },
-  { name: 'Earnings', href: '/earnings', icon: DollarSign },
+  { name: 'Refer', href: '/referrals', icon: Users2 },
   { name: 'Pro', href: '/subscription', icon: Crown },
 ];
 

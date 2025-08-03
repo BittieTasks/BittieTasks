@@ -965,6 +965,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register subscription routes
   registerSubscriptionRoutes(app);
 
+  // Register referral routes
+  const { registerReferralRoutes } = await import("./routes/referrals");
+  registerReferralRoutes(app);
+
   const httpServer = createServer(app);
   return httpServer;
 }

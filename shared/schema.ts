@@ -47,7 +47,12 @@ export const users = pgTable("users", {
   lastMonthlyReset: timestamp("last_monthly_reset").default(sql`CURRENT_TIMESTAMP`),
   prioritySupport: boolean("priority_support").default(false),
   adFree: boolean("ad_free").default(false),
-  premiumBadge: boolean("premium_badge").default(false)
+  premiumBadge: boolean("premium_badge").default(false),
+  // Referral fields
+  referralCode: text("referral_code").unique(),
+  referredBy: text("referred_by"), // referral code of the person who referred them
+  referralCount: integer("referral_count").default(0),
+  referralEarnings: decimal("referral_earnings").default("0.00")
 });
 
 export const taskCategories = pgTable("task_categories", {
@@ -195,6 +200,23 @@ export const insertUserChallengeSchema = createInsertSchema(userChallenges).omit
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// Referrals table
+export const referrals = pgTable("referrals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  referrerUserId: text("referrer_user_id").references(() => users.id),
+  referredUserId: text("referred_user_id").references(() => users.id),
+  referralCode: text("referral_code").notNull(),
+  status: text("status").notNull().default("pending"), // pending, completed, paid
+  referrerReward: decimal("referrer_reward").default("10.00"), // $10 bonus for referrer
+  referredReward: decimal("referred_reward").default("5.00"), // $5 bonus for new user
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+  completedAt: timestamp("completed_at"), // when referred user completes first task
+});
+
+export const insertReferralSchema = createInsertSchema(referrals);
+export type InsertReferral = z.infer<typeof insertReferralSchema>;
+export type Referral = typeof referrals.$inferSelect;
 
 export type InsertTaskCategory = z.infer<typeof insertTaskCategorySchema>;
 export type TaskCategory = typeof taskCategories.$inferSelect;
