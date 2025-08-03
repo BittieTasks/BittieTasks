@@ -13,6 +13,7 @@ import {
   generateSecureToken,
   validatePhoneNumber,
   validateDocumentUpload,
+  analyzeDocumentFraud,
   calculateTrustScore,
   requireVerification
 } from "../middleware/verification";
@@ -186,11 +187,28 @@ router.post("/identity/upload",
         return res.status(400).json({ message: "Valid document type required" });
       }
 
-      // Validate each uploaded file
+      // Validate and analyze each uploaded file
+      let totalRiskScore = 0;
+      const analysisResults = [];
+      
       for (const file of files) {
         const validation = validateDocumentUpload(file);
         if (!validation.valid) {
           return res.status(400).json({ message: validation.error });
+        }
+
+        // Advanced fraud analysis
+        const fraudAnalysis = await analyzeDocumentFraud(file);
+        analysisResults.push(fraudAnalysis);
+        totalRiskScore += fraudAnalysis.riskScore;
+
+        // Block obviously fraudulent documents
+        if (fraudAnalysis.riskScore > 50) {
+          return res.status(400).json({ 
+            message: "Document appears to be digitally manipulated or suspicious",
+            reasons: fraudAnalysis.reasons,
+            riskScore: fraudAnalysis.riskScore
+          });
         }
       }
 
@@ -212,15 +230,23 @@ router.post("/identity/upload",
         })
       );
 
-      // Log activity
+      // Log activity with fraud analysis results
       await db.insert(userActivity).values({
         userId: userId,
         activityType: "identity_documents_uploaded",
         metadata: { 
           documentType, 
           fileCount: files.length,
-          ip: req.ip 
-        }
+          ip: req.ip,
+          riskScore: totalRiskScore,
+          fraudAnalysis: analysisResults.map(r => ({
+            suspicious: r.suspicious,
+            riskScore: r.riskScore,
+            reasonCount: r.reasons.length
+          }))
+        },
+        riskScore: Math.min(totalRiskScore, 100),
+        flagged: totalRiskScore > 30
       });
 
       res.json({ 

@@ -19,6 +19,7 @@ import Compliance from "@/pages/Compliance";
 import DailyChallenges from "@/pages/DailyChallenges";
 import AdminDashboard from "@/pages/admin-simple";
 import Verification from "@/pages/verification";
+import SecurityDemo from "@/pages/security-demo";
 import type { User } from "@shared/schema";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -75,6 +76,8 @@ function Router() {
           <Route path="/achievements" component={() => <AuthenticatedRoute component={Achievements} />} />
           <Route path="/challenges" component={() => <AuthenticatedRoute component={DailyChallenges} />} />
           <Route path="/compliance" component={() => <AuthenticatedRoute component={Compliance} />} />
+          <Route path="/verification" component={() => <AuthenticatedRoute component={Verification} />} />
+          <Route path="/security-demo" component={() => <AuthenticatedRoute component={SecurityDemo} />} />
           <Route path="/admin" component={() => <AuthenticatedRoute component={AdminDashboard} />} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />

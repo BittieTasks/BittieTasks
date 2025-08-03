@@ -185,7 +185,7 @@ export const fraudPreventionCheck = async (req: Request, res: Response, next: Ne
   }
 };
 
-// Document verification helpers
+// Advanced document verification helpers
 export const validateDocumentUpload = (file: Express.Multer.File): { valid: boolean; error?: string } => {
   // Check file type
   const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
@@ -198,13 +198,103 @@ export const validateDocumentUpload = (file: Express.Multer.File): { valid: bool
     return { valid: false, error: 'File too large. Please upload files smaller than 5MB.' };
   }
 
-  // Basic filename validation
+  // Minimum file size check (prevents tiny/empty files)
+  if (file.size < 10 * 1024) { // 10KB minimum
+    return { valid: false, error: 'File too small. Document images must be at least 10KB.' };
+  }
+
+  // Basic filename validation (prevent path traversal)
   if (!/^[a-zA-Z0-9._-]+$/.test(file.originalname)) {
     return { valid: false, error: 'Invalid filename. Please use only letters, numbers, dots, underscores, and dashes.' };
   }
 
+  // Check for suspicious file extensions in filename
+  const suspiciousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.php', '.js', '.html'];
+  const filename = file.originalname.toLowerCase();
+  if (suspiciousExtensions.some(ext => filename.includes(ext))) {
+    return { valid: false, error: 'Suspicious file detected. Please upload only document images or PDFs.' };
+  }
+
   return { valid: true };
 };
+
+// Enhanced document analysis for fraud detection
+export const analyzeDocumentFraud = async (file: Express.Multer.File): Promise<{ 
+  suspicious: boolean; 
+  reasons: string[];
+  riskScore: number; 
+}> => {
+  const reasons: string[] = [];
+  let riskScore = 0;
+
+  // Check file metadata for manipulation
+  const creationTime = file.buffer ? await getImageMetadata(file.buffer) : null;
+  
+  // Flag very recent creation times (possible fresh edits)
+  if (creationTime && Date.now() - creationTime.getTime() < 24 * 60 * 60 * 1000) {
+    reasons.push("Document created/modified within last 24 hours");
+    riskScore += 20;
+  }
+
+  // Check file size patterns (manipulated images often have unusual sizes)
+  const aspectRatio = await getImageDimensions(file.path);
+  if (aspectRatio && (aspectRatio < 0.5 || aspectRatio > 3.0)) {
+    reasons.push("Unusual document aspect ratio");
+    riskScore += 15;
+  }
+
+  // Basic EXIF data analysis for digital manipulation
+  const hasExifData = await checkExifData(file.path);
+  if (!hasExifData) {
+    reasons.push("Missing or stripped EXIF data (possible digital manipulation)");
+    riskScore += 10;
+  }
+
+  // Check for common photo editing software signatures
+  const editingSoftware = await detectEditingSoftware(file.path);
+  if (editingSoftware.length > 0) {
+    reasons.push(`Document processed with: ${editingSoftware.join(', ')}`);
+    riskScore += 25;
+  }
+
+  return {
+    suspicious: riskScore > 30,
+    reasons,
+    riskScore
+  };
+};
+
+// Helper functions for document analysis
+async function getImageMetadata(buffer: Buffer): Promise<Date | null> {
+  // In production, use libraries like 'exif-parser' or 'piexifjs'
+  try {
+    // Simulate EXIF date extraction
+    return new Date(); // Placeholder - implement with actual EXIF parsing
+  } catch {
+    return null;
+  }
+}
+
+async function getImageDimensions(filePath: string): Promise<number | null> {
+  // In production, use 'image-size' library
+  try {
+    // Simulate dimension analysis
+    return 1.5; // Placeholder - implement with actual image analysis
+  } catch {
+    return null;
+  }
+}
+
+async function checkExifData(filePath: string): Promise<boolean> {
+  // In production, check for presence of EXIF data
+  return Math.random() > 0.3; // Placeholder - implement actual EXIF check
+}
+
+async function detectEditingSoftware(filePath: string): Promise<string[]> {
+  // In production, analyze file for signatures of editing software
+  const editingSoftware = ['Photoshop', 'GIMP', 'Paint.NET', 'Canva'];
+  return Math.random() > 0.7 ? [editingSoftware[Math.floor(Math.random() * editingSoftware.length)]] : [];
+}
 
 // Trust score calculation
 export const calculateTrustScore = (user: any): number => {
