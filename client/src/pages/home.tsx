@@ -315,7 +315,12 @@ export default function HomePage() {
 
       </main>
       
+      {/* Spacer for bottom navigation */}
+      <div className="h-20"></div>
+      
+      {/* Bottom Navigation - Both versions for testing */}
       <AccessibleBottomNavigation />
+      <BottomNavigation />
     </div>
   );
 }
