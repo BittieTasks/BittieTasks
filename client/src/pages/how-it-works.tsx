@@ -105,7 +105,7 @@ export default function HowItWorks() {
                   </p>
                   <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
                     <li>Payment processing and security</li>
-                    <li>Insurance coverage for all tasks</li>
+                    <li>Platform insurance coverage for all users</li>
                     <li>24/7 customer support</li>
                     <li>Platform maintenance and development</li>
                   </ul>
@@ -218,7 +218,7 @@ export default function HowItWorks() {
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                  Professional childcare hub - $50/child
+                  Professional organization service - $50/room
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
@@ -330,7 +330,7 @@ export default function HowItWorks() {
               </div>
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
-                <span className="text-gray-800 text-sm">$1M liability insurance on all tasks</span>
+                <span className="text-gray-800 text-sm">Platform-provided liability insurance coverage</span>
               </div>
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
@@ -421,7 +421,7 @@ export default function HowItWorks() {
                   <span className="font-medium">$50</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>4 kids childcare ($35 × 4)</span>
+                  <span>4 organization projects ($35 × 4)</span>
                   <span className="font-medium">$140</span>
                 </div>
                 <div className="flex justify-between">

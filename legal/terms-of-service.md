@@ -58,7 +58,7 @@ TaskParent operates as a marketplace platform only and DOES NOT:
 - Control, supervise, or dictate HOW tasks are performed (providers set their own methods)
 - Set work schedules, hours, or provide equipment or tools
 - Guarantee the quality, safety, legality, or results of any services
-- Provide insurance coverage for task-related incidents, property damage, or personal injury
+- Act as employers of Task Providers
 - Assume liability for disputes between users
 - Permit or facilitate any childcare services
 - Act as an employment agency, childcare agency, or service provider
@@ -74,7 +74,7 @@ TaskParent operates as a marketplace platform only and DOES NOT:
 - ALL SERVICES PROVIDED "AS-IS" WITHOUT WARRANTIES
 - USERS ASSUME ALL RISKS OF PROPERTY DAMAGE AND PERSONAL INJURY
 - PLATFORM SERVES AS MARKETPLACE ONLY - NOT SERVICE PROVIDER
-- USERS MUST MAINTAIN APPROPRIATE INSURANCE COVERAGE
+- PLATFORM PROVIDES LIABILITY PROTECTION FOR COVERED ACTIVITIES
 
 ## 5. USER RESPONSIBILITIES
 
@@ -83,27 +83,55 @@ As independent contractors operating your own business, you must:
 - Maintain current background check clearance as required
 - Set your own rates, schedules, and service methods
 - Provide your own tools, equipment, and supplies (unless specifically requested by client)
-- Maintain appropriate business insurance and licenses
+- Maintain appropriate business licenses where required
 - Handle your own tax obligations and business expenses
 - Deliver services according to your professional standards and client agreements
 - Communicate directly with clients regarding task requirements and completion
 - Comply with all applicable state and local laws
 - Obtain any required business licenses and certifications
-- Maintain appropriate general liability and property damage insurance
+- Follow platform safety guidelines and task restrictions
 - Set their own prices, methods, and service standards
 - Handle their own tax obligations and business expenses
 - Report safety incidents immediately through platform incident system
 
 ### Task Requester Obligations
-- Verify Task Provider credentials and insurance before hiring
+- Verify Task Provider credentials and background check status
 - Ensure safe working conditions in their home
-- Maintain appropriate homeowner's/renter's insurance coverage
 - Take reasonable precautions to protect personal property
 - Report safety concerns or violations immediately
 - Pay agreed amounts promptly through the Platform
 - Resolve disputes directly with Task Provider or through Platform dispute resolution
 
-## 6. SAFETY AND INCIDENT REPORTING
+## 6. PLATFORM LIABILITY PROTECTION
+
+### TaskParent Insurance Coverage
+TaskParent maintains comprehensive liability insurance to protect users during platform activities:
+
+**Platform-Provided Protection**
+- General liability coverage for task-related incidents
+- Property damage protection up to policy limits
+- Professional liability for platform operations and matching services
+- Technology errors and omissions coverage
+
+**Coverage Scope**
+- Tasks completed through the platform within approved categories
+- Property damage during authorized household activities
+- Personal injury claims related to platform-facilitated tasks
+- Platform technology failures and payment processing errors
+
+**Coverage Limitations**
+- Excludes intentional misconduct or criminal activity
+- Limited to approved task categories (no electrical, plumbing, heavy lifting)
+- Coverage does not extend to off-platform activities
+- Users remain responsible for compliance with safety guidelines
+
+**Claims Process**
+- Report incidents immediately through platform reporting system
+- Platform insurance team handles all claims coordination
+- Users receive support throughout claims process
+- No individual insurance verification required
+
+## 7. SAFETY AND INCIDENT REPORTING
 
 ### Mandatory Reporting
 Users must immediately report:
@@ -117,7 +145,7 @@ Users must immediately report:
 - Contact Platform safety hotline: 1-800-SAFETY-1
 - Submit incident reports within 24 hours
 
-## 7. PAYMENT OPTIONS AND BILLING
+## 8. PAYMENT OPTIONS AND BILLING
 
 ### Multiple Payment Methods Available
 **Platform Payment Processing** (Optional):
@@ -195,10 +223,10 @@ TaskParent is NOT LIABLE for:
 - **Technical Issues**: Platform downtime, bugs, or technical malfunctions
 - **Force Majeure**: Natural disasters, pandemics, or other unforeseeable events
 
-### Required Insurance Coverage
-- **Task Providers**: Must maintain general liability insurance of at least $1 million
-- **Task Requesters**: Must maintain homeowner's or renter's insurance covering task-related activities
-- **Platform Disclaimer**: TaskParent does not provide any insurance coverage for users
+### Platform Insurance Protection
+- **Platform Protection**: TaskParent provides comprehensive liability insurance covering all approved task activities
+- **User Benefits**: No individual insurance verification or premium costs required
+- **Coverage Scope**: Platform insurance is primary protection for all task-related incidents
 
 ## 11. INDEMNIFICATION
 
