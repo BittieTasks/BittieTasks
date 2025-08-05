@@ -51,7 +51,7 @@ Preferred communication style: Simple, everyday language.
 - **Core Innovation**: Community-based earning model.
   - Parents earn income by sharing tasks with neighbors who pay to join.
 - **Revenue Streams**:
-  - **Sponsored Tasks**: Companies pay $35-55 per participant for community engagement events (Starbucks, Target, McDonald's, Home Depot). BittieTasks keeps $15-20 platform fee, participants earn $20-35.
+  - **Sponsored Tasks**: Companies pay $37-60 per participant for community engagement events (Starbucks, Target, McDonald's, Home Depot, Amazon, Nike, Disney+, Costco, Apple). BittieTasks keeps $15-20 platform fee, participants earn $22-40.
   - **Advertising**: Native feed ads, local service providers, affiliate marketing.
   - **Affiliate Marketing**: Task-based product recommendations with 3-12% commission.
 - **Payment Infrastructure**: Enterprise-grade processing system.

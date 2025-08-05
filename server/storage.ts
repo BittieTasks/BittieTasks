@@ -504,6 +504,91 @@ export class MemStorage implements IStorage {
         }
       },
       {
+        title: "Amazon Prime Family Movie Night",
+        description: "Amazon Prime Video pays families $25 to watch and review new family movies! Get paid to have movie night, plus free snacks and exclusive early access to upcoming releases.",
+        payment: "25.00",
+        duration: 120,
+        difficulty: "Easy",
+        requirements: ["Amazon Prime subscription", "Family with kids", "Complete movie review survey", "Rate content appropriateness"],
+        imageUrl: "https://images.unsplash.com/photo-1489599162731-83d8d6057604?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "sponsored",
+        sponsorInfo: {
+          brandName: "Amazon Prime",
+          brandDescription: "Amazon pays $40 per family ($25 to participants + $15 platform fee) for authentic family entertainment feedback",
+          specialReward: "Free movie rental credit + early access to new releases",
+          brandColor: "#FF9900"
+        }
+      },
+      {
+        title: "Nike Family Fitness Challenge",
+        description: "Nike sponsors active families! Complete a 30-minute family workout, test new Nike gear, and earn $28 per person. Perfect way to stay active together while earning money!",
+        payment: "28.00",
+        duration: 45,
+        difficulty: "Medium",
+        requirements: ["Family of 3+ members", "Age range 8-50", "Complete workout video", "Test Nike products", "Share fitness photos"],
+        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f0c9e62f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "sponsored",
+        sponsorInfo: {
+          brandName: "Nike",
+          brandDescription: "Nike invests $43 per participant ($28 payment + $15 platform fee) to promote family fitness and test new product lines",
+          specialReward: "Nike gear sample + 20% off family fitness products",
+          brandColor: "#000000"
+        }
+      },
+      {
+        title: "Disney+ Family Content Preview",
+        description: "Disney+ pays families $22 to preview upcoming shows and movies! Watch exclusive content before it releases and provide family-friendly feedback. Kids love being Disney testers!",
+        payment: "22.00",
+        duration: 90,
+        difficulty: "Easy",
+        requirements: ["Disney+ subscription", "Children ages 4-14", "Watch full episode/movie", "Complete family survey", "Rate age-appropriateness"],
+        imageUrl: "https://images.unsplash.com/photo-1489599162731-83d8d6057604?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "sponsored",
+        sponsorInfo: {
+          brandName: "Disney+",
+          brandDescription: "Disney pays $37 per family ($22 to participants + $15 platform fee) for valuable family entertainment insights and content testing",
+          specialReward: "Exclusive Disney merchandise + free month of Disney+",
+          brandColor: "#1E3A8A"
+        }
+      },
+      {
+        title: "Costco Bulk Shopping Family Test",
+        description: "Costco sponsors family shopping experiences! Test new bulk family products, get exclusive samples, and earn $32 for providing feedback on family-sized items and shopping experience.",
+        payment: "32.00",
+        duration: 60,
+        difficulty: "Easy",
+        requirements: ["Costco membership", "Family of 4+ members", "Test 5 new products", "Minimum $100 purchase", "Complete detailed survey"],
+        imageUrl: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Organizing",
+        taskType: "sponsored",
+        sponsorInfo: {
+          brandName: "Costco",
+          brandDescription: "Costco invests $47 per family ($32 payment + $15 platform fee) to understand bulk buying patterns and family preferences",
+          specialReward: "$10 Costco cash card + exclusive member coupons",
+          brandColor: "#E31837"
+        }
+      },
+      {
+        title: "Apple Family Tech Setup Workshop",
+        description: "Apple pays families $40 to learn and test new family tech features! Get hands-on training with iPads, parental controls, and family sharing. Perfect for tech-curious families!",
+        payment: "40.00",
+        duration: 120,
+        difficulty: "Medium",
+        requirements: ["Apple device ownership", "Parents + kids (ages 6+)", "Complete tech tutorial", "Test family features", "Provide usability feedback"],
+        imageUrl: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Organizing",
+        taskType: "sponsored",
+        sponsorInfo: {
+          brandName: "Apple",
+          brandDescription: "Apple invests $60 per family ($40 payment + $20 platform fee) to improve family technology experiences and gather user insights",
+          specialReward: "Apple accessories bundle + exclusive beta access",
+          brandColor: "#1D1D1F"
+        }
+      },
+      {
         title: "Whole Foods Family Cooking Class",
         description: "Whole Foods is hosting a family-friendly cooking demonstration! Learn to make healthy meals together while kids get hands-on cooking experience. Includes take-home recipe cards and samples.",
         payment: "40.00",
