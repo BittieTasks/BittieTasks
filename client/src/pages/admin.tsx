@@ -16,7 +16,13 @@ import {
   Star,
   Eye,
   Ban,
-  MessageSquare
+  MessageSquare,
+  Target,
+  Settings,
+  Shield,
+  Zap,
+  Building,
+  FileText
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -54,6 +60,18 @@ interface PlatformStats {
   totalRevenue: number;
   platformFees: number;
   monthlyGrowth: number;
+  // Advertising Stats
+  totalAdvertisers: number;
+  approvedAdvertisers: number;
+  pendingAdvertisers: number;
+  rejectedAdvertisers: number;
+  adRevenue: number;
+  // Ad Preferences Stats
+  usersWithAdPreferences: number;
+  averageAdFrequency: number;
+  averageAdRelevance: number;
+  ethicalAdsOnlyUsers: number;
+  familyFriendlyOnlyUsers: number;
 }
 
 export default function AdminDashboard() {
@@ -211,10 +229,10 @@ export default function AdminDashboard() {
 
       {/* Main Content Tabs */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="approvals">
-            Task Approvals
+            Tasks
             {stats?.pendingApprovals ? (
               <Badge variant="destructive" className="ml-2 h-5 w-5 rounded-full p-0 text-xs">
                 {stats.pendingApprovals}
@@ -222,6 +240,18 @@ export default function AdminDashboard() {
             ) : null}
           </TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="advertising">
+            Advertising
+            {stats?.pendingAdvertisers ? (
+              <Badge variant="destructive" className="ml-2 h-5 w-5 rounded-full p-0 text-xs">
+                {stats.pendingAdvertisers}
+              </Badge>
+            ) : null}
+          </TabsTrigger>
+          <TabsTrigger value="ad-preferences">
+            <Target className="h-4 w-4 mr-1" />
+            Ad Prefs
+          </TabsTrigger>
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
         </TabsList>
 
@@ -504,6 +534,383 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="advertising" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Advertising Overview Stats */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building className="h-5 w-5" />
+                  Advertiser Stats
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Total Advertisers</span>
+                  <span className="font-semibold">{stats?.totalAdvertisers || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-green-600">Approved</span>
+                  <span className="font-semibold text-green-600">{stats?.approvedAdvertisers || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-yellow-600">Pending</span>
+                  <span className="font-semibold text-yellow-600">{stats?.pendingAdvertisers || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-red-600">Rejected</span>
+                  <span className="font-semibold text-red-600">{stats?.rejectedAdvertisers || 0}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <DollarSign className="h-5 w-5" />
+                  Ad Revenue
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">
+                    ${stats?.adRevenue?.toLocaleString() || "0"}
+                  </div>
+                  <p className="text-sm text-gray-600">This month</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Platform Fee (15%)</span>
+                    <span>${((stats?.adRevenue || 0) * 0.15).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>User Earnings (70%)</span>
+                    <span>${((stats?.adRevenue || 0) * 0.70).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Creator Bonus (15%)</span>
+                    <span>${((stats?.adRevenue || 0) * 0.15).toLocaleString()}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Ethical Standards
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {stats?.approvedAdvertisers ? Math.round((stats.approvedAdvertisers / stats.totalAdvertisers) * 100) : 0}%
+                  </div>
+                  <p className="text-sm text-gray-600">Approval Rate</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>HRC 75+ Score</span>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Child Safety</span>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>COPPA Compliant</span>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Pending Advertiser Applications */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Pending Advertiser Applications</CardTitle>
+              <CardDescription>Review and approve new advertising partners</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Demo pending advertisers */}
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">EcoTech Solutions</h4>
+                      <p className="text-sm text-gray-600">Sustainable family technology products</p>
+                    </div>
+                    <Badge variant="secondary">Pending Review</Badge>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">HRC Score:</span>
+                      <span className="font-medium ml-1">85/100</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Budget:</span>
+                      <span className="font-medium ml-1">$2,500/mo</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Category:</span>
+                      <span className="font-medium ml-1">Technology</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Child Safe:</span>
+                      <CheckCircle className="h-4 w-4 text-green-600 inline" />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      Approve
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                      <XCircle className="h-4 w-4 mr-1" />
+                      Reject
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <Eye className="h-4 w-4 mr-1" />
+                      Review Details
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">GreenSpace Learning</h4>
+                      <p className="text-sm text-gray-600">Educational outdoor programs for families</p>
+                    </div>
+                    <Badge variant="secondary">Pending Review</Badge>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">HRC Score:</span>
+                      <span className="font-medium ml-1">92/100</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Budget:</span>
+                      <span className="font-medium ml-1">$1,800/mo</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Category:</span>
+                      <span className="font-medium ml-1">Education</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Child Safe:</span>
+                      <CheckCircle className="h-4 w-4 text-green-600 inline" />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      Approve
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                      <XCircle className="h-4 w-4 mr-1" />
+                      Reject
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <Eye className="h-4 w-4 mr-1" />
+                      Review Details
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="ad-preferences" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* User Ad Preferences Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  User Preferences
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {stats?.usersWithAdPreferences || 0}
+                  </div>
+                  <p className="text-sm text-gray-600">Users with custom preferences</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Avg. Ad Frequency</span>
+                    <span className="font-medium">{stats?.averageAdFrequency || 5}/10</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Avg. Relevance</span>
+                    <span className="font-medium">{stats?.averageAdRelevance || 7}/10</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Safety Preferences
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Family-Friendly Only</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{stats?.familyFriendlyOnlyUsers || 0}</span>
+                      <span className="text-xs text-gray-500">
+                        ({stats?.familyFriendlyOnlyUsers ? Math.round((stats.familyFriendlyOnlyUsers / stats.totalUsers) * 100) : 0}%)
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Ethical Ads Only</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{stats?.ethicalAdsOnlyUsers || 0}</span>
+                      <span className="text-xs text-gray-500">
+                        ({stats?.ethicalAdsOnlyUsers ? Math.round((stats.ethicalAdsOnlyUsers / stats.totalUsers) * 100) : 0}%)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5" />
+                  Ad Performance
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">94%</div>
+                  <p className="text-sm text-gray-600">User Satisfaction</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Relevant Ads</span>
+                    <span className="font-medium">87%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Click-through Rate</span>
+                    <span className="font-medium">3.2%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Ad Categories Performance */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Popular Ad Categories</CardTitle>
+              <CardDescription>Most selected categories by users</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-4 border rounded-lg">
+                  <div className="text-2xl mb-2">📚</div>
+                  <div className="font-medium">Education</div>
+                  <div className="text-sm text-gray-600">68% of users</div>
+                </div>
+                <div className="text-center p-4 border rounded-lg">
+                  <div className="text-2xl mb-2">🏃‍♀️</div>
+                  <div className="font-medium">Health & Wellness</div>
+                  <div className="text-sm text-gray-600">64% of users</div>
+                </div>
+                <div className="text-center p-4 border rounded-lg">
+                  <div className="text-2xl mb-2">🛍️</div>
+                  <div className="font-medium">Family Shopping</div>
+                  <div className="text-sm text-gray-600">58% of users</div>
+                </div>
+                <div className="text-center p-4 border rounded-lg">
+                  <div className="text-2xl mb-2">📱</div>
+                  <div className="font-medium">Family Tech</div>
+                  <div className="text-sm text-gray-600">42% of users</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Ad Types Performance */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Ad Type Preferences</CardTitle>
+              <CardDescription>User preferences by ad format</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Zap className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <div className="font-medium">Native Feed Ads</div>
+                      <div className="text-sm text-gray-600">Seamlessly integrated with task feeds</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-bold text-blue-600">82%</div>
+                    <div className="text-xs text-gray-500">preferred</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Star className="h-5 w-5 text-purple-600" />
+                    <div>
+                      <div className="font-medium">Sponsored Tasks</div>
+                      <div className="text-sm text-gray-600">Company-sponsored activities</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-bold text-purple-600">76%</div>
+                    <div className="text-xs text-gray-500">preferred</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="h-5 w-5 text-green-600" />
+                    <div>
+                      <div className="font-medium">Affiliate Products</div>
+                      <div className="text-sm text-gray-600">Product recommendations with commissions</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-bold text-green-600">61%</div>
+                    <div className="text-xs text-gray-500">preferred</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Eye className="h-5 w-5 text-orange-600" />
+                    <div>
+                      <div className="font-medium">Banner Ads</div>
+                      <div className="text-sm text-gray-600">Traditional display advertising</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-bold text-orange-600">34%</div>
+                    <div className="text-xs text-gray-500">preferred</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

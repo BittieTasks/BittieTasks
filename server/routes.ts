@@ -878,6 +878,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const totalRevenue = approvedCompletions.reduce((sum, c) => sum + Number(c.earnings || 0), 0);
       const platformFees = totalRevenue * 0.15;
 
+      // Get advertising statistics
+      const advertisers = advertisingMatcher.getAllAdvertisers();
+      const totalAdvertisers = advertisers.length;
+      const approvedAdvertisers = advertisers.filter(ad => {
+        const evaluation = advertisingMatcher.evaluateAdvertiser(ad);
+        return evaluation.approved;
+      }).length;
+      const pendingAdvertisers = advertisers.filter(ad => {
+        const evaluation = advertisingMatcher.evaluateAdvertiser(ad);
+        return !evaluation.approved && evaluation.score >= 60; // Pending review
+      }).length;
+      const rejectedAdvertisers = totalAdvertisers - approvedAdvertisers - pendingAdvertisers;
+
+      // Calculate ad revenue (estimated)
+      const adRevenue = approvedAdvertisers * 1500; // Average $1500 per advertiser per month
+
+      // Get ad preferences statistics
+      const usersWithAdPreferences = users.filter(user => 
+        user.adFrequency !== undefined || user.adRelevance !== undefined
+      ).length;
+      
+      const adFrequencies = users
+        .filter(user => user.adFrequency !== undefined)
+        .map(user => user.adFrequency || 5);
+      const averageAdFrequency = adFrequencies.length > 0 
+        ? Math.round(adFrequencies.reduce((a, b) => a + b, 0) / adFrequencies.length)
+        : 5;
+        
+      const adRelevances = users
+        .filter(user => user.adRelevance !== undefined)
+        .map(user => user.adRelevance || 7);
+      const averageAdRelevance = adRelevances.length > 0
+        ? Math.round(adRelevances.reduce((a, b) => a + b, 0) / adRelevances.length)
+        : 7;
+
+      const ethicalAdsOnlyUsers = users.filter(user => user.ethicalAdsOnly !== false).length;
+      const familyFriendlyOnlyUsers = users.filter(user => user.familyFriendlyOnly !== false).length;
+
       // Mock monthly growth for demo
       const monthlyGrowth = 23;
 
@@ -888,7 +926,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         pendingApprovals,
         totalRevenue: Math.round(totalRevenue * 100) / 100,
         platformFees: Math.round(platformFees * 100) / 100,
-        monthlyGrowth
+        monthlyGrowth,
+        // Advertising Stats
+        totalAdvertisers,
+        approvedAdvertisers,
+        pendingAdvertisers,
+        rejectedAdvertisers,
+        adRevenue,
+        // Ad Preferences Stats
+        usersWithAdPreferences,
+        averageAdFrequency,
+        averageAdRelevance,
+        ethicalAdsOnlyUsers,
+        familyFriendlyOnlyUsers
       };
 
       res.json(stats);

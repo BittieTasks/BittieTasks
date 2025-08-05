@@ -70,6 +70,9 @@ export interface IStorage {
   getTodaysChallenges(userId: string): Promise<UserChallenge[]>;
 
   // Admin methods for platform management
+  getAllUsers(): Promise<User[]>;
+  getAllTasks(): Promise<Task[]>;
+  getAllTaskCompletions(): Promise<TaskCompletion[]>;
   getTaskCompletion(id: string): Promise<TaskCompletion | undefined>;
   initializeDailyChallenges(): void;
 
@@ -1206,6 +1209,19 @@ export class MemStorage implements IStorage {
       });
     }
   }
+
+  // Admin methods
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
+  async getAllTasks(): Promise<Task[]> {
+    return Array.from(this.tasks.values());
+  }
+
+  async getAllTaskCompletions(): Promise<TaskCompletion[]> {
+    return Array.from(this.taskCompletions.values());
+  }
 }
 
 // Security enhancement: Using PostgreSQL database for production security
@@ -1452,6 +1468,24 @@ export class DatabaseStorage implements IStorage {
     }
     
     return todaysChallenges;
+  }
+
+  // Admin methods for DatabaseStorage
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getAllTasks(): Promise<Task[]> {
+    return await db.select().from(tasks);
+  }
+
+  async getAllTaskCompletions(): Promise<TaskCompletion[]> {
+    return await db.select().from(taskCompletions);
+  }
+
+  async getTaskCompletion(id: string): Promise<TaskCompletion | undefined> {
+    const [completion] = await db.select().from(taskCompletions).where(eq(taskCompletions.id, id));
+    return completion || undefined;
   }
 
   // Initialize sample daily challenges
