@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { registerSubscriptionRoutes } from "./routes/subscription";
 import { storage } from "./storage";
 import affiliateProductsRouter from "./routes/affiliate-products";
+import paymentsRouter from "./routes/payments";
 import { insertTaskCompletionSchema, insertMessageSchema, insertUserSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
@@ -85,6 +86,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Affiliate products routes
   app.use("/api/affiliate-products", affiliateProductsRouter);
+  
+  // Payment processing routes
+  app.use("/api/payments", paymentsRouter);
   
   // Verification routes
   const verificationRouter = await import("./routes/verification");

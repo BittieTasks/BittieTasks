@@ -27,6 +27,8 @@ import SimpleAdmin from "@/pages/simple-admin";
 import AdminTest from "@/pages/admin-test";
 import SubscriptionPage from "@/pages/subscription";
 import SubscriptionDemo from "@/pages/subscription-demo";
+import SubscriptionCheckout from "@/pages/subscription-checkout";
+import Payment from "@/pages/payment";
 import ReferralsPage from "@/pages/referrals";
 import type { User } from "@shared/schema";
 
@@ -94,6 +96,8 @@ function Router() {
           <Route path="/admin-test" component={AdminTest} />
           <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
           <Route path="/subscription-demo" component={SubscriptionDemo} />
+          <Route path="/subscription/checkout/:tier" component={() => <AuthenticatedRoute component={SubscriptionCheckout} />} />
+          <Route path="/payment/:id" component={() => <AuthenticatedRoute component={Payment} />} />
           <Route path="/referrals" component={() => <AuthenticatedRoute component={ReferralsPage} />} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />

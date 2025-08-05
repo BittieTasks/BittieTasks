@@ -91,7 +91,43 @@ export const taskCompletions = pgTable("task_completions", {
   reviewNotes: text("review_notes"),
   rating: integer("rating"),
   earnings: decimal("earnings"),
+  paymentIntentId: text("payment_intent_id"), // Stripe payment intent ID
+  paymentStatus: text("payment_status").default("pending"), // pending, processing, completed, failed
+  platformFee: decimal("platform_fee"), // Fee taken by BittieTasks
+  netEarnings: decimal("net_earnings"), // Earnings after platform fee
   completedAt: timestamp("completed_at").default(sql`CURRENT_TIMESTAMP`)
+});
+
+export const payments = pgTable("payments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  paymentIntentId: text("payment_intent_id").notNull().unique(),
+  taskCompletionId: varchar("task_completion_id").references(() => taskCompletions.id),
+  payerId: varchar("payer_id").references(() => users.id), // User paying for the task
+  payeeId: varchar("payee_id").references(() => users.id), // User receiving payment
+  amount: decimal("amount").notNull(), // Total amount paid
+  platformFee: decimal("platform_fee").notNull(), // BittieTasks fee
+  netAmount: decimal("net_amount").notNull(), // Amount to payee after fees
+  status: text("status").notNull(), // pending, processing, completed, failed, refunded
+  stripeChargeId: text("stripe_charge_id"),
+  stripeTransferId: text("stripe_transfer_id"),
+  paymentMethod: text("payment_method"), // card, bank_transfer, etc.
+  currency: text("currency").default("usd"),
+  metadata: jsonb("metadata"), // Additional payment data
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+  processedAt: timestamp("processed_at")
+});
+
+export const escrowTransactions = pgTable("escrow_transactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  taskCompletionId: varchar("task_completion_id").references(() => taskCompletions.id),
+  escrowTransactionId: text("escrow_transaction_id").notNull(), // Escrow.com transaction ID
+  buyerId: varchar("buyer_id").references(() => users.id),
+  sellerId: varchar("seller_id").references(() => users.id),
+  amount: decimal("amount").notNull(),
+  status: text("status").notNull(), // pending, funded, inspection, completed, disputed, cancelled
+  inspectionPeriod: integer("inspection_period_days").default(3),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+  completedAt: timestamp("completed_at")
 });
 
 export const messages = pgTable("messages", {
@@ -186,6 +222,35 @@ export const insertUserAchievementSchema = createInsertSchema(userAchievements).
 export const insertAchievementDefinitionSchema = createInsertSchema(achievementDefinitions).omit({
   id: true
 });
+
+export const insertPaymentSchema = createInsertSchema(payments).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertEscrowTransactionSchema = createInsertSchema(escrowTransactions).omit({
+  id: true,
+  createdAt: true
+});
+
+// Type exports
+export type InsertUser = typeof users.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
+
+export type InsertTask = typeof tasks.$inferInsert;
+export type SelectTask = typeof tasks.$inferSelect;
+
+export type InsertTaskCompletion = typeof taskCompletions.$inferInsert;
+export type SelectTaskCompletion = typeof taskCompletions.$inferSelect;
+
+export type InsertPayment = typeof payments.$inferInsert;
+export type SelectPayment = typeof payments.$inferSelect;
+
+export type InsertEscrowTransaction = typeof escrowTransactions.$inferInsert;
+export type SelectEscrowTransaction = typeof escrowTransactions.$inferSelect;
+
+export type InsertMessage = typeof messages.$inferInsert;
+export type SelectMessage = typeof messages.$inferSelect;
 
 export const insertDailyChallengeSchema = createInsertSchema(dailyChallenges).omit({
   id: true,
