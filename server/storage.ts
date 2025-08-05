@@ -1125,6 +1125,58 @@ export class MemStorage implements IStorage {
       );
   }
 
+  // Human verification methods for MemStorage
+  async updateUserVerification(userId: string, verificationData: Partial<User>): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) return undefined;
+    
+    Object.assign(user, verificationData);
+    this.users.set(userId, user);
+    return user;
+  }
+
+  async getUserVerificationStatus(userId: string): Promise<any> {
+    const user = this.users.get(userId);
+    if (!user) return null;
+
+    return {
+      overallScore: user.identityScore || 0,
+      level: user.humanVerificationLevel || 'basic',
+      verifications: {
+        email: user.isEmailVerified || false,
+        phone: user.isPhoneVerified || false,
+        identity: user.governmentIdVerified || false,
+        face: user.faceVerificationCompleted || false,
+        behavior: (user.behaviorScore || 0) > 70,
+        captcha: user.isCaptchaVerified || false,
+        twoFactor: user.twoFactorEnabled || false
+      },
+      requirements: [],
+      riskLevel: (user.riskScore || 0) > 50 ? 'high' : (user.riskScore || 0) > 20 ? 'medium' : 'low'
+    };
+  }
+
+  async logVerificationActivity(userId: string, activityType: string, metadata?: any): Promise<void> {
+    console.log(`Verification activity: ${activityType} for user ${userId}`, metadata);
+  }
+
+  async incrementRiskScore(userId: string, amount: number): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.riskScore = (user.riskScore || 0) + amount;
+      this.users.set(userId, user);
+    }
+  }
+
+  async lockUserAccount(userId: string, reason: string): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.accountLocked = true;
+      user.lockUntil = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      this.users.set(userId, user);
+    }
+  }
+
   async getTaskCompletion(id: string): Promise<TaskCompletion | undefined> {
     return this.taskCompletions.get(id);
   }

@@ -92,9 +92,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Payment processing routes
   app.use("/api/payments", paymentsRouter);
   
-  // Verification routes
-  const verificationRouter = await import("./routes/verification");
-  app.use("/api/verification", verificationRouter.default);
+  // Verification routes - DISABLED for demo (using inline routes below)
+  // const verificationRouter = await import("./routes/verification");
+  // app.use("/api/verification", verificationRouter.default);
 
   // Logout route
   app.post("/api/auth/logout", (req, res) => {
@@ -1604,10 +1604,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Human verification routes
+  // Human verification routes (public for demo purposes - no auth required)
   app.get('/api/verification/status', async (req, res) => {
     try {
-      const userId = 'demo-user-id'; // In real app, get from session
+      const userId = req.query.userId as string || 'demo-user-id';
       const status = await storage.getUserVerificationStatus(userId);
       res.json(status);
     } catch (error) {
@@ -1618,7 +1618,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/verification/phone/send-code', async (req, res) => {
     try {
-      const { phoneNumber, userId } = req.body;
+      const { phoneNumber } = req.body;
+      const userId = req.body.userId || 'demo-user-id';
       
       // Generate verification code
       const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -1647,7 +1648,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/verification/phone/verify', async (req, res) => {
     try {
-      const { userId, verificationCode } = req.body;
+      const { verificationCode } = req.body;
+      const userId = req.body.userId || 'demo-user-id';
       
       // In production, verify against stored code and check expiration
       await storage.updateUserVerification(userId, {
@@ -1668,7 +1670,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/verification/upload-identity', async (req, res) => {
     try {
-      const { userId, documentType, documentData } = req.body;
+      const { documentType, documentData } = req.body;
+      const userId = req.body.userId || 'demo-user-id';
       
       // In production, process document upload and verification
       await storage.updateUserVerification(userId, {
@@ -1687,7 +1690,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/verification/verify-face', async (req, res) => {
     try {
-      const { userId, faceData, livenessData } = req.body;
+      const { faceData, livenessData } = req.body;
+      const userId = req.body.userId || 'demo-user-id';
       
       // In production, perform face verification and liveness detection
       await storage.updateUserVerification(userId, {
@@ -1706,7 +1710,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/verification/analyze-behavior', async (req, res) => {
     try {
-      const { userId, behaviorData } = req.body;
+      const { behaviorData } = req.body;
+      const userId = req.body.userId || 'demo-user-id';
       
       // Analyze behavior patterns
       const behaviorScore = Math.min(100, Math.max(0, 
