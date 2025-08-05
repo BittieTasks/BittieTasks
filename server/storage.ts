@@ -454,7 +454,7 @@ export class MemStorage implements IStorage {
       },
       {
         title: "Target Neighborhood Shopping Group",
-        description: "Target is sponsoring community shopping groups! Join our weekly Target run and get exclusive coupons. Perfect for household essentials, groceries, and seasonal items.",
+        description: "Target pays $20 per participant for community shopping events! Join our weekly Target run, get exclusive coupons, and earn money for shopping. Target covers all participant payments plus provides additional rewards.",
         payment: "20.00",
         duration: 120,
         difficulty: "Easy",
@@ -464,9 +464,43 @@ export class MemStorage implements IStorage {
         taskType: "sponsored",
         sponsorInfo: {
           brandName: "Target",
-          brandDescription: "Official Target Community Shopping Program - earn cashback and get exclusive member deals",
+          brandDescription: "Target pays BittieTasks $35 per participant ($20 to you + $15 platform fee) to drive community shopping engagement and gather customer insights",
           specialReward: "$5 Target gift card + exclusive weekly coupons",
           brandColor: "#CC0000"
+        }
+      },
+      {
+        title: "McDonald's Family Breakfast Test",
+        description: "McDonald's is paying families $30 each to try their new breakfast menu items and provide feedback. They cover all food costs plus your participation fee. Perfect for families with kids!",
+        payment: "30.00",
+        duration: 45,
+        difficulty: "Easy",
+        requirements: ["Family with kids ages 3-12", "Try 3 new breakfast items", "Complete detailed feedback survey", "Share photos (optional)"],
+        imageUrl: "https://images.unsplash.com/photo-1551782450-17144efb9c50?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "sponsored",
+        sponsorInfo: {
+          brandName: "McDonald's",
+          brandDescription: "McDonald's pays $45 per family ($30 to participants + $15 platform fee) for authentic family feedback on new breakfast products",
+          specialReward: "Free breakfast for the family + $10 McDonald's gift card",
+          brandColor: "#FFC72C"
+        }
+      },
+      {
+        title: "Home Depot DIY Workshop",
+        description: "Home Depot sponsors hands-on DIY workshops for parents! Learn new skills, get free materials, and earn money for attending. They pay for your time plus provide all tools and supplies.",
+        payment: "35.00",
+        duration: 180,
+        difficulty: "Medium",
+        requirements: ["Must be 18+ years old", "Bring safety glasses if you have them", "Stay for full workshop", "Complete project take-home"],
+        imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Organizing",
+        taskType: "sponsored",
+        sponsorInfo: {
+          brandName: "Home Depot",
+          brandDescription: "Home Depot invests $55 per participant ($35 payment + $20 materials/platform fee) to build customer loyalty and demonstrate products",
+          specialReward: "Free DIY kit to take home + 15% off next purchase",
+          brandColor: "#F96302"
         }
       },
       {
