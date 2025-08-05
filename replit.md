@@ -5,6 +5,8 @@ BittieTasks is a mobile-first React web application designed as a dual-income ma
 
 **NEW: Bartering System** - The platform now includes a comprehensive bartering system where parents can trade skills, services, and time with neighbors without cash transactions. This includes proper tax documentation for IRS compliance, fair market value tracking, and seamless integration with the existing platform.
 
+**UPDATED: Self-Care Tasks** - Self-care tasks are now solo activities with optional accountability partners. Users earn money for completing personal wellness activities (walks, yoga, meal prep, reading) while being able to invite friends as accountability partners who also earn for providing support and encouragement. No payment required to join - focuses on community support and mutual earnings.
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
@@ -32,10 +34,12 @@ Preferred communication style: Simple, everyday language.
 ### Database Schema Design
 - **Users**: Profile management, earnings, ratings, skills.
 - **Task Categories**: Organized task types including Self-Care.
-- **Tasks**: Detailed task information, including self-care tasks for parent wellness.
-- **Task Completions**: Status tracking with file attachments.
+- **Tasks**: Detailed task information with support for solo, shared, barter, and sponsored types. Self-care tasks include accountability partner support with configurable partner limits and earnings.
+- **Task Completions**: Status tracking with file attachments and barter transaction support.
 - **Messages**: User-to-user communication.
 - **User Achievements**: Gamification system.
+- **Accountability Partnerships**: Support system for self-care tasks where partners earn for providing encouragement.
+- **Barter Transactions**: Non-monetary skill and service exchanges with tax compliance tracking.
 
 ### Authentication and Authorization
 - **Implementation**: Full session-based authentication with login/logout.
