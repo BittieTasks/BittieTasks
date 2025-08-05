@@ -30,6 +30,7 @@ import SubscriptionDemo from "@/pages/subscription-demo";
 import SubscriptionCheckout from "@/pages/subscription-checkout";
 import Payment from "@/pages/payment";
 import ReferralsPage from "@/pages/referrals";
+import Barter from "@/pages/barter";
 import type { User } from "@shared/schema";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -99,6 +100,7 @@ function Router() {
           <Route path="/subscription/checkout/:tier" component={() => <AuthenticatedRoute component={SubscriptionCheckout} />} />
           <Route path="/payment/:id" component={() => <AuthenticatedRoute component={Payment} />} />
           <Route path="/referrals" component={() => <AuthenticatedRoute component={ReferralsPage} />} />
+          <Route path="/barter" component={() => <AuthenticatedRoute component={Barter} />} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />
         </Switch>

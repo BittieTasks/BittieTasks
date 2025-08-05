@@ -72,6 +72,14 @@ export interface IStorage {
   // Admin methods for platform management
   getTaskCompletion(id: string): Promise<TaskCompletion | undefined>;
   initializeDailyChallenges(): void;
+
+  // Barter methods
+  getBarterTasks(): Promise<Task[]>;
+  createBarterTask(task: InsertTask): Promise<Task>;
+  createBarterTransaction(transaction: any): Promise<any>;
+  getUserBarterTransactions(userId: string): Promise<any[]>;
+  updateBarterTransaction(id: string, updates: any): Promise<any>;
+  ensureBarterCategory(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -951,6 +959,63 @@ export class MemStorage implements IStorage {
       };
       this.dailyChallenges.set(id, challenge);
     });
+  }
+
+  // Barter transaction storage
+  private barterTransactions: any[] = [];
+
+  async getBarterTasks(): Promise<Task[]> {
+    const allTasks = await this.getTasks();
+    return allTasks.filter(task => task.paymentType === "barter" && task.isActive);
+  }
+
+  async createBarterTask(task: InsertTask): Promise<Task> {
+    const newTask: Task = {
+      id: randomUUID(),
+      createdAt: new Date(),
+      ...task
+    };
+    // Use the existing createTask method instead of direct array manipulation
+    return await this.createTask(newTask);
+  }
+
+  async createBarterTransaction(transaction: any): Promise<any> {
+    const newTransaction = {
+      id: randomUUID(),
+      createdAt: new Date(),
+      ...transaction
+    };
+    this.barterTransactions.push(newTransaction);
+    return newTransaction;
+  }
+
+  async getUserBarterTransactions(userId: string): Promise<any[]> {
+    return this.barterTransactions.filter(
+      transaction => transaction.offererId === userId || transaction.accepterId === userId
+    );
+  }
+
+  async updateBarterTransaction(id: string, updates: any): Promise<any> {
+    const index = this.barterTransactions.findIndex(t => t.id === id);
+    if (index !== -1) {
+      this.barterTransactions[index] = { ...this.barterTransactions[index], ...updates };
+      return this.barterTransactions[index];
+    }
+    return null;
+  }
+
+  async ensureBarterCategory(): Promise<void> {
+    const categories = await this.getTaskCategories();
+    const barterCategory = categories.find(cat => cat.id === "barter");
+    if (!barterCategory) {
+      await this.createTaskCategory({
+        id: "barter",
+        name: "Barter Exchange",
+        icon: "handshake",
+        color: "#10b981",
+        description: "Trade skills, services, and time with community members"
+      });
+    }
   }
 }
 

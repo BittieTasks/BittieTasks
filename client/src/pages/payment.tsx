@@ -11,8 +11,10 @@ import { ArrowLeft, Shield, CreditCard, AlertCircle } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
-// Initialize Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || "");
+// Initialize Stripe only if keys are available
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY ? 
+  loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY) : 
+  null;
 
 interface PaymentData {
   clientSecret?: string;
@@ -74,6 +76,28 @@ export default function Payment() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Show configuration message if Stripe is not configured
+  if (!stripePromise) {
+    return (
+      <div className="max-w-md mx-auto mt-8 p-4">
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Payment processing is not configured. Please contact an administrator to set up Stripe integration.
+          </AlertDescription>
+        </Alert>
+        <Button 
+          onClick={() => setLocation('/')} 
+          className="mt-4"
+          variant="outline"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Return Home
+        </Button>
       </div>
     );
   }

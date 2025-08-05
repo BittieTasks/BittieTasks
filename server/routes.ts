@@ -359,7 +359,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all tasks
+  // Barter-specific routes MUST come before general task routes
+  const demoBarterTasks = [
+    {
+      id: "barter-1",
+      title: "Tutoring Exchange for Lawn Care",
+      description: "I can provide 2 hours of math tutoring for your child in exchange for lawn mowing service",
+      difficulty: "Medium",
+      duration: 120,
+      userId: "demo-user-id",
+      payment: 0,
+      categoryId: "barter",
+      paymentType: "barter",
+      isActive: true,
+      createdAt: new Date(),
+      barterOffered: "2 hours of math tutoring",
+      barterWanted: "Lawn mowing service",
+      barterCategory: "skill",
+      estimatedValue: 50,
+      rating: 4.8
+    },
+    {
+      id: "barter-2", 
+      title: "Babysitting for House Cleaning",
+      description: "I will watch your kids for 3 hours in exchange for house cleaning",
+      difficulty: "Easy",
+      duration: 180,
+      userId: "neighbor-user-1",
+      payment: 0,
+      categoryId: "barter",
+      paymentType: "barter",
+      isActive: true,
+      createdAt: new Date(),
+      barterOffered: "3 hours babysitting",
+      barterWanted: "House cleaning service",
+      barterCategory: "service",
+      estimatedValue: 75,
+      rating: 4.9
+    },
+    {
+      id: "barter-3",
+      title: "Meal Prep for Car Maintenance",
+      description: "I'll prepare healthy meals for your family for a week in exchange for basic car maintenance",
+      difficulty: "Medium", 
+      duration: 240,
+      userId: "neighbor-user-2",
+      payment: 0,
+      categoryId: "barter",
+      paymentType: "barter",
+      isActive: true,
+      createdAt: new Date(),
+      barterOffered: "Weekly meal prep service",
+      barterWanted: "Car maintenance (oil change, tune-up)",
+      barterCategory: "service",
+      estimatedValue: 120,
+      rating: 4.7
+    }
+  ];
+
+  app.get("/api/tasks/barter", async (req, res) => {
+    res.json(demoBarterTasks);
+  });
+
+  app.post("/api/tasks/barter", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId || "demo-user-id";
+      
+      const newBarterTask = {
+        id: `barter-${Date.now()}`,
+        title: req.body.title || "Barter Task",
+        description: req.body.description || "Barter exchange",
+        difficulty: req.body.difficulty || "Medium",
+        duration: Number(req.body.duration) || 60,
+        userId,
+        payment: 0,
+        categoryId: "barter",
+        paymentType: "barter",
+        isActive: true,
+        createdAt: new Date(),
+        barterOffered: req.body.barterOffered || "Service offered",
+        barterWanted: req.body.barterWanted || "Service wanted", 
+        barterCategory: req.body.barterCategory || "service",
+        estimatedValue: Number(req.body.estimatedValue) || 0,
+        rating: 4.5
+      };
+      
+      demoBarterTasks.push(newBarterTask);
+      res.status(201).json(newBarterTask);
+    } catch (error) {
+      console.error("Error creating barter task:", error);
+      res.status(500).json({ 
+        message: "Failed to create barter task", 
+        error: error.message
+      });
+    }
+  });
+
+  // Get all tasks (general route, comes after specific routes)
   app.get("/api/tasks", async (req, res) => {
     try {
       const { category } = req.query;
@@ -972,6 +1068,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register referral routes
   const { registerReferralRoutes } = await import("./routes/referrals");
   registerReferralRoutes(app);
+
+  // Barter transactions (moved from later in the file)
+
+  const demoBarterTransactions: any[] = [];
+
+  app.post("/api/barter-transactions", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId || "demo-user-id";
+      const newTransaction = {
+        id: `transaction-${Date.now()}`,
+        taskId: req.body.taskId,
+        offererId: userId,
+        accepterId: null,
+        offeredService: req.body.offeredService,
+        requestedService: req.body.requestedService,
+        agreedValue: req.body.agreedValue,
+        status: "proposed",
+        createdAt: new Date(),
+        acceptedAt: null,
+        completedAt: null
+      };
+      
+      demoBarterTransactions.push(newTransaction);
+      res.status(201).json(newTransaction);
+    } catch (error) {
+      console.error("Error creating barter transaction:", error);
+      res.status(500).json({ message: "Failed to create barter transaction" });
+    }
+  });
+
+  app.get("/api/barter-transactions/my", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId || "demo-user-id";
+      const userTransactions = demoBarterTransactions.filter(
+        t => t.offererId === userId || t.accepterId === userId
+      );
+      res.json(userTransactions);
+    } catch (error) {
+      console.error("Error fetching user barter transactions:", error);
+      res.status(500).json({ message: "Failed to fetch barter transactions" });
+    }
+  });
+
+  // Initialize barter category
+  try {
+    await storage.ensureBarterCategory();
+    console.log("Barter category initialized successfully");
+  } catch (error) {
+    console.error("Error ensuring barter category:", error);
+  }
 
   const httpServer = createServer(app);
   return httpServer;

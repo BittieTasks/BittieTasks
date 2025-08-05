@@ -173,6 +173,14 @@ export default function HomePage() {
                 <TrendingUp size={16} className="mr-2" aria-hidden="true" />
                 How It Works
               </Link>
+              <Link 
+                href="/barter" 
+                className="inline-flex items-center text-sm font-medium bg-emerald-500 bg-opacity-90 hover:bg-opacity-100 px-3 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-emerald-500"
+                aria-label="Trade skills and services with neighbors"
+              >
+                <span className="mr-2" aria-hidden="true">🤝</span>
+                Barter Exchange
+              </Link>
             </div>
           </div>
           

@@ -68,7 +68,7 @@ export const tasks = pgTable("tasks", {
   title: text("title").notNull(),
   description: text("description").notNull(),
   categoryId: varchar("category_id").references(() => taskCategories.id),
-  payment: decimal("payment").notNull(),
+  payment: decimal("payment"),
   duration: integer("duration_minutes"),
   difficulty: text("difficulty").notNull(), // Easy, Medium, Hard
   requirements: text("requirements").array().default([]),
@@ -76,8 +76,15 @@ export const tasks = pgTable("tasks", {
   rating: decimal("rating").default("0.00"),
   completions: integer("completions").default(0),
   isActive: boolean("is_active").default(true),
-  taskType: text("task_type").notNull().default("shared"), // shared, sponsored, community
+  taskType: text("task_type").notNull().default("shared"), // shared, sponsored, community, barter
   sponsorInfo: jsonb("sponsor_info"), // For sponsored tasks - {brandName, brandLogo, brandColor, specialReward}
+  // Barter-specific fields
+  paymentType: text("payment_type").notNull().default("cash"), // cash, barter, both
+  barterOffered: text("barter_offered"), // What the task creator is offering in exchange
+  barterWanted: text("barter_wanted"), // What the task creator wants in return
+  estimatedValue: decimal("estimated_value"), // Fair market value for tax purposes
+  barterCategory: text("barter_category"), // skill, service, item, time
+  flexibleBarter: boolean("flexible_barter").default(false), // Open to barter negotiation
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
 });
 
@@ -95,6 +102,12 @@ export const taskCompletions = pgTable("task_completions", {
   paymentStatus: text("payment_status").default("pending"), // pending, processing, completed, failed
   platformFee: decimal("platform_fee"), // Fee taken by BittieTasks
   netEarnings: decimal("net_earnings"), // Earnings after platform fee
+  // Barter-specific fields
+  isBarterTransaction: boolean("is_barter_transaction").default(false),
+  barterValue: decimal("barter_value"), // Fair market value for tax reporting
+  barterDescription: text("barter_description"), // What was actually traded
+  barterAgreement: jsonb("barter_agreement"), // Terms of the barter exchange
+  taxFormRequired: boolean("tax_form_required").default(false), // IRS 1099-B requirement
   completedAt: timestamp("completed_at").default(sql`CURRENT_TIMESTAMP`)
 });
 
@@ -234,22 +247,11 @@ export const insertEscrowTransactionSchema = createInsertSchema(escrowTransactio
 });
 
 // Type exports
-export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
-
-export type InsertTask = typeof tasks.$inferInsert;
 export type SelectTask = typeof tasks.$inferSelect;
-
-export type InsertTaskCompletion = typeof taskCompletions.$inferInsert;
 export type SelectTaskCompletion = typeof taskCompletions.$inferSelect;
-
-export type InsertPayment = typeof payments.$inferInsert;
 export type SelectPayment = typeof payments.$inferSelect;
-
-export type InsertEscrowTransaction = typeof escrowTransactions.$inferInsert;
 export type SelectEscrowTransaction = typeof escrowTransactions.$inferSelect;
-
-export type InsertMessage = typeof messages.$inferInsert;
 export type SelectMessage = typeof messages.$inferSelect;
 
 export const insertDailyChallengeSchema = createInsertSchema(dailyChallenges).omit({
@@ -344,6 +346,38 @@ export const insertTaskProductSchema = createInsertSchema(taskProducts).omit({
 
 export type InsertAffiliateProduct = z.infer<typeof insertAffiliateProductSchema>;
 export type AffiliateProduct = typeof affiliateProducts.$inferSelect;
+
+// Barter Transactions table for non-monetary exchanges
+export const barterTransactions = pgTable("barter_transactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  taskId: varchar("task_id").references(() => tasks.id),
+  taskCompletionId: varchar("task_completion_id").references(() => taskCompletions.id),
+  offererId: varchar("offerer_id").references(() => users.id), // Person offering the task
+  accepterId: varchar("accepter_id").references(() => users.id), // Person accepting the barter
+  offeredService: text("offered_service").notNull(), // What the offerer is providing
+  requestedService: text("requested_service").notNull(), // What the offerer wants in return
+  agreedValue: decimal("agreed_value").notNull(), // Fair market value for tax purposes
+  status: text("status").notNull().default("proposed"), // proposed, accepted, in_progress, completed, cancelled, disputed
+  negotiationHistory: jsonb("negotiation_history"), // Array of negotiation messages
+  agreementTerms: jsonb("agreement_terms"), // Detailed terms of the barter
+  deliveryDate: timestamp("delivery_date"), // When the barter exchange should occur
+  completionProof: text("completion_proof").array().default([]), // Photos/documents of completion
+  mutualRating: boolean("mutual_rating").default(false), // Both parties have rated
+  taxReportingRequired: boolean("tax_reporting_required").default(false), // Based on value threshold
+  platformFeeType: text("platform_fee_type").default("percentage"), // percentage, flat, none
+  platformFeeAmount: decimal("platform_fee_amount").default("0.00"), // Fee charged by platform
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+  acceptedAt: timestamp("accepted_at"),
+  completedAt: timestamp("completed_at")
+});
+
+export const insertBarterTransactionSchema = createInsertSchema(barterTransactions).omit({
+  id: true,
+  createdAt: true
+});
+
+export type InsertBarterTransaction = z.infer<typeof insertBarterTransactionSchema>;
+export type BarterTransaction = typeof barterTransactions.$inferSelect;
 export type InsertTaskProduct = z.infer<typeof insertTaskProductSchema>;
 export type TaskProduct = typeof taskProducts.$inferSelect;
 
