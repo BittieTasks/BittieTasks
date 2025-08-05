@@ -1165,6 +1165,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Company application endpoint - allows companies to submit partnership proposals
+  app.post('/api/ethical-partners/apply', async (req, res) => {
+    try {
+      const applicationData = req.body as PartnershipCandidate;
+      
+      // Validate required fields
+      if (!applicationData.companyName || !applicationData.industry || !applicationData.proposedTaskType) {
+        return res.status(400).json({ message: 'Missing required company information' });
+      }
+
+      // Auto-evaluate the application
+      const evaluation = ethicalPartnershipMatcher.evaluatePartner(applicationData);
+      const report = ethicalPartnershipMatcher.generatePartnershipReport(applicationData);
+      
+      // Store application (in real implementation, this would go to database)
+      const application = {
+        id: `app-${Date.now()}`,
+        submittedAt: new Date(),
+        status: evaluation.approved ? 'approved' : 'rejected',
+        candidate: applicationData,
+        evaluation,
+        report
+      };
+
+      // In production, you'd save to database and notify admins
+      console.log('New partnership application:', application);
+
+      res.json({
+        applicationId: application.id,
+        status: application.status,
+        evaluation,
+        message: evaluation.approved 
+          ? 'Congratulations! Your company meets our ethical standards and has been approved for partnership.'
+          : 'Thank you for your interest. Your application needs improvement in our ethical criteria before approval.',
+        nextSteps: evaluation.approved 
+          ? 'Our team will contact you within 48 hours to finalize partnership details.'
+          : 'Please review the evaluation report and resubmit when ethical standards are met.'
+      });
+    } catch (error) {
+      console.error('Error processing partnership application:', error);
+      res.status(500).json({ message: 'Failed to process application' });
+    }
+  });
+
+  // Endpoint for companies to submit custom task proposals
+  app.post('/api/ethical-partners/propose-task', async (req, res) => {
+    try {
+      const { companyName, taskProposal } = req.body;
+      
+      if (!companyName || !taskProposal?.title || !taskProposal?.description) {
+        return res.status(400).json({ message: 'Missing required task proposal information' });
+      }
+
+      // Check if company is approved
+      const approvedPartners = ethicalPartnershipMatcher.getApprovedPartners();
+      const isApproved = approvedPartners.some(partner => 
+        partner.companyName.toLowerCase() === companyName.toLowerCase()
+      );
+
+      if (!isApproved) {
+        return res.status(403).json({ 
+          message: 'Company must be an approved ethical partner to propose tasks',
+          action: 'Please submit a partnership application first'
+        });
+      }
+
+      const taskProposalRecord = {
+        id: `task-proposal-${Date.now()}`,
+        companyName,
+        submittedAt: new Date(),
+        status: 'pending_review',
+        proposal: {
+          title: taskProposal.title,
+          description: taskProposal.description,
+          payment: taskProposal.payment || 0,
+          targetAudience: taskProposal.targetAudience || 'General families',
+          expectedParticipants: taskProposal.expectedParticipants || 20,
+          duration: taskProposal.duration || '1-2 hours',
+          requirements: taskProposal.requirements || []
+        }
+      };
+
+      // In production, save to database and notify admins for review
+      console.log('New task proposal from approved partner:', taskProposalRecord);
+
+      res.json({
+        proposalId: taskProposalRecord.id,
+        status: 'submitted',
+        message: 'Task proposal submitted successfully and is under review',
+        estimatedReviewTime: '2-3 business days',
+        proposal: taskProposalRecord.proposal
+      });
+    } catch (error) {
+      console.error('Error processing task proposal:', error);
+      res.status(500).json({ message: 'Failed to process task proposal' });
+    }
+  });
+
   // Demo endpoint to show ethical partnership evaluation
   app.get('/api/ethical-partners/demo-evaluation', async (req, res) => {
     try {

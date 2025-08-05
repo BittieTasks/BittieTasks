@@ -3,6 +3,8 @@
 ## Overview
 BittieTasks is a mobile-first React web application designed as a dual-income marketplace for parents. It enables parents to earn money by sharing daily tasks with neighbors for additional income. The platform focuses on community-based earnings, where neighbors pay to join activities, facilitated by BittieTasks. It features a responsive mobile interface, real-time task management, earnings tracking, a comprehensive messaging system, and personalized wellness achievement badges for gamification. The business model has evolved to include an advertising-based revenue model with affiliate marketing integration, allowing parents to earn commissions on recommended products. Comprehensive legal protections are in place, ensuring compliance and minimizing risk.
 
+**NEW: Ethical Partnership Matching Algorithm** - Comprehensive automated system for evaluating corporate partners based on HRC Corporate Equality Index scores, DEI leadership, LGBTQ+ support, environmental practices, and labor standards. Companies can apply for partnerships and propose custom tasks through dedicated portals with real-time ethical evaluation.
+
 **NEW: Bartering System** - The platform now includes a comprehensive bartering system where parents can trade skills, services, and time with neighbors without cash transactions. This includes proper tax documentation for IRS compliance, fair market value tracking, and seamless integration with the existing platform.
 
 **UPDATED: Self-Care Tasks** - Self-care tasks are now solo activities with optional accountability partners. Users earn money for completing personal wellness activities (walks, yoga, meal prep, reading) while being able to invite friends as accountability partners who also earn for providing support and encouragement. No payment required to join - focuses on community support and mutual earnings.
@@ -59,7 +61,8 @@ Preferred communication style: Simple, everyday language.
   - **Escrow.com Integration**: Protection for high-value transactions ($100+).
   - **Subscription Billing**: Automated recurring revenue for Pro/Premium plans.
 - **Value Proposition**: Monetizing routine parent activities.
-- **Ethical Partnership Standards**: All corporate sponsors must demonstrate commitment to diversity, equity, inclusion, LGBTQ+ rights, and responsible business practices. Regular partner evaluation ensures alignment with community values.
+- **Ethical Partnership Standards**: Automated evaluation system screens corporate partners using HRC Corporate Equality Index (minimum 80/100), DEI leadership requirements, LGBTQ+ support, environmental responsibility, and labor practices. Real-time application processing with detailed ethical scoring and approval workflows.
+- **Corporate Partner Portal**: Dedicated interfaces for company applications and custom task proposals, with automated evaluation against ethical criteria and transparent approval processes.
 
 ## External Dependencies
 
