@@ -397,21 +397,60 @@ export class MemStorage implements IStorage {
       },
       // Sponsored tasks - brands pay extra for community engagement
       {
-        title: "Try New Starbucks Holiday Drinks",
-        description: "Starbucks is sponsoring a community coffee tasting! Join me to try their new holiday menu items and rate them. Each participant gets a free drink voucher and 20% off coupon.",
-        payment: "25.00",
+        title: "Solo Morning Walk & Mindfulness",
+        description: "Start your day with a peaceful solo walk. Document your journey with photos and reflections. Invite accountability partners to earn together - they get paid too for joining and supporting your wellness goals!",
+        payment: "15.00",
+        duration: 30,
+        difficulty: "Easy",
+        requirements: ["Comfortable walking shoes", "Phone for photo documentation", "Journal for reflections", "Optional: invite accountability partners"],
+        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f0c9e62f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "solo",
+        allowAccountabilityPartners: true,
+        maxPartners: 2,
+        partnerPayment: "8.00"
+      },
+      {
+        title: "Home Yoga & Meditation Session", 
+        description: "Practice yoga and meditation at home. Document your session with photos and reflection notes. Invite friends as accountability partners - they earn $5 each for checking in and providing encouragement!",
+        payment: "12.00",
+        duration: 45,
+        difficulty: "Easy", 
+        requirements: ["Yoga mat or comfortable space", "Meditation app or quiet music", "Photo of setup", "5-minute reflection notes"],
+        imageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "solo",
+        allowAccountabilityPartners: true,
+        maxPartners: 3,
+        partnerPayment: "5.00"
+      },
+      {
+        title: "Healthy Meal Prep Sunday",
+        description: "Prepare nutritious meals for the week. Share your meal prep photos and recipes. Accountability partners earn by helping you stay on track with meal planning goals!",
+        payment: "20.00", 
+        duration: 90,
+        difficulty: "Medium",
+        requirements: ["Fresh ingredients", "Meal prep containers", "Photos of prepped meals", "Recipe notes to share"],
+        imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care",
+        taskType: "solo",
+        allowAccountabilityPartners: true,
+        maxPartners: 2,
+        partnerPayment: "7.00"
+      },
+      {
+        title: "Personal Reading & Learning Hour",
+        description: "Dedicate time to reading and personal development. Share book recommendations and key insights. Partners earn by engaging with your reading progress and sharing encouragement!",
+        payment: "10.00",
         duration: 60,
         difficulty: "Easy",
-        requirements: ["Must be 16+ years old", "Bring your phone to rate drinks", "Stay for full tasting session", "Complete feedback survey"],
-        imageUrl: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
-        categoryName: "Self-Care",
-        taskType: "sponsored",
-        sponsorInfo: {
-          brandName: "Starbucks",
-          brandDescription: "Community taste testing event sponsored by Starbucks to gather feedback on new holiday menu items",
-          specialReward: "Free drink voucher + 20% off coupon for future visits",
-          brandColor: "#00704A"
-        }
+        requirements: ["Book or learning material", "Quiet reading space", "Reading notes or highlights", "Share insights with partners"],
+        imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+        categoryName: "Self-Care", 
+        taskType: "solo",
+        allowAccountabilityPartners: true,
+        maxPartners: 1,
+        partnerPayment: "6.00"
       },
       {
         title: "Target Neighborhood Shopping Group",
@@ -468,6 +507,10 @@ export class MemStorage implements IStorage {
           isActive: true,
           taskType: (taskData as any).taskType || "shared",
           sponsorInfo: (taskData as any).sponsorInfo || null,
+          paymentType: "cash",
+          allowAccountabilityPartners: (taskData as any).allowAccountabilityPartners || false,
+          maxPartners: (taskData as any).maxPartners || 0,
+          partnerPayment: (taskData as any).partnerPayment || "0.00",
           createdAt: new Date()
         };
         this.tasks.set(id, task);

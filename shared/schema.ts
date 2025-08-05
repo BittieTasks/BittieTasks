@@ -76,7 +76,7 @@ export const tasks = pgTable("tasks", {
   rating: decimal("rating").default("0.00"),
   completions: integer("completions").default(0),
   isActive: boolean("is_active").default(true),
-  taskType: text("task_type").notNull().default("shared"), // shared, sponsored, community, barter
+  taskType: text("task_type").notNull().default("shared"), // shared, sponsored, community, barter, solo
   sponsorInfo: jsonb("sponsor_info"), // For sponsored tasks - {brandName, brandLogo, brandColor, specialReward}
   // Barter-specific fields
   paymentType: text("payment_type").notNull().default("cash"), // cash, barter, both
@@ -84,6 +84,10 @@ export const tasks = pgTable("tasks", {
   barterWanted: text("barter_wanted"), // What the task creator wants in return
   estimatedValue: decimal("estimated_value"), // Fair market value for tax purposes
   barterCategory: text("barter_category"), // skill, service, item, time
+  // Self-care specific fields
+  allowAccountabilityPartners: boolean("allow_accountability_partners").default(false), // Can invite others to join for support
+  maxPartners: integer("max_partners").default(3), // Maximum number of accountability partners
+  partnerPayment: decimal("partner_payment").default("0.00"), // How much each partner earns for joining
   flexibleBarter: boolean("flexible_barter").default(false), // Open to barter negotiation
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
 });
@@ -141,6 +145,21 @@ export const escrowTransactions = pgTable("escrow_transactions", {
   inspectionPeriod: integer("inspection_period_days").default(3),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
   completedAt: timestamp("completed_at")
+});
+
+// Accountability partnerships for self-care tasks
+export const accountabilityPartnerships = pgTable("accountability_partnerships", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  taskId: varchar("task_id").references(() => tasks.id),
+  taskCompletionId: varchar("task_completion_id").references(() => taskCompletions.id),
+  creatorId: varchar("creator_id").references(() => users.id), // Person who created the self-care task
+  partnerId: varchar("partner_id").references(() => users.id), // Person providing accountability support
+  status: text("status").notNull().default("pending"), // pending, accepted, completed, cancelled
+  supportType: text("support_type").default("encouragement"), // encouragement, photo_check, progress_tracking
+  partnerEarnings: decimal("partner_earnings").default("0.00"),
+  supportNotes: text("support_notes"), // Partner's notes on providing support
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
 });
 
 export const messages = pgTable("messages", {
@@ -380,6 +399,15 @@ export type InsertBarterTransaction = z.infer<typeof insertBarterTransactionSche
 export type BarterTransaction = typeof barterTransactions.$inferSelect;
 export type InsertTaskProduct = z.infer<typeof insertTaskProductSchema>;
 export type TaskProduct = typeof taskProducts.$inferSelect;
+
+// Accountability partnership schema and types
+export const insertAccountabilityPartnershipSchema = createInsertSchema(accountabilityPartnerships).omit({
+  id: true,
+  createdAt: true
+});
+
+export type InsertAccountabilityPartnership = z.infer<typeof insertAccountabilityPartnershipSchema>;
+export type AccountabilityPartnership = typeof accountabilityPartnerships.$inferSelect;
 
 // User activity tracking for fraud prevention
 export const userActivity = pgTable("user_activity", {
