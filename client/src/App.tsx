@@ -34,6 +34,7 @@ import Barter from "@/pages/barter";
 import CompanyApplication from "@/pages/company-application";
 import EthicalPartnerships from "@/pages/ethical-partnerships";
 import AdvertisingPortal from "@/pages/advertising-portal";
+import AdPreferences from "@/pages/ad-preferences";
 import type { User } from "@shared/schema";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -107,6 +108,7 @@ function Router() {
           <Route path="/company-application" component={CompanyApplication} />
           <Route path="/ethical-partnerships" component={EthicalPartnerships} />
           <Route path="/advertising-portal" component={AdvertisingPortal} />
+          <Route path="/ad-preferences" component={() => <AuthenticatedRoute component={AdPreferences} />} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />
         </Switch>

@@ -691,6 +691,30 @@ export class MemStorage implements IStorage {
     return updatedUser;
   }
 
+  // Method to update user ad preferences
+  async updateUserAdPreferences(userId: string, preferences: {
+    adFrequency?: number;
+    adRelevance?: number;
+    adTypes?: string[];
+    adCategories?: string[];
+    maxAdBudget?: number;
+    minAdBudget?: number;
+    familyFriendlyOnly?: boolean;
+    localAdsOnly?: boolean;
+    ethicalAdsOnly?: boolean;
+    adPersonalization?: boolean;
+  }): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) return undefined;
+    
+    const updatedUser = { 
+      ...user, 
+      ...preferences
+    };
+    this.users.set(userId, updatedUser);
+    return updatedUser;
+  }
+
   async getTaskCategories(): Promise<TaskCategory[]> {
     return Array.from(this.taskCategories.values());
   }

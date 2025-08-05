@@ -1381,6 +1381,131 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User Ad Preferences Management
+  app.put('/api/user/ad-preferences', async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    try {
+      const userId = req.session.userId;
+      const preferences = req.body;
+
+      // Validate preferences
+      if (!preferences.adTypes || preferences.adTypes.length === 0) {
+        return res.status(400).json({ message: 'At least one ad type must be selected' });
+      }
+
+      if (!preferences.adCategories || preferences.adCategories.length === 0) {
+        return res.status(400).json({ message: 'At least one category must be selected' });
+      }
+
+      // Update user preferences
+      const updatedUser = await storage.updateUserAdPreferences(userId, preferences);
+      
+      res.json({ 
+        message: 'Ad preferences updated successfully',
+        user: updatedUser
+      });
+    } catch (error) {
+      console.error('Error updating ad preferences:', error);
+      res.status(500).json({ message: 'Failed to update ad preferences' });
+    }
+  });
+
+  app.post('/api/advertising/preview', async (req, res) => {
+    try {
+      const preferences = req.body;
+      
+      // Get approved advertisers that match user preferences
+      let matchingAds = advertisingMatcher.getApprovedAdvertisers();
+      
+      // Filter by ad types
+      if (preferences.adTypes && preferences.adTypes.length > 0) {
+        matchingAds = matchingAds.filter(ad => preferences.adTypes.includes(ad.adType));
+      }
+      
+      // Filter by categories
+      if (preferences.adCategories && preferences.adCategories.length > 0) {
+        matchingAds = matchingAds.filter(ad => 
+          preferences.adCategories.some(category => 
+            ad.industry.toLowerCase().includes(category.replace('-', ' '))
+          )
+        );
+      }
+      
+      // Filter by budget range
+      if (preferences.minAdBudget && preferences.maxAdBudget) {
+        matchingAds = matchingAds.filter(ad => 
+          ad.proposedBudget >= preferences.minAdBudget && 
+          ad.proposedBudget <= preferences.maxAdBudget
+        );
+      }
+      
+      // Filter by ethical standards
+      if (preferences.ethicalAdsOnly) {
+        matchingAds = matchingAds.filter(ad => {
+          const evaluation = advertisingMatcher.evaluateAdvertiser(ad);
+          return evaluation.approved && evaluation.score >= 75;
+        });
+      }
+      
+      // Sort by relevance and budget
+      matchingAds.sort((a, b) => {
+        const scoreA = advertisingMatcher.evaluateAdvertiser(a).score;
+        const scoreB = advertisingMatcher.evaluateAdvertiser(b).score;
+        if (scoreA !== scoreB) return scoreB - scoreA;
+        return b.proposedBudget - a.proposedBudget;
+      });
+      
+      res.json(matchingAds.slice(0, 10)); // Return top 10 matches
+    } catch (error) {
+      console.error('Error generating ad preview:', error);
+      res.status(500).json({ message: 'Failed to generate ad preview' });
+    }
+  });
+
+  app.get('/api/advertising/user-insights', async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    try {
+      const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Calculate insights based on user preferences
+      const estimatedMonthlyEarnings = Math.round(
+        (user.adFrequency || 5) * 
+        (user.adRelevance || 7) * 
+        2.5 + 15 // Base earning calculation
+      );
+      
+      const relevanceScore = Math.round(
+        ((user.adRelevance || 7) * 10) + 
+        (user.adPersonalization ? 15 : 0) +
+        (user.adCategories?.length || 3) * 2
+      );
+      
+      const ethicalComplianceRate = user.ethicalAdsOnly ? 100 : 85;
+      
+      res.json({
+        estimatedMonthlyEarnings,
+        relevanceScore: Math.min(relevanceScore, 100),
+        ethicalComplianceRate,
+        adTypesEnabled: user.adTypes?.length || 2,
+        categoriesEnabled: user.adCategories?.length || 3
+      });
+    } catch (error) {
+      console.error('Error generating user insights:', error);
+      res.status(500).json({ message: 'Failed to generate insights' });
+    }
+  });
+
   // Demo endpoint for advertising evaluation
   app.get('/api/advertising/demo-evaluation', async (req, res) => {
     try {

@@ -52,7 +52,18 @@ export const users = pgTable("users", {
   referralCode: text("referral_code").unique(),
   referredBy: text("referred_by"), // referral code of the person who referred them
   referralCount: integer("referral_count").default(0),
-  referralEarnings: decimal("referral_earnings").default("0.00")
+  referralEarnings: decimal("referral_earnings").default("0.00"),
+  // Ad Preference Settings
+  adFrequency: integer("ad_frequency").default(5), // 1-10 scale: how often to show ads
+  adRelevance: integer("ad_relevance").default(7), // 1-10 scale: how targeted ads should be
+  adTypes: text("ad_types").array().default(sql`ARRAY['native_feed', 'sponsored_task']`), // preferred ad types
+  adCategories: text("ad_categories").array().default(sql`ARRAY['education', 'health-wellness', 'retail']`), // preferred categories
+  maxAdBudget: integer("max_ad_budget").default(100), // max budget range to show ads from
+  minAdBudget: integer("min_ad_budget").default(10), // min budget range to show ads from
+  familyFriendlyOnly: boolean("family_friendly_only").default(true), // only family-friendly content
+  localAdsOnly: boolean("local_ads_only").default(false), // prefer local businesses
+  ethicalAdsOnly: boolean("ethical_ads_only").default(true), // only ethically approved advertisers
+  adPersonalization: boolean("ad_personalization").default(true) // use personal data for targeting
 });
 
 export const taskCategories = pgTable("task_categories", {

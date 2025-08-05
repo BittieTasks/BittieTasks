@@ -173,6 +173,13 @@ export default function ProfilePage() {
             <Edit className="mr-2" size={16} />
             Edit Profile
           </Button>
+
+          <Link href="/ad-preferences">
+            <Button variant="outline" className="w-full justify-start">
+              <Settings className="mr-2" size={16} />
+              Ad Preferences
+            </Button>
+          </Link>
           
           <Link href="/earnings">
             <Button variant="outline" className="w-full justify-start">
