@@ -466,7 +466,8 @@ export class MemStorage implements IStorage {
           brandName: "Target",
           brandDescription: "Target pays BittieTasks $35 per participant ($20 to you + $15 platform fee) to drive community shopping engagement and gather customer insights",
           specialReward: "$5 Target gift card + exclusive weekly coupons",
-          brandColor: "#CC0000"
+          brandColor: "#CC0000",
+          ethicalStanding: "Target scores 100/100 on HRC Corporate Equality Index for LGBTQ+ workplace equality and has strong DEI commitments"
         }
       },
       {
@@ -534,7 +535,8 @@ export class MemStorage implements IStorage {
           brandName: "Nike",
           brandDescription: "Nike invests $43 per participant ($28 payment + $15 platform fee) to promote family fitness and test new product lines",
           specialReward: "Nike gear sample + 20% off family fitness products",
-          brandColor: "#000000"
+          brandColor: "#000000",
+          ethicalStanding: "Nike scores 90/100 on HRC index, champions equality through sport, and has committed $40M to organizations supporting Black communities"
         }
       },
       {
@@ -585,7 +587,8 @@ export class MemStorage implements IStorage {
           brandName: "Apple",
           brandDescription: "Apple invests $60 per family ($40 payment + $20 platform fee) to improve family technology experiences and gather user insights",
           specialReward: "Apple accessories bundle + exclusive beta access",
-          brandColor: "#1D1D1F"
+          brandColor: "#1D1D1F",
+          ethicalStanding: "Apple scores 100/100 on HRC index, carbon neutral by 2030, and has strong supplier diversity programs supporting minority-owned businesses"
         }
       },
       {
