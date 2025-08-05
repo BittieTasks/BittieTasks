@@ -27,6 +27,30 @@ export const users = pgTable("users", {
   identityDocuments: text("identity_documents").array().default([]),
   trustScore: integer("trust_score").default(0),
   riskScore: integer("risk_score").default(0),
+  identityScore: integer("identity_score").default(0), // Overall human verification score 0-100
+  // Enhanced Human Verification
+  isCaptchaVerified: boolean("is_captcha_verified").default(false),
+  captchaScore: decimal("captcha_score").default("0.0"), // reCAPTCHA score 0.0-1.0
+  deviceFingerprint: text("device_fingerprint"),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  signupMethod: text("signup_method").default("email"), // email, phone, google, facebook
+  behaviorScore: integer("behavior_score").default(0), // AI-analyzed behavior patterns
+  lastCaptchaVerification: timestamp("last_captcha_verification"),
+  // Identity Verification Requirements
+  governmentIdUploaded: boolean("government_id_uploaded").default(false),
+  governmentIdVerified: boolean("government_id_verified").default(false),
+  faceVerificationCompleted: boolean("face_verification_completed").default(false),
+  livelinessCheckPassed: boolean("liveliness_check_passed").default(false),
+  // Anti-Bot Measures  
+  mouseMovementAnalyzed: boolean("mouse_movement_analyzed").default(false),
+  keystrokePatternAnalyzed: boolean("keystroke_pattern_analyzed").default(false),
+  sessionBehaviorScore: integer("session_behavior_score").default(0),
+  humanVerificationLevel: text("human_verification_level").default("basic"), // basic, standard, premium
+  // Two-Factor Authentication
+  twoFactorEnabled: boolean("two_factor_enabled").default(false),
+  twoFactorSecret: text("two_factor_secret"),
+  backupCodes: text("backup_codes").array().default([]),
   emailVerificationToken: text("email_verification_token"),
   passwordResetToken: text("password_reset_token"),
   passwordResetExpires: timestamp("password_reset_expires"),
@@ -298,6 +322,51 @@ export const insertUserChallengeSchema = createInsertSchema(userChallenges).omit
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
+// Additional tables for comprehensive verification system
+export const userActivity = pgTable("user_activity", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  activityType: text("activity_type").notNull(),
+  metadata: jsonb("metadata"),
+  riskScore: integer("risk_score").default(0),
+  flagged: boolean("flagged").default(false),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
+});
+
+export const verificationDocuments = pgTable("verification_documents", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  documentType: text("document_type").notNull(), // drivers_license, passport, etc.
+  documentUrl: text("document_url").notNull(),
+  verificationStatus: text("verification_status").default("pending"), // pending, approved, rejected
+  verificationNotes: text("verification_notes"),
+  uploadedAt: timestamp("uploaded_at").default(sql`CURRENT_TIMESTAMP`),
+  verifiedAt: timestamp("verified_at")
+});
+
+export const safetyReports = pgTable("safety_reports", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  reporterUserId: varchar("reporter_user_id").references(() => users.id),
+  reportedUserId: varchar("reported_user_id").references(() => users.id),
+  reportType: text("report_type").notNull(), // fraud, harassment, etc.
+  description: text("description").notNull(),
+  evidence: text("evidence").array().default([]),
+  status: text("status").default("pending"), // pending, investigating, resolved
+  priority: text("priority").default("medium"), // low, medium, high, critical
+  resolution: text("resolution"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+  resolvedAt: timestamp("resolved_at")
+});
+
+export type UserActivity = typeof userActivity.$inferSelect;
+export type InsertUserActivity = typeof userActivity.$inferInsert;
+export type VerificationDocument = typeof verificationDocuments.$inferSelect;
+export type InsertVerificationDocument = typeof verificationDocuments.$inferInsert;
+export type SafetyReport = typeof safetyReports.$inferSelect;
+export type InsertSafetyReport = typeof safetyReports.$inferInsert;
+
 // Referrals table
 export const referrals = pgTable("referrals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -420,60 +489,9 @@ export const insertAccountabilityPartnershipSchema = createInsertSchema(accounta
 export type InsertAccountabilityPartnership = z.infer<typeof insertAccountabilityPartnershipSchema>;
 export type AccountabilityPartnership = typeof accountabilityPartnerships.$inferSelect;
 
-// User activity tracking for fraud prevention
-export const userActivity = pgTable("user_activity", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
-  activityType: text("activity_type").notNull(), // login, task_creation, payment, message, etc.
-  metadata: jsonb("metadata"), // IP, user agent, additional data
-  riskScore: integer("risk_score").default(0),
-  flagged: boolean("flagged").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-});
+// Duplicate tables removed - using original definitions above
 
-// Identity verification documents
-export const verificationDocuments = pgTable("verification_documents", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
-  documentType: text("document_type").notNull(), // drivers_license, passport, utility_bill, etc.
-  documentUrl: text("document_url").notNull(),
-  verificationStatus: text("verification_status").notNull().default("pending"), // pending, approved, rejected
-  verificationNotes: text("verification_notes"),
-  submittedAt: timestamp("submitted_at").defaultNow(),
-  reviewedAt: timestamp("reviewed_at"),
-  reviewedBy: varchar("reviewed_by"),
-});
-
-// Trust and safety reports
-export const safetyReports = pgTable("safety_reports", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  reporterUserId: varchar("reporter_user_id").references(() => users.id).notNull(),
-  reportedUserId: varchar("reported_user_id").references(() => users.id).notNull(),
-  reportType: text("report_type").notNull(), // fraud, harassment, inappropriate_behavior, etc.
-  description: text("description").notNull(),
-  evidence: text("evidence").array().default([]), // URLs to uploaded evidence
-  status: text("status").notNull().default("pending"), // pending, investigating, resolved, dismissed
-  priority: text("priority").notNull().default("medium"), // low, medium, high, urgent
-  assignedTo: varchar("assigned_to"),
-  resolution: text("resolution"),
-  createdAt: timestamp("created_at").defaultNow(),
-  resolvedAt: timestamp("resolved_at"),
-});
-
-export const insertUserActivitySchema = createInsertSchema(userActivity).omit({
-  id: true,
-  createdAt: true
-});
-
-export const insertVerificationDocumentSchema = createInsertSchema(verificationDocuments).omit({
-  id: true,
-  submittedAt: true
-});
-
-export const insertSafetyReportSchema = createInsertSchema(safetyReports).omit({
-  id: true,
-  createdAt: true
-});
+// Schema types already defined above with original table definitions
 
 export type InsertUserActivity = z.infer<typeof insertUserActivitySchema>;
 export type UserActivity = typeof userActivity.$inferSelect;

@@ -1604,6 +1604,130 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Human verification routes
+  app.get('/api/verification/status', async (req, res) => {
+    try {
+      const userId = 'demo-user-id'; // In real app, get from session
+      const status = await storage.getUserVerificationStatus(userId);
+      res.json(status);
+    } catch (error) {
+      console.error('Error fetching verification status:', error);
+      res.status(500).json({ message: 'Failed to fetch verification status' });
+    }
+  });
+
+  app.post('/api/verification/phone/send-code', async (req, res) => {
+    try {
+      const { phoneNumber, userId } = req.body;
+      
+      // Generate verification code
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // In production, send SMS here
+      console.log(`SMS code ${code} would be sent to ${phoneNumber}`);
+      
+      // Store code temporarily (in production, store in database with expiration)
+      await storage.updateUserVerification(userId, {
+        phoneNumber,
+        phoneVerificationCode: code,
+        phoneVerificationExpires: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+      });
+      
+      await storage.logVerificationActivity(userId, 'phone_code_sent', { phoneNumber });
+      
+      res.json({ 
+        message: 'Verification code sent',
+        code // Only for demo - remove in production
+      });
+    } catch (error) {
+      console.error('Error sending verification code:', error);
+      res.status(500).json({ message: 'Failed to send verification code' });
+    }
+  });
+
+  app.post('/api/verification/phone/verify', async (req, res) => {
+    try {
+      const { userId, verificationCode } = req.body;
+      
+      // In production, verify against stored code and check expiration
+      await storage.updateUserVerification(userId, {
+        isPhoneVerified: true,
+        phoneVerificationCode: null,
+        phoneVerificationExpires: null,
+        identityScore: 25 // Award points for phone verification
+      });
+      
+      await storage.logVerificationActivity(userId, 'phone_verified');
+      
+      res.json({ message: 'Phone verified successfully' });
+    } catch (error) {
+      console.error('Error verifying phone:', error);
+      res.status(500).json({ message: 'Failed to verify phone' });
+    }
+  });
+
+  app.post('/api/verification/upload-identity', async (req, res) => {
+    try {
+      const { userId, documentType, documentData } = req.body;
+      
+      // In production, process document upload and verification
+      await storage.updateUserVerification(userId, {
+        governmentIdVerified: true,
+        identityScore: 50 // Award points for identity verification
+      });
+      
+      await storage.logVerificationActivity(userId, 'identity_document_uploaded', { documentType });
+      
+      res.json({ message: 'Identity document uploaded successfully' });
+    } catch (error) {
+      console.error('Error uploading identity document:', error);
+      res.status(500).json({ message: 'Failed to upload identity document' });
+    }
+  });
+
+  app.post('/api/verification/verify-face', async (req, res) => {
+    try {
+      const { userId, faceData, livenessData } = req.body;
+      
+      // In production, perform face verification and liveness detection
+      await storage.updateUserVerification(userId, {
+        faceVerificationCompleted: true,
+        identityScore: 75 // Award points for face verification
+      });
+      
+      await storage.logVerificationActivity(userId, 'face_verification_completed');
+      
+      res.json({ message: 'Face verification completed successfully' });
+    } catch (error) {
+      console.error('Error verifying face:', error);
+      res.status(500).json({ message: 'Failed to verify face' });
+    }
+  });
+
+  app.post('/api/verification/analyze-behavior', async (req, res) => {
+    try {
+      const { userId, behaviorData } = req.body;
+      
+      // Analyze behavior patterns
+      const behaviorScore = Math.min(100, Math.max(0, 
+        70 + Math.random() * 30 // Demo scoring
+      ));
+      
+      await storage.updateUserVerification(userId, {
+        behaviorScore,
+        humanVerificationLevel: behaviorScore > 80 ? 'premium' : behaviorScore > 60 ? 'standard' : 'basic',
+        identityScore: Math.min(100, 85) // Award points for behavior analysis
+      });
+      
+      await storage.logVerificationActivity(userId, 'behavior_analysis_completed', { score: behaviorScore });
+      
+      res.json({ message: 'Behavior analysis completed successfully', score: behaviorScore });
+    } catch (error) {
+      console.error('Error analyzing behavior:', error);
+      res.status(500).json({ message: 'Failed to analyze behavior' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

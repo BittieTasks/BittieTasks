@@ -9,7 +9,7 @@ import { Users2 } from "lucide-react";
 const navigation = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Search', href: '/search', icon: Search },
-  { name: 'Daily', href: '/challenges', icon: Zap },
+  { name: 'Verify', href: '/verification', icon: Shield },
   { name: 'Refer', href: '/referrals', icon: Users2 },
   { name: 'Pro', href: '/subscription', icon: Crown },
 ];

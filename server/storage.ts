@@ -68,6 +68,13 @@ export interface IStorage {
   assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge>;
   completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined>;
   getTodaysChallenges(userId: string): Promise<UserChallenge[]>;
+  
+  // Human verification methods
+  updateUserVerification(userId: string, verificationData: Partial<User>): Promise<User | undefined>;
+  getUserVerificationStatus(userId: string): Promise<any>;
+  logVerificationActivity(userId: string, activityType: string, metadata?: any): Promise<void>;
+  incrementRiskScore(userId: string, amount: number): Promise<void>;
+  lockUserAccount(userId: string, reason: string): Promise<void>;
 
   // Admin methods for platform management
   getAllUsers(): Promise<User[]>;
@@ -1468,6 +1475,61 @@ export class DatabaseStorage implements IStorage {
     }
     
     return todaysChallenges;
+  }
+
+  // Human verification methods for DatabaseStorage
+  async updateUserVerification(userId: string, verificationData: Partial<User>): Promise<User | undefined> {
+    const [updatedUser] = await db
+      .update(users)
+      .set(verificationData)
+      .where(eq(users.id, userId))
+      .returning();
+    return updatedUser || undefined;
+  }
+
+  async getUserVerificationStatus(userId: string): Promise<any> {
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    if (!user) return null;
+
+    return {
+      overallScore: user.identityScore || 0,
+      level: user.humanVerificationLevel || 'basic',
+      verifications: {
+        email: user.isEmailVerified || false,
+        phone: user.isPhoneVerified || false,
+        identity: user.governmentIdVerified || false,
+        face: user.faceVerificationCompleted || false,
+        behavior: (user.behaviorScore || 0) > 70,
+        captcha: user.isCaptchaVerified || false,
+        twoFactor: user.twoFactorEnabled || false
+      },
+      requirements: [],
+      riskLevel: (user.riskScore || 0) > 50 ? 'high' : (user.riskScore || 0) > 20 ? 'medium' : 'low'
+    };
+  }
+
+  async logVerificationActivity(userId: string, activityType: string, metadata?: any): Promise<void> {
+    // In production, would log to userActivity table
+    console.log(`Verification activity: ${activityType} for user ${userId}`, metadata);
+  }
+
+  async incrementRiskScore(userId: string, amount: number): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        riskScore: sql`COALESCE(risk_score, 0) + ${amount}`
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async lockUserAccount(userId: string, reason: string): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        accountLocked: true,
+        lockUntil: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+      })
+      .where(eq(users.id, userId));
   }
 
   // Admin methods for DatabaseStorage
