@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { registerSubscriptionRoutes } from "./routes/subscription";
 import { storage } from "./storage";
 import affiliateProductsRouter from "./routes/affiliate-products";
+import { ethicalPartnershipMatcher, type PartnershipCandidate } from "./services/ethicalPartnershipMatcher";
 import paymentsRouter from "./routes/payments";
 import { insertTaskCompletionSchema, insertMessageSchema, insertUserSchema } from "@shared/schema";
 import multer from "multer";
@@ -1118,6 +1119,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
   } catch (error) {
     console.error("Error ensuring barter category:", error);
   }
+
+  // Ethical Partnership Matching API routes
+  app.get('/api/ethical-partners', async (req, res) => {
+    try {
+      const approvedPartners = ethicalPartnershipMatcher.getApprovedPartners();
+      res.json(approvedPartners);
+    } catch (error) {
+      console.error('Error fetching ethical partners:', error);
+      res.status(500).json({ message: 'Failed to fetch ethical partners' });
+    }
+  });
+
+  app.post('/api/ethical-partners/evaluate', async (req, res) => {
+    try {
+      const candidateData = req.body as PartnershipCandidate;
+      const evaluation = ethicalPartnershipMatcher.evaluatePartner(candidateData);
+      const report = ethicalPartnershipMatcher.generatePartnershipReport(candidateData);
+      
+      res.json({
+        evaluation,
+        report,
+        candidate: candidateData
+      });
+    } catch (error) {
+      console.error('Error evaluating partnership candidate:', error);
+      res.status(500).json({ message: 'Failed to evaluate partnership candidate' });
+    }
+  });
+
+  app.get('/api/ethical-partners/find/:taskType', async (req, res) => {
+    try {
+      const { taskType } = req.params;
+      const { minPayment } = req.query;
+      
+      const partners = ethicalPartnershipMatcher.findPartnersForTaskType(
+        taskType, 
+        minPayment ? parseInt(minPayment as string) : 0
+      );
+      
+      res.json(partners);
+    } catch (error) {
+      console.error('Error finding partners for task type:', error);
+      res.status(500).json({ message: 'Failed to find partners' });
+    }
+  });
+
+  // Demo endpoint to show ethical partnership evaluation
+  app.get('/api/ethical-partners/demo-evaluation', async (req, res) => {
+    try {
+      const demoCandidate: PartnershipCandidate = {
+        companyName: "Example Corp",
+        industry: "Technology",
+        proposedTaskType: "Family Tech Workshop",
+        proposedPayment: 45,
+        taskDescription: "Family coding workshop for kids",
+        targetAudience: "Families with children 8-16",
+        expectedParticipants: 20,
+        ethicalCriteria: {
+          hrcScore: 85,
+          deiLeadership: true,
+          lgbtqSupport: true,
+          environmentalScore: 70,
+          laborPracticesScore: 80,
+          communityInvestment: true,
+          controversyScore: 15,
+          carbonNeutralCommitment: true,
+          supplierDiversityProgram: false
+        }
+      };
+
+      const evaluation = ethicalPartnershipMatcher.evaluatePartner(demoCandidate);
+      const report = ethicalPartnershipMatcher.generatePartnershipReport(demoCandidate);
+
+      res.json({
+        message: "Demo ethical partnership evaluation",
+        evaluation,
+        report,
+        candidate: demoCandidate
+      });
+    } catch (error) {
+      console.error('Error in demo evaluation:', error);
+      res.status(500).json({ message: 'Failed to run demo evaluation' });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
