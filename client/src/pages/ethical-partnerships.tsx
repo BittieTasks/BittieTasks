@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, Heart, Leaf, Users, Award, CheckCircle, AlertTriangle } from "lucide-react";
+import { Shield, Heart, Leaf, Users, Award, CheckCircle, AlertTriangle, Building2 } from "lucide-react";
 
 interface EthicalCriteria {
   hrcScore: number;
@@ -161,12 +161,28 @@ export default function EthicalPartnerships() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold">Ethical Partnership Matching</h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
           BittieTasks partners only with companies that demonstrate strong commitments to diversity, 
           equity, inclusion, LGBTQ+ rights, and responsible business practices.
         </p>
+        <div className="flex justify-center gap-4">
+          <Button 
+            onClick={() => window.location.href = '/company-application'}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Building2 className="h-4 w-4 mr-2" />
+            Apply for Partnership
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => window.location.href = '/company-application?tab=task-proposal'}
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Propose Custom Task
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="approved" className="space-y-6">

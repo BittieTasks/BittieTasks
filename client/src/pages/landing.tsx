@@ -145,6 +145,11 @@ export default function LandingPage() {
               Learn More
             </Button>
           </Link>
+          <Link href="/company-application">
+            <Button variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-50">
+              Corporate Partnership
+            </Button>
+          </Link>
         </div>
 
         {/* Trust Indicators */}
@@ -157,6 +162,16 @@ export default function LandingPage() {
             <div>10,000+ parents</div>
             <div>$2M+ earned</div>
           </div>
+        </div>
+
+        {/* Corporate Partnership Info */}
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg text-center">
+          <p className="text-sm text-blue-800 mb-2">
+            <strong>For Companies:</strong> Partner with BittieTasks to engage families through ethical, values-aligned activities.
+          </p>
+          <p className="text-xs text-blue-600">
+            We only partner with companies that meet our strict ethical standards for DEI, LGBTQ+ support, and responsible business practices.
+          </p>
         </div>
       </div>
     </div>
