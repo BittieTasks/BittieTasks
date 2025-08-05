@@ -4,6 +4,7 @@ import { registerSubscriptionRoutes } from "./routes/subscription";
 import { storage } from "./storage";
 import affiliateProductsRouter from "./routes/affiliate-products";
 import { ethicalPartnershipMatcher, type PartnershipCandidate } from "./services/ethicalPartnershipMatcher";
+import { advertisingMatcher, type AdvertisingCandidate } from "./services/advertisingMatcher";
 import paymentsRouter from "./routes/payments";
 import { insertTaskCompletionSchema, insertMessageSchema, insertUserSchema } from "@shared/schema";
 import multer from "multer";
@@ -1299,6 +1300,132 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in demo evaluation:', error);
       res.status(500).json({ message: 'Failed to run demo evaluation' });
+    }
+  });
+
+  // Advertising Management API routes
+  app.get('/api/advertising/approved', async (req, res) => {
+    try {
+      const { tier } = req.query;
+      const approvedAds = advertisingMatcher.getApprovedAdvertisers(tier as any);
+      res.json(approvedAds);
+    } catch (error) {
+      console.error('Error fetching approved advertisers:', error);
+      res.status(500).json({ message: 'Failed to fetch approved advertisers' });
+    }
+  });
+
+  app.post('/api/advertising/apply', async (req, res) => {
+    try {
+      const applicationData = req.body as AdvertisingCandidate;
+      
+      // Validate required fields
+      if (!applicationData.companyName || !applicationData.adType || !applicationData.contentDescription) {
+        return res.status(400).json({ message: 'Missing required advertising information' });
+      }
+
+      // Auto-evaluate the advertising application
+      const evaluation = advertisingMatcher.evaluateAdvertiser(applicationData);
+      const report = advertisingMatcher.generateAdvertisingReport(applicationData);
+      const revenueSplit = evaluation.approved && evaluation.tier !== 'rejected' 
+        ? advertisingMatcher.calculateRevenueSplit(evaluation.tier, applicationData.proposedBudget)
+        : null;
+      
+      // Store application (in real implementation, this would go to database)
+      const application = {
+        id: `ad-app-${Date.now()}`,
+        submittedAt: new Date(),
+        status: evaluation.approved ? 'approved' : 'rejected',
+        tier: evaluation.tier,
+        candidate: applicationData,
+        evaluation,
+        report,
+        revenueSplit
+      };
+
+      console.log('New advertising application:', application);
+
+      res.json({
+        applicationId: application.id,
+        status: application.status,
+        tier: evaluation.tier,
+        evaluation,
+        revenueSplit,
+        message: evaluation.approved 
+          ? `Congratulations! Your advertising meets our ethical standards and has been approved for ${evaluation.tier} tier placement.`
+          : 'Thank you for your interest. Your advertising application needs improvement in our ethical criteria before approval.',
+        nextSteps: evaluation.approved 
+          ? 'Our advertising team will contact you within 24 hours to set up your campaign.'
+          : 'Please review the evaluation report and resubmit when ethical standards are met.'
+      });
+    } catch (error) {
+      console.error('Error processing advertising application:', error);
+      res.status(500).json({ message: 'Failed to process advertising application' });
+    }
+  });
+
+  app.get('/api/advertising/find/:contentType', async (req, res) => {
+    try {
+      const { contentType } = req.params;
+      const { audience } = req.query;
+      
+      const matchingAds = advertisingMatcher.findAdsForContent(
+        contentType, 
+        audience as string || 'general'
+      );
+      
+      res.json(matchingAds);
+    } catch (error) {
+      console.error('Error finding advertising content:', error);
+      res.status(500).json({ message: 'Failed to find advertising content' });
+    }
+  });
+
+  // Demo endpoint for advertising evaluation
+  app.get('/api/advertising/demo-evaluation', async (req, res) => {
+    try {
+      const demoAdvertiser: AdvertisingCandidate = {
+        companyName: "FamilyTech Inc",
+        industry: "Educational Technology",
+        adType: "native_feed",
+        proposedBudget: 2500,
+        targetAudience: "Parents with school-age children",
+        contentDescription: "Educational apps and learning tools for children",
+        ethicalCriteria: {
+          hrcScore: 80,
+          deiCommitment: true,
+          lgbtqSupport: true,
+          environmentalScore: 60,
+          childSafetyCompliance: true,
+          dataPrivacyScore: 90,
+          controversyScore: 20,
+          familyFriendlyContent: true,
+          transparentAdvertising: true
+        },
+        adContent: {
+          title: "Educational Learning Apps",
+          description: "Safe, engaging learning tools for your children",
+          ctaText: "Explore Learning Apps",
+          landingUrl: "https://familytech.com/apps"
+        }
+      };
+
+      const evaluation = advertisingMatcher.evaluateAdvertiser(demoAdvertiser);
+      const report = advertisingMatcher.generateAdvertisingReport(demoAdvertiser);
+      const revenueSplit = evaluation.approved && evaluation.tier !== 'rejected'
+        ? advertisingMatcher.calculateRevenueSplit(evaluation.tier, demoAdvertiser.proposedBudget)
+        : null;
+
+      res.json({
+        message: "Demo advertising evaluation",
+        evaluation,
+        report,
+        revenueSplit,
+        candidate: demoAdvertiser
+      });
+    } catch (error) {
+      console.error('Error in demo advertising evaluation:', error);
+      res.status(500).json({ message: 'Failed to run demo advertising evaluation' });
     }
   });
 

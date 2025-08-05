@@ -5,6 +5,8 @@ BittieTasks is a mobile-first React web application designed as a dual-income ma
 
 **NEW: Ethical Partnership Matching Algorithm** - Comprehensive automated system for evaluating corporate partners based on HRC Corporate Equality Index scores, DEI leadership, LGBTQ+ support, environmental practices, and labor standards. Companies can apply for partnerships and propose custom tasks through dedicated portals with real-time ethical evaluation.
 
+**NEW: Advertising Management System** - Dedicated ethical evaluation system for advertisers with tiered approval (Premium/Standard/Basic), automated revenue sharing calculations, family-safety requirements, and transparent disclosure standards. Includes specialized criteria for child safety compliance, data privacy, and family-friendly content.
+
 **NEW: Bartering System** - The platform now includes a comprehensive bartering system where parents can trade skills, services, and time with neighbors without cash transactions. This includes proper tax documentation for IRS compliance, fair market value tracking, and seamless integration with the existing platform.
 
 **UPDATED: Self-Care Tasks** - Self-care tasks are now solo activities with optional accountability partners. Users earn money for completing personal wellness activities (walks, yoga, meal prep, reading) while being able to invite friends as accountability partners who also earn for providing support and encouragement. No payment required to join - focuses on community support and mutual earnings.

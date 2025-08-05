@@ -150,6 +150,11 @@ export default function LandingPage() {
               Corporate Partnership
             </Button>
           </Link>
+          <Link href="/advertising-portal">
+            <Button variant="outline" className="w-full border-purple-600 text-purple-600 hover:bg-purple-50">
+              Advertise with Us
+            </Button>
+          </Link>
         </div>
 
         {/* Trust Indicators */}
