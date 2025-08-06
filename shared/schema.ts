@@ -360,12 +360,7 @@ export const safetyReports = pgTable("safety_reports", {
   resolvedAt: timestamp("resolved_at")
 });
 
-export type UserActivity = typeof userActivity.$inferSelect;
-export type InsertUserActivity = typeof userActivity.$inferInsert;
-export type VerificationDocument = typeof verificationDocuments.$inferSelect;
-export type InsertVerificationDocument = typeof verificationDocuments.$inferInsert;
-export type SafetyReport = typeof safetyReports.$inferSelect;
-export type InsertSafetyReport = typeof safetyReports.$inferInsert;
+
 
 // Referrals table
 export const referrals = pgTable("referrals", {
@@ -493,9 +488,4 @@ export type AccountabilityPartnership = typeof accountabilityPartnerships.$infer
 
 // Schema types already defined above with original table definitions
 
-export type InsertUserActivity = z.infer<typeof insertUserActivitySchema>;
-export type UserActivity = typeof userActivity.$inferSelect;
-export type InsertVerificationDocument = z.infer<typeof insertVerificationDocumentSchema>;
-export type VerificationDocument = typeof verificationDocuments.$inferSelect;
-export type InsertSafetyReport = z.infer<typeof insertSafetyReportSchema>;
-export type SafetyReport = typeof safetyReports.$inferSelect;
+// Type exports (consolidated to avoid duplicates)

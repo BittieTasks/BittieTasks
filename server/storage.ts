@@ -1271,15 +1271,15 @@ export class MemStorage implements IStorage {
 
   // Admin methods
   async getAllUsers(): Promise<User[]> {
-    return Array.from(this.users.values());
+    return await db.select().from(users);
   }
 
   async getAllTasks(): Promise<Task[]> {
-    return Array.from(this.tasks.values());
+    return await db.select().from(tasks);
   }
 
   async getAllTaskCompletions(): Promise<TaskCompletion[]> {
-    return Array.from(this.taskCompletions.values());
+    return await db.select().from(taskCompletions);
   }
 }
 
@@ -1288,7 +1288,7 @@ import { db } from "./db";
 import { eq, and, gte, lt, sql } from "drizzle-orm";
 import { users, tasks, taskCategories, taskCompletions, messages, userAchievements, achievementDefinitions, dailyChallenges, userChallenges } from "@shared/schema";
 
-export class DatabaseStorage implements IStorage {
+export class DatabaseStorage {
   async getUsers(): Promise<User[]> {
     return await db.select().from(users);
   }
