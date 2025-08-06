@@ -62,9 +62,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: [
+          "'self'", 
+          "'unsafe-inline'", 
+          "'unsafe-eval'",
+          "https://js.stripe.com",
+          "https://replit.com"
+        ],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
+        connectSrc: [
+          "'self'",
+          "https://api.stripe.com",
+          "https://q.stripe.com",
+          "https://js.stripe.com"
+        ],
+        frameSrc: [
+          "https://js.stripe.com",
+          "https://hooks.stripe.com"
+        ],
       },
     },
   }));
