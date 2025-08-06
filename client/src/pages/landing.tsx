@@ -100,17 +100,17 @@ export default function LandingPage() {
             </Button>
           </Link>
           <Link href="/how-it-works">
-            <Button variant="outline" className="w-full">
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3">
               Learn More
             </Button>
           </Link>
           <Link href="/company-application">
-            <Button variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-50">
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3">
               Corporate Partnership
             </Button>
           </Link>
           <Link href="/advertising-portal">
-            <Button variant="outline" className="w-full border-purple-600 text-purple-600 hover:bg-purple-50">
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3">
               Advertise with Us
             </Button>
           </Link>
