@@ -229,23 +229,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Demo login endpoint
   app.post("/api/auth/demo", async (req, res) => {
     try {
-      // Create or get demo user
+      // Create or get demo user - Development mode with zero values
       const demoUser = {
         id: "demo-user-id",
         firstName: "Demo",
         lastName: "User",
-        email: "demo@taskparent.com",
+        email: "demo@bittietasks.com",
         phone: "(555) 123-4567",
-        bio: "Demo account for exploring TaskParent features",
+        bio: "Development account for BittieTasks platform testing",
         skills: ["Cooking", "Cleaning", "Organizing"],
-        rating: 4.8,
-        completedTasks: 45,
-        earnings: 1250.75,
-        joinedAt: "2024-01-15",
+        rating: 0,
+        completedTasks: 0,
+        earnings: 0,
+        joinedAt: "2025-01-06",
         verified: true,
         profileImage: null,
-        location: "Demo City, ST",
-        availability: "Weekdays 9am-5pm",
+        location: "Development Environment",
+        availability: "Available for testing",
       };
 
       // Store demo user in session
@@ -340,18 +340,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: "demo-user-id",
           firstName: "Demo",
           lastName: "User",
-          email: "demo@taskparent.com",
+          email: "demo@bittietasks.com",
           phone: "(555) 123-4567",
-          bio: "Demo account for exploring TaskParent features",
+          bio: "Development account for BittieTasks platform testing",
           skills: ["Cooking", "Cleaning", "Organizing"],
-          rating: 4.8,
-          completedTasks: 45,
-          earnings: 1250.75,
-          joinedAt: "2024-01-15",
+          rating: 0,
+          completedTasks: 0,
+          earnings: 0,
+          joinedAt: "2025-01-06",
           verified: true,
           profileImage: null,
-          location: "Demo City, ST",
-          availability: "Weekdays 9am-5pm",
+          location: "Development Environment",
+          availability: "Available for testing",
         };
         return res.json(demoUser);
       }
@@ -367,17 +367,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           phone: "(555) 000-0001",
           bio: "BittieTasks Platform Administrator",
           skills: ["Platform Management", "Security", "Analytics", "Stripe Integration"],
-          rating: 5.0,
+          rating: 0,
           completedTasks: 0,
           earnings: 0,
-          joinedAt: "2024-01-01",
+          joinedAt: "2025-01-06",
           verified: true,
           profileImage: null,
-          location: "Platform HQ",
-          availability: "24/7 Platform Monitoring",
+          location: "Development Environment",
+          availability: "Development Mode",
           totalEarnings: "0.00",
-          currentStreak: 365,
-          totalPoints: 10000,
+          currentStreak: 0,
+          totalPoints: 0,
           isAdmin: true,
           stripeEnabled: process.env.STRIPE_SECRET_KEY ? true : false
         };
