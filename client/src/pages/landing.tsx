@@ -112,7 +112,7 @@ export default function LandingPage() {
           
           <div className="p-2 bg-white rounded-xl shadow-sm">
             <Link href="/company-application">
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg">
+              <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-500 hover:from-indigo-700 hover:to-purple-600 text-white py-3 rounded-lg shadow-lg">
                 Corporate Partnership
               </Button>
             </Link>
@@ -120,7 +120,7 @@ export default function LandingPage() {
           
           <div className="p-2 bg-white rounded-xl shadow-sm">
             <Link href="/advertising-portal">
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg">
+              <Button className="w-full bg-gradient-to-r from-orange-600 to-pink-500 hover:from-orange-700 hover:to-pink-600 text-white py-3 rounded-lg shadow-lg">
                 Advertise with Us
               </Button>
             </Link>
