@@ -25,8 +25,10 @@ export default function AdminLogin() {
         title: "Admin Access Granted",
         description: "Welcome to the BittieTasks platform dashboard.",
       });
-      // Reload to refresh authentication state
-      window.location.href = "/admin";
+      // Force reload to refresh authentication state and redirect
+      setTimeout(() => {
+        window.location.href = "/admin";
+      }, 1000);
     },
     onError: (error: any) => {
       if (error.message.includes("Verification code required")) {
@@ -42,6 +44,7 @@ export default function AdminLogin() {
           variant: "destructive",
         });
       }
+      setIsLoading(false);
     },
   });
 
@@ -55,6 +58,15 @@ export default function AdminLogin() {
       toast({
         title: "Email Required",
         description: "Please enter your admin email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (requiresCode && !verificationCode) {
+      toast({
+        title: "Verification Code Required",
+        description: "Please enter the admin verification code.",
         variant: "destructive",
       });
       return;

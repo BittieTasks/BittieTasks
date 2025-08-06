@@ -358,14 +358,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Handle admin user
       if (userId === "admin-user-id") {
+        const adminEmail = (req.session as any).adminEmail || "admin@bittietasks.com";
         const adminUser = {
           id: "admin-user-id",
           firstName: "Platform",
           lastName: "Admin",
-          email: "admin@taskparent.com",
+          email: adminEmail,
           phone: "(555) 000-0001",
-          bio: "TaskParent Platform Administrator",
-          skills: ["Platform Management", "Security", "Analytics"],
+          bio: "BittieTasks Platform Administrator",
+          skills: ["Platform Management", "Security", "Analytics", "Stripe Integration"],
           rating: 5.0,
           completedTasks: 0,
           earnings: 0,
@@ -377,7 +378,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalEarnings: "0.00",
           currentStreak: 365,
           totalPoints: 10000,
-          isAdmin: true
+          isAdmin: true,
+          stripeEnabled: process.env.STRIPE_SECRET_KEY ? true : false
         };
         return res.json(adminUser);
       }
