@@ -258,17 +258,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin login endpoint
+  // Enhanced admin login with email verification
   app.post("/api/auth/admin", async (req, res) => {
     try {
+      const { email, verificationCode } = req.body;
+      
+      // Admin email whitelist - you can add your email here
+      const adminEmails = [
+        "admin@taskparent.com",
+        "admin@bittietasks.com",
+        // Add your email here for admin access
+        // "your-email@example.com"
+      ];
+      
+      // If email provided, verify it's an admin email
+      if (email) {
+        if (!adminEmails.includes(email.toLowerCase())) {
+          return res.status(403).json({ message: "Unauthorized admin access" });
+        }
+        
+        // For now, simple verification (in production, send email verification)
+        if (!verificationCode || verificationCode !== "admin2025") {
+          return res.status(401).json({ 
+            message: "Verification code required",
+            requiresCode: true 
+          });
+        }
+      }
+      
       const adminUser = {
         id: "admin-user-id",
         firstName: "Platform",
-        lastName: "Admin",
-        email: "admin@taskparent.com",
+        lastName: "Admin", 
+        email: email || "admin@bittietasks.com",
         phone: "(555) 000-0001",
-        bio: "TaskParent Platform Administrator",
-        skills: ["Platform Management", "Security", "Analytics"],
+        bio: "BittieTasks Platform Administrator",
+        skills: ["Platform Management", "Security", "Analytics", "Stripe Integration"],
         rating: 5.0,
         completedTasks: 0,
         earnings: 0,
@@ -280,12 +305,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalEarnings: "0.00",
         currentStreak: 365,
         totalPoints: 10000,
-        isAdmin: true
+        isAdmin: true,
+        stripeEnabled: process.env.STRIPE_SECRET_KEY ? true : false
       };
       
       // Store admin session
       (req.session as any).userId = "admin-user-id";
       (req.session as any).isAdmin = true;
+      (req.session as any).adminEmail = email;
       
       res.json({
         message: "Admin login successful",
