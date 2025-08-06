@@ -19,14 +19,12 @@ import Compliance from "@/pages/Compliance";
 import DailyChallenges from "@/pages/DailyChallenges";
 import AdminDashboard from "@/pages/admin-simple";
 import Verification from "@/pages/verification";
-import SecurityDemo from "@/pages/security-demo";
 import AdminLogin from "@/pages/admin-login";
 import AdminAccess from "@/pages/admin-access";
 import QuickAdmin from "@/pages/quick-admin";
 import SimpleAdmin from "@/pages/simple-admin";
 import AdminTest from "@/pages/admin-test";
 import SubscriptionPage from "@/pages/subscription";
-import SubscriptionDemo from "@/pages/subscription-demo";
 import SubscriptionCheckout from "@/pages/subscription-checkout";
 import Payment from "@/pages/payment";
 import ReferralsPage from "@/pages/referrals";
@@ -92,7 +90,6 @@ function Router() {
           <Route path="/challenges" component={() => <AuthenticatedRoute component={DailyChallenges} />} />
           <Route path="/compliance" component={() => <AuthenticatedRoute component={Compliance} />} />
           <Route path="/verification" component={() => <AuthenticatedRoute component={Verification} />} />
-          <Route path="/security-demo" component={() => <AuthenticatedRoute component={SecurityDemo} />} />
           <Route path="/admin" component={() => <AuthenticatedRoute component={AdminDashboard} />} />
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin-access" component={() => <AuthenticatedRoute component={AdminAccess} />} />
@@ -100,7 +97,6 @@ function Router() {
           <Route path="/simple-admin" component={SimpleAdmin} />
           <Route path="/admin-test" component={AdminTest} />
           <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
-          <Route path="/subscription-demo" component={SubscriptionDemo} />
           <Route path="/subscription/checkout/:tier" component={() => <AuthenticatedRoute component={SubscriptionCheckout} />} />
           <Route path="/payment/:id" component={() => <AuthenticatedRoute component={Payment} />} />
           <Route path="/referrals" component={() => <AuthenticatedRoute component={ReferralsPage} />} />

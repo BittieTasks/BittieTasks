@@ -31,39 +31,14 @@ export default function AdminLogin() {
     },
   });
 
-  const demoLoginMutation = useMutation({
-    mutationFn: async () => {
-      return apiRequest("/api/auth/demo", {
-        method: "POST",
-        body: JSON.stringify({}),
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Demo Access Granted",
-        description: "Exploring TaskParent as a demo user.",
-      });
-      // Reload to refresh authentication state
-      window.location.href = "/";
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Demo Login Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+
 
   const handleAdminLogin = () => {
     setIsLoading(true);
     adminLoginMutation.mutate();
   };
 
-  const handleDemoLogin = () => {
-    setIsLoading(true);
-    demoLoginMutation.mutate();
-  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -113,28 +88,7 @@ export default function AdminLogin() {
           </CardContent>
         </Card>
 
-        {/* Demo Access Card */}
-        <Card className="border-2 border-gray-200 bg-white shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <User className="h-5 w-5 text-gray-600" />
-              <span>Demo User</span>
-            </CardTitle>
-            <CardDescription>
-              Explore TaskParent features as a regular parent user
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              onClick={handleDemoLogin}
-              disabled={isLoading}
-              variant="outline"
-              className="w-full"
-            >
-              {demoLoginMutation.isPending ? "Starting Demo..." : "Try Demo Mode"}
-            </Button>
-          </CardContent>
-        </Card>
+
 
         {/* Platform Info */}
         <div className="text-center text-sm text-gray-500 space-y-1">

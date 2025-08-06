@@ -104,7 +104,7 @@ export default function MessagesPage() {
           </div>
         )}
 
-        {/* Sample messages for demonstration */}
+        {/* User messages */}
         {Object.keys(conversations).length === 0 && (
           <div className="space-y-3 mt-8">
             <div className="text-sm text-gray-500 text-center mb-4">Sample conversations:</div>

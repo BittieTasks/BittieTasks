@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { User } from "@shared/schema";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Clock, Zap, Trophy, CheckCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,8 @@ export default function DailyChallenges() {
   const queryClient = useQueryClient();
 
   // Get current user ID from session/auth (placeholder for now)
-  const currentUserId = "demo-user-id";
+  const { data: user } = useQuery<User>({ queryKey: ["/api/user/current"] });
+  const currentUserId = user?.id || "";
 
   const { data: todaysChallenges = [], isLoading } = useQuery({
     queryKey: ["/api/challenges/today", currentUserId],
