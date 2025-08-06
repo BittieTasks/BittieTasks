@@ -226,46 +226,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Demo login endpoint - DEVELOPMENT MODE ZERO VALUES
+  // Demo login endpoint - FIXED DEVELOPMENT MODE  
   app.post("/api/auth/demo", async (req, res) => {
-    try {
-      console.log("🟡 DEMO LOGIN: Creating user with ZERO values for development");
-      
-      // FORCE NEW USER CREATION - Development mode with zero values
-      const demoUser = {
-        id: "demo-user-id-dev",
-        firstName: "Development",
-        lastName: "TestUser",
-        email: "dev@bittietasks.com",
-        phone: "(555) 000-0000",
-        bio: "DEVELOPMENT MODE - All stats reset to zero",
-        skills: ["Development", "Testing"],
-        rating: 0,
-        completedTasks: 0,
-        earnings: 0,
-        joinedAt: "2025-01-06",
-        verified: true,
-        profileImage: null,
-        location: "Development Mode",
-        availability: "Testing Environment",
-      };
+    console.log("=== DEMO LOGIN REQUEST RECEIVED ===");
+    
+    // Return fresh demo user with zero values for development testing
+    const freshDemoUser = {
+      id: "demo-dev-2025",
+      firstName: "DevMode",
+      lastName: "TestUser", 
+      email: "devmode@bittietasks.com",
+      phone: "(555) 000-ZERO",
+      bio: "Development testing account - all values reset to zero",
+      skills: ["Testing", "Development"],
+      rating: 0,
+      completedTasks: 0,
+      earnings: 0,
+      totalEarnings: "0.00",
+      joinedAt: new Date().toISOString().split('T')[0],
+      verified: true,
+      profileImage: null,
+      location: "Development Environment",
+      availability: "Available for testing"
+    };
 
-      // Store demo user in session
-      (req.session as any).userId = demoUser.id;
-      (req.session as any).isDemo = true;
+    // Store in session
+    (req.session as any).userId = freshDemoUser.id;
+    (req.session as any).isDemo = true;
 
-      console.log("🟢 DEMO LOGIN: Returning user with values:", {
-        rating: demoUser.rating,
-        completedTasks: demoUser.completedTasks,
-        earnings: demoUser.earnings,
-        email: demoUser.email
-      });
+    console.log("=== RETURNING ZERO VALUES ===", {
+      rating: freshDemoUser.rating,
+      completedTasks: freshDemoUser.completedTasks, 
+      earnings: freshDemoUser.earnings
+    });
 
-      res.json({ message: "Demo login successful", user: demoUser });
-    } catch (error) {
-      console.error("🔴 DEMO LOGIN ERROR:", error);
-      res.status(500).json({ message: "Demo login failed" });
-    }
+    res.json({ 
+      message: "Development demo login successful", 
+      user: freshDemoUser 
+    });
   });
 
   // Enhanced admin login with email verification
