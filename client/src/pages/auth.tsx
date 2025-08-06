@@ -210,15 +210,7 @@ export default function AuthPage() {
             </TabsContent>
           </Tabs>
           
-          <div className="mt-6 text-center">
-            <Button
-              variant="outline"
-              onClick={() => setLocation("/")}
-              className="w-full"
-            >
-              Continue as Demo User
-            </Button>
-          </div>
+
         </CardContent>
       </Card>
     </div>
