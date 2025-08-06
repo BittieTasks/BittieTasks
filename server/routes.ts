@@ -226,34 +226,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Demo login endpoint
+  // Demo login endpoint - DEVELOPMENT MODE ZERO VALUES
   app.post("/api/auth/demo", async (req, res) => {
     try {
-      // Create or get demo user - Development mode with zero values
+      console.log("🟡 DEMO LOGIN: Creating user with ZERO values for development");
+      
+      // FORCE NEW USER CREATION - Development mode with zero values
       const demoUser = {
-        id: "demo-user-id",
-        firstName: "Demo",
-        lastName: "User",
-        email: "demo@bittietasks.com",
-        phone: "(555) 123-4567",
-        bio: "Development account for BittieTasks platform testing",
-        skills: ["Cooking", "Cleaning", "Organizing"],
+        id: "demo-user-id-dev",
+        firstName: "Development",
+        lastName: "TestUser",
+        email: "dev@bittietasks.com",
+        phone: "(555) 000-0000",
+        bio: "DEVELOPMENT MODE - All stats reset to zero",
+        skills: ["Development", "Testing"],
         rating: 0,
         completedTasks: 0,
         earnings: 0,
         joinedAt: "2025-01-06",
         verified: true,
         profileImage: null,
-        location: "Development Environment",
-        availability: "Available for testing",
+        location: "Development Mode",
+        availability: "Testing Environment",
       };
 
       // Store demo user in session
       (req.session as any).userId = demoUser.id;
       (req.session as any).isDemo = true;
 
+      console.log("🟢 DEMO LOGIN: Returning user with values:", {
+        rating: demoUser.rating,
+        completedTasks: demoUser.completedTasks,
+        earnings: demoUser.earnings,
+        email: demoUser.email
+      });
+
       res.json({ message: "Demo login successful", user: demoUser });
     } catch (error) {
+      console.error("🔴 DEMO LOGIN ERROR:", error);
       res.status(500).json({ message: "Demo login failed" });
     }
   });

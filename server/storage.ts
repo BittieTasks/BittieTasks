@@ -127,16 +127,16 @@ export class MemStorage implements IStorage {
     const userId = randomUUID();
     const defaultUser: User = {
       id: userId,
-      username: "sarah_parent",
-      email: "sarah@example.com",
+      username: "dev_user",
+      email: "dev@bittietasks.com",
       passwordHash: "demo_hash",
-      firstName: "Sarah",
-      lastName: "Miller",
+      firstName: "Development",
+      lastName: "User",
       profilePicture: null,
-      totalEarnings: "347.50",
-      rating: "4.8",
-      completedTasks: 28,
-      currentStreak: 5,
+      totalEarnings: "0.00",
+      rating: "0.0",
+      completedTasks: 0,
+      currentStreak: 0,
       skills: ["cooking", "organizing", "cleaning", "meal-prep"],
       availability: { weekdays: true, weekends: true, mornings: true, afternoons: true },
       isEmailVerified: true,
@@ -152,7 +152,7 @@ export class MemStorage implements IStorage {
       isIdentityVerified: true,
       isBackgroundChecked: true,
       phoneNumber: "+1234567890",
-      identityScore: 95
+      identityScore: 0
     };
     this.users.set(userId, defaultUser);
 
@@ -634,8 +634,8 @@ export class MemStorage implements IStorage {
           difficulty: taskData.difficulty,
           requirements: taskData.requirements,
           imageUrl: taskData.imageUrl,
-          rating: "4.8",
-          completions: Math.floor(Math.random() * 50) + 10,
+          rating: "0.0",
+          completions: 0,
           isActive: true,
           taskType: (taskData as any).taskType || "shared",
           sponsorInfo: (taskData as any).sponsorInfo || null,

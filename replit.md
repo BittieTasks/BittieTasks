@@ -25,6 +25,7 @@ Preferred communication style: Simple, everyday language.
 - ✅ **Production Build Fixed**: Asset serving corrected, JavaScript/CSS loading properly
 - ⏳ **Payment Integration**: Awaiting Stripe API keys for full payment processing
 - ⏳ **Website Access Issues**: Investigating browser compatibility and JavaScript execution
+- 🔴 **CRITICAL SERVER CACHE ISSUE**: Despite updating demo user data to zero values in all source files, API responses still return cached non-zero values (rating: 4.8, earnings: 1250.75, completedTasks: 45). Server logs show no debug messages indicating requests aren't reaching updated code.
 
 ## System Architecture
 
