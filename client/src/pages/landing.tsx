@@ -93,24 +93,24 @@ export default function LandingPage() {
         </div>
 
         {/* Call to Action */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <Link href="/auth">
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3">
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg border-2 border-white/20">
               Get Started - Create Account
             </Button>
           </Link>
           <Link href="/how-it-works">
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3">
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg border-2 border-white/20">
               Learn More
             </Button>
           </Link>
           <Link href="/company-application">
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3">
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg border-2 border-white/20">
               Corporate Partnership
             </Button>
           </Link>
           <Link href="/advertising-portal">
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3">
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg border-2 border-white/20">
               Advertise with Us
             </Button>
           </Link>
