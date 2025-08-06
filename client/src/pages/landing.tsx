@@ -93,27 +93,38 @@ export default function LandingPage() {
         </div>
 
         {/* Call to Action */}
-        <div className="space-y-4">
-          <Link href="/auth">
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg border-2 border-white/20">
-              Get Started - Create Account
-            </Button>
-          </Link>
-          <Link href="/how-it-works">
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg border-2 border-white/20">
-              Learn More
-            </Button>
-          </Link>
-          <Link href="/company-application">
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg border-2 border-white/20">
-              Corporate Partnership
-            </Button>
-          </Link>
-          <Link href="/advertising-portal">
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg border-2 border-white/20">
-              Advertise with Us
-            </Button>
-          </Link>
+        <div className="space-y-6">
+          <div className="p-2 bg-white rounded-xl shadow-sm">
+            <Link href="/auth">
+              <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg">
+                Get Started - Create Account
+              </Button>
+            </Link>
+          </div>
+          
+          <div className="p-2 bg-white rounded-xl shadow-sm">
+            <Link href="/how-it-works">
+              <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg">
+                Learn More
+              </Button>
+            </Link>
+          </div>
+          
+          <div className="p-2 bg-white rounded-xl shadow-sm">
+            <Link href="/company-application">
+              <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg">
+                Corporate Partnership
+              </Button>
+            </Link>
+          </div>
+          
+          <div className="p-2 bg-white rounded-xl shadow-sm">
+            <Link href="/advertising-portal">
+              <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg">
+                Advertise with Us
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Trust Indicators */}
