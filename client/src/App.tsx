@@ -36,7 +36,12 @@ import CompanyApplication from "@/pages/company-application";
 import EthicalPartnerships from "@/pages/ethical-partnerships";
 import AdvertisingPortal from "@/pages/advertising-portal";
 import AdPreferences from "@/pages/ad-preferences";
+import AnalyticsTest from "@/pages/analytics-test";
 import type { User } from "@shared/schema";
+import { initGA } from "./lib/analytics";
+import { useAnalytics } from "./hooks/use-analytics";
+import { AnalyticsProvider } from "./components/AnalyticsProvider";
+import { useEffect } from "react";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
   const { data: user, isLoading } = useQuery<User>({
@@ -69,6 +74,9 @@ function AuthenticatedRoute({ component: Component }: { component: React.Compone
 }
 
 function Router() {
+  // Track page views when routes change
+  useAnalytics();
+  
   return (
     <div>
       {/* Skip links for keyboard navigation */}
@@ -111,6 +119,7 @@ function Router() {
           <Route path="/ethical-partnerships" component={EthicalPartnerships} />
           <Route path="/advertising-portal" component={AdvertisingPortal} />
           <Route path="/ad-preferences" component={() => <AuthenticatedRoute component={AdPreferences} />} />
+          <Route path="/analytics-test" component={() => <AuthenticatedRoute component={AnalyticsTest} />} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />
         </Switch>
@@ -120,12 +129,23 @@ function Router() {
 }
 
 function App() {
+  // Initialize Google Analytics when app loads
+  useEffect(() => {
+    if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
+      console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
+    } else {
+      initGA();
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <AnalyticsProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </AnalyticsProvider>
     </QueryClientProvider>
   );
 }
