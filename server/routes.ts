@@ -428,10 +428,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      // Handle demo user
-      if (isDemo && userId === "demo-user-id") {
+      // Handle demo user - support both old and new demo IDs
+      if (isDemo && (userId === "demo-user-id" || userId === "demo-dev-2025")) {
         const demoUser = {
-          id: "demo-user-id",
+          id: userId, // Use the actual session ID
           firstName: "Demo",
           lastName: "User",
           email: "demo@bittietasks.com",
@@ -441,6 +441,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           rating: 0,
           completedTasks: 0,
           earnings: 0,
+          totalEarnings: "0.00",
           joinedAt: "2025-01-06",
           verified: true,
           profileImage: null,
@@ -476,6 +477,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
           stripeEnabled: process.env.STRIPE_SECRET_KEY ? true : false
         };
         return res.json(adminUser);
+      }
+
+      // Handle any other demo users that might exist
+      if (isDemo || userId.includes("demo")) {
+        const genericDemoUser = {
+          id: userId,
+          firstName: "Demo",
+          lastName: "User",
+          email: "demo@bittietasks.com",
+          phone: "(555) 123-4567",
+          bio: "Development account for BittieTasks platform testing",
+          skills: ["Cooking", "Cleaning", "Organizing"],
+          rating: 0,
+          completedTasks: 0,
+          earnings: 0,
+          totalEarnings: "0.00",
+          joinedAt: "2025-01-06",
+          verified: true,
+          profileImage: null,
+          location: "Development Environment",
+          availability: "Available for testing",
+        };
+        return res.json(genericDemoUser);
       }
 
       // Get regular user
