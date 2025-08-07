@@ -25,6 +25,9 @@ import { fraudDetection } from "./services/fraudDetection";
 import { analytics } from "./services/analyticsService";
 import { fileManager } from "./services/fileManager";
 import { fraudCheckMiddleware, highValueFraudCheck, trackSuspiciousActivity } from "./middleware/fraudMiddleware";
+import { cacheService } from "./services/cacheService";
+import { performanceMiddleware } from "./middleware/performanceMiddleware";
+import { performanceMonitor } from "./services/performanceMonitor";
 
 // Configure multer for file uploads
 const uploadDir = "uploads";
@@ -68,6 +71,9 @@ const apiLimiter = rateLimit({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Apply performance monitoring middleware
+  app.use(performanceMiddleware);
+  
   // Apply security middleware
   app.use(helmet({
     contentSecurityPolicy: {
@@ -433,10 +439,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all task categories
+  // Get all task categories (with caching for performance)
   app.get("/api/categories", async (req, res) => {
     try {
+      // Check cache first
+      const cachedCategories = cacheService.get("task-categories");
+      if (cachedCategories) {
+        res.set('Cache-Control', 'public, max-age=300'); // 5 minutes
+        res.set('X-Cache-Hit', 'true');
+        return res.json(cachedCategories);
+      }
+
+      // Fetch from database if not cached
       const categories = await storage.getTaskCategories();
+      
+      // Cache for 5 minutes (300 seconds)
+      cacheService.set("task-categories", categories, 5 * 60 * 1000);
+      
+      res.set('Cache-Control', 'public, max-age=300'); // 5 minutes
       res.json(categories);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch categories" });
@@ -543,14 +563,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/tasks", async (req, res) => {
     try {
       const { category } = req.query;
-      let tasks;
+      const cacheKey = category ? `tasks-category-${category}` : 'tasks-all';
       
+      // Check cache first
+      const cachedTasks = cacheService.get(cacheKey);
+      if (cachedTasks) {
+        res.set('Cache-Control', 'public, max-age=180'); // 3 minutes
+        res.set('X-Cache-Hit', 'true');
+        return res.json(cachedTasks);
+      }
+
+      let tasks;
       if (category && typeof category === "string") {
         tasks = await storage.getTasksByCategory(category);
       } else {
         tasks = await storage.getTasks();
       }
       
+      // Cache for 3 minutes (tasks change more frequently than categories)
+      cacheService.set(cacheKey, tasks, 3 * 60 * 1000);
+      
+      res.set('Cache-Control', 'public, max-age=180'); // 3 minutes
       res.json(tasks);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch tasks" });
@@ -1314,6 +1347,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       autoHealer: {
         active: true,
         description: "Automated monitoring and self-healing system active"
+      }
+    });
+  });
+
+  // Performance monitoring endpoint
+  app.get("/api/performance", (req, res) => {
+    const report = performanceMonitor.getPerformanceReport();
+    res.json({
+      ...report,
+      timestamp: new Date().toISOString(),
+      optimization_status: "active",
+      caching: {
+        service: "active",
+        categories_ttl: "5 minutes",
+        tasks_ttl: "3 minutes"
       }
     });
   });

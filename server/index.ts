@@ -1,11 +1,14 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { autoHealer } from "./services/autoHealer";
 
 const app = express();
+// Add response compression for better performance
+app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
