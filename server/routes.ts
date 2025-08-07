@@ -16,6 +16,7 @@ import helmet from 'helmet';
 import legalRoutes from './routes/legal';
 import analyticsRoutes from './routes/analyticsRoutes';
 import moderationRoutes from './routes/moderationRoutes';
+import smsRoutes from './routes/smsRoutes';
 import { sendWelcomeEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
 import { autoHealer } from "./services/autoHealer";
 import { fraudDetection } from "./services/fraudDetection";
@@ -115,6 +116,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Content Moderation routes  
   app.use('/api', moderationRoutes);
+  
+  // SMS notification routes
+  app.use('/api/sms', smsRoutes);
   
   // Affiliate products routes
   app.use("/api/affiliate-products", affiliateProductsRouter);
