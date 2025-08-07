@@ -19,7 +19,7 @@ import moderationRoutes from './routes/moderationRoutes';
 import smsRoutes from './routes/smsRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import emailRoutes from './routes/emailRoutes';
-import { sendWelcomeEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
+import { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
 import { autoHealer } from "./services/autoHealer";
 import { fraudDetection } from "./services/fraudDetection";
 import { analytics } from "./services/analyticsService";
@@ -122,6 +122,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SMS notification routes
   app.use('/api/sms', smsRoutes);
 
+  // Email verification route
+  app.get("/api/auth/verify-email", async (req, res) => {
+    try {
+      const { token } = req.query;
+      
+      if (!token || typeof token !== 'string') {
+        return res.status(400).json({ message: "Invalid verification token" });
+      }
+
+      // Find user with this verification token
+      const users = await storage.getUsers();
+      const user = users.find(u => u.emailVerificationToken === token);
+      
+      if (!user) {
+        return res.status(400).json({ message: "Invalid or expired verification token" });
+      }
+
+      // Update user to mark email as verified
+      await storage.updateUser(user.id, {
+        isEmailVerified: true,
+        emailVerificationToken: null, // Clear the token
+      });
+
+      // Send welcome email after verification
+      try {
+        await sendWelcomeEmail(user.email, user.firstName);
+        console.log(`Welcome email sent to ${user.email} after verification`);
+      } catch (emailError) {
+        console.error('Failed to send welcome email after verification:', emailError);
+      }
+
+      res.json({ 
+        message: "Email verified successfully! Welcome to BittieTasks!", 
+        verified: true 
+      });
+    } catch (error) {
+      console.error("Email verification error:", error);
+      res.status(500).json({ message: "Failed to verify email" });
+    }
+  });
+
   // Payment processing routes
   app.use('/api/payments', paymentRoutes);
   
@@ -192,6 +233,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Hash password before storing
       const hashedPassword = await bcrypt.hash(password, 12);
 
+      // Generate email verification token
+      const verificationToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+
       // Create new user
       const newUser = await storage.createUser({
         username: `${firstName.toLowerCase()}_${lastName.toLowerCase()}`,
@@ -206,21 +250,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         currentStreak: 0,
         skills: [],
         availability: { weekdays: true, weekends: true, mornings: true, afternoons: true },
+        emailVerificationToken: verificationToken,
+        isEmailVerified: false,
       });
 
       // Store user ID in session
       (req.session as any).userId = newUser.id;
 
-      // Send welcome email
+      // Send verification email
       try {
-        await sendWelcomeEmail(email, firstName);
-        console.log(`Welcome email sent to ${email}`);
+        await sendVerificationEmail(email, firstName, verificationToken);
+        console.log(`Verification email sent to ${email}`);
       } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError);
+        console.error('Failed to send verification email:', emailError);
         // Continue with registration even if email fails
       }
 
-      res.json({ message: "Account created successfully", user: newUser });
+      res.json({ 
+        message: "Account created successfully! Please check your email to verify your account.", 
+        user: newUser,
+        emailVerificationSent: true
+      });
     } catch (error) {
       res.status(500).json({ message: "Failed to create account" });
     }

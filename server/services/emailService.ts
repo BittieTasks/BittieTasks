@@ -40,6 +40,73 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
   }
 }
 
+export async function sendVerificationEmail(userEmail: string, userName: string, verificationToken: string): Promise<boolean> {
+  if (!process.env.SENDGRID_API_KEY) {
+    console.log('SendGrid not configured, skipping verification email');
+    return false;
+  }
+
+  const verificationUrl = `https://bittietasks.com/verify-email?token=${verificationToken}`;
+  
+  const verificationHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        .container { max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; line-height: 1.6; }
+        .button { background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 20px 0; }
+        .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffeaa7; padding: 12px; margin: 20px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Verify Your Email</h1>
+        </div>
+        <div class="content">
+          <h2>Hi ${userName},</h2>
+          <p>Welcome to BittieTasks! To complete your registration and start earning money from everyday tasks, please verify your email address.</p>
+          
+          <a href="${verificationUrl}" class="button">Verify Email Address</a>
+          
+          <div class="warning">
+            <p><strong>Important:</strong> You need to verify your email before you can:</p>
+            <ul>
+              <li>Create tasks and earn money</li>
+              <li>Join activities in your area</li>
+              <li>Receive important notifications</li>
+              <li>Access all platform features</li>
+            </ul>
+          </div>
+          
+          <p>If the button doesn't work, copy and paste this link into your browser:</p>
+          <p style="word-break: break-all; color: #667eea;">${verificationUrl}</p>
+          
+          <p>This verification link expires in 24 hours for security reasons.</p>
+          
+          <p>Best regards,<br>The BittieTasks Team</p>
+        </div>
+        <div class="footer">
+          <p>BittieTasks - Little Tasks, Real Income</p>
+          <p>If you didn't create this account, please ignore this email.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: userEmail,
+    from: 'noreply@bittietasks.com',
+    subject: 'Verify Your Email - BittieTasks Account',
+    html: verificationHtml,
+    text: `Welcome to BittieTasks, ${userName}! Please verify your email by visiting: ${verificationUrl}`
+  });
+}
+
 export async function sendWelcomeEmail(userEmail: string, userName: string): Promise<boolean> {
   if (!process.env.SENDGRID_API_KEY) {
     console.log('SendGrid not configured, skipping welcome email');

@@ -1,6 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
-import MemoryStore from "memorystore";
+import connectPg from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { autoHealer } from "./services/autoHealer";
@@ -9,19 +9,23 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Configure session middleware
-const MemoryStoreSession = MemoryStore(session);
+// Configure session middleware with PostgreSQL store for persistence
+const pgSession = connectPg(session);
+const sessionStore = new pgSession({
+  conString: process.env.DATABASE_URL,
+  createTableIfMissing: true,
+  ttl: 7 * 24 * 60 * 60, // 7 days in seconds
+});
+
 app.use(session({
-  store: new MemoryStoreSession({
-    checkPeriod: 86400000 // Prune expired entries every 24h
-  }),
+  store: sessionStore,
   secret: process.env.SESSION_SECRET || 'taskparent-dev-secret-key',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
   }
 }));
 
