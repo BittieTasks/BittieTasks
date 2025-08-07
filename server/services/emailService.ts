@@ -101,13 +101,33 @@ export async function sendVerificationEmail(userEmail: string, userName: string,
     </html>
   `;
 
-  return sendEmail({
-    to: userEmail,
-    from: 'support@bittietasks.com', // Use a more standard sender format
-    subject: 'Verify Your Email - BittieTasks Account',
-    html: verificationHtml,
-    text: `Welcome to BittieTasks, ${userName}! Please verify your email by visiting: ${verificationUrl}`
-  });
+  // Try different sender addresses to find one that works
+  const possibleSenders = [
+    'support@bittietasks.com',
+    'noreply@bittietasks.com',
+    'hello@bittietasks.com'
+  ];
+
+  // Try each sender until one works
+  for (const sender of possibleSenders) {
+    console.log(`Attempting to send verification email from: ${sender}`);
+    
+    const success = await sendEmail({
+      to: userEmail,
+      from: sender,
+      subject: 'Verify Your Email - BittieTasks Account',
+      html: verificationHtml,
+      text: `Welcome to BittieTasks, ${userName}! Please verify your email by visiting: ${verificationUrl}`
+    });
+
+    if (success) {
+      console.log(`✅ Verification email sent successfully from: ${sender}`);
+      return true;
+    }
+  }
+
+  console.log('❌ All sender addresses failed - domain verification needed');
+  return false;
 }
 
 export async function sendWelcomeEmail(userEmail: string, userName: string): Promise<boolean> {
