@@ -26,7 +26,7 @@ Preferred communication style: Simple, everyday language.
 - ⏳ **Payment Integration**: Awaiting Stripe API keys for full payment processing
 - ⏳ **Website Access Issues**: Investigating browser compatibility and JavaScript execution
 - ✅ **Server Cache Issue Resolved**: Development server now properly returns zero values for demo users. Fixed caching problem and updated deployment.
-- ⚠️ **Browser Access Issues**: Website loads correctly (HTTP 200) but some users report "page can't be reached" - investigating browser compatibility.
+- ⚠️ **Mobile Access Issues**: Website loads on desktop but users report mobile access problems. Server running correctly, investigating mobile browser compatibility and network connectivity.
 
 ## System Architecture
 
