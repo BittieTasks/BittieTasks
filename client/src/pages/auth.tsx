@@ -31,14 +31,23 @@ export default function AuthPage() {
     mutationFn: (data: { email: string; password: string }) =>
       apiRequest("POST", "/api/auth/login", data),
     onSuccess: () => {
+      // Force refresh user data
       queryClient.invalidateQueries({ queryKey: ["/api/user/current"] });
+      queryClient.refetchQueries({ queryKey: ["/api/user/current"] });
+      
       toast({
         title: "Welcome back!",
-        description: "You've successfully logged in.",
+        description: "Logged in! Redirecting to your dashboard...",
       });
-      setLocation("/");
+      
+      // Small delay to ensure session is established
+      setTimeout(() => {
+        setLocation("/");
+        window.location.reload(); // Force page refresh to establish session
+      }, 1000);
     },
     onError: (error: any) => {
+      console.error("Login error:", error);
       toast({
         title: "Login Failed",
         description: error.message || "Invalid email or password",
@@ -51,16 +60,25 @@ export default function AuthPage() {
     mutationFn: (data: { firstName: string; lastName: string; email: string; password: string }) =>
       apiRequest("POST", "/api/auth/signup", data),
     onSuccess: () => {
+      // Force refresh user data
       queryClient.invalidateQueries({ queryKey: ["/api/user/current"] });
+      queryClient.refetchQueries({ queryKey: ["/api/user/current"] });
+      
       toast({
         title: "Welcome to BittieTasks!",
-        description: "Your account has been created successfully.",
+        description: "Account created! Redirecting to your dashboard...",
       });
-      setLocation("/");
+      
+      // Small delay to ensure session is established
+      setTimeout(() => {
+        setLocation("/");
+        window.location.reload(); // Force page refresh to establish session
+      }, 1000);
     },
     onError: (error: any) => {
+      console.error("Signup error:", error);
       toast({
-        title: "Signup Failed",
+        title: "Signup Failed", 
         description: error.message || "Failed to create account",
         variant: "destructive",
       });
@@ -100,6 +118,9 @@ export default function AuthPage() {
           <CardDescription>
             Turn your daily routines into income
           </CardDescription>
+          <div className="text-sm text-center text-gray-600 mt-2">
+            Simple signup - just 6+ character password needed
+          </div>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signup" className="w-full">
@@ -182,7 +203,7 @@ export default function AuthPage() {
                   <Input
                     id="signupPassword"
                     type="password"
-                    placeholder="Create a password"
+                    placeholder="At least 6 characters"
                     value={signupData.password}
                     onChange={(e) => setSignupData(prev => ({ ...prev, password: e.target.value }))}
                     required
