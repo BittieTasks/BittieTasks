@@ -19,6 +19,7 @@ import Compliance from "@/pages/Compliance";
 import DailyChallenges from "@/pages/DailyChallenges";
 import AdminLogin from "@/pages/admin-login";
 import AdminAccess from "@/pages/admin-access";
+import Admin from "@/pages/admin";
 import SubscriptionPage from "@/pages/subscription";
 import SubscriptionCheckout from "@/pages/subscription-checkout";
 import SubscriptionUpgrade from "@/pages/subscription-upgrade";
@@ -98,6 +99,7 @@ function Router() {
           <Route path="/compliance" component={() => <AuthenticatedRoute component={Compliance} />} />
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin-access" component={() => <AuthenticatedRoute component={AdminAccess} />} />
+          <Route path="/admin" component={() => <AuthenticatedRoute component={Admin} />} />
           <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
           <Route path="/subscription/checkout/:tier" component={() => <AuthenticatedRoute component={SubscriptionCheckout} />} />
           <Route path="/subscription-upgrade" component={() => <AuthenticatedRoute component={SubscriptionUpgrade} />} />
