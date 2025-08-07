@@ -164,6 +164,16 @@ export default function ContentModerationTest() {
         </CardContent>
       </Card>
 
+      <div className="text-center mb-4">
+        <p className="text-sm text-gray-600 mb-3">
+          Want to try AI task generation? Visit the{' '}
+          <a href="/ai-tasks" className="text-blue-600 hover:underline">
+            AI Task Generator
+          </a>{' '}
+          to create and enhance tasks with artificial intelligence!
+        </p>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Test Scenarios</CardTitle>

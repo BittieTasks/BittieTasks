@@ -170,4 +170,45 @@ router.get('/moderation/stats', async (req, res) => {
   }
 });
 
+// AI Task Generation
+router.post('/generate-tasks', async (req, res) => {
+  try {
+    const { category, userSkills, location, duration } = req.body;
+    
+    const suggestions = await contentModerationService.generateTaskSuggestions(
+      category || 'General',
+      userSkills || [],
+      location,
+      duration
+    );
+    
+    res.json(suggestions);
+  } catch (error) {
+    console.error('Task generation error:', error);
+    res.status(500).json({ error: 'Task generation failed' });
+  }
+});
+
+// AI Task Enhancement
+router.post('/enhance-task', async (req, res) => {
+  try {
+    const { title, description, category } = req.body;
+    
+    if (!title || !description) {
+      return res.status(400).json({ error: 'Title and description are required' });
+    }
+    
+    const enhancement = await contentModerationService.enhanceTaskDescription(
+      title,
+      description,
+      category || 'General'
+    );
+    
+    res.json(enhancement);
+  } catch (error) {
+    console.error('Task enhancement error:', error);
+    res.status(500).json({ error: 'Task enhancement failed' });
+  }
+});
+
 export default router;

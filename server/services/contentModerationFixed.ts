@@ -215,6 +215,138 @@ Respond in JSON format with:
     }
   }
 
+  async generateTaskSuggestions(
+    category: string, 
+    userSkills: string[] = [], 
+    location?: string,
+    duration?: number
+  ): Promise<{ tasks: Array<{ title: string; description: string; payment: number; difficulty: string }> }> {
+    if (!this.anthropic) {
+      return {
+        tasks: [
+          {
+            title: "AI task generation not available",
+            description: "Content moderation not configured",
+            payment: 0,
+            difficulty: "Easy"
+          }
+        ]
+      };
+    }
+
+    const prompt = `You are a task creation assistant for BittieTasks, a family-friendly platform where parents earn money through community tasks.
+
+Generate 3 appropriate task suggestions based on:
+- Category: ${category}
+- User skills: ${userSkills.join(', ') || 'General'}
+- Location context: ${location || 'General area'}
+- Preferred duration: ${duration || 60} minutes
+
+Create tasks that are:
+- Safe and family-friendly
+- Reasonably priced ($15-75 range)
+- Achievable for typical parents
+- Community-focused and helpful
+- Clear and specific
+
+Respond in JSON format:
+{
+  "tasks": [
+    {
+      "title": "Specific task title",
+      "description": "Clear, detailed task description with what's needed",
+      "payment": 25,
+      "difficulty": "Easy|Medium|Hard"
+    }
+  ]
+}`;
+
+    try {
+      const response = await this.anthropic.messages.create({
+        model: DEFAULT_MODEL_STR,
+        max_tokens: 2048,
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      const textContent = this.extractTextFromResponse(response);
+      const result = JSON.parse(textContent);
+      
+      return {
+        tasks: result.tasks || []
+      };
+    } catch (error) {
+      console.error('Task generation error:', error);
+      return {
+        tasks: [
+          {
+            title: "Custom Task",
+            description: "Create your own task description",
+            payment: 30,
+            difficulty: "Medium"
+          }
+        ]
+      };
+    }
+  }
+
+  async enhanceTaskDescription(
+    title: string, 
+    basicDescription: string, 
+    category: string
+  ): Promise<{ enhancedDescription: string; suggestedPayment: number; estimatedDuration: number }> {
+    if (!this.anthropic) {
+      return {
+        enhancedDescription: basicDescription,
+        suggestedPayment: 25,
+        estimatedDuration: 60
+      };
+    }
+
+    const prompt = `You are a task enhancement assistant for BittieTasks.
+
+Enhance this task posting:
+Title: "${title}"
+Basic description: "${basicDescription}"
+Category: ${category}
+
+Improve the description to be:
+- Clear and specific about what's needed
+- Professional and family-friendly
+- Include relevant details and expectations
+- Estimate fair payment and duration
+
+Respond in JSON format:
+{
+  "enhancedDescription": "Improved task description",
+  "suggestedPayment": 35,
+  "estimatedDuration": 90
+}`;
+
+    try {
+      const response = await this.anthropic.messages.create({
+        model: DEFAULT_MODEL_STR,
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      const textContent = this.extractTextFromResponse(response);
+      const result = JSON.parse(textContent);
+      
+      return {
+        enhancedDescription: result.enhancedDescription || basicDescription,
+        suggestedPayment: result.suggestedPayment || 25,
+        estimatedDuration: result.estimatedDuration || 60
+      };
+    } catch (error) {
+      console.error('Task enhancement error:', error);
+      return {
+        enhancedDescription: basicDescription,
+        suggestedPayment: 25,
+        estimatedDuration: 60
+      };
+    }
+  }
+
   isEnabled(): boolean {
     return !!this.anthropic;
   }
