@@ -186,11 +186,11 @@ export default function SimpleAdmin() {
                 {loading ? 'Refreshing...' : 'Refresh Admin Access'}
               </Button>
               <Button 
-                onClick={() => window.location.reload()}
+                onClick={() => window.location.href = '/system-status'}
                 variant="outline"
                 className="h-16"
               >
-                Reload Dashboard
+                System Status & AutoHealer
               </Button>
             </div>
           </CardContent>

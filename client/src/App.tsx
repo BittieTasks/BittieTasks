@@ -27,6 +27,7 @@ import AdminTest from "@/pages/admin-test";
 import SubscriptionPage from "@/pages/subscription";
 import SubscriptionCheckout from "@/pages/subscription-checkout";
 import SubscriptionUpgrade from "@/pages/subscription-upgrade";
+import SystemStatus from "@/pages/system-status";
 import Payment from "@/pages/payment";
 import ReferralsPage from "@/pages/referrals";
 import Barter from "@/pages/barter";
@@ -100,6 +101,7 @@ function Router() {
           <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
           <Route path="/subscription/checkout/:tier" component={() => <AuthenticatedRoute component={SubscriptionCheckout} />} />
           <Route path="/subscription-upgrade" component={() => <AuthenticatedRoute component={SubscriptionUpgrade} />} />
+          <Route path="/system-status" component={() => <AuthenticatedRoute component={SystemStatus} />} />
           <Route path="/payment/:id" component={() => <AuthenticatedRoute component={Payment} />} />
           <Route path="/referrals" component={() => <AuthenticatedRoute component={ReferralsPage} />} />
           <Route path="/barter" component={() => <AuthenticatedRoute component={Barter} />} />

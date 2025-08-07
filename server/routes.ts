@@ -15,6 +15,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import legalRoutes from './routes/legal';
 import { sendWelcomeEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
+import { autoHealer } from "./services/autoHealer";
 
 // Configure multer for file uploads
 const uploadDir = "uploads";
@@ -1179,6 +1180,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register subscription routes
   registerSubscriptionRoutes(app);
+
+  // Health monitoring endpoint
+  app.get("/api/health", (req, res) => {
+    const systemStatus = autoHealer.getSystemStatus();
+    res.json({
+      timestamp: new Date().toISOString(),
+      status: systemStatus.overall,
+      checks: systemStatus.details,
+      autoHealer: {
+        active: true,
+        description: "Automated monitoring and self-healing system active"
+      }
+    });
+  });
 
   // Create subscription for upgrades  
   app.post("/api/create-subscription", async (req, res) => {

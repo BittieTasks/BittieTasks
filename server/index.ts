@@ -3,6 +3,7 @@ import session from "express-session";
 import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { autoHealer } from "./services/autoHealer";
 
 const app = express();
 app.use(express.json());
@@ -85,5 +86,10 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Start automated monitoring and self-healing system
+    setTimeout(() => {
+      autoHealer.start();
+    }, 5000); // Start after 5 seconds to let server fully initialize
   });
 })();
