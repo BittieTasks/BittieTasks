@@ -93,11 +93,25 @@ export default function LandingPage() {
         </div>
 
         {/* Call to Action */}
-        <div className="space-y-6">
+        <div className="space-y-4 mb-8">
+          <Link href="/auth?mode=register">
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white font-medium py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+              🚀 Get Started - Sign Up Free
+            </Button>
+          </Link>
+          
+          <Link href="/auth?mode=login">
+            <Button variant="outline" className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium py-4 px-6 rounded-lg transition-all duration-200">
+              Already have an account? Log In
+            </Button>
+          </Link>
+        </div>
+
+        <div className="space-y-3">
           <div className="p-2 bg-white rounded-xl shadow-sm">
-            <Link href="/auth">
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg">
-                Get Started - Create Account
+            <Link href="/how-it-works">
+              <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-lg">
+                Learn How It Works
               </Button>
             </Link>
           </div>

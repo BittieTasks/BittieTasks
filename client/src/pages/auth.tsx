@@ -53,7 +53,7 @@ export default function AuthPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/current"] });
       toast({
-        title: "Welcome to TaskParent!",
+        title: "Welcome to BittieTasks!",
         description: "Your account has been created successfully.",
       });
       setLocation("/");
