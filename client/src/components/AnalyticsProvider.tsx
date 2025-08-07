@@ -73,7 +73,7 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
     method?: string, 
     tier?: string
   ) => {
-    trackUserEngagement(action, method, tier);
+    trackUserEngagement(action, method);
     track(`user_${action}`, {
       method,
       tier,
@@ -87,7 +87,7 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
     method: 'stripe' | 'paypal' = 'stripe', 
     tier?: string
   ) => {
-    trackPaymentEvent(action, amount, method, tier);
+    trackPaymentEvent(action, amount, method);
     track(`payment_${action}`, {
       amount,
       method,
@@ -119,7 +119,7 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
     value?: number, 
     transactionId?: string
   ) => {
-    trackConversion(type, value, transactionId);
+    trackConversion(type, value);
     track('conversion', {
       conversionType: type,
       value,
