@@ -29,13 +29,16 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
       to: params.to,
       from: params.from,
       subject: params.subject,
-      text: params.text,
-      html: params.html,
+      text: params.text || '',
+      html: params.html || '',
     });
     console.log(`Email sent successfully to ${params.to}`);
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('SendGrid email error:', error);
+    if (error.response?.body?.errors) {
+      console.error('SendGrid error details:', error.response.body.errors);
+    }
     return false;
   }
 }
@@ -100,7 +103,7 @@ export async function sendVerificationEmail(userEmail: string, userName: string,
 
   return sendEmail({
     to: userEmail,
-    from: 'noreply@bittietasks.com',
+    from: 'support@bittietasks.com', // Use a more standard sender format
     subject: 'Verify Your Email - BittieTasks Account',
     html: verificationHtml,
     text: `Welcome to BittieTasks, ${userName}! Please verify your email by visiting: ${verificationUrl}`
@@ -160,7 +163,7 @@ export async function sendWelcomeEmail(userEmail: string, userName: string): Pro
 
   return sendEmail({
     to: userEmail,
-    from: 'noreply@bittietasks.com',
+    from: 'support@bittietasks.com',
     subject: 'Welcome to BittieTasks - Start Earning Today!',
     html: welcomeHtml,
     text: `Welcome to BittieTasks, ${userName}! Start earning money from everyday tasks. Visit https://bittietasks.com to get started.`
