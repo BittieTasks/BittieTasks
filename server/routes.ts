@@ -28,6 +28,7 @@ import { fraudCheckMiddleware, highValueFraudCheck, trackSuspiciousActivity } fr
 import { cacheService } from "./services/cacheService";
 import { performanceMiddleware } from "./middleware/performanceMiddleware";
 import { performanceMonitor } from "./services/performanceMonitor";
+import { sendEmail } from "./services/emailService";
 
 // Configure multer for file uploads
 const uploadDir = "uploads";
@@ -71,8 +72,8 @@ const apiLimiter = rateLimit({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Apply performance monitoring middleware
-  app.use(performanceMiddleware);
+  // Apply performance monitoring middleware (temporarily disabled for debugging)
+  // app.use(performanceMiddleware);
   
   // Apply security middleware
   app.use(helmet({
@@ -1364,6 +1365,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         tasks_ttl: "3 minutes"
       }
     });
+  });
+
+  // SendGrid testing endpoint
+  app.post("/api/test-email", async (req, res) => {
+    try {
+      const success = await sendEmail({
+        to: req.body.to || "test@bittietasks.com",
+        from: "support@bittietasks.com",
+        subject: req.body.subject || "SendGrid Test Email",
+        html: "<h2>SendGrid Test</h2><p>This is a test email from BittieTasks to verify SendGrid integration.</p>",
+        text: "SendGrid Test: This is a test email from BittieTasks to verify SendGrid integration."
+      });
+
+      if (success) {
+        res.json({ 
+          status: "success", 
+          message: "Email sent successfully",
+          sender: "support@bittietasks.com"
+        });
+      } else {
+        res.status(500).json({ 
+          status: "error", 
+          message: "Failed to send email - check domain verification",
+          next_steps: "Verify sender domain in SendGrid dashboard"
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({ 
+        status: "error", 
+        message: error.message,
+        error_details: error.response?.body?.errors || "Unknown error"
+      });
+    }
   });
 
   // Create subscription for upgrades  
