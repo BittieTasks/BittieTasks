@@ -1426,9 +1426,8 @@ export class DatabaseStorage {
     return achievement || undefined;
   }
 
-  // Daily Challenge Methods
   async getDailyChallenges(): Promise<DailyChallenge[]> {
-    return await db.select().from(dailyChallenges).where(eq(dailyChallenges.isActive, true));
+    return await db.select().from(dailyChallenges);
   }
 
   async createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge> {
@@ -1440,373 +1439,126 @@ export class DatabaseStorage {
   }
 
   async getUserChallenges(userId: string, date?: Date): Promise<UserChallenge[]> {
-    if (!date) {
-      return await db.select().from(userChallenges).where(eq(userChallenges.userId, userId));
-    }
-    
-    const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
-    
-    return await db
-      .select()
-      .from(userChallenges)
-      .where(
-        and(
-          eq(userChallenges.userId, userId),
-          gte(userChallenges.assignedDate, startOfDay),
-          lt(userChallenges.assignedDate, endOfDay)
-        )
-      );
+    return await db.select().from(userChallenges).where(eq(userChallenges.userId, userId));
   }
 
   async assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge> {
-    const [newUserChallenge] = await db
+    const [newChallenge] = await db
       .insert(userChallenges)
       .values({
+        id: randomUUID(),
         userId,
         challengeId,
-        status: "assigned"
+        status: 'assigned',
+        assignedAt: new Date(),
+        completed: false,
       })
       .returning();
-    return newUserChallenge;
+    return newChallenge;
   }
 
   async completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined> {
-    const [updatedChallenge] = await db
+    const [completed] = await db
       .update(userChallenges)
-      .set({
-        status: "completed",
-        completedAt: sql`CURRENT_TIMESTAMP`,
-        reflection: reflection || null
+      .set({ 
+        status: 'completed', 
+        completed: true, 
+        completedAt: new Date(),
+        reflection 
       })
       .where(eq(userChallenges.id, userChallengeId))
       .returning();
-    
-    if (updatedChallenge) {
-      // Get challenge details to award points
-      const [challenge] = await db
-        .select()
-        .from(dailyChallenges)
-        .where(eq(dailyChallenges.id, updatedChallenge.challengeId));
-      
-      if (challenge) {
-        // Update points earned in user challenge
-        await db
-          .update(userChallenges)
-          .set({ pointsEarned: challenge.rewardPoints })
-          .where(eq(userChallenges.id, userChallengeId));
-        
-        // Update user's total points
-        await db
-          .update(users)
-          .set({ 
-            totalPoints: sql`COALESCE(total_points, 0) + ${challenge.rewardPoints}` 
-          })
-          .where(eq(users.id, updatedChallenge.userId));
-      }
-    }
-    
-    return updatedChallenge || undefined;
+    return completed || undefined;
   }
 
   async getTodaysChallenges(userId: string): Promise<UserChallenge[]> {
     const today = new Date();
-    let todaysChallenges = await this.getUserChallenges(userId, today);
-    
-    // If no challenges assigned for today, assign random ones
-    if (todaysChallenges.length === 0) {
-      const allChallenges = await this.getDailyChallenges();
-      const randomChallenges = allChallenges
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3); // Assign 3 random challenges
-
-      for (const challenge of randomChallenges) {
-        const assigned = await this.assignDailyChallenge(userId, challenge.id);
-        todaysChallenges.push(assigned);
-      }
-    }
-    
-    return todaysChallenges;
+    today.setHours(0, 0, 0, 0);
+    return await db.select().from(userChallenges)
+      .where(and(
+        eq(userChallenges.userId, userId),
+        gte(userChallenges.assignedAt, today)
+      ));
   }
 
-  // Human verification methods for DatabaseStorage
+  // Security and verification methods
+  async getUserActivity(userId: string, hours: number): Promise<any[]> {
+    // Return empty array for now - can be enhanced with actual user activity table
+    return [];
+  }
+
+  async logSuspiciousActivity(userId: string, activity: any): Promise<void> {
+    console.warn(`Suspicious activity logged for user ${userId}:`, activity);
+  }
+
   async updateUserVerification(userId: string, verificationData: Partial<User>): Promise<User | undefined> {
-    const [updatedUser] = await db
-      .update(users)
-      .set(verificationData)
-      .where(eq(users.id, userId))
-      .returning();
-    return updatedUser || undefined;
+    return await this.updateUser(userId, verificationData);
   }
 
   async getUserVerificationStatus(userId: string): Promise<any> {
-    const [user] = await db.select().from(users).where(eq(users.id, userId));
-    if (!user) return null;
-
+    const user = await this.getUser(userId);
     return {
-      overallScore: user.identityScore || 0,
-      level: user.humanVerificationLevel || 'basic',
-      verifications: {
-        email: user.isEmailVerified || false,
-        phone: user.isPhoneVerified || false,
-        identity: user.governmentIdVerified || false,
-        face: user.faceVerificationCompleted || false,
-        behavior: (user.behaviorScore || 0) > 70,
-        captcha: user.isCaptchaVerified || false,
-        twoFactor: user.twoFactorEnabled || false
-      },
-      requirements: [],
-      riskLevel: (user.riskScore || 0) > 50 ? 'high' : (user.riskScore || 0) > 20 ? 'medium' : 'low'
+      isEmailVerified: user?.isEmailVerified || false,
+      isPhoneVerified: user?.isPhoneVerified || false,
+      isIdentityVerified: user?.isIdentityVerified || false,
+      isBackgroundChecked: user?.isBackgroundChecked || false
     };
   }
 
   async logVerificationActivity(userId: string, activityType: string, metadata?: any): Promise<void> {
-    // In production, would log to userActivity table
     console.log(`Verification activity: ${activityType} for user ${userId}`, metadata);
   }
 
   async incrementRiskScore(userId: string, amount: number): Promise<void> {
-    await db
-      .update(users)
-      .set({
-        riskScore: sql`COALESCE(risk_score, 0) + ${amount}`
-      })
-      .where(eq(users.id, userId));
+    const user = await this.getUser(userId);
+    if (user) {
+      const newRiskScore = (user.riskScore || 0) + amount;
+      await this.updateUser(userId, { riskScore: newRiskScore });
+    }
   }
 
   async lockUserAccount(userId: string, reason: string): Promise<void> {
-    await db
-      .update(users)
-      .set({
-        accountLocked: true,
-        lockUntil: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
-      })
-      .where(eq(users.id, userId));
+    await this.updateUser(userId, { 
+      accountLocked: true, 
+      lockUntil: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+    });
   }
 
-  // Admin methods for DatabaseStorage
-  async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users);
+  initializeDailyChallenges(): void {
+    // Initialize challenges asynchronously
+    setTimeout(() => this.createDefaultChallenges(), 100);
   }
 
-  async getAllTasks(): Promise<Task[]> {
-    return await db.select().from(tasks);
-  }
-
-  async getAllTaskCompletions(): Promise<TaskCompletion[]> {
-    return await db.select().from(taskCompletions);
-  }
-
-  async getTaskCompletion(id: string): Promise<TaskCompletion | undefined> {
-    const [completion] = await db.select().from(taskCompletions).where(eq(taskCompletions.id, id));
-    return completion || undefined;
-  }
-
-  // Initialize sample daily challenges
-  async initializeDailyChallenges(): Promise<void> {
-    const existingChallenges = await this.getDailyChallenges();
-    if (existingChallenges.length > 0) return; // Already initialized
-
-    const sampleChallenges = [
-      {
-        title: "Morning Mindfulness",
-        description: "Take 5 minutes to practice deep breathing or meditation before starting your day",
+  private async createDefaultChallenges(): Promise<void> {
+    // Create sample challenges if none exist
+    const existing = await this.getDailyChallenges();
+    if (existing.length === 0) {
+      await this.createDailyChallenge({
+        id: randomUUID(),
+        title: "Quick Walk",
+        description: "Take a 10-minute walk around your neighborhood",
         category: "wellness",
         difficulty: "easy",
         rewardPoints: 10,
-        icon: "🧘‍♀️",
-        color: "#8b5cf6",
-        estimatedMinutes: 5,
-        isActive: true
-      },
-      {
-        title: "Tidy Up One Room",
-        description: "Choose one room in your home and spend 15 minutes organizing or cleaning it",
-        category: "productivity",
-        difficulty: "easy",
-        rewardPoints: 15,
-        icon: "🏠",
-        color: "#06b6d4",
-        estimatedMinutes: 15,
-        isActive: true
-      },
-      {
-        title: "Connect with a Friend",
-        description: "Send a thoughtful message, make a call, or schedule time with someone you care about",
-        category: "social",
-        difficulty: "easy",
-        rewardPoints: 10,
-        icon: "💝",
-        color: "#ec4899",
-        estimatedMinutes: 10,
-        isActive: true
-      },
-      {
-        title: "Hydration Check",
-        description: "Drink a full glass of water and track your hydration throughout the day",
-        category: "health",
-        difficulty: "easy",
-        rewardPoints: 5,
-        icon: "💧",
-        color: "#3b82f6",
-        estimatedMinutes: 2,
-        isActive: true
-      },
-      {
-        title: "Gratitude Practice",
-        description: "Write down three things you're grateful for today",
-        category: "wellness",
-        difficulty: "easy",
-        rewardPoints: 10,
-        icon: "🙏",
-        color: "#f59e0b",
-        estimatedMinutes: 5,
-        isActive: true
-      },
-      {
-        title: "Quick Exercise",
-        description: "Do 10 jumping jacks, stretch for 5 minutes, or take a short walk",
-        category: "health",
-        difficulty: "easy",
-        rewardPoints: 15,
-        icon: "🏃‍♀️",
+        icon: "🚶‍♀️",
         color: "#10b981",
         estimatedMinutes: 10,
         isActive: true
-      },
-      {
-        title: "Creative Break",
-        description: "Spend 15 minutes on a creative activity: drawing, writing, or crafting",
-        category: "creativity",
-        difficulty: "medium",
-        rewardPoints: 20,
-        icon: "🎨",
-        color: "#f97316",
-        estimatedMinutes: 15,
-        isActive: true
-      },
-      {
-        title: "Learn Something New",
-        description: "Watch an educational video, read an article, or practice a new skill for 10 minutes",
-        category: "growth",
-        difficulty: "medium",
-        rewardPoints: 20,
-        icon: "📚",
-        color: "#6366f1",
-        estimatedMinutes: 10,
-        isActive: true
-      },
-      {
-        title: "Random Act of Kindness",
-        description: "Do something kind for someone else, whether big or small",
-        category: "social",
-        difficulty: "medium",
-        rewardPoints: 25,
-        icon: "❤️",
-        color: "#ef4444",
-        estimatedMinutes: 20,
-        isActive: true
-      },
-      {
-        title: "Digital Detox",
-        description: "Put your phone aside for 30 minutes and focus on being present",
-        category: "wellness",
-        difficulty: "hard",
-        rewardPoints: 30,
-        icon: "📱",
-        color: "#64748b",
-        estimatedMinutes: 30,
-        isActive: true
-      }
-    ];
-
-    for (const challengeData of sampleChallenges) {
-      await this.createDailyChallenge(challengeData);
+      });
     }
   }
 
-  // Admin methods for platform management
-  async getAllUsers(): Promise<User[]> {
-    return Array.from(this.users.values());
-  }
-
-  async getAllTasks(): Promise<Task[]> {
-    return Array.from(this.tasks.values());
-  }
-
-  async getAllTaskCompletions(): Promise<TaskCompletion[]> {
-    return Array.from(this.taskCompletions.values());
-  }
-
-  async getTaskCompletion(id: string): Promise<TaskCompletion | undefined> {
-    return this.taskCompletions.get(id);
-  }
-
-  async updateTaskCompletionStatus(id: string, status: string, notes?: string): Promise<void> {
-    const completion = this.taskCompletions.get(id);
-    if (completion) {
-      completion.status = status as any;
-      if (notes) {
-        completion.submissionNotes = notes;
-      }
-      this.taskCompletions.set(id, completion);
+  async ensureBarterCategory(): Promise<void> {
+    const existing = await db.select().from(taskCategories).where(eq(taskCategories.id, 'barter'));
+    if (existing.length === 0) {
+      await this.createTaskCategory({
+        id: 'barter',
+        name: 'Barter & Trade',
+        icon: 'handshake',
+        color: '#10b981',
+        description: 'Trade skills, services, and time with community members'
+      });
     }
-  }
-
-  async updateUserEarnings(userId: string, amount: number): Promise<void> {
-    const user = this.users.get(userId);
-    if (user) {
-      user.earnings = (user.earnings || 0) + amount;
-      this.users.set(userId, user);
-    }
-  }
-
-  async updateUserStatus(userId: string, updates: { accountLocked?: boolean; isEmailVerified?: boolean }): Promise<void> {
-    const user = this.users.get(userId);
-    if (user) {
-      if (updates.accountLocked !== undefined) {
-        user.accountLocked = updates.accountLocked;
-      }
-      if (updates.isEmailVerified !== undefined) {
-        user.isEmailVerified = updates.isEmailVerified;
-      }
-      this.users.set(userId, user);
-    }
-  }
-}
-
-// Database storage implementation (commented out for demo - use MemStorage)
-/*
-class DatabaseStorageImpl implements IStorage {
-  async getUsers(): Promise<User[]> {
-    return await db.select().from(users);
-  }
-
-  async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
-  }
-
-  async createUser(user: InsertUser): Promise<User> {
-    const [newUser] = await db
-      .insert(users)
-      .values(user)
-      .returning();
-    return newUser;
-  }
-
-  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
-    const [updatedUser] = await db
-      .update(users)
-      .set(updates)
-      .where(eq(users.id, id))
-      .returning();
-    return updatedUser || undefined;
   }
 
   // Admin methods for platform management
@@ -1828,24 +1580,17 @@ class DatabaseStorageImpl implements IStorage {
   }
 
   async updateTaskCompletionStatus(id: string, status: string, notes?: string): Promise<void> {
-    const updateData: any = { status };
-    if (notes) {
-      updateData.submissionNotes = notes;
-    }
     await db
       .update(taskCompletions)
-      .set(updateData)
+      .set({ status: status as any, submissionNotes: notes })
       .where(eq(taskCompletions.id, id));
   }
 
   async updateUserEarnings(userId: string, amount: number): Promise<void> {
-    const user = await this.getUser(userId);
-    if (user) {
-      await db
-        .update(users)
-        .set({ earnings: (user.earnings || 0) + amount })
-        .where(eq(users.id, userId));
-    }
+    await db
+      .update(users)
+      .set({ totalEarnings: sql`COALESCE(total_earnings, 0) + ${amount}` })
+      .where(eq(users.id, userId));
   }
 
   async updateUserStatus(userId: string, updates: { accountLocked?: boolean; isEmailVerified?: boolean }): Promise<void> {
@@ -1854,54 +1599,7 @@ class DatabaseStorageImpl implements IStorage {
       .set(updates)
       .where(eq(users.id, userId));
   }
-
-  // Stub methods for other required interface methods - implement as needed
-  async getTaskCategories(): Promise<TaskCategory[]> { return []; }
-  async createTaskCategory(category: InsertTaskCategory): Promise<TaskCategory> { throw new Error('Not implemented'); }
-  async getTasks(): Promise<Task[]> { return []; }
-  async getTask(id: string): Promise<Task | undefined> { return undefined; }
-  async getTasksByCategory(categoryId: string): Promise<Task[]> { return []; }
-  async createTask(task: InsertTask): Promise<Task> { throw new Error('Not implemented'); }
-  async getTaskCompletions(userId: string): Promise<TaskCompletion[]> { return []; }
-  async createTaskCompletion(completion: InsertTaskCompletion): Promise<TaskCompletion> { throw new Error('Not implemented'); }
-  async updateTaskCompletion(id: string, updates: Partial<TaskCompletion>): Promise<TaskCompletion | undefined> { return undefined; }
-  async getMessages(userId: string): Promise<Message[]> { return []; }
-  async createMessage(message: InsertMessage): Promise<Message> { throw new Error('Not implemented'); }
-  async markMessageAsRead(id: string): Promise<void> {}
-  async getUserAchievements(userId: string): Promise<UserAchievement[]> { return []; }
-  async createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement> { throw new Error('Not implemented'); }
-  async getAchievementDefinitions(): Promise<AchievementDefinition[]> { return []; }
-  async createAchievementDefinition(definition: InsertAchievementDefinition): Promise<AchievementDefinition> { throw new Error('Not implemented'); }
-  async updateUserAchievementProgress(userId: string, achievementType: string, progress: number): Promise<UserAchievement | undefined> { return undefined; }
-  async getDailyChallenges(): Promise<DailyChallenge[]> { return []; }
-  async createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge> { throw new Error('Not implemented'); }
-  async getUserChallenges(userId: string, date?: Date): Promise<UserChallenge[]> { return []; }
-  async assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge> { throw new Error('Not implemented'); }
-  async completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined> { return undefined; }
-  async getTodaysChallenges(userId: string): Promise<UserChallenge[]> { return []; }
-  
-  // Security and verification methods implementation for demo
-  async getUserActivity(userId: string, hours: number): Promise<UserActivity[]> {
-    // In demo mode, return simulated activity data
-    return [
-      {
-        id: 1,
-        userId: userId,
-        activityType: "login",
-        metadata: { ip: "192.168.1.1", userAgent: "Chrome" },
-        riskScore: 0,
-        flagged: false,
-        createdAt: new Date()
-      }
-    ] as UserActivity[];
-  }
-
-  async logSuspiciousActivity(userId: string, activity: any): Promise<void> {
-    // In demo mode, just log to console
-    console.warn(`Suspicious activity logged for user ${userId}:`, activity);
-  }
 }
-*/
 
-// Using secure MemStorage for demo - in production use DatabaseStorage with proper DB setup
-export const storage = new MemStorage();
+// Using DatabaseStorage for production - proper database persistence
+export const storage = new DatabaseStorage();

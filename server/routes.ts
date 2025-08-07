@@ -272,6 +272,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         emailVerificationSent: true
       });
     } catch (error) {
+      console.error('Registration error:', error);
       res.status(500).json({ message: "Failed to create account" });
     }
   });
