@@ -40,6 +40,7 @@ import AnalyticsTest from "@/pages/analytics-test";
 import ModerationTest from "@/pages/moderation-test";
 import AITaskGeneratorPage from "@/pages/ai-task-generator";
 import SMSTestPage from "@/pages/sms-test";
+import IntegrationsTest from "@/pages/integrations-test";
 import type { User } from "@shared/schema";
 import { initGA } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
@@ -126,6 +127,7 @@ function Router() {
           <Route path="/moderation-test" component={ModerationTest} />
           <Route path="/ai-tasks" component={AITaskGeneratorPage} />
           <Route path="/sms-test" component={SMSTestPage} />
+          <Route path="/integrations-test" component={IntegrationsTest} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />
         </Switch>

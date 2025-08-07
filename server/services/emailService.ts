@@ -1,12 +1,14 @@
 import { MailService } from '@sendgrid/mail';
 
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
-if (!SENDGRID_API_KEY) {
-  throw new Error("SENDGRID_API_KEY environment variable must be set");
+if (!process.env.SENDGRID_API_KEY) {
+  console.warn('SendGrid API key not configured. Email notifications disabled.');
 }
 
 const mailService = new MailService();
-mailService.setApiKey(SENDGRID_API_KEY);
+if (process.env.SENDGRID_API_KEY) {
+  mailService.setApiKey(process.env.SENDGRID_API_KEY);
+  console.log('✓ SendGrid email service initialized successfully');
+}
 
 interface EmailParams {
   to: string;
@@ -17,6 +19,11 @@ interface EmailParams {
 }
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
+  if (!process.env.SENDGRID_API_KEY) {
+    console.log('SendGrid not configured, skipping email');
+    return false;
+  }
+
   try {
     await mailService.send({
       to: params.to,
@@ -34,6 +41,11 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
 }
 
 export async function sendWelcomeEmail(userEmail: string, userName: string): Promise<boolean> {
+  if (!process.env.SENDGRID_API_KEY) {
+    console.log('SendGrid not configured, skipping welcome email');
+    return false;
+  }
+
   const welcomeHtml = `
     <!DOCTYPE html>
     <html>
@@ -79,9 +91,9 @@ export async function sendWelcomeEmail(userEmail: string, userName: string): Pro
     </html>
   `;
 
-  return await sendEmail({
+  return sendEmail({
     to: userEmail,
-    from: 'welcome@bittietasks.com',
+    from: 'noreply@bittietasks.com',
     subject: 'Welcome to BittieTasks - Start Earning Today!',
     html: welcomeHtml,
     text: `Welcome to BittieTasks, ${userName}! Start earning money from everyday tasks. Visit https://bittietasks.com to get started.`
@@ -89,18 +101,21 @@ export async function sendWelcomeEmail(userEmail: string, userName: string): Pro
 }
 
 export async function sendPasswordResetEmail(userEmail: string, resetToken: string): Promise<boolean> {
-  const resetUrl = `https://bittietasks.com/reset-password?token=${resetToken}`;
-  
+  if (!process.env.SENDGRID_API_KEY) {
+    console.log('SendGrid not configured, skipping password reset email');
+    return false;
+  }
+
   const resetHtml = `
     <!DOCTYPE html>
     <html>
     <head>
       <style>
         .container { max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+        .header { background: #dc3545; color: white; padding: 20px; text-align: center; }
         .content { padding: 20px; line-height: 1.6; }
-        .button { background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 20px 0; }
-        .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 6px; margin: 20px 0; }
+        .button { background: #dc3545; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 20px 0; }
+        .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; }
       </style>
     </head>
     <body>
@@ -109,46 +124,48 @@ export async function sendPasswordResetEmail(userEmail: string, resetToken: stri
           <h1>Password Reset Request</h1>
         </div>
         <div class="content">
-          <h2>Reset Your Password</h2>
-          <p>We received a request to reset your BittieTasks password. If you made this request, click the button below to create a new password:</p>
+          <h2>Reset Your BittieTasks Password</h2>
+          <p>You requested a password reset for your BittieTasks account. Click the button below to create a new password:</p>
           
-          <a href="${resetUrl}" class="button">Reset My Password</a>
+          <a href="https://bittietasks.com/reset-password?token=${resetToken}" class="button">Reset Password</a>
           
-          <div class="warning">
-            <strong>Important:</strong> This link will expire in 1 hour for security reasons.
-          </div>
+          <p>If you didn't request this reset, please ignore this email. Your password will remain unchanged.</p>
+          <p>This link will expire in 24 hours for security reasons.</p>
           
-          <p>If you didn't request this password reset, you can safely ignore this email. Your password will remain unchanged.</p>
-          
-          <p>For security, never share this email with anyone.</p>
-          
-          <p>Best regards,<br>The BittieTasks Security Team</p>
+          <p>Best regards,<br>The BittieTasks Team</p>
+        </div>
+        <div class="footer">
+          <p>BittieTasks - Little Tasks, Real Income</p>
         </div>
       </div>
     </body>
     </html>
   `;
 
-  return await sendEmail({
+  return sendEmail({
     to: userEmail,
-    from: 'security@bittietasks.com',
-    subject: 'Reset Your BittieTasks Password',
-    html: resetHtml,
-    text: `Reset your BittieTasks password: ${resetUrl} (expires in 1 hour)`
+    from: 'noreply@bittietasks.com',
+    subject: 'BittieTasks Password Reset',
+    html: resetHtml
   });
 }
 
 export async function sendUpgradeConfirmationEmail(userEmail: string, userName: string, planName: string): Promise<boolean> {
+  if (!process.env.SENDGRID_API_KEY) {
+    console.log('SendGrid not configured, skipping upgrade confirmation email');
+    return false;
+  }
+
   const upgradeHtml = `
     <!DOCTYPE html>
     <html>
     <head>
       <style>
         .container { max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+        .header { background: #28a745; color: white; padding: 20px; text-align: center; }
         .content { padding: 20px; line-height: 1.6; }
-        .success { background: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 6px; margin: 20px 0; }
-        .feature-list { background: #f8f9fa; padding: 20px; border-radius: 6px; margin: 20px 0; }
+        .button { background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 20px 0; }
+        .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; }
       </style>
     </head>
     <body>
@@ -158,49 +175,34 @@ export async function sendUpgradeConfirmationEmail(userEmail: string, userName: 
         </div>
         <div class="content">
           <h2>Hi ${userName},</h2>
-          
-          <div class="success">
-            <strong>Congratulations!</strong> Your upgrade to ${planName} is now active.
-          </div>
+          <p>Congratulations! Your BittieTasks account has been upgraded to ${planName}. You now have access to premium features that will help you earn even more.</p>
           
           <h3>Your new benefits include:</h3>
-          <div class="feature-list">
-            ${planName === 'Premium' ? `
-              <ul>
-                <li>✓ Keep 80% of task earnings (vs 75% Basic)</li>
-                <li>✓ Priority customer support</li>
-                <li>✓ Advanced analytics dashboard</li>
-                <li>✓ Higher task visibility</li>
-                <li>✓ Exclusive premium tasks</li>
-              </ul>
-            ` : `
-              <ul>
-                <li>✓ Keep 85% of task earnings</li>
-                <li>✓ VIP customer support</li>
-                <li>✓ Advanced analytics & insights</li>
-                <li>✓ Maximum task visibility</li>
-                <li>✓ Exclusive high-value tasks</li>
-                <li>✓ Early access to new features</li>
-              </ul>
-            `}
-          </div>
+          <ul>
+            <li>✓ Priority task placement</li>
+            <li>✓ Advanced analytics dashboard</li>
+            <li>✓ Higher earning limits</li>
+            <li>✓ Premium customer support</li>
+          </ul>
           
-          <p>Start maximizing your earnings right away! Your new plan benefits are active immediately.</p>
+          <a href="https://bittietasks.com/dashboard" class="button">Access Premium Features</a>
           
-          <p>Questions? Our support team is here to help you make the most of your ${planName} membership.</p>
+          <p>Thank you for supporting BittieTasks and our community of parents!</p>
           
           <p>Best regards,<br>The BittieTasks Team</p>
+        </div>
+        <div class="footer">
+          <p>BittieTasks - Little Tasks, Real Income</p>
         </div>
       </div>
     </body>
     </html>
   `;
 
-  return await sendEmail({
+  return sendEmail({
     to: userEmail,
-    from: 'billing@bittietasks.com',
-    subject: `Welcome to ${planName} - Your Upgrade is Active!`,
-    html: upgradeHtml,
-    text: `Congratulations ${userName}! Your ${planName} upgrade is now active. Start earning more today!`
+    from: 'noreply@bittietasks.com',
+    subject: `Welcome to BittieTasks ${planName}!`,
+    html: upgradeHtml
   });
 }

@@ -1,19 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
-import { 
-  createPaymentIntent, 
-  createCustomer, 
-  createSubscription,
-  calculatePlatformFee,
-  isStripeEnabled,
-  verifyWebhookSignature
-} from "../services/paymentService";
-import { 
-  createEscrowTransaction, 
-  shouldUseEscrow, 
-  validateEscrowRequest,
-  calculateEscrowFee 
-} from "../services/escrowService";
+import { paymentService } from "../services/paymentService";
+import { escrowService } from "../services/escrowService";
 import { storage } from "../storage";
 
 const router = Router();
@@ -34,15 +22,28 @@ const createSubscriptionSchema = z.object({
 // Create payment intent for task completion
 router.post("/create-payment-intent", async (req, res) => {
   try {
-    if (!isStripeEnabled()) {
+    if (!paymentService.isEnabled()) {
       return res.status(503).json({ 
         error: "Payment processing is currently unavailable. Please try again later." 
       });
     }
 
-    const { taskCompletionId, amount, useEscrow } = createPaymentIntentSchema.parse(req.body);
+    const { amount } = req.body;
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
     
-    // Get task completion details
+    const result = await paymentService.createPaymentIntent(amount);
+    
+    if (result.success && result.paymentIntent) {
+      res.json({
+        clientSecret: result.paymentIntent.client_secret,
+        paymentIntentId: result.paymentIntent.id,
+        amount: result.paymentIntent.amount
+      });
+    } else {
+      res.status(500).json({ error: result.error || 'Failed to create payment intent' });
+    }
     const taskCompletion = await storage.getTaskCompletion(taskCompletionId);
     if (!taskCompletion) {
       return res.status(404).json({ error: "Task completion not found" });

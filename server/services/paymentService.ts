@@ -1,167 +1,144 @@
 import Stripe from 'stripe';
 
-// Initialize Stripe - will use environment variable when available
-let stripe: Stripe | null = null;
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+}
 
-export function initializeStripe() {
-  if (process.env.STRIPE_SECRET_KEY) {
-    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20',
-    });
-    console.log('✓ Stripe initialized successfully');
-  } else {
-    console.log('⚠️  STRIPE_SECRET_KEY not found - payment processing disabled');
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2023-10-16",
+});
+
+export interface PaymentIntent {
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  client_secret: string;
+}
+
+export interface PaymentResult {
+  success: boolean;
+  paymentIntent?: PaymentIntent;
+  error?: string;
+}
+
+class PaymentService {
+  async createPaymentIntent(amount: number, currency: string = 'usd'): Promise<PaymentResult> {
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency,
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      console.log(`Payment intent created: ${paymentIntent.id} for $${amount}`);
+
+      return {
+        success: true,
+        paymentIntent: {
+          id: paymentIntent.id,
+          amount: paymentIntent.amount / 100,
+          currency: paymentIntent.currency,
+          status: paymentIntent.status,
+          client_secret: paymentIntent.client_secret!,
+        }
+      };
+    } catch (error: any) {
+      console.error('Payment intent creation failed:', error.message);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  async confirmPayment(paymentIntentId: string): Promise<{ success: boolean; status?: string; error?: string }> {
+    try {
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      return {
+        success: true,
+        status: paymentIntent.status
+      };
+    } catch (error: any) {
+      console.error('Payment confirmation failed:', error.message);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  async createConnectedAccount(email: string, country: string = 'US'): Promise<{ success: boolean; accountId?: string; error?: string }> {
+    try {
+      const account = await stripe.accounts.create({
+        type: 'express',
+        email,
+        country,
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
+        },
+      });
+
+      return {
+        success: true,
+        accountId: account.id
+      };
+    } catch (error: any) {
+      console.error('Connected account creation failed:', error.message);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  async processPlatformPayment(
+    amount: number,
+    platformFee: number,
+    connectedAccountId: string
+  ): Promise<PaymentResult> {
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100),
+        currency: 'usd',
+        application_fee_amount: Math.round(platformFee * 100),
+        transfer_data: {
+          destination: connectedAccountId,
+        },
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      console.log(`Platform payment created: ${paymentIntent.id}, Fee: $${platformFee}`);
+
+      return {
+        success: true,
+        paymentIntent: {
+          id: paymentIntent.id,
+          amount: paymentIntent.amount / 100,
+          currency: paymentIntent.currency,
+          status: paymentIntent.status,
+          client_secret: paymentIntent.client_secret!,
+        }
+      };
+    } catch (error: any) {
+      console.error('Platform payment failed:', error.message);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  isEnabled(): boolean {
+    return !!process.env.STRIPE_SECRET_KEY;
   }
 }
 
-export function isStripeEnabled(): boolean {
-  return stripe !== null;
-}
-
-export function getStripe(): Stripe {
-  if (!stripe) {
-    throw new Error('Stripe not initialized. Please check STRIPE_SECRET_KEY environment variable.');
-  }
-  return stripe;
-}
-
-// Payment Intent creation for marketplace transactions
-export async function createPaymentIntent(
-  amount: number, // in cents
-  currency: string = 'usd',
-  metadata: Record<string, string> = {}
-): Promise<Stripe.PaymentIntent> {
-  const stripeInstance = getStripe();
-  
-  return await stripeInstance.paymentIntents.create({
-    amount,
-    currency,
-    metadata,
-    automatic_payment_methods: {
-      enabled: true,
-    },
-  });
-}
-
-// Create connected account for task providers (sellers)
-export async function createConnectedAccount(
-  email: string,
-  businessType: 'individual' | 'company' = 'individual',
-  country: string = 'US'
-): Promise<Stripe.Account> {
-  const stripeInstance = getStripe();
-  
-  return await stripeInstance.accounts.create({
-    type: 'express',
-    country,
-    email,
-    business_type: businessType,
-    capabilities: {
-      card_payments: { requested: true },
-      transfers: { requested: true },
-    },
-  });
-}
-
-// Create account link for onboarding
-export async function createAccountLink(
-  accountId: string,
-  refreshUrl: string,
-  returnUrl: string
-): Promise<Stripe.AccountLink> {
-  const stripeInstance = getStripe();
-  
-  return await stripeInstance.accountLinks.create({
-    account: accountId,
-    refresh_url: refreshUrl,
-    return_url: returnUrl,
-    type: 'account_onboarding',
-  });
-}
-
-// Transfer funds to connected account (after task completion)
-export async function transferToConnectedAccount(
-  amount: number, // in cents
-  destinationAccount: string,
-  transferGroup?: string
-): Promise<Stripe.Transfer> {
-  const stripeInstance = getStripe();
-  
-  return await stripeInstance.transfers.create({
-    amount,
-    currency: 'usd',
-    destination: destinationAccount,
-    transfer_group: transferGroup,
-  });
-}
-
-// Create customer for subscription billing
-export async function createCustomer(
-  email: string,
-  name?: string,
-  metadata: Record<string, string> = {}
-): Promise<Stripe.Customer> {
-  const stripeInstance = getStripe();
-  
-  return await stripeInstance.customers.create({
-    email,
-    name,
-    metadata,
-  });
-}
-
-// Create subscription for Pro/Premium plans
-export async function createSubscription(
-  customerId: string,
-  priceId: string,
-  metadata: Record<string, string> = {}
-): Promise<Stripe.Subscription> {
-  const stripeInstance = getStripe();
-  
-  return await stripeInstance.subscriptions.create({
-    customer: customerId,
-    items: [{ price: priceId }],
-    payment_behavior: 'default_incomplete',
-    payment_settings: { save_default_payment_method: 'on_subscription' },
-    expand: ['latest_invoice.payment_intent'],
-    metadata,
-  });
-}
-
-// Cancel subscription
-export async function cancelSubscription(
-  subscriptionId: string,
-  cancelAtPeriodEnd: boolean = true
-): Promise<Stripe.Subscription> {
-  const stripeInstance = getStripe();
-  
-  return await stripeInstance.subscriptions.update(subscriptionId, {
-    cancel_at_period_end: cancelAtPeriodEnd,
-  });
-}
-
-// Calculate platform fee based on user's subscription tier
-export function calculatePlatformFee(amount: number, subscriptionTier: string): number {
-  const feeRates = {
-    'free': 0.10,     // 10%
-    'pro': 0.07,      // 7% 
-    'premium': 0.05   // 5%
-  };
-  
-  const rate = feeRates[subscriptionTier as keyof typeof feeRates] || feeRates.free;
-  return Math.round(amount * rate);
-}
-
-// Webhook signature verification
-export function verifyWebhookSignature(
-  payload: string | Buffer,
-  signature: string,
-  secret: string
-): Stripe.Event {
-  const stripeInstance = getStripe();
-  
-  return stripeInstance.webhooks.constructEvent(payload, signature, secret);
-}
-
-// Initialize Stripe on module load
-initializeStripe();
+export const paymentService = new PaymentService();
+export default paymentService;
