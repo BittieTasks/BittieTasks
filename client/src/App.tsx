@@ -17,13 +17,8 @@ import Auth from "@/pages/auth";
 import Achievements from "@/pages/achievements";
 import Compliance from "@/pages/Compliance";
 import DailyChallenges from "@/pages/DailyChallenges";
-import AdminDashboard from "@/pages/admin-simple";
-import Verification from "@/pages/verification";
 import AdminLogin from "@/pages/admin-login";
 import AdminAccess from "@/pages/admin-access";
-import QuickAdmin from "@/pages/quick-admin";
-import SimpleAdmin from "@/pages/simple-admin";
-import AdminTest from "@/pages/admin-test";
 import SubscriptionPage from "@/pages/subscription";
 import SubscriptionCheckout from "@/pages/subscription-checkout";
 import SubscriptionUpgrade from "@/pages/subscription-upgrade";
@@ -36,11 +31,7 @@ import CompanyApplication from "@/pages/company-application";
 import EthicalPartnerships from "@/pages/ethical-partnerships";
 import AdvertisingPortal from "@/pages/advertising-portal";
 import AdPreferences from "@/pages/ad-preferences";
-import AnalyticsTest from "@/pages/analytics-test";
-import ModerationTest from "@/pages/moderation-test";
 import AITaskGeneratorPage from "@/pages/ai-task-generator";
-import SMSTestPage from "@/pages/sms-test";
-import IntegrationsTest from "@/pages/integrations-test";
 import VerifyEmailPage from "@/pages/verify-email";
 import type { User } from "@shared/schema";
 import { initGA } from "./lib/analytics";
@@ -105,13 +96,8 @@ function Router() {
           <Route path="/achievements" component={() => <AuthenticatedRoute component={Achievements} />} />
           <Route path="/challenges" component={() => <AuthenticatedRoute component={DailyChallenges} />} />
           <Route path="/compliance" component={() => <AuthenticatedRoute component={Compliance} />} />
-          <Route path="/verification" component={() => <AuthenticatedRoute component={Verification} />} />
-          <Route path="/admin" component={() => <AuthenticatedRoute component={AdminDashboard} />} />
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin-access" component={() => <AuthenticatedRoute component={AdminAccess} />} />
-          <Route path="/quick-admin" component={QuickAdmin} />
-          <Route path="/simple-admin" component={SimpleAdmin} />
-          <Route path="/admin-test" component={AdminTest} />
           <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
           <Route path="/subscription/checkout/:tier" component={() => <AuthenticatedRoute component={SubscriptionCheckout} />} />
           <Route path="/subscription-upgrade" component={() => <AuthenticatedRoute component={SubscriptionUpgrade} />} />
@@ -124,11 +110,7 @@ function Router() {
           <Route path="/ethical-partnerships" component={EthicalPartnerships} />
           <Route path="/advertising-portal" component={AdvertisingPortal} />
           <Route path="/ad-preferences" component={() => <AuthenticatedRoute component={AdPreferences} />} />
-          <Route path="/analytics-test" component={() => <AuthenticatedRoute component={AnalyticsTest} />} />
-          <Route path="/moderation-test" component={ModerationTest} />
           <Route path="/ai-tasks" component={AITaskGeneratorPage} />
-          <Route path="/sms-test" component={SMSTestPage} />
-          <Route path="/integrations-test" component={IntegrationsTest} />
           <Route path="/verify-email" component={VerifyEmailPage} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />
