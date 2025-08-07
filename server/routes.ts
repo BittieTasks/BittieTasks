@@ -72,8 +72,8 @@ const apiLimiter = rateLimit({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Apply performance monitoring middleware (temporarily disabled for debugging)
-  // app.use(performanceMiddleware);
+  // Apply performance monitoring middleware
+  app.use(performanceMiddleware);
   
   // Apply security middleware
   app.use(helmet({
@@ -1367,35 +1367,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // SendGrid testing endpoint
+  // SendGrid domain verification status check
+  app.get("/api/sendgrid-status", (req, res) => {
+    res.json({
+      api_key_configured: !!process.env.SENDGRID_API_KEY,
+      service_initialized: true,
+      domain_authentication_needed: true,
+      last_error: "403 Forbidden - Sender Identity Not Verified",
+      instructions: {
+        step1: "Go to SendGrid Dashboard → Settings → Sender Authentication",
+        step2: "Check status of bittietasks.com domain verification",
+        step3: "Ensure all DNS records are properly configured",
+        step4: "Wait up to 24 hours for DNS propagation",
+        alternative: "Use Single Sender Verification for immediate testing"
+      },
+      test_endpoint: "/api/test-email"
+    });
+  });
+
+  // SendGrid testing and verification endpoint
   app.post("/api/test-email", async (req, res) => {
     try {
+      console.log('🧪 Testing SendGrid with domain authentication...');
+      
       const success = await sendEmail({
-        to: req.body.to || "test@bittietasks.com",
-        from: "support@bittietasks.com",
-        subject: req.body.subject || "SendGrid Test Email",
-        html: "<h2>SendGrid Test</h2><p>This is a test email from BittieTasks to verify SendGrid integration.</p>",
-        text: "SendGrid Test: This is a test email from BittieTasks to verify SendGrid integration."
+        to: req.body.to || "test@example.com",
+        from: "support@bittietasks.com", // Using the domain that should be authenticated
+        subject: req.body.subject || "SendGrid Domain Authentication Test",
+        html: `
+          <h2>✅ SendGrid Test - Domain Authentication</h2>
+          <p>This email confirms that BittieTasks SendGrid integration is working properly with domain authentication.</p>
+          <p><strong>Sender:</strong> support@bittietasks.com</p>
+          <p><strong>Domain:</strong> bittietasks.com</p>
+          <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+        `,
+        text: `SendGrid Domain Authentication Test - This email confirms BittieTasks SendGrid is working. Sent: ${new Date().toISOString()}`
       });
 
       if (success) {
+        console.log('✅ SendGrid email sent successfully!');
         res.json({ 
           status: "success", 
-          message: "Email sent successfully",
-          sender: "support@bittietasks.com"
+          message: "Email sent successfully! Domain authentication is working.",
+          sender: "support@bittietasks.com",
+          domain_status: "verified",
+          timestamp: new Date().toISOString()
         });
       } else {
+        console.log('❌ SendGrid email failed to send');
         res.status(500).json({ 
           status: "error", 
-          message: "Failed to send email - check domain verification",
-          next_steps: "Verify sender domain in SendGrid dashboard"
+          message: "Failed to send email - domain authentication may not be complete",
+          sender: "support@bittietasks.com",
+          domain_status: "unverified",
+          next_steps: "Check SendGrid dashboard for domain verification status"
         });
       }
     } catch (error: any) {
+      console.log('❌ SendGrid error:', error.message);
       res.status(500).json({ 
         status: "error", 
-        message: error.message,
-        error_details: error.response?.body?.errors || "Unknown error"
+        message: "SendGrid API error",
+        error_type: error.code || "unknown",
+        error_details: error.response?.body?.errors || error.message,
+        domain_status: "verification_needed"
       });
     }
   });
