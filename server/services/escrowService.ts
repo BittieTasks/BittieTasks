@@ -25,65 +25,94 @@ export interface EscrowPaymentRequest {
 export async function createEscrowTransaction(
   request: EscrowPaymentRequest
 ): Promise<{ paymentUrl: string; transactionId: string }> {
-  // This would integrate with Escrow.com API when API keys are available
-  // For now, return a mock structure that shows the integration pattern
+  // Check if Escrow.com API credentials are available
+  if (!process.env.ESCROW_API_KEY || !process.env.ESCROW_EMAIL) {
+    console.warn('Escrow.com API credentials not configured, using mock data');
+    const mockTransactionId = `escrow_${Date.now()}`;
+    const paymentUrl = `https://www.escrow.com/pay?transaction=${mockTransactionId}&amount=${request.amount}`;
+    return { paymentUrl, transactionId: mockTransactionId };
+  }
   
-  const mockTransactionId = `escrow_${Date.now()}`;
-  
-  // In production, this would make actual API call to Escrow.com
-  // const response = await fetch('https://api.escrow.com/2017-09-01/transaction', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Authorization': `Bearer ${process.env.ESCROW_API_KEY}`,
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     parties: [
-  //       { role: 'buyer', email: request.buyerEmail },
-  //       { role: 'seller', email: request.sellerEmail }
-  //     ],
-  //     items: [{
-  //       title: request.description,
-  //       description: request.description,
-  //       type: 'general_merchandise',
-  //       inspection_period: request.inspectionPeriod || 3,
-  //       quantity: 1,
-  //       schedule: [{
-  //         amount: request.amount,
-  //         payer_customer: 'buyer',
-  //         beneficiary_customer: 'seller'
-  //       }]
-  //     }],
-  //     currency: request.currency || 'USD'
-  //   })
-  // });
-  
-  // Return mock payment URL for now
-  const paymentUrl = `https://www.escrow.com/pay?transaction=${mockTransactionId}&amount=${request.amount}`;
-  
-  return {
-    paymentUrl,
-    transactionId: mockTransactionId
-  };
+  try {
+    const response = await fetch('https://api.escrow.com/2017-09-01/transaction', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.ESCROW_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        parties: [
+          { role: 'buyer', email: request.buyerEmail },
+          { role: 'seller', email: request.sellerEmail }
+        ],
+        items: [{
+          title: request.description,
+          description: request.description,
+          type: 'general_merchandise',
+          inspection_period: request.inspectionPeriod || 3,
+          quantity: 1,
+          schedule: [{
+            amount: request.amount,
+            payer_customer: 'buyer',
+            beneficiary_customer: 'seller'
+          }]
+        }],
+        currency: request.currency || 'USD'
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Escrow API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      paymentUrl: data.payment_url,
+      transactionId: data.id
+    };
+  } catch (error) {
+    console.error('Escrow.com API error:', error);
+    // Fallback to Stripe for failed escrow transactions
+    throw new Error('High-value transaction processing temporarily unavailable');
+  }
 }
 
-// Check escrow transaction status
+// Check escrow transaction status  
 export async function getEscrowTransactionStatus(
   transactionId: string
 ): Promise<EscrowTransaction | null> {
-  // This would query Escrow.com API for transaction status
-  // For now, return mock data
-  
-  return {
-    id: transactionId,
-    amount: 250.00,
-    currency: 'USD',
-    buyerEmail: 'buyer@example.com',
-    sellerEmail: 'seller@example.com',
-    description: 'Task completion payment',
-    inspectionPeriod: 3,
-    status: 'pending'
-  };
+  if (!process.env.ESCROW_API_KEY) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(`https://api.escrow.com/2017-09-01/transaction/${transactionId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${process.env.ESCROW_API_KEY}`,
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return {
+      id: data.id,
+      amount: data.items[0]?.schedule[0]?.amount || 0,
+      currency: data.currency,
+      buyerEmail: data.parties.find((p: any) => p.role === 'buyer')?.email || '',
+      sellerEmail: data.parties.find((p: any) => p.role === 'seller')?.email || '',
+      description: data.items[0]?.title || '',
+      inspectionPeriod: data.items[0]?.inspection_period || 3,
+      status: data.status as any
+    };
+  } catch (error) {
+    console.error('Error fetching escrow status:', error);
+    return null;
+  }
 }
 
 // Determine if a transaction should use escrow based on amount and risk factors

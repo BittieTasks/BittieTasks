@@ -52,9 +52,11 @@ router.post("/create-payment-intent", async (req, res) => {
     const task = await storage.getTask(taskCompletion.taskId);
     const provider = await storage.getUser(taskCompletion.userId);
     
-    if (!task || !provider) {
-      return res.status(404).json({ error: "Task or provider not found" });
+    if (!task?.title || !provider?.email) {
+      return res.status(404).json({ error: "Task or provider information incomplete" });
     }
+    
+
 
     // Determine if escrow should be used
     const shouldUseEscrowPayment = useEscrow || shouldUseEscrow(
@@ -108,12 +110,12 @@ router.post("/create-subscription", async (req, res) => {
     }
 
     // Check if user is authenticated
-    if (!req.session?.userId) {
+    if (!(req.session as any)?.userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
 
     const { priceId, tier } = createSubscriptionSchema.parse(req.body);
-    const userId = req.session.userId;
+    const userId = (req.session as any).userId;
 
     // Get user details
     const user = await storage.getUser(userId);
@@ -169,11 +171,11 @@ router.post("/create-subscription", async (req, res) => {
 // Get subscription status
 router.get("/subscription-status", async (req, res) => {
   try {
-    if (!req.session?.userId) {
+    if (!(req.session as any)?.userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
 
-    const user = await storage.getUser(req.session.userId);
+    const user = await storage.getUser((req.session as any).userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -202,11 +204,11 @@ router.post("/cancel-subscription", async (req, res) => {
       });
     }
 
-    if (!req.session?.userId) {
+    if (!(req.session as any)?.userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
 
-    const user = await storage.getUser(req.session.userId);
+    const user = await storage.getUser((req.session as any).userId);
     if (!user || !user.stripeSubscriptionId) {
       return res.status(404).json({ error: "No active subscription found" });
     }
@@ -218,7 +220,7 @@ router.post("/cancel-subscription", async (req, res) => {
     );
 
     // Update user subscription status
-    await storage.updateUser(req.session.userId, {
+    await storage.updateUser((req.session as any).userId, {
       subscriptionStatus: 'cancelled'
     });
 
@@ -289,11 +291,11 @@ router.get("/payment-methods", async (req, res) => {
       });
     }
 
-    if (!req.session?.userId) {
+    if (!(req.session as any)?.userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
 
-    const user = await storage.getUser(req.session.userId);
+    const user = await storage.getUser((req.session as any).userId);
     if (!user || !user.stripeCustomerId) {
       return res.json({ paymentMethods: [] });
     }
