@@ -28,7 +28,7 @@ import { fraudCheckMiddleware, highValueFraudCheck, trackSuspiciousActivity } fr
 import { cacheService } from "./services/cacheService";
 import { performanceMiddleware } from "./middleware/performanceMiddleware";
 import { performanceMonitor } from "./services/performanceMonitor";
-import { sendEmail, sendVerificationEmail } from "./services/emailService";
+import { sendEmail } from "./services/emailService";
 
 // Configure multer for file uploads
 const uploadDir = "uploads";
@@ -372,6 +372,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Admin login error:", error);
       res.status(500).json({ message: "Failed to admin login" });
+    }
+  });
+
+  // Auth user endpoint - used by frontend to check authentication
+  app.get("/api/auth/user", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Handle admin user
+      if (userId === "admin-user-id") {
+        const adminEmail = (req.session as any)?.adminEmail;
+        const adminUser = {
+          id: userId,
+          email: adminEmail || "admin@bittietasks.com",
+          firstName: "Platform",
+          lastName: "Admin",
+          isAdmin: true,
+          earnings: 0,
+          completedTasks: 0,
+          rating: 5.0,
+          verified: true,
+          status: 'active',
+          joinedAt: new Date().toISOString()
+        };
+        return res.json(adminUser);
+      }
+
+      // Get regular user
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(user);
+    } catch (error) {
+      console.error("Get auth user error:", error);
+      res.status(500).json({ message: "Failed to get user" });
     }
   });
 
@@ -1777,12 +1818,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // User Ad Preferences Management
   app.put('/api/user/ad-preferences', async (req, res) => {
-    if (!req.session.userId) {
+    if (!(req.session as any).userId) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const preferences = req.body;
 
       // Validate preferences
@@ -1860,12 +1901,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get('/api/advertising/user-insights', async (req, res) => {
-    if (!req.session.userId) {
+    if (!(req.session as any).userId) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const user = await storage.getUser(userId);
       
       if (!user) {
