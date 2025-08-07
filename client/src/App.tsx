@@ -37,6 +37,7 @@ import EthicalPartnerships from "@/pages/ethical-partnerships";
 import AdvertisingPortal from "@/pages/advertising-portal";
 import AdPreferences from "@/pages/ad-preferences";
 import AnalyticsTest from "@/pages/analytics-test";
+import ModerationTest from "@/pages/moderation-test";
 import type { User } from "@shared/schema";
 import { initGA } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
@@ -120,6 +121,7 @@ function Router() {
           <Route path="/advertising-portal" component={AdvertisingPortal} />
           <Route path="/ad-preferences" component={() => <AuthenticatedRoute component={AdPreferences} />} />
           <Route path="/analytics-test" component={() => <AuthenticatedRoute component={AnalyticsTest} />} />
+          <Route path="/moderation-test" component={ModerationTest} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />
         </Switch>

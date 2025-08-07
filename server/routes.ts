@@ -15,6 +15,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import legalRoutes from './routes/legal';
 import analyticsRoutes from './routes/analyticsRoutes';
+import moderationRoutes from './routes/moderationRoutes';
 import { sendWelcomeEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
 import { autoHealer } from "./services/autoHealer";
 import { fraudDetection } from "./services/fraudDetection";
@@ -111,6 +112,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Analytics routes
   app.use('/api/analytics', analyticsRoutes);
+  
+  // Content Moderation routes  
+  app.use('/api', moderationRoutes);
   
   // Affiliate products routes
   app.use("/api/affiliate-products", affiliateProductsRouter);
