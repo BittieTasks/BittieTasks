@@ -16,6 +16,10 @@ import helmet from 'helmet';
 import legalRoutes from './routes/legal';
 import { sendWelcomeEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
 import { autoHealer } from "./services/autoHealer";
+import { fraudDetection } from "./services/fraudDetection";
+import { analytics } from "./services/analyticsService";
+import { fileManager } from "./services/fileManager";
+import { fraudCheckMiddleware, highValueFraudCheck, trackSuspiciousActivity } from "./middleware/fraudMiddleware";
 
 // Configure multer for file uploads
 const uploadDir = "uploads";
@@ -1180,6 +1184,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register subscription routes
   registerSubscriptionRoutes(app);
+
+  // Apply fraud detection middleware to authenticated routes
+  app.use('/api/tasks', fraudCheckMiddleware);
+  app.use('/api/user', trackSuspiciousActivity);
+  app.use('/api/payments', highValueFraudCheck);
+  app.use('/api/create-subscription', highValueFraudCheck);
+
+  // Analytics tracking endpoints
+  app.post("/api/analytics/track", async (req, res) => {
+    try {
+      const { eventName, properties } = req.body;
+      const userId = (req as any).user?.id;
+      
+      await analytics.trackEvent(eventName, userId, {
+        ...properties,
+        userAgent: req.headers['user-agent'],
+        url: req.headers.referer || req.url,
+        ip: req.ip
+      });
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Analytics tracking error:', error);
+      res.status(500).json({ error: 'Failed to track event' });
+    }
+  });
+
+  // Get user analytics dashboard
+  app.get("/api/analytics/user/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const days = parseInt(req.query.days as string) || 30;
+      
+      const metrics = await analytics.getUserMetrics(userId, days);
+      res.json(metrics);
+    } catch (error) {
+      console.error('User analytics error:', error);
+      res.status(500).json({ error: 'Failed to get user analytics' });
+    }
+  });
+
+  // Get platform analytics
+  app.get("/api/analytics/platform", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 7;
+      const metrics = await analytics.getPlatformMetrics(days);
+      res.json(metrics);
+    } catch (error) {
+      console.error('Platform analytics error:', error);
+      res.status(500).json({ error: 'Failed to get platform analytics' });
+    }
+  });
+
+  // File upload endpoint with enhanced security
+  app.post("/api/upload", upload.single("file"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const userId = (req as any).user?.id || 'anonymous';
+      const category = req.body.category || 'general';
+      
+      // Use enhanced file manager
+      const result = await fileManager.saveFile(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        userId,
+        category
+      );
+
+      if (!result.success) {
+        return res.status(400).json({ message: result.error });
+      }
+
+      // Track file upload
+      await analytics.trackEvent('file_uploaded', userId, {
+        filename: result.filename,
+        size: result.size,
+        category
+      });
+
+      res.json({
+        message: "File uploaded successfully",
+        filename: result.filename,
+        url: result.url,
+        size: result.size
+      });
+    } catch (error) {
+      console.error("File upload error:", error);
+      res.status(500).json({ message: "Upload failed" });
+    }
+  });
+
+  // Storage management endpoint
+  app.get("/api/storage/stats", async (req, res) => {
+    try {
+      const stats = await fileManager.getStorageStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Storage stats error:', error);
+      res.status(500).json({ error: 'Failed to get storage stats' });
+    }
+  });
 
   // Health monitoring endpoint
   app.get("/api/health", (req, res) => {

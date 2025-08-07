@@ -193,6 +193,23 @@ export default function SimpleAdmin() {
                 System Status & AutoHealer
               </Button>
             </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <Button 
+                onClick={() => window.location.href = '/analytics'}
+                variant="outline"
+                className="h-16"
+              >
+                Analytics Dashboard
+              </Button>
+              <Button 
+                onClick={() => window.location.reload()}
+                variant="outline"
+                className="h-16"
+              >
+                Reload Dashboard
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -1,5 +1,7 @@
 import { storage } from "../storage";
-import { sendEmail } from "./emailService";
+import { analytics } from "./analyticsService";
+import { fraudDetection } from "./fraudDetection";
+import { fileManager } from "./fileManager";
 
 interface HealthCheck {
   name: string;
@@ -56,6 +58,11 @@ class AutoHealer {
       
       // Check user authentication
       await this.checkUserAuth(checks);
+      
+      // Check new integrated services
+      await this.checkAnalyticsService(checks);
+      await this.checkFraudDetection(checks);
+      await this.checkFileManager(checks);
       
       // Auto-fix critical issues
       await this.autoFixIssues(checks);
@@ -212,6 +219,77 @@ class AutoHealer {
         name: 'User Authentication',
         status: 'critical',
         message: `Auth check failed: ${error?.message || 'Unknown error'}`,
+        timestamp: new Date()
+      });
+    }
+  }
+
+  private async checkAnalyticsService(checks: HealthCheck[]) {
+    try {
+      // Test analytics service by getting platform metrics
+      const metrics = await analytics.getPlatformMetrics(1); // Last 1 day
+      
+      checks.push({
+        name: 'Analytics Service',
+        status: 'healthy',
+        message: `Tracking ${metrics.totalEvents || 0} events`,
+        timestamp: new Date()
+      });
+    } catch (error: any) {
+      checks.push({
+        name: 'Analytics Service',
+        status: 'critical',
+        message: `Analytics error: ${error?.message || 'Unknown error'}`,
+        timestamp: new Date()
+      });
+    }
+  }
+
+  private async checkFraudDetection(checks: HealthCheck[]) {
+    try {
+      // Test fraud detection with a sample analysis
+      const testUserId = 'test-user-id';
+      const testRequestInfo = {
+        ip: '127.0.0.1',
+        userAgent: 'Test-Agent',
+        path: '/api/test',
+        method: 'GET'
+      };
+      
+      const fraudCheck = await fraudDetection.analyzeUser(testUserId, testRequestInfo);
+      
+      checks.push({
+        name: 'Fraud Detection',
+        status: 'healthy',
+        message: `Risk scoring operational (test score: ${fraudCheck.riskScore}%)`,
+        timestamp: new Date()
+      });
+    } catch (error: any) {
+      checks.push({
+        name: 'Fraud Detection',
+        status: 'critical',
+        message: `Fraud detection error: ${error?.message || 'Unknown error'}`,
+        timestamp: new Date()
+      });
+    }
+  }
+
+  private async checkFileManager(checks: HealthCheck[]) {
+    try {
+      // Test file manager by getting storage stats
+      const stats = await fileManager.getStorageStats();
+      
+      checks.push({
+        name: 'File Management',
+        status: 'healthy',
+        message: `Managing ${stats.totalFiles} files (${(stats.totalSize / 1024 / 1024).toFixed(1)}MB)`,
+        timestamp: new Date()
+      });
+    } catch (error: any) {
+      checks.push({
+        name: 'File Management',
+        status: 'critical',
+        message: `File manager error: ${error?.message || 'Unknown error'}`,
         timestamp: new Date()
       });
     }
