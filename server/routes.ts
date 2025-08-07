@@ -14,6 +14,7 @@ import bcrypt from "bcryptjs";
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import legalRoutes from './routes/legal';
+import { sendWelcomeEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
 
 // Configure multer for file uploads
 const uploadDir = "uploads";
@@ -184,6 +185,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Store user ID in session
       (req.session as any).userId = newUser.id;
+
+      // Send welcome email
+      try {
+        await sendWelcomeEmail(email, firstName);
+        console.log(`Welcome email sent to ${email}`);
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError);
+        // Continue with registration even if email fails
+      }
 
       res.json({ message: "Account created successfully", user: newUser });
     } catch (error) {
@@ -1169,6 +1179,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register subscription routes
   registerSubscriptionRoutes(app);
+
+  // Create subscription for upgrades  
+  app.post("/api/create-subscription", async (req, res) => {
+    try {
+      const { planId, amount } = req.body;
+      
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({ message: "Stripe not configured" });
+      }
+      
+      const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: 'usd',
+        metadata: { planId }
+      });
+
+      console.log(`Created subscription payment intent for plan ${planId}: $${amount}`);
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        planId 
+      });
+    } catch (error) {
+      console.error("Error creating subscription:", error);
+      res.status(500).json({ message: "Error setting up subscription" });
+    }
+  });
 
   // Register referral routes
   const { registerReferralRoutes } = await import("./routes/referrals");
