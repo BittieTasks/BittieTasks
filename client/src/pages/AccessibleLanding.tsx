@@ -6,19 +6,8 @@ import { Heart, Users, DollarSign, Shield, CheckCircle, Star } from "lucide-reac
 import { ARIA_LABELS } from "@/lib/accessibility";
 
 export default function AccessibleLanding() {
-  const handleDemoLogin = async () => {
-    try {
-      const response = await fetch("/api/auth/demo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      
-      if (response.ok) {
-        window.location.href = "/";
-      }
-    } catch (error) {
-      console.error("Demo login failed:", error);
-    }
+  const handleSignUp = () => {
+    window.location.href = "/auth";
   };
 
   const features = [
@@ -93,11 +82,11 @@ export default function AccessibleLanding() {
                   How It Works
                 </Link>
                 <AccessibleButton
-                  onClick={handleDemoLogin}
+                  onClick={handleSignUp}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
-                  ariaLabel="Try TaskParent demo - explore the platform"
+                  ariaLabel="Get started with TaskParent - create your account"
                 >
-                  Try Demo
+                  Get Started
                 </AccessibleButton>
               </div>
             </nav>
@@ -122,10 +111,10 @@ export default function AccessibleLanding() {
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <AccessibleButton
-            onClick={handleDemoLogin}
+            onClick={handleSignUp}
             size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg min-w-[200px]"
-            ariaLabel="Start your TaskParent journey with our interactive demo"
+            ariaLabel="Start your TaskParent journey by creating an account"
           >
             Start Your Journey
           </AccessibleButton>
@@ -247,7 +236,7 @@ export default function AccessibleLanding() {
           </p>
           
           <AccessibleButton
-            onClick={handleDemoLogin}
+            onClick={handleSignUp}
             size="lg"
             className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
             ariaLabel="Get started with TaskParent today"

@@ -101,7 +101,7 @@ class AutoHealer {
       '/api/user/current',
       '/api/categories',
       '/api/tasks',
-      '/api/auth/demo'
+      '/api/auth/user'
     ];
 
     for (const endpoint of endpoints) {
@@ -189,11 +189,10 @@ class AutoHealer {
 
   private async checkUserAuth(checks: HealthCheck[]) {
     try {
-      // Test demo user creation
-      const testResponse = await fetch('http://localhost:5000/api/auth/demo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+      // Test authentication system
+      const testResponse = await fetch('http://localhost:5000/api/user/current', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
       });
 
       if (testResponse.ok) {

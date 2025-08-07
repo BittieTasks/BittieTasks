@@ -312,45 +312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Demo login endpoint - FIXED DEVELOPMENT MODE  
-  app.post("/api/auth/demo", async (req, res) => {
-    console.log("=== DEMO LOGIN REQUEST RECEIVED ===");
-    
-    // Return fresh demo user with zero values for development testing
-    const freshDemoUser = {
-      id: "demo-dev-2025",
-      firstName: "DevMode",
-      lastName: "TestUser", 
-      email: "devmode@bittietasks.com",
-      phone: "(555) 000-ZERO",
-      bio: "Development testing account - all values reset to zero",
-      skills: ["Testing", "Development"],
-      rating: 0,
-      completedTasks: 0,
-      earnings: 0,
-      totalEarnings: "0.00",
-      joinedAt: new Date().toISOString().split('T')[0],
-      verified: true,
-      profileImage: null,
-      location: "Development Environment",
-      availability: "Available for testing"
-    };
 
-    // Store in session
-    (req.session as any).userId = freshDemoUser.id;
-    (req.session as any).isDemo = true;
-
-    console.log("=== RETURNING ZERO VALUES ===", {
-      rating: freshDemoUser.rating,
-      completedTasks: freshDemoUser.completedTasks, 
-      earnings: freshDemoUser.earnings
-    });
-
-    res.json({ 
-      message: "Development demo login successful", 
-      user: freshDemoUser 
-    });
-  });
 
   // Enhanced admin login with email verification
   app.post("/api/auth/admin", async (req, res) => {
@@ -422,34 +384,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/user/current", async (req, res) => {
     try {
       const userId = (req.session as any)?.userId;
-      const isDemo = (req.session as any)?.isDemo;
       
       if (!userId) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      // Handle demo user - support both old and new demo IDs
-      if (isDemo && (userId === "demo-user-id" || userId === "demo-dev-2025")) {
-        const demoUser = {
-          id: userId, // Use the actual session ID
-          firstName: "Demo",
-          lastName: "User",
-          email: "demo@bittietasks.com",
-          phone: "(555) 123-4567",
-          bio: "Development account for BittieTasks platform testing",
-          skills: ["Cooking", "Cleaning", "Organizing"],
-          rating: 0,
-          completedTasks: 0,
-          earnings: 0,
-          totalEarnings: "0.00",
-          joinedAt: "2025-01-06",
-          verified: true,
-          profileImage: null,
-          location: "Development Environment",
-          availability: "Available for testing",
-        };
-        return res.json(demoUser);
-      }
+
 
       // Handle admin user
       if (userId === "admin-user-id") {
@@ -479,28 +419,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json(adminUser);
       }
 
-      // Handle any other demo users that might exist
-      if (isDemo || userId.includes("demo")) {
-        const genericDemoUser = {
-          id: userId,
-          firstName: "Demo",
-          lastName: "User",
-          email: "demo@bittietasks.com",
-          phone: "(555) 123-4567",
-          bio: "Development account for BittieTasks platform testing",
-          skills: ["Cooking", "Cleaning", "Organizing"],
-          rating: 0,
-          completedTasks: 0,
-          earnings: 0,
-          totalEarnings: "0.00",
-          joinedAt: "2025-01-06",
-          verified: true,
-          profileImage: null,
-          location: "Development Environment",
-          availability: "Available for testing",
-        };
-        return res.json(genericDemoUser);
-      }
+
 
       // Get regular user
       const user = await storage.getUser(userId);
@@ -1010,8 +929,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ADMIN ROUTES - Platform Owner Management
   const isAdmin = (req: any, res: any, next: any) => {
     const session = req.session as any;
-    // In demo mode, allow admin access. In production, check admin status
-    if (session?.userId === 'demo-user-id' || session?.isAdmin) {
+    // Check admin status
+    if (session?.isAdmin) {
       next();
     } else {
       res.status(403).json({ message: 'Admin access required' });

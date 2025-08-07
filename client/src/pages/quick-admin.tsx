@@ -27,7 +27,7 @@ export default function QuickAdmin() {
     onError: (error: any) => {
       toast({
         title: "Access Error",
-        description: error.message || "Please try the demo login first",
+        description: error.message || "Admin login failed",
         variant: "destructive",
       });
     },
@@ -68,7 +68,7 @@ export default function QuickAdmin() {
           {adminLoginMutation.isError && (
             <div className="space-y-3">
               <p className="text-red-600 text-center text-sm">
-                Please login first with demo account
+                Admin authentication required
               </p>
               <Button 
                 onClick={() => window.location.href = '/'}

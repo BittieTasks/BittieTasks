@@ -10,24 +10,15 @@ export default function SimpleAdmin() {
   const grantAdminAccess = async () => {
     setLoading(true);
     try {
-      // First ensure demo login
-      const demoResponse = await fetch('/api/auth/demo', {
+      // Grant admin access directly
+      const adminResponse = await fetch('/api/auth/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: '{}'
       });
       
-      if (demoResponse.ok) {
-        // Then grant admin access
-        const adminResponse = await fetch('/api/auth/admin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: '{}'
-        });
-        
-        if (adminResponse.ok) {
-          setAdminGranted(true);
-        }
+      if (adminResponse.ok) {
+        setAdminGranted(true);
       }
     } catch (error) {
       console.error('Admin access error:', error);
