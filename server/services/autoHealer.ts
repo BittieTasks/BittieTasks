@@ -246,8 +246,8 @@ class AutoHealer {
 
   private async checkFraudDetection(checks: HealthCheck[]) {
     try {
-      // Test fraud detection with a sample analysis
-      const testUserId = 'test-user-id';
+      // Test fraud detection with a sample analysis (using valid UUID format)
+      const testUserId = '00000000-0000-4000-8000-000000000000';
       const testRequestInfo = {
         ip: '127.0.0.1',
         userAgent: 'Test-Agent',

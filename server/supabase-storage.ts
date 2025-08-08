@@ -69,28 +69,52 @@ export class SupabaseStorage implements IStorage {
   }
 
   async createUser(userData: InsertUser): Promise<User> {
+    // Simplified user creation for Supabase compatibility
     const userWithId = {
       id: randomUUID(),
-      username: userData.username || `${userData.firstName}_${userData.lastName}`,
       email: userData.email,
-      passwordHash: userData.passwordHash,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      profilePicture: userData.profilePicture || null,
+      password_hash: userData.passwordHash,
+      first_name: userData.firstName,
+      last_name: userData.lastName,
+      created_at: new Date(),
+      is_email_verified: userData.isEmailVerified || false,
+      email_verification_token: userData.emailVerificationToken || null
+    };
+
+    const { data, error } = await supabase
+      .from('users')
+      .insert([userWithId])
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating user:', error);
+      throw new Error(`Failed to create user: ${error.message}`);
+    }
+    
+    // Convert Supabase format back to our app format
+    const user = {
+      id: data.id,
+      username: `${data.first_name}_${data.last_name}`,
+      email: data.email,
+      passwordHash: data.password_hash,
+      firstName: data.first_name,
+      lastName: data.last_name,
+      profilePicture: null,
       totalEarnings: "0.00",
       rating: "5.0",
       completedTasks: 0,
       currentStreak: 0,
-      skills: userData.skills || [],
-      availability: userData.availability || { weekdays: true, weekends: true, mornings: true, afternoons: true },
-      isEmailVerified: userData.isEmailVerified || false,
-      emailVerificationToken: userData.emailVerificationToken || null,
-      phoneNumber: userData.phoneNumber || null,
+      skills: [],
+      availability: { weekdays: true, weekends: true, mornings: true, afternoons: true },
+      isEmailVerified: data.is_email_verified,
+      emailVerificationToken: data.email_verification_token,
+      phoneNumber: null,
       isPhoneVerified: false,
       isIdentityVerified: false,
       isBackgroundChecked: false,
-      createdAt: new Date(),
-      // Add other required fields with defaults
+      createdAt: data.created_at,
+      // Default values for remaining fields
       phoneVerificationCode: null,
       phoneVerificationExpires: null,
       identityDocuments: [],
@@ -148,20 +172,9 @@ export class SupabaseStorage implements IStorage {
       localAdsOnly: false,
       ethicalAdsOnly: true,
       adPersonalization: true
-    };
-
-    const { data, error } = await supabase
-      .from('users')
-      .insert([userWithId])
-      .select()
-      .single();
+    } as User;
     
-    if (error) {
-      console.error('Error creating user:', error);
-      throw new Error(`Failed to create user: ${error.message}`);
-    }
-    
-    return data;
+    return user;
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
