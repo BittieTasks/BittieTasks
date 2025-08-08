@@ -278,11 +278,16 @@ export function registerAuthRoutes(app: Express) {
       const user = await storage.getUserByEmail(email);
       
       if (!user) {
+        console.log(`❌ No user found with email: ${email}`);
         // Don't reveal if user exists or not for security
         return res.json({ message: 'If an account exists with that email, a verification link will be sent.' });
       }
 
+      console.log(`👤 Found user: ${user.firstName} ${user.lastName} (${user.email})`);
+      console.log(`✅ Email verified: ${user.isEmailVerified ? 'YES' : 'NO'}`);
+
       if (user.isEmailVerified) {
+        console.log(`✅ User ${user.email} is already verified`);
         return res.json({ message: 'This email is already verified. You can log in.' });
       }
 
@@ -292,12 +297,19 @@ export function registerAuthRoutes(app: Express) {
         emailVerificationToken
       });
 
+      console.log(`🔑 Generated new token for ${user.email}: ${emailVerificationToken.substring(0, 8)}...`);
+
       // Send new verification email
       const displayName = `${user.firstName} ${user.lastName}`;
-      await sendVerificationEmail(email, displayName, emailVerificationToken);
+      const emailSent = await sendVerificationEmail(email, displayName, emailVerificationToken);
 
-      console.log(`✅ New verification email sent to: ${email}`);
-      res.json({ message: 'Verification email sent! Please check your inbox.' });
+      if (emailSent) {
+        console.log(`✅ New verification email sent successfully to: ${email}`);
+        res.json({ message: 'Verification email sent! Please check your inbox and spam folder.' });
+      } else {
+        console.log(`❌ Failed to send verification email to: ${email}`);
+        res.status(500).json({ message: 'Failed to send verification email. Please try again.' });
+      }
 
     } catch (error) {
       console.error('❌ Resend verification error:', error);
