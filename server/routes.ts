@@ -80,9 +80,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register Supabase authentication routes
   registerAuthRoutes(app);
   
-  // Apply security middleware
+  // Apply security middleware - more permissive for development
   app.use(helmet({
-    contentSecurityPolicy: {
+    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: [
@@ -104,8 +104,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           "https://js.stripe.com",
           "https://hooks.stripe.com"
         ],
+        upgradeInsecureRequests: []
       },
-    },
+    } : false, // Disable CSP in development to prevent browser warnings
+    hsts: process.env.NODE_ENV === 'production' ? {
+      maxAge: 31536000,
+      includeSubDomains: true
+    } : false, // Disable HSTS in development
   }));
   
   // Apply rate limiting only to login endpoints
