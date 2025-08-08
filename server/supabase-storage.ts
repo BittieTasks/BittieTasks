@@ -658,6 +658,91 @@ export class SupabaseStorage implements IStorage {
       });
     }
   }
+
+  // Admin method to clear all user data
+  async clearAllUserData(): Promise<{ success: boolean; message: string; deletedCounts: any }> {
+    try {
+      const deletedCounts = {
+        users: 0,
+        taskCompletions: 0,
+        messages: 0,
+        userAchievements: 0,
+        userChallenges: 0,
+        sessions: 0
+      };
+
+      // Clear user challenges first (has foreign key to users)
+      const { data: userChallengesData } = await supabase
+        .from('user_challenges')
+        .select('id');
+      if (userChallengesData) {
+        deletedCounts.userChallenges = userChallengesData.length;
+        await supabase.from('user_challenges').delete().neq('id', '');
+      }
+
+      // Clear user achievements (has foreign key to users)
+      const { data: userAchievementsData } = await supabase
+        .from('user_achievements')
+        .select('id');
+      if (userAchievementsData) {
+        deletedCounts.userAchievements = userAchievementsData.length;
+        await supabase.from('user_achievements').delete().neq('id', '');
+      }
+
+      // Clear messages (has foreign key to users)
+      const { data: messagesData } = await supabase
+        .from('messages')
+        .select('id');
+      if (messagesData) {
+        deletedCounts.messages = messagesData.length;
+        await supabase.from('messages').delete().neq('id', '');
+      }
+
+      // Clear task completions (has foreign key to users)
+      const { data: taskCompletionsData } = await supabase
+        .from('task_completions')
+        .select('id');
+      if (taskCompletionsData) {
+        deletedCounts.taskCompletions = taskCompletionsData.length;
+        await supabase.from('task_completions').delete().neq('id', '');
+      }
+
+      // Clear sessions (may reference users)
+      const { data: sessionsData } = await supabase
+        .from('sessions')
+        .select('sid');
+      if (sessionsData) {
+        deletedCounts.sessions = sessionsData.length;
+        await supabase.from('sessions').delete().neq('sid', '');
+      }
+
+      // Finally clear users table
+      const { data: usersData } = await supabase
+        .from('users')
+        .select('id');
+      if (usersData) {
+        deletedCounts.users = usersData.length;
+        await supabase.from('users').delete().neq('id', '');
+      }
+
+      // Clear in-memory cache
+      this.mockUsers.clear();
+
+      return {
+        success: true,
+        message: 'All user data cleared successfully',
+        deletedCounts
+      };
+
+    } catch (error) {
+      console.error('Error clearing user data:', error);
+      return {
+        success: false,
+        message: `Failed to clear user data: ${error.message}`,
+        deletedCounts: {}
+      };
+    }
+  }
 }
 
 export const storage = new SupabaseStorage();

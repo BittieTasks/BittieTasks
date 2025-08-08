@@ -90,6 +90,9 @@ export interface IStorage {
   getUserBarterTransactions(userId: string): Promise<any[]>;
   updateBarterTransaction(id: string, updates: any): Promise<any>;
   ensureBarterCategory(): Promise<void>;
+
+  // Admin methods
+  clearAllUserData(): Promise<{ success: boolean; message: string; deletedCounts: any }>;
 }
 
 export class MemStorage implements IStorage {

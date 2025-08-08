@@ -1259,6 +1259,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin - Clear All User Data (for testing/reset purposes)
+  app.post('/api/admin/clear-users', isAdmin, async (req, res) => {
+    try {
+      const result = await storage.clearAllUserData();
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          message: result.message,
+          deletedCounts: result.deletedCounts
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: result.message
+        });
+      }
+    } catch (error) {
+      console.error('Error clearing user data:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to clear user data' 
+      });
+    }
+  });
+
   // Register subscription routes
   registerSubscriptionRoutes(app);
 
