@@ -25,7 +25,7 @@ import bcrypt from "bcryptjs";
 
 export class SupabaseStorage implements IStorage {
   // In-memory storage for users when Supabase has schema issues
-  private mockUsers: Map<string, User> = new Map();
+  public mockUsers: Map<string, User> = new Map();
   
   // User methods
   async getUsers(): Promise<User[]> {
@@ -110,6 +110,7 @@ export class SupabaseStorage implements IStorage {
         // Fall back to mock user (no additional email verification)
         console.log('Falling back to mock user creation (no duplicate emails)');
         const mockUser = this.createMockUser(userData);
+        console.log(`📝 Created mock user with token: ${mockUser.emailVerificationToken}`);
         return mockUser;
       }
       
@@ -139,7 +140,7 @@ export class SupabaseStorage implements IStorage {
       skills: [],
       availability: { weekdays: true, weekends: true, mornings: true, afternoons: true },
       isEmailVerified: userData.isEmailVerified || false,
-      emailVerificationToken: userData.emailVerificationToken || null,
+      emailVerificationToken: userData.emailVerificationToken, // Keep exact token
       phoneNumber: null,
       isPhoneVerified: false,
       isIdentityVerified: false,
@@ -206,7 +207,8 @@ export class SupabaseStorage implements IStorage {
     
     // Store mock user in memory for verification
     this.mockUsers.set(userId, mockUser);
-    console.log(`✅ Single-email user created: ${userData.email} (SendGrid only, no Supabase auth duplicates)`);
+    console.log(`✅ Mock user created: ${userData.email} with token: ${userData.emailVerificationToken}`);
+    console.log(`📝 Mock users count: ${this.mockUsers.size}`);
     return mockUser;
   }
 
@@ -293,6 +295,18 @@ export class SupabaseStorage implements IStorage {
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    // Check if this is a mock user first
+    if (this.mockUsers.has(id)) {
+      const mockUser = this.mockUsers.get(id);
+      if (mockUser) {
+        const updatedUser = { ...mockUser, ...updates };
+        this.mockUsers.set(id, updatedUser);
+        console.log(`✅ Mock user ${mockUser.email} updated successfully`);
+        return updatedUser;
+      }
+    }
+
+    // Try database update
     const { data, error } = await supabase
       .from('users')
       .update(updates)

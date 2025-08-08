@@ -31,11 +31,11 @@ export default function VerifyEmailPage() {
           setMessage(data.message || 'Email verified successfully!');
         } else {
           setVerificationStatus('error');
-          setMessage(data.message || 'Failed to verify email.');
+          setMessage(data.message || 'Verification link expired. Please request a new verification email from the signup page.');
         }
       } catch (error) {
         setVerificationStatus('error');
-        setMessage('Invalid or expired verification link. Please try signing up again.');
+        setMessage('Verification link expired. Please go to the signup page and request a new verification email.');
       }
     };
 
