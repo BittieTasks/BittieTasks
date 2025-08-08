@@ -171,10 +171,10 @@ export function registerAuthRoutes(app: Express) {
     }
   });
 
-  // Verify email
-  app.post('/api/auth/verify-email', async (req, res) => {
+  // Verify email (GET endpoint for URL links)
+  app.get('/api/auth/verify-email', async (req, res) => {
     try {
-      const { token } = req.body;
+      const { token } = req.query;
 
       if (!token) {
         return res.status(400).json({ message: 'Verification token required' });
@@ -194,11 +194,11 @@ export function registerAuthRoutes(app: Express) {
         emailVerificationToken: null
       });
 
-      res.json({ message: 'Email verified successfully' });
+      res.json({ verified: true, message: 'Email verified successfully! You can now log in.' });
 
     } catch (error) {
       console.error('Email verification error:', error);
-      res.status(500).json({ message: 'Failed to verify email' });
+      res.status(500).json({ verified: false, message: 'Failed to verify email' });
     }
   });
 }

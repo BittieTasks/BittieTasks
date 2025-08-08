@@ -49,7 +49,11 @@ export async function sendVerificationEmail(userEmail: string, userName: string,
     return false;
   }
 
-  const verificationUrl = `https://bittietasks.com/verify-email?token=${verificationToken}`;
+  // Use the current environment URL for verification
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://bittietasks.com' 
+    : 'http://localhost:5000';
+  const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
   
   const verificationHtml = `
     <!DOCTYPE html>

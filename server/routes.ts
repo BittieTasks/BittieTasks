@@ -134,46 +134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SMS notification routes
   app.use('/api/sms', smsRoutes);
 
-  // Email verification route
-  app.get("/api/auth/verify-email", async (req, res) => {
-    try {
-      const { token } = req.query;
-      
-      if (!token || typeof token !== 'string') {
-        return res.status(400).json({ message: "Invalid verification token" });
-      }
 
-      // Find user with this verification token
-      const users = await storage.getUsers();
-      const user = users.find(u => u.emailVerificationToken === token);
-      
-      if (!user) {
-        return res.status(400).json({ message: "Invalid or expired verification token" });
-      }
-
-      // Update user to mark email as verified
-      await storage.updateUser(user.id, {
-        isEmailVerified: true,
-        emailVerificationToken: null, // Clear the token
-      });
-
-      // Send welcome email after verification
-      try {
-        await sendWelcomeEmail(user.email, user.firstName);
-        console.log(`Welcome email sent to ${user.email} after verification`);
-      } catch (emailError) {
-        console.error('Failed to send welcome email after verification:', emailError);
-      }
-
-      res.json({ 
-        message: "Email verified successfully! Welcome to BittieTasks!", 
-        verified: true 
-      });
-    } catch (error) {
-      console.error("Email verification error:", error);
-      res.status(500).json({ message: "Failed to verify email" });
-    }
-  });
 
   // Payment processing routes
   app.use('/api/payments', paymentRoutes);
