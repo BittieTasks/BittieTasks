@@ -44,21 +44,11 @@ import type { User } from "@shared/schema";
 import { initGA } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
 import { AnalyticsProvider } from "./components/AnalyticsProvider";
+import { useAuth } from "./hooks/useAuth";
 import { useEffect } from "react";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
-  const { data: user, isLoading, error } = useQuery<User>({
-    queryKey: ["/api/user/current"],
-    retry: false,
-    refetchInterval: 30000, // Check every 30 seconds
-    refetchIntervalInBackground: false,
-    staleTime: 25000 // Consider data stale after 25 seconds
-  });
-
-  // If we get an auth error or no user data, show landing page
-  if (error && error.message.includes('401')) {
-    return <Landing />;
-  }
+  const { user, isLoading, isAuthenticated } = useAuth();
 
   if (isLoading) {
     return (
@@ -77,7 +67,7 @@ function AuthenticatedRoute({ component: Component }: { component: React.Compone
     );
   }
 
-  if (!user) {
+  if (!isAuthenticated) {
     return <Landing />;
   }
 
