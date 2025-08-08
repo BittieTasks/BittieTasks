@@ -2,7 +2,8 @@ import { Router } from "express";
 import { z } from "zod";
 import { paymentService } from "../services/paymentService";
 import { escrowService } from "../services/escrowService";
-import { storage } from "../storage";
+import { paypalService } from "../services/paypalService";
+import { storage } from "../supabase-storage";
 
 const router = Router();
 
@@ -28,72 +29,71 @@ router.post("/create-payment-intent", async (req, res) => {
       });
     }
 
-    const { amount } = req.body;
+    const { amount, taskCompletionId, useEscrow } = req.body;
     if (!amount || amount <= 0) {
       return res.status(400).json({ error: 'Invalid amount' });
     }
-    
-    const result = await paymentService.createPaymentIntent(amount);
+
+    // Helper function to determine if escrow should be used
+    const shouldUseEscrowPayment = (amount: number, isProviderUnverified: boolean, isHighRiskCategory: boolean) => {
+      return amount >= 100 || isProviderUnverified || isHighRiskCategory;
+    };
+
+    // Helper function to calculate escrow fee
+    const calculateEscrowFee = (amount: number) => {
+      return Math.max(15, amount * 0.025); // $15 minimum or 2.5% of amount
+    };
+
+    if (taskCompletionId) {
+      const taskCompletion = await storage.getTaskCompletion(taskCompletionId);
+      if (!taskCompletion) {
+        return res.status(404).json({ error: "Task completion not found" });
+      }
+
+      // Get task and user details
+      const task = await storage.getTask(taskCompletion.taskId);
+      const provider = await storage.getUser(taskCompletion.userId);
+      
+      if (!task || !provider) {
+        return res.status(404).json({ error: "Task or provider information incomplete" });
+      }
+
+      // Determine if escrow should be used
+      const shouldUseEscrowForTask = useEscrow || shouldUseEscrowPayment(
+        amount,
+        !provider.isIdentityVerified,
+        task.categoryId === 'home-improvement'
+      );
+
+      if (shouldUseEscrowForTask && escrowService.isEnabled()) {
+        // Use Escrow.com for high-value/risk transactions
+        const escrowFee = calculateEscrowFee(amount);
+        const totalAmount = amount + escrowFee;
+        
+        res.json({
+          useEscrow: true,
+          amount: totalAmount,
+          escrowFee,
+          paymentUrl: `https://www.escrow.com/pay?amount=${amount}&description=${encodeURIComponent(task.title)}`
+        });
+        return;
+      }
+    }
+
+    // Use Stripe for standard transactions
+    const result = await paymentService.createPaymentIntent(amount, 'usd', {
+      taskCompletionId: taskCompletionId || null
+    });
     
     if (result.success && result.paymentIntent) {
       res.json({
         clientSecret: result.paymentIntent.client_secret,
         paymentIntentId: result.paymentIntent.id,
-        amount: result.paymentIntent.amount
+        amount: result.paymentIntent.amount,
+        useEscrow: false
       });
     } else {
       res.status(500).json({ error: result.error || 'Failed to create payment intent' });
-    }
-    const taskCompletion = await storage.getTaskCompletion(taskCompletionId);
-    if (!taskCompletion) {
-      return res.status(404).json({ error: "Task completion not found" });
-    }
-
-    // Get task and user details
-    const task = await storage.getTask(taskCompletion.taskId);
-    const provider = await storage.getUser(taskCompletion.userId);
-    
-    if (!task?.title || !provider?.email) {
-      return res.status(404).json({ error: "Task or provider information incomplete" });
-    }
-    
-
-
-    // Determine if escrow should be used
-    const shouldUseEscrowPayment = useEscrow || shouldUseEscrow(
-      amount,
-      !provider.isIdentityVerified,
-      task.categoryId === 'home-improvement'
-    );
-
-    if (shouldUseEscrowPayment) {
-      // Use Escrow.com for high-value/risk transactions
-      const escrowFee = calculateEscrowFee(amount);
-      const totalAmount = amount + escrowFee;
-      
-      res.json({
-        useEscrow: true,
-        amount: totalAmount,
-        escrowFee,
-        paymentUrl: `https://www.escrow.com/pay?amount=${amount}&description=${encodeURIComponent(task.title)}`
-      });
-    } else {
-      // Use Stripe for standard transactions
-      const paymentIntent = await createPaymentIntent(
-        Math.round(amount * 100), // Convert to cents
-        'usd',
-        {
-          taskCompletionId,
-          taskId: task.id,
-          providerId: provider.id
-        }
-      );
-
-      res.json({
-        clientSecret: paymentIntent.client_secret,
-        useEscrow: false,
-        amount
-      });
     }
   } catch (error) {
     console.error("Error creating payment intent:", error);
@@ -104,7 +104,7 @@ router.post("/create-payment-intent", async (req, res) => {
 // Create subscription for Pro/Premium plans
 router.post("/create-subscription", async (req, res) => {
   try {
-    if (!isStripeEnabled()) {
+    if (!paymentService.isEnabled()) {
       return res.status(503).json({ 
         error: "Subscription billing is currently unavailable. Please try again later." 
       });
@@ -127,23 +127,34 @@ router.post("/create-subscription", async (req, res) => {
     // Create or get Stripe customer
     let customerId = user.stripeCustomerId;
     if (!customerId) {
-      const customer = await createCustomer(
+      const customerResult = await paymentService.createCustomer(
         user.email,
         `${user.firstName} ${user.lastName}`,
         { userId: user.id }
       );
-      customerId = customer.id;
+      
+      if (!customerResult.success || !customerResult.customer) {
+        return res.status(500).json({ error: "Failed to create customer" });
+      }
+      
+      customerId = customerResult.customer.id;
       
       // Update user with Stripe customer ID
       await storage.updateUser(userId, { stripeCustomerId: customerId });
     }
 
     // Create subscription
-    const subscription = await createSubscription(
+    const subscriptionResult = await paymentService.createSubscription(
       customerId,
       priceId,
       { userId, tier }
     );
+
+    if (!subscriptionResult.success || !subscriptionResult.subscription) {
+      return res.status(500).json({ error: subscriptionResult.error || "Failed to create subscription" });
+    }
+
+    const subscription = subscriptionResult.subscription;
 
     // Update user subscription info
     await storage.updateUser(userId, {
@@ -199,7 +210,7 @@ router.get("/subscription-status", async (req, res) => {
 // Cancel subscription
 router.post("/cancel-subscription", async (req, res) => {
   try {
-    if (!isStripeEnabled()) {
+    if (!paymentService.isEnabled()) {
       return res.status(503).json({ 
         error: "Subscription management is currently unavailable." 
       });
@@ -215,10 +226,14 @@ router.post("/cancel-subscription", async (req, res) => {
     }
 
     // Cancel subscription at period end
-    const cancelledSubscription = await require("../services/paymentService").cancelSubscription(
+    const cancelResult = await paymentService.cancelSubscription(
       user.stripeSubscriptionId,
       true
     );
+
+    if (!cancelResult.success) {
+      return res.status(500).json({ error: cancelResult.error || "Failed to cancel subscription" });
+    }
 
     // Update user subscription status
     await storage.updateUser((req.session as any).userId, {
@@ -227,7 +242,7 @@ router.post("/cancel-subscription", async (req, res) => {
 
     res.json({
       message: "Subscription cancelled successfully",
-      endsAt: cancelledSubscription.current_period_end
+      endsAt: (cancelResult.subscription as any)?.current_period_end
     });
   } catch (error) {
     console.error("Error cancelling subscription:", error);
@@ -238,7 +253,7 @@ router.post("/cancel-subscription", async (req, res) => {
 // Stripe webhook handler
 router.post("/webhook", async (req, res) => {
   try {
-    if (!isStripeEnabled()) {
+    if (!paymentService.isEnabled()) {
       return res.status(503).send("Webhooks unavailable");
     }
 
@@ -250,7 +265,7 @@ router.post("/webhook", async (req, res) => {
       return res.status(500).send("Webhook secret not configured");
     }
 
-    const event = verifyWebhookSignature(req.body, signature, webhookSecret);
+    const event = paymentService.verifyWebhookSignature(req.body, signature, webhookSecret);
 
     // Handle different event types
     switch (event.type) {
@@ -286,7 +301,7 @@ router.post("/webhook", async (req, res) => {
 // Get payment methods for user
 router.get("/payment-methods", async (req, res) => {
   try {
-    if (!isStripeEnabled()) {
+    if (!paymentService.isEnabled()) {
       return res.status(503).json({ 
         error: "Payment method management is currently unavailable." 
       });
@@ -301,20 +316,118 @@ router.get("/payment-methods", async (req, res) => {
       return res.json({ paymentMethods: [] });
     }
 
-    // In production, would fetch payment methods from Stripe
-    // const paymentMethods = await stripe.paymentMethods.list({
-    //   customer: user.stripeCustomerId,
-    //   type: 'card',
-    // });
-
     res.json({ 
       paymentMethods: [],
-      message: "Payment methods will be available once Stripe is configured"
+      stripeEnabled: paymentService.isEnabled(),
+      escrowEnabled: escrowService.isEnabled(),
+      paypalEnabled: false, // Will be enabled when PayPal is configured
+      message: paymentService.isEnabled() ? "Stripe payments available" : "Payment methods will be available once Stripe is configured"
     });
   } catch (error) {
     console.error("Error getting payment methods:", error);
     res.status(500).json({ error: "Failed to get payment methods" });
   }
+});
+
+// PayPal payment routes
+router.post("/create-paypal-order", async (req, res) => {
+  try {
+    if (!paypalService.isEnabled()) {
+      return res.status(503).json({ 
+        error: "PayPal payments are currently unavailable. Please try another method." 
+      });
+    }
+
+    const { amount, taskId } = req.body;
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    const result = await paypalService.createOrder(amount, 'USD');
+    
+    if (result.success && result.order) {
+      res.json({
+        success: true,
+        orderId: result.order.id,
+        approvalUrl: result.approvalUrl
+      });
+    } else {
+      res.status(500).json({ 
+        success: false,
+        error: result.error || 'Failed to create PayPal order' 
+      });
+    }
+  } catch (error) {
+    console.error("Error creating PayPal order:", error);
+    res.status(500).json({ error: "Failed to create PayPal order" });
+  }
+});
+
+// PayPal order capture
+router.post("/capture-paypal-order", async (req, res) => {
+  try {
+    if (!paypalService.isEnabled()) {
+      return res.status(503).json({ 
+        error: "PayPal payments are currently unavailable." 
+      });
+    }
+
+    const { orderId } = req.body;
+    if (!orderId) {
+      return res.status(400).json({ error: 'Order ID is required' });
+    }
+
+    const result = await paypalService.captureOrder(orderId);
+    
+    if (result.success && result.order) {
+      res.json({
+        success: true,
+        order: result.order
+      });
+    } else {
+      res.status(500).json({ 
+        success: false,
+        error: result.error || 'Failed to capture PayPal order' 
+      });
+    }
+  } catch (error) {
+    console.error("Error capturing PayPal order:", error);
+    res.status(500).json({ error: "Failed to capture PayPal order" });
+  }
+});
+
+// PayPal success callback
+router.get("/paypal/success", async (req, res) => {
+  try {
+    const { token } = req.query;
+    
+    if (!token) {
+      return res.redirect('/payment/error?message=Missing payment token');
+    }
+
+    const result = await paypalService.getOrderDetails(token as string);
+    
+    if (result.success && result.order?.status === 'APPROVED') {
+      // Capture the payment
+      const captureResult = await paypalService.captureOrder(token as string);
+      
+      if (captureResult.success) {
+        res.redirect('/payment/success');
+      } else {
+        res.redirect('/payment/error?message=Payment capture failed');
+      }
+    } else {
+      res.redirect('/payment/error?message=Payment not approved');
+    }
+  } catch (error) {
+    console.error("PayPal success callback error:", error);
+    res.redirect('/payment/error?message=Payment processing error');
+  }
+});
+
+// PayPal cancel callback
+router.get("/paypal/cancel", (req, res) => {
+  res.redirect('/payment/cancelled');
 });
 
 export default router;

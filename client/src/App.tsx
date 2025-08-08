@@ -26,6 +26,9 @@ import SubscriptionUpgrade from "@/pages/subscription-upgrade";
 import SystemStatus from "@/pages/system-status";
 import AnalyticsDashboard from "@/pages/analytics-dashboard";
 import Payment from "@/pages/payment";
+import Checkout from "@/pages/checkout";
+import PaymentSuccess from "@/pages/payment-success";
+import PaymentError from "@/pages/payment-error";
 import ReferralsPage from "@/pages/referrals";
 import Barter from "@/pages/barter";
 import CompanyApplication from "@/pages/company-application";
@@ -106,6 +109,9 @@ function Router() {
           <Route path="/system-status" component={() => <AuthenticatedRoute component={SystemStatus} />} />
           <Route path="/analytics" component={() => <AuthenticatedRoute component={AnalyticsDashboard} />} />
           <Route path="/payment/:id" component={() => <AuthenticatedRoute component={Payment} />} />
+          <Route path="/checkout" component={() => <AuthenticatedRoute component={Checkout} />} />
+          <Route path="/payment/success" component={PaymentSuccess} />
+          <Route path="/payment/error" component={PaymentError} />
           <Route path="/referrals" component={() => <AuthenticatedRoute component={ReferralsPage} />} />
           <Route path="/barter" component={() => <AuthenticatedRoute component={Barter} />} />
           <Route path="/company-application" component={CompanyApplication} />
