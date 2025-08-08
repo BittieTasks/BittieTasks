@@ -1,0 +1,19 @@
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: undefined
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE, PATCH
+RateLimit-Policy: 5;w=900
+RateLimit-Limit: 5
+RateLimit-Remaining: 4
+RateLimit-Reset: 900
+Content-Type: application/json; charset=utf-8
+Content-Length: 185
+ETag: W/"b9-gGhM02dS98MX3Bsu90EkJp9mPiU"
+Set-Cookie: connect.sid=s%3AFe7PBUwQHKF-_j1lVk5WW7psYEEg9MSb.VgIDemN6EZH7Bn1PYP0r6DZtXWMOwgAIK4w139n88aY; Path=/; Expires=Sat, 09 Aug 2025 19:28:21 GMT; SameSite=Lax
+Vary: Accept-Encoding
+Date: Fri, 08 Aug 2025 19:28:21 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
