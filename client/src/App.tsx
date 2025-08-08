@@ -47,10 +47,18 @@ import { AnalyticsProvider } from "./components/AnalyticsProvider";
 import { useEffect } from "react";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
-  const { data: user, isLoading } = useQuery<User>({
+  const { data: user, isLoading, error } = useQuery<User>({
     queryKey: ["/api/user/current"],
-    retry: false
+    retry: false,
+    refetchInterval: 30000, // Check every 30 seconds
+    refetchIntervalInBackground: false,
+    staleTime: 25000 // Consider data stale after 25 seconds
   });
+
+  // If we get an auth error or no user data, show landing page
+  if (error && error.message.includes('401')) {
+    return <Landing />;
+  }
 
   if (isLoading) {
     return (

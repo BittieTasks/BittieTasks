@@ -11,12 +11,25 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// CORS configuration for session cookies
+// CORS configuration for session cookies - Enhanced for Replit
 app.use((req, res, next) => {
-  const origin = req.headers.origin || req.get('host') || 'http://localhost:5000';
-  res.header('Access-Control-Allow-Origin', origin);
+  const origin = req.headers.origin || req.get('origin') || 'http://localhost:5000';
+  
+  // Allow Replit domains and localhost
+  const allowedOrigins = [
+    'http://localhost:5000',
+    'https://localhost:5000',
+    ...(process.env.REPLIT_DOMAINS ? process.env.REPLIT_DOMAINS.split(',').map(d => `https://${d}`) : [])
+  ];
+  
+  if (allowedOrigins.includes(origin) || origin.includes('replit.dev')) {
+    res.header('Access-Control-Allow-Origin', origin);
+  } else {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:5000');
+  }
+  
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cookie');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE, PATCH');
   
   // Add security headers for privacy connection issues
@@ -37,10 +50,10 @@ app.use(session({
   saveUninitialized: true, // FIXED: Allow new sessions to be created
   name: 'connect.sid',
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
     httpOnly: false, // CRITICAL: Allow JavaScript access for browser sessions
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'lax', // Allow cross-origin cookies
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Cross-origin for production
     path: '/', // Ensure cookie is available on all paths
     domain: undefined // Let browser handle domain automatically
   }
