@@ -11,18 +11,31 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// CORS configuration for session cookies
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE, PATCH');
+  
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // Session management
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
   resave: false,
   saveUninitialized: false,
-  name: 'connect.sid', // Explicit cookie name
+  name: 'connect.sid',
   cookie: {
     secure: false, // Set to true in production with HTTPS
-    httpOnly: false, // Allow JavaScript access for SPA - CRITICAL for browser sessions
+    httpOnly: false, // CRITICAL: Allow JavaScript access for browser sessions
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'lax', // Allow cookies in cross-origin requests
-    domain: 'localhost' // Explicit domain for development
+    sameSite: 'lax', // Allow cross-origin cookies
+    path: '/' // Ensure cookie is available on all paths
   }
 }));
 

@@ -35,37 +35,19 @@ export default function AuthPage() {
   const loginMutation = useMutation({
     mutationFn: (data: { email: string; password: string }) =>
       apiRequest("POST", "/api/auth/signin", data),
-    onSuccess: async (response) => {
-      console.log('✅ Login successful, response:', response);
-      
-      // Wait a bit for session to be fully established
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Force refresh user data  
-      queryClient.invalidateQueries({ queryKey: ["/api/user/current"] });
-      queryClient.resetQueries({ queryKey: ["/api/user/current"] });
-      
+    onSuccess: async () => {
       toast({
         title: "Welcome back!",
-        description: "Logged in! Redirecting to your dashboard...",
+        description: "Login successful! Loading your dashboard...",
       });
       
-      // Check if user data is available now
-      try {
-        const userResponse = await fetch('/api/user/current', { 
-          credentials: 'include' 
-        });
-        if (userResponse.ok) {
-          console.log('✅ User data available, redirecting');
-          setLocation("/");
-        } else {
-          console.log('❌ User data not available, forcing reload');
-          window.location.href = "/";
-        }
-      } catch (error) {
-        console.error('Error checking user data:', error);
-        window.location.href = "/";
-      }
+      // Clear all cached queries to force fresh data fetch
+      queryClient.clear();
+      
+      // Wait a moment for session to be established, then redirect
+      setTimeout(() => {
+        window.location.href = "/"; // Force full page reload to ensure session is recognized
+      }, 500);
     },
     onError: (error: any) => {
       console.error("Login error:", error);
@@ -81,20 +63,20 @@ export default function AuthPage() {
     mutationFn: (data: { firstName: string; lastName: string; email: string; password: string }) =>
       apiRequest("POST", "/api/auth/signup", data),
     onSuccess: () => {
-      // Force refresh user data
-      queryClient.invalidateQueries({ queryKey: ["/api/user/current"] });
-      queryClient.refetchQueries({ queryKey: ["/api/user/current"] });
-      
       toast({
         title: "Welcome to BittieTasks!",
-        description: "Account created! Redirecting to your dashboard...",
+        description: "Account created! Please check your email to verify your account.",
+        duration: 5000,
       });
       
-      // Small delay to ensure session is established
-      setTimeout(() => {
-        setLocation("/");
-        window.location.reload(); // Force page refresh to establish session
-      }, 1000);
+      // Clear form data after successful signup
+      setSignupData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+      });
     },
     onError: (error: any) => {
       console.error("Signup error:", error);
