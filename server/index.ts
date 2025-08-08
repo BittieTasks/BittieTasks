@@ -13,11 +13,16 @@ app.use(express.urlencoded({ extended: false }));
 
 // CORS configuration for session cookies
 app.use((req, res, next) => {
-  const origin = req.headers.origin || 'http://localhost:5000';
+  const origin = req.headers.origin || req.get('host') || 'http://localhost:5000';
   res.header('Access-Control-Allow-Origin', origin);
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE, PATCH');
+  
+  // Add security headers for privacy connection issues
+  res.header('X-Frame-Options', 'SAMEORIGIN');
+  res.header('X-Content-Type-Options', 'nosniff');
+  res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
   
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
