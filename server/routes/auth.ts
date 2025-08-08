@@ -27,6 +27,17 @@ export function registerAuthRoutes(app: Express) {
         return res.status(400).json({ message: 'All fields are required' });
       }
 
+      // Enhanced email validation
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Please enter a valid email address' });
+      }
+
+      // Password validation
+      if (password.length < 6) {
+        return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+      }
+
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {

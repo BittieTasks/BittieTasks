@@ -96,10 +96,31 @@ export default function AuthPage() {
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(signupData.email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (signupData.password !== signupData.confirmPassword) {
       toast({
         title: "Passwords don't match",
         description: "Please make sure both passwords are the same",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Password validation
+    if (signupData.password.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long",
         variant: "destructive",
       });
       return;
