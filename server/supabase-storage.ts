@@ -313,6 +313,30 @@ export class SupabaseStorage implements IStorage {
     return newCompletion;
   }
 
+  async updateTaskCompletionStatus(id: string, status: string): Promise<TaskCompletion | undefined> {
+    return this.updateTaskCompletion(id, { status });
+  }
+
+  async updateUserEarnings(userId: string, amount: string): Promise<User | undefined> {
+    const user = await this.getUser(userId);
+    if (!user) return undefined;
+    
+    const currentEarnings = parseFloat(user.totalEarnings || "0");
+    const newEarnings = currentEarnings + parseFloat(amount);
+    
+    return this.updateUser(userId, {
+      totalEarnings: newEarnings.toFixed(2)
+    });
+  }
+
+  async updateUserStatus(userId: string, status: any): Promise<User | undefined> {
+    return this.updateUser(userId, { ...status });
+  }
+
+  async updateUserAdPreferences(userId: string, preferences: any): Promise<User | undefined> {
+    return this.updateUser(userId, { ...preferences });
+  }
+
   async updateTaskCompletion(id: string, updates: Partial<TaskCompletion>): Promise<TaskCompletion | undefined> {
     return undefined;
   }

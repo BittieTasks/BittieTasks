@@ -580,7 +580,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       demoBarterTasks.push(newBarterTask);
       res.status(201).json(newBarterTask);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating barter task:", error);
       res.status(500).json({ 
         message: "Failed to create barter task", 
