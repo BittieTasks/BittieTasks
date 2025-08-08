@@ -216,7 +216,7 @@ export function registerAuthRoutes(app: Express) {
     try {
       const { token } = req.query;
 
-      console.log(`Verification request with token: ${token}`);
+      console.log(`🔍 Email verification request with token: ${token}`);
 
       if (!token) {
         return res.status(400).json({ message: 'Verification token required' });
@@ -224,27 +224,84 @@ export function registerAuthRoutes(app: Express) {
 
       // Find user by verification token
       const users = await storage.getUsers();
-      console.log(`Total users in database: ${users.length}`);
-      console.log('Users with verification tokens:', users.filter(u => u.emailVerificationToken).map(u => ({ email: u.email, token: u.emailVerificationToken })));
+      console.log(`📊 Total users in database: ${users.length}`);
+      
+      const usersWithTokens = users.filter(u => u.emailVerificationToken);
+      console.log(`🔑 Users with verification tokens: ${usersWithTokens.length}`);
+      console.log('Token details:', usersWithTokens.map(u => ({ 
+        email: u.email, 
+        token: u.emailVerificationToken?.substring(0, 8) + '...',
+        verified: u.isEmailVerified 
+      })));
       
       const user = users.find(u => u.emailVerificationToken === token);
-      console.log(`User found for token: ${user ? 'YES' : 'NO'}`);
+      console.log(`👤 User found for token: ${user ? `YES - ${user.email}` : 'NO'}`);
 
       if (!user) {
+        console.log(`❌ Token not found: ${token}`);
         return res.status(400).json({ message: 'Invalid or expired verification token' });
       }
 
+      // Check if already verified
+      if (user.isEmailVerified) {
+        console.log(`✅ User ${user.email} already verified`);
+        return res.json({ verified: true, message: 'Email already verified! You can log in.' });
+      }
+
       // Update user as verified
-      await storage.updateUser(user.id, {
+      const updatedUser = await storage.updateUser(user.id, {
         isEmailVerified: true,
         emailVerificationToken: null
       });
 
+      console.log(`✅ Email verification successful for: ${user.email}`);
       res.json({ verified: true, message: 'Email verified successfully! You can now log in.' });
 
     } catch (error) {
-      console.error('Email verification error:', error);
+      console.error('❌ Email verification error:', error);
       res.status(500).json({ verified: false, message: 'Failed to verify email' });
+    }
+  });
+
+  // Resend verification email
+  app.post('/api/auth/resend-verification', authLimiter, async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
+      }
+
+      console.log(`🔄 Resend verification request for: ${email}`);
+
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        // Don't reveal if user exists or not for security
+        return res.json({ message: 'If an account exists with that email, a verification link will be sent.' });
+      }
+
+      if (user.isEmailVerified) {
+        return res.json({ message: 'This email is already verified. You can log in.' });
+      }
+
+      // Generate new verification token
+      const emailVerificationToken = randomUUID();
+      await storage.updateUser(user.id, {
+        emailVerificationToken
+      });
+
+      // Send new verification email
+      const displayName = `${user.firstName} ${user.lastName}`;
+      await sendVerificationEmail(email, displayName, emailVerificationToken);
+
+      console.log(`✅ New verification email sent to: ${email}`);
+      res.json({ message: 'Verification email sent! Please check your inbox.' });
+
+    } catch (error) {
+      console.error('❌ Resend verification error:', error);
+      res.status(500).json({ message: 'Failed to resend verification email' });
     }
   });
 }
