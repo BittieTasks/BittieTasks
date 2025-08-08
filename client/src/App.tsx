@@ -37,6 +37,7 @@ import AdvertisingPortal from "@/pages/advertising-portal";
 import AdPreferences from "@/pages/ad-preferences";
 import AITaskGeneratorPage from "@/pages/ai-task-generator";
 import VerifyEmailPage from "@/pages/verify-email";
+import PaymentMethods from "@/pages/payment-methods";
 import type { User } from "@shared/schema";
 import { initGA } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
@@ -120,6 +121,7 @@ function Router() {
           <Route path="/ad-preferences" component={() => <AuthenticatedRoute component={AdPreferences} />} />
           <Route path="/ai-tasks" component={AITaskGeneratorPage} />
           <Route path="/verify-email" component={VerifyEmailPage} />
+          <Route path="/payment-methods" component={() => <AuthenticatedRoute component={PaymentMethods} />} />
           <Route path="/how-it-works" component={HowItWorks} />
           <Route component={NotFound} />
         </Switch>

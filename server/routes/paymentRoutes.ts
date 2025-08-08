@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import paymentService from '../services/paymentService';
 import escrowService from '../services/escrowService';
+import { paypalService } from '../services/paypalService';
 
 const router = Router();
 
@@ -85,6 +86,10 @@ router.get('/status', (req, res) => {
       enabled: escrowService.isEnabled(),
       minimumAmount: escrowService.getMinimumAmount(),
       features: ['high_value_protection', 'buyer_seller_protection']
+    },
+    paypal: {
+      enabled: paypalService.isEnabled(),
+      features: ['instant_payment', 'buyer_protection', 'express_checkout']
     }
   });
 });
