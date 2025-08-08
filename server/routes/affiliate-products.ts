@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { db } from "../db";
+// Database operations temporarily disabled - using Supabase storage instead
+// import { db } from "../db";
 import { affiliateProducts } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
@@ -8,6 +9,9 @@ const router = Router();
 // Get all active affiliate products
 router.get("/", async (req, res) => {
   try {
+    // Temporarily return empty array - needs Supabase integration
+    res.json([]);
+    return;
     const products = await db
       .select()
       .from(affiliateProducts)

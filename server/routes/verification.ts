@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { db } from "../db";
+// Database operations temporarily disabled - using Supabase storage instead
+// import { db } from "../db";
 import { users, userActivity, verificationDocuments, safetyReports } from "@shared/schema";
 import { eq, and, desc, gte } from "drizzle-orm";
 import multer from "multer";

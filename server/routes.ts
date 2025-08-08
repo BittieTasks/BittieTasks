@@ -21,6 +21,7 @@ import paymentRoutes from './routes/paymentRoutes';
 import emailRoutes from './routes/emailRoutes';
 import { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
 import { registerAuthRoutes } from './routes/auth';
+import { requireAuth, optionalAuth } from './auth/supabase-auth';
 import { autoHealer } from "./services/autoHealer";
 import { fraudDetection } from "./services/fraudDetection";
 import { analytics } from "./services/analyticsService";
@@ -190,288 +191,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // const verificationRouter = await import("./routes/verification");
   // app.use("/api/verification", verificationRouter.default);
 
-  // Logout route
-  app.post("/api/auth/logout", (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ message: "Could not log out" });
-      }
-      res.clearCookie('connect.sid');
-      res.json({ message: "Logged out successfully" });
-    });
-  });
+  // Legacy logout route removed - using Supabase auth instead
 
-  // Authentication routes
-  app.post("/api/auth/signup", async (req, res) => {
-    try {
-      const { firstName, lastName, email, password } = req.body;
-      
-      if (!firstName || !lastName || !email || !password) {
-        return res.status(400).json({ message: "All fields are required" });
-      }
+  // Legacy signup route removed - using Supabase auth instead
 
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: "Invalid email format" });
-      }
-
-      // Validate password strength (simplified for better user experience)
-      if (password.length < 6) {
-        return res.status(400).json({ message: "Password must be at least 6 characters long" });
-      }
-
-      // Check if user already exists
-      const existingUsers = await storage.getUsers();
-      const userExists = existingUsers.some(user => user.email === email);
-      
-      if (userExists) {
-        return res.status(400).json({ message: "User already exists with this email" });
-      }
-
-      // Hash password before storing
-      const hashedPassword = await bcrypt.hash(password, 12);
-
-      // Generate email verification token
-      const verificationToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
-
-      // Create new user
-      const newUser = await storage.createUser({
-        username: `${firstName.toLowerCase()}_${lastName.toLowerCase()}`,
-        email,
-        passwordHash: hashedPassword,
-        firstName,
-        lastName,
-        profilePicture: null,
-        totalEarnings: "0.00",
-        rating: "5.0",
-        completedTasks: 0,
-        currentStreak: 0,
-        skills: [],
-        availability: { weekdays: true, weekends: true, mornings: true, afternoons: true },
-        emailVerificationToken: verificationToken,
-        isEmailVerified: false,
-      });
-
-      // Store user ID in session
-      (req.session as any).userId = newUser.id;
-
-      // Send verification email
-      try {
-        await sendVerificationEmail(email, firstName, verificationToken);
-        console.log(`Verification email sent to ${email}`);
-      } catch (emailError) {
-        console.error('Failed to send verification email:', emailError);
-        // Continue with registration even if email fails
-      }
-
-      res.json({ 
-        message: "Account created successfully! Please check your email to verify your account.", 
-        user: newUser,
-        emailVerificationSent: true
-      });
-    } catch (error) {
-      console.error('Registration error:', error);
-      res.status(500).json({ message: "Failed to create account" });
-    }
-  });
-
-  app.post("/api/auth/login", async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      
-      if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
-      }
-
-      // Find user by email
-      const users = await storage.getUsers();
-      const user = users.find(u => u.email === email);
-      
-      if (!user) {
-        return res.status(401).json({ message: "Invalid email or password" });
-      }
-
-      // Verify password hash
-      if (!user.passwordHash) {
-        return res.status(401).json({ message: "Invalid email or password" });
-      }
-      
-      const isValidPassword = await bcrypt.compare(password, user.passwordHash);
-      if (!isValidPassword) {
-        return res.status(401).json({ message: "Invalid email or password" });
-      }
-      
-      // Store user ID in session
-      (req.session as any).userId = user.id;
-      
-      res.json({ message: "Login successful", user });
-    } catch (error) {
-      res.status(500).json({ message: "Failed to login" });
-    }
-  });
+  // Legacy login route removed - using Supabase auth instead
 
 
 
-  // Enhanced admin login with email verification
-  app.post("/api/auth/admin", async (req, res) => {
-    try {
-      const { email, verificationCode } = req.body;
-      
-      // Admin email whitelist - you can add your email here
-      const adminEmails = [
-        "admin@taskparent.com",
-        "admin@bittietasks.com",
-        // Add your email here for admin access
-        // "your-email@example.com"
-      ];
-      
-      // If email provided, verify it's an admin email
-      if (email) {
-        if (!adminEmails.includes(email.toLowerCase())) {
-          return res.status(403).json({ message: "Unauthorized admin access" });
-        }
-        
-        // For now, simple verification (in production, send email verification)
-        if (!verificationCode || verificationCode !== "admin2025") {
-          return res.status(401).json({ 
-            message: "Verification code required",
-            requiresCode: true 
-          });
-        }
-      }
-      
-      const adminUser = {
-        id: "admin-user-id",
-        firstName: "Platform",
-        lastName: "Admin", 
-        email: email || "admin@bittietasks.com",
-        phone: "(555) 000-0001",
-        bio: "BittieTasks Platform Administrator",
-        skills: ["Platform Management", "Security", "Analytics", "Stripe Integration"],
-        rating: 5.0,
-        completedTasks: 0,
-        earnings: 0,
-        joinedAt: "2024-01-01",
-        verified: true,
-        profileImage: null,
-        location: "Platform HQ",
-        availability: "24/7 Platform Monitoring",
-        totalEarnings: "0.00",
-        currentStreak: 365,
-        totalPoints: 10000,
-        isAdmin: true,
-        stripeEnabled: process.env.STRIPE_SECRET_KEY ? true : false
-      };
-      
-      // Store admin session
-      (req.session as any).userId = "admin-user-id";
-      (req.session as any).isAdmin = true;
-      (req.session as any).adminEmail = email;
-      
-      res.json({
-        message: "Admin login successful",
-        user: adminUser
-      });
-    } catch (error) {
-      console.error("Admin login error:", error);
-      res.status(500).json({ message: "Failed to admin login" });
-    }
-  });
+  // Legacy admin login removed - using Supabase auth with RLS admin policies instead
 
-  // Auth user endpoint - used by frontend to check authentication
-  app.get("/api/auth/user", async (req, res) => {
-    try {
-      const userId = (req.session as any)?.userId;
-      
-      if (!userId) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
+  // Legacy auth/user endpoint removed - using Supabase auth instead
 
-      // Handle admin user
-      if (userId === "admin-user-id") {
-        const adminEmail = (req.session as any)?.adminEmail;
-        const adminUser = {
-          id: userId,
-          email: adminEmail || "admin@bittietasks.com",
-          firstName: "Platform",
-          lastName: "Admin",
-          isAdmin: true,
-          earnings: 0,
-          completedTasks: 0,
-          rating: 5.0,
-          verified: true,
-          status: 'active',
-          joinedAt: new Date().toISOString()
-        };
-        return res.json(adminUser);
-      }
-
-      // Get regular user
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      res.json(user);
-    } catch (error) {
-      console.error("Get auth user error:", error);
-      res.status(500).json({ message: "Failed to get user" });
-    }
-  });
-
-  // Get current user
-  app.get("/api/user/current", async (req, res) => {
-    try {
-      const userId = (req.session as any)?.userId;
-      
-      if (!userId) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
-
-
-
-      // Handle admin user
-      if (userId === "admin-user-id") {
-        const adminEmail = (req.session as any).adminEmail || "admin@bittietasks.com";
-        const adminUser = {
-          id: "admin-user-id",
-          firstName: "Platform",
-          lastName: "Admin",
-          email: adminEmail,
-          phone: "(555) 000-0001",
-          bio: "BittieTasks Platform Administrator",
-          skills: ["Platform Management", "Security", "Analytics", "Stripe Integration"],
-          rating: 0,
-          completedTasks: 0,
-          earnings: 0,
-          joinedAt: "2025-01-06",
-          verified: true,
-          profileImage: null,
-          location: "Development Environment",
-          availability: "Development Mode",
-          totalEarnings: "0.00",
-          currentStreak: 0,
-          totalPoints: 0,
-          isAdmin: true,
-          stripeEnabled: process.env.STRIPE_SECRET_KEY ? true : false
-        };
-        return res.json(adminUser);
-      }
-
-
-
-      // Get regular user
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      res.json(user);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to get current user" });
-    }
-  });
+  // Legacy user/current endpoint removed - using Supabase auth instead
 
   // Get all task categories (with caching for performance)
   app.get("/api/categories", async (req, res) => {
@@ -559,9 +291,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(demoBarterTasks);
   });
 
-  app.post("/api/tasks/barter", async (req, res) => {
+  app.post("/api/tasks/barter", optionalAuth, async (req, res) => {
     try {
-      const userId = (req.session as any)?.userId || "demo-user-id";
+      const userId = req.user?.id || "demo-user-id";
       
       const newBarterTask = {
         id: `barter-${Date.now()}`,
@@ -667,12 +399,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create new task
-  app.post("/api/tasks", async (req, res) => {
+  app.post("/api/tasks", requireAuth, async (req, res) => {
     try {
-      const userId = (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
+      const userId = req.user.id;
 
       const { title, description, categoryId, payment, duration, difficulty, requirements, taskType, sponsorInfo } = req.body;
       
@@ -756,8 +485,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const taskId = req.params.id;
       const { submissionNotes } = req.body;
       
-      // Get user from session
-      const userId = (req.session as any)?.userId || "demo-user-id"; // Demo fallback
+      // Get user from auth
+      const userId = req.user?.id || "demo-user-id"; // Demo fallback
       
       const task = await storage.getTask(taskId);
       if (!task) {
@@ -856,7 +585,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Achievement routes
   app.get('/api/achievements/user', async (req, res) => {
     try {
-      const userId = (req.session as any)?.userId;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({ message: 'Authentication required' });
       }
@@ -881,7 +610,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/achievements/check', async (req, res) => {
     try {
-      const userId = (req.session as any)?.userId;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({ message: 'Authentication required' });
       }
@@ -1105,7 +834,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const last30Days = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
       
       const recentCompletions = completions.filter(c => 
-        new Date(c.submittedAt || c.createdAt || Date.now()) >= last30Days
+        new Date(c.createdAt || Date.now()) >= last30Days
       );
       
       // Count AI approved vs manual approved
