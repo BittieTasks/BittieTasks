@@ -93,5 +93,5 @@ export interface IStorage {
   clearAllUserData(): Promise<{ success: boolean; message: string; deletedCounts: any }>;
 }
 
-// Export Supabase storage for production
-export { storage } from './supabase-storage';
+// Export memory storage for development (single database solution)
+export { storage } from './memory-storage';

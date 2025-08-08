@@ -72,7 +72,7 @@ export class DatabaseStorage implements IStorage {
       return user;
     } catch (error) {
       console.error('Error creating user:', error);
-      throw new Error(`Failed to create user: ${error.message}`);
+      throw new Error(`Failed to create user: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
