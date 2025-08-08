@@ -1,4 +1,4 @@
-import { storage } from "../simple-storage";
+import { storage } from "../supabase-storage";
 
 interface FraudCheck {
   userId: string;

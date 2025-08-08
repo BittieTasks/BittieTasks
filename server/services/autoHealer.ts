@@ -1,4 +1,4 @@
-import { storage } from "../simple-storage";
+import { storage } from "../supabase-storage";
 import { analytics } from "./analyticsService";
 import { fraudDetection } from "./fraudDetection";
 import { fileManager } from "./fileManager";

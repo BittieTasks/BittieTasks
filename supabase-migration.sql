@@ -426,14 +426,6 @@ CREATE POLICY "Users can view all achievement definitions" ON public.achievement
 CREATE POLICY "Users can view active challenges" ON public.daily_challenges FOR SELECT TO authenticated USING (is_active = true);
 CREATE POLICY "Users can view own challenges" ON public.user_challenges FOR SELECT USING (auth.uid() = user_id::uuid);
 
--- Fixed INSERT statements (remove id column, let it auto-generate UUIDs)
-INSERT INTO public.task_categories (name, icon, color, description) VALUES
-('Cooking', 'fa-utensils', '#FF6B6B', 'Meal preparation and cooking activities'),
-('Cleaning', 'fa-broom', '#4ECDC4', 'Home cleaning and organization tasks'),
-('Childcare', 'fa-baby', '#45B7D1', 'Child supervision and care activities'),
-('Exercise', 'fa-dumbbell', '#96CEB4', 'Physical fitness and workout activities'),
-('Errands', 'fa-car', '#FFEAA7', 'Shopping, appointments, and errands'),
-('Self Care', 'fa-heart', '#DDA0DD', 'Personal wellness and mindfulness activities');
 -- Insert default categories
 INSERT INTO public.task_categories (id, name, icon, color, description) VALUES
 ('cooking', 'Cooking', 'fa-utensils', '#FF6B6B', 'Meal preparation and cooking activities'),
