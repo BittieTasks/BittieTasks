@@ -29,14 +29,15 @@ app.use((req, res, next) => {
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true, // FIXED: Allow new sessions to be created
   name: 'connect.sid',
   cookie: {
     secure: false, // Set to true in production with HTTPS
     httpOnly: false, // CRITICAL: Allow JavaScript access for browser sessions
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
     sameSite: 'lax', // Allow cross-origin cookies
-    path: '/' // Ensure cookie is available on all paths
+    path: '/', // Ensure cookie is available on all paths
+    domain: undefined // Let browser handle domain automatically
   }
 }));
 

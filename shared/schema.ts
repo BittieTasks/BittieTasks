@@ -428,15 +428,9 @@ export const taskProducts = pgTable("task_products", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertAffiliateProductSchema = createInsertSchema(affiliateProducts).omit({
-  id: true,
-  createdAt: true
-});
+export const insertAffiliateProductSchema = createInsertSchema(affiliateProducts);
 
-export const insertTaskProductSchema = createInsertSchema(taskProducts).omit({
-  id: true,
-  createdAt: true
-});
+export const insertTaskProductSchema = createInsertSchema(taskProducts);
 
 export type InsertAffiliateProduct = z.infer<typeof insertAffiliateProductSchema>;
 export type AffiliateProduct = typeof affiliateProducts.$inferSelect;
