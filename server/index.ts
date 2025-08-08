@@ -1,6 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
-import connectPg from "connect-pg-simple";
 import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -12,16 +11,8 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Configure session middleware with PostgreSQL store for persistence
-const pgSession = connectPg(session);
-const sessionStore = new pgSession({
-  conString: process.env.DATABASE_URL,
-  createTableIfMissing: true,
-  ttl: 7 * 24 * 60 * 60, // 7 days in seconds
-});
-
+// Configure session middleware with memory store for development
 app.use(session({
-  store: sessionStore,
   secret: process.env.SESSION_SECRET || 'taskparent-dev-secret-key',
   resave: false,
   saveUninitialized: false,

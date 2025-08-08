@@ -1,5 +1,3 @@
-// Note: This file is deprecated - use database-storage.ts instead
-// import { supabase } from './db';
 import { 
   type User, 
   type InsertUser,
@@ -22,111 +20,182 @@ import {
 } from "@shared/schema";
 import type { IStorage } from './storage';
 import { randomUUID } from "crypto";
-import bcrypt from "bcryptjs";
 
-export class SupabaseStorage implements IStorage {
-  // In-memory storage for users when Supabase has schema issues
-  private mockUsers: Map<string, User> = new Map();
-  
+export class MemoryStorage implements IStorage {
+  private users: Map<string, User> = new Map();
+  private taskCategories: Map<string, TaskCategory> = new Map();
+  private tasks: Map<string, Task> = new Map();
+  private taskCompletions: Map<string, TaskCompletion> = new Map();
+  private messages: Map<string, Message> = new Map();
+  private userAchievements: Map<string, UserAchievement> = new Map();
+  private achievementDefinitions: Map<string, AchievementDefinition> = new Map();
+  private dailyChallenges: Map<string, DailyChallenge> = new Map();
+  private userChallenges: Map<string, UserChallenge> = new Map();
+
+  constructor() {
+    this.initializeDefaultData();
+  }
+
+  private initializeDefaultData() {
+    // Initialize default task categories
+    const defaultCategories: TaskCategory[] = [
+      {
+        id: '440740be-526e-4c88-a9e4-d6a4abb94b28',
+        name: 'Household',
+        icon: 'fa-home',
+        color: '#3B82F6',
+        description: 'Home and household tasks'
+      },
+      {
+        id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+        name: 'Childcare',
+        icon: 'fa-baby',
+        color: '#10B981',
+        description: 'Childcare and parenting tasks'
+      },
+      {
+        id: 'b2c3d4e5-f6g7-8901-bcde-f23456789012',
+        name: 'Shopping',
+        icon: 'fa-shopping-cart',
+        color: '#F59E0B',
+        description: 'Shopping and errands'
+      },
+      {
+        id: 'c3d4e5f6-g7h8-9012-cdef-345678901234',
+        name: 'Transportation',
+        icon: 'fa-car',
+        color: '#EF4444',
+        description: 'Transportation and delivery'
+      },
+      {
+        id: 'd4e5f6g7-h8i9-0123-defg-456789012345',
+        name: 'Self-Care',
+        icon: 'fa-heart',
+        color: '#EC4899',
+        description: 'Personal wellness and self-care'
+      },
+      {
+        id: 'e5f6g7h8-i9j0-1234-efgh-567890123456',
+        name: 'Barter',
+        icon: 'fa-exchange-alt',
+        color: '#8B5CF6',
+        description: 'Trade skills and services without cash'
+      }
+    ];
+
+    defaultCategories.forEach(category => {
+      this.taskCategories.set(category.id, category);
+    });
+
+    // Initialize demo tasks
+    const defaultTasks: Task[] = [
+      {
+        id: '8d75f318-a626-4469-9704-083fcd9cbbb2',
+        title: 'Help with grocery shopping',
+        description: 'Need someone to help carry groceries from the store to my apartment',
+        categoryId: 'b2c3d4e5-f6g7-8901-bcde-f23456789012',
+        payment: '25.00',
+        duration: 60,
+        difficulty: 'Easy',
+        requirements: [],
+        imageUrl: null,
+        rating: '4.5',
+        completions: 2,
+        isActive: true,
+        taskType: 'shared',
+        sponsorInfo: null,
+        paymentType: 'cash',
+        barterOffered: null,
+        barterWanted: null,
+        estimatedValue: null,
+        barterCategory: null,
+        allowAccountabilityPartners: false,
+        maxPartners: 3,
+        partnerPayment: '0.00',
+        flexibleBarter: false,
+        createdAt: new Date('2024-01-15T10:00:00Z')
+      },
+      {
+        id: 'f1e2d3c4-b5a6-9788-0def-123456789abc',
+        title: 'Babysitting for date night',
+        description: 'Looking for a trusted babysitter for our 2 kids (ages 4 and 7) for a 3-hour evening',
+        categoryId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+        payment: '45.00',
+        duration: 180,
+        difficulty: 'Medium',
+        requirements: ['background check', 'experience with children'],
+        imageUrl: null,
+        rating: '4.8',
+        completions: 5,
+        isActive: true,
+        taskType: 'shared',
+        sponsorInfo: null,
+        paymentType: 'cash',
+        barterOffered: null,
+        barterWanted: null,
+        estimatedValue: null,
+        barterCategory: null,
+        allowAccountabilityPartners: false,
+        maxPartners: 3,
+        partnerPayment: '0.00',
+        flexibleBarter: false,
+        createdAt: new Date('2024-01-16T14:30:00Z')
+      },
+      {
+        id: 'a9b8c7d6-e5f4-3210-ghij-klmnopqrstuv',
+        title: 'House cleaning help',
+        description: 'Need help with deep cleaning the house, especially kitchen and bathrooms',
+        categoryId: '440740be-526e-4c88-a9e4-d6a4abb94b28',
+        payment: '60.00',
+        duration: 240,
+        difficulty: 'Medium',
+        requirements: ['bring own supplies'],
+        imageUrl: null,
+        rating: '4.7',
+        completions: 3,
+        isActive: true,
+        taskType: 'shared',
+        sponsorInfo: null,
+        paymentType: 'cash',
+        barterOffered: null,
+        barterWanted: null,
+        estimatedValue: null,
+        barterCategory: null,
+        allowAccountabilityPartners: false,
+        maxPartners: 3,
+        partnerPayment: '0.00',
+        flexibleBarter: false,
+        createdAt: new Date('2024-01-17T09:15:00Z')
+      }
+    ];
+
+    defaultTasks.forEach(task => {
+      this.tasks.set(task.id, task);
+    });
+  }
+
   // User methods
   async getUsers(): Promise<User[]> {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*');
-    
-    if (error) {
-      console.error('Error fetching users:', error);
-      return [];
-    }
-    
-    return data || [];
+    return Array.from(this.users.values());
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-    
-    if (error) {
-      console.error('Error fetching user:', error);
-      return undefined;
-    }
-    
-    return data || undefined;
+    return this.users.get(id);
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    // Check mock users first
-    for (const user of this.mockUsers.values()) {
+    for (const user of this.users.values()) {
       if (user.email === email) {
         return user;
       }
     }
-    
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', email)
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Error fetching user by email:', error);
-        return undefined;
-      }
-      
-      return data ? this.convertSupabaseUserToAppUser(data) : undefined;
-    } catch (error) {
-      console.error('Error in getUserByEmail:', error);
-      return undefined;
-    }
+    return undefined;
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    // For now, create a user record using Supabase's simpler approach
-    // We'll work around the schema mismatch by using just the essential fields
-    try {
-      const simpleUser = {
-        email: userData.email,
-        first_name: userData.firstName,
-        last_name: userData.lastName,
-        password_hash: userData.passwordHash,
-        is_email_verified: userData.isEmailVerified || false,
-        email_verification_token: userData.emailVerificationToken || null
-      };
-
-      console.log('Attempting to create user:', simpleUser);
-
-      // Try to insert without username first to see what's required
-      const { data, error } = await supabase
-        .from('users')
-        .insert([simpleUser])
-        .select()
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Supabase insert error:', error);
-        // For now, fall back to creating a mock user that works with our app
-        console.log('Falling back to mock user creation');
-        const mockUser = this.createMockUser(userData);
-        return mockUser;
-      }
-      
-      // Convert Supabase format back to our app format
-      return this.convertSupabaseUserToAppUser(data);
-    } catch (error) {
-      console.error('User creation failed:', error);
-      // Fall back to mock user for development
-      return this.createMockUser(userData);
-    }
-  }
-
-  private createMockUser(userData: InsertUser): User {
-    const userId = randomUUID();
-    return {
-      id: userId,
+    const id = randomUUID();
+    const user: User = {
+      id,
       username: userData.username || `${userData.firstName?.toLowerCase()}_${userData.lastName?.toLowerCase()}`,
       email: userData.email,
       passwordHash: userData.passwordHash,
@@ -203,187 +272,52 @@ export class SupabaseStorage implements IStorage {
       localAdsOnly: false,
       ethicalAdsOnly: true,
       adPersonalization: true
-    } as User;
-  }
+    };
 
-  private convertSupabaseUserToAppUser(data: any): User {
-    return {
-      id: data.id,
-      username: data.username || `${data.first_name}_${data.last_name}`,
-      email: data.email,
-      passwordHash: data.password_hash,
-      firstName: data.first_name,
-      lastName: data.last_name,
-      profilePicture: null,
-      totalEarnings: "0.00",
-      rating: "5.0",
-      completedTasks: 0,
-      currentStreak: 0,
-      skills: [],
-      availability: { weekdays: true, weekends: true, mornings: true, afternoons: true },
-      isEmailVerified: data.is_email_verified,
-      emailVerificationToken: data.email_verification_token,
-      phoneNumber: null,
-      isPhoneVerified: false,
-      isIdentityVerified: false,
-      isBackgroundChecked: false,
-      createdAt: data.created_at || new Date(),
-      phoneVerificationCode: null,
-      phoneVerificationExpires: null,
-      identityDocuments: [],
-      trustScore: 0,
-      riskScore: 0,
-      identityScore: 0,
-      isCaptchaVerified: false,
-      captchaScore: "0.0",
-      deviceFingerprint: null,
-      ipAddress: null,
-      userAgent: null,
-      signupMethod: "email",
-      behaviorScore: 0,
-      lastCaptchaVerification: null,
-      governmentIdUploaded: false,
-      governmentIdVerified: false,
-      faceVerificationCompleted: false,
-      livelinessCheckPassed: false,
-      mouseMovementAnalyzed: false,
-      keystrokePatternAnalyzed: false,
-      sessionBehaviorScore: 0,
-      humanVerificationLevel: "basic",
-      twoFactorEnabled: false,
-      twoFactorSecret: null,
-      backupCodes: [],
-      passwordResetToken: null,
-      passwordResetExpires: null,
-      lastLogin: null,
-      failedLoginAttempts: 0,
-      accountLocked: false,
-      lockUntil: null,
-      subscriptionTier: "free",
-      subscriptionStatus: "active",
-      subscriptionStartDate: null,
-      subscriptionEndDate: null,
-      stripeCustomerId: null,
-      stripeSubscriptionId: null,
-      monthlyTaskLimit: 5,
-      monthlyTasksCompleted: 0,
-      lastMonthlyReset: new Date(),
-      prioritySupport: false,
-      adFree: false,
-      premiumBadge: false,
-      referralCode: null,
-      referredBy: null,
-      referralCount: 0,
-      referralEarnings: "0.00",
-      adFrequency: 5,
-      adRelevance: 7,
-      adTypes: ["native_feed", "sponsored_task"],
-      adCategories: ["education", "health-wellness", "retail"],
-      maxAdBudget: 100,
-      minAdBudget: 10,
-      familyFriendlyOnly: true,
-      localAdsOnly: false,
-      ethicalAdsOnly: true,
-      adPersonalization: true
-    } as User;
+    this.users.set(id, user);
+    return user;
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
-    const { data, error } = await supabase
-      .from('users')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
+    const user = this.users.get(id);
+    if (!user) return undefined;
     
-    if (error) {
-      console.error('Error updating user:', error);
-      return undefined;
-    }
-    
-    return data || undefined;
+    const updatedUser = { ...user, ...updates };
+    this.users.set(id, updatedUser);
+    return updatedUser;
   }
 
   // Task Category methods
   async getTaskCategories(): Promise<TaskCategory[]> {
-    const { data, error } = await supabase
-      .from('task_categories')
-      .select('*');
-    
-    if (error) {
-      console.error('Error fetching task categories:', error);
-      return [];
-    }
-    
-    return data || [];
+    return Array.from(this.taskCategories.values());
   }
 
   async createTaskCategory(category: InsertTaskCategory): Promise<TaskCategory> {
-    const categoryWithId = {
-      id: randomUUID(),
-      ...category
-    };
-
-    const { data, error } = await supabase
-      .from('task_categories')
-      .insert([categoryWithId])
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Error creating task category:', error);
-      throw new Error(`Failed to create task category: ${error.message}`);
-    }
-    
-    return data;
+    const id = randomUUID();
+    const newCategory: TaskCategory = { id, ...category };
+    this.taskCategories.set(id, newCategory);
+    return newCategory;
   }
 
   // Task methods
   async getTasks(): Promise<Task[]> {
-    const { data, error } = await supabase
-      .from('tasks')
-      .select('*');
-    
-    if (error) {
-      console.error('Error fetching tasks:', error);
-      return [];
-    }
-    
-    return data || [];
+    return Array.from(this.tasks.values()).filter(task => task.isActive);
   }
 
   async getTask(id: string): Promise<Task | undefined> {
-    const { data, error } = await supabase
-      .from('tasks')
-      .select('*')
-      .eq('id', id)
-      .single();
-    
-    if (error) {
-      console.error('Error fetching task:', error);
-      return undefined;
-    }
-    
-    return data || undefined;
+    return this.tasks.get(id);
   }
 
   async getTasksByCategory(categoryId: string): Promise<Task[]> {
-    const { data, error } = await supabase
-      .from('tasks')
-      .select('*')
-      .eq('category_id', categoryId);
-    
-    if (error) {
-      console.error('Error fetching tasks by category:', error);
-      return [];
-    }
-    
-    return data || [];
+    return Array.from(this.tasks.values()).filter(
+      task => task.categoryId === categoryId && task.isActive
+    );
   }
 
   async createTask(taskData: InsertTask): Promise<Task> {
-    const taskWithDefaults = {
-      id: randomUUID(),
+    const id = randomUUID();
+    const task: Task = {
+      id,
       createdAt: new Date(),
       rating: "0.00",
       completions: 0,
@@ -403,28 +337,21 @@ export class SupabaseStorage implements IStorage {
       ...taskData
     };
 
-    const { data, error } = await supabase
-      .from('tasks')
-      .insert([taskWithDefaults])
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Error creating task:', error);
-      throw new Error(`Failed to create task: ${error.message}`);
-    }
-    
-    return data;
+    this.tasks.set(id, task);
+    return task;
   }
 
-  // Stub methods for other functionality (to be implemented as needed)
+  // Stub methods for other functionality
   async getTaskCompletions(userId: string): Promise<TaskCompletion[]> {
-    return [];
+    return Array.from(this.taskCompletions.values()).filter(
+      completion => completion.userId === userId
+    );
   }
 
   async createTaskCompletion(completion: InsertTaskCompletion): Promise<TaskCompletion> {
-    const newCompletion = {
-      id: randomUUID(),
+    const id = randomUUID();
+    const newCompletion: TaskCompletion = {
+      id,
       completedAt: new Date(),
       earnings: "0.00",
       platformFee: "0.00", 
@@ -432,9 +359,25 @@ export class SupabaseStorage implements IStorage {
       isBarterTransaction: false,
       taxFormRequired: false,
       status: "pending",
+      rating: null,
+      paymentIntentId: null,
+      paymentStatus: "pending",
+      barterValue: null,
+      barterDescription: null,
+      barterAgreement: null,
       ...completion
-    } as TaskCompletion;
+    };
+    this.taskCompletions.set(id, newCompletion);
     return newCompletion;
+  }
+
+  async updateTaskCompletion(id: string, updates: Partial<TaskCompletion>): Promise<TaskCompletion | undefined> {
+    const completion = this.taskCompletions.get(id);
+    if (!completion) return undefined;
+    
+    const updatedCompletion = { ...completion, ...updates };
+    this.taskCompletions.set(id, updatedCompletion);
+    return updatedCompletion;
   }
 
   async updateTaskCompletionStatus(id: string, status: string): Promise<TaskCompletion | undefined> {
@@ -461,55 +404,71 @@ export class SupabaseStorage implements IStorage {
     return this.updateUser(userId, { ...preferences });
   }
 
-  async updateTaskCompletion(id: string, updates: Partial<TaskCompletion>): Promise<TaskCompletion | undefined> {
-    return undefined;
+  async getTaskCompletion(id: string): Promise<TaskCompletion | undefined> {
+    return this.taskCompletions.get(id);
   }
 
   async getMessages(userId: string): Promise<Message[]> {
-    return [];
+    return Array.from(this.messages.values()).filter(
+      message => message.toUserId === userId
+    );
   }
 
   async createMessage(message: InsertMessage): Promise<Message> {
-    return {
-      id: randomUUID(),
+    const id = randomUUID();
+    const newMessage: Message = {
+      id,
       createdAt: new Date(),
       isRead: false,
       ...message
-    } as Message;
+    };
+    this.messages.set(id, newMessage);
+    return newMessage;
   }
 
   async markMessageAsRead(id: string): Promise<void> {
-    // Stub
+    const message = this.messages.get(id);
+    if (message) {
+      message.isRead = true;
+    }
   }
 
   // Achievement methods (stubs)
   async getUserAchievements(userId: string): Promise<UserAchievement[]> {
-    return [];
+    return Array.from(this.userAchievements.values()).filter(
+      achievement => achievement.userId === userId
+    );
   }
 
   async createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement> {
-    return {
-      id: randomUUID(),
+    const id = randomUUID();
+    const newAchievement: UserAchievement = {
+      id,
       earnedAt: new Date(),
       isVisible: true,
       progress: 0,
       maxProgress: 1,
       ...achievement
-    } as UserAchievement;
+    };
+    this.userAchievements.set(id, newAchievement);
+    return newAchievement;
   }
 
   async getAchievementDefinitions(): Promise<AchievementDefinition[]> {
-    return [];
+    return Array.from(this.achievementDefinitions.values());
   }
 
   async createAchievementDefinition(definition: InsertAchievementDefinition): Promise<AchievementDefinition> {
-    return {
-      id: randomUUID(),
+    const id = randomUUID();
+    const newDefinition: AchievementDefinition = {
+      id,
       rarity: "common",
       rewardPoints: 0,
       isActive: true,
       ...definition
-    } as AchievementDefinition;
+    };
+    this.achievementDefinitions.set(id, newDefinition);
+    return newDefinition;
   }
 
   async updateUserAchievementProgress(userId: string, achievementType: string, progress: number): Promise<UserAchievement | undefined> {
@@ -518,36 +477,46 @@ export class SupabaseStorage implements IStorage {
 
   // Challenge methods (stubs)
   async getDailyChallenges(): Promise<DailyChallenge[]> {
-    return [];
+    return Array.from(this.dailyChallenges.values());
   }
 
   async createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge> {
-    return {
-      id: randomUUID(),
+    const id = randomUUID();
+    const newChallenge: DailyChallenge = {
+      id,
       rewardPoints: 5,
       isActive: true,
       createdAt: new Date(),
       ...challenge
-    } as DailyChallenge;
+    };
+    this.dailyChallenges.set(id, newChallenge);
+    return newChallenge;
   }
 
   async getUserChallenges(userId: string, date?: Date): Promise<UserChallenge[]> {
-    return [];
+    return Array.from(this.userChallenges.values()).filter(
+      challenge => challenge.userId === userId
+    );
   }
 
   async assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge> {
-    return {
-      id: randomUUID(),
+    const id = randomUUID();
+    const newUserChallenge: UserChallenge = {
+      id,
       userId,
       challengeId,
       assignedDate: new Date(),
       status: "assigned",
-      pointsEarned: 0
-    } as UserChallenge;
+      pointsEarned: 0,
+      completedAt: null,
+      reflection: null
+    };
+    this.userChallenges.set(id, newUserChallenge);
+    return newUserChallenge;
   }
 
   async completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined> {
-    return undefined;
+    return this.userChallenges.get(userChallengeId);
   }
 
   async getTodaysChallenges(userId: string): Promise<UserChallenge[]> {
@@ -607,15 +576,11 @@ export class SupabaseStorage implements IStorage {
   }
 
   async getAllTasks(): Promise<Task[]> {
-    return this.getTasks();
+    return Array.from(this.tasks.values());
   }
 
   async getAllTaskCompletions(): Promise<TaskCompletion[]> {
-    return [];
-  }
-
-  async getTaskCompletion(id: string): Promise<TaskCompletion | undefined> {
-    return undefined;
+    return Array.from(this.taskCompletions.values());
   }
 
   async initializeDailyChallenges(): Promise<void> {
@@ -624,8 +589,8 @@ export class SupabaseStorage implements IStorage {
 
   // Barter methods (stubs)
   async getBarterTasks(): Promise<Task[]> {
-    return this.getTasks().then(tasks => 
-      tasks.filter(task => task.paymentType === 'barter')
+    return Array.from(this.tasks.values()).filter(
+      task => task.paymentType === 'barter' && task.isActive
     );
   }
 
@@ -664,70 +629,18 @@ export class SupabaseStorage implements IStorage {
   async clearAllUserData(): Promise<{ success: boolean; message: string; deletedCounts: any }> {
     try {
       const deletedCounts = {
-        users: 0,
-        taskCompletions: 0,
-        messages: 0,
-        userAchievements: 0,
-        userChallenges: 0,
-        sessions: 0
+        users: this.users.size,
+        taskCompletions: this.taskCompletions.size,
+        messages: this.messages.size,
+        userAchievements: this.userAchievements.size,
+        userChallenges: this.userChallenges.size
       };
 
-      // Clear user challenges first (has foreign key to users)
-      const { data: userChallengesData } = await supabase
-        .from('user_challenges')
-        .select('id');
-      if (userChallengesData) {
-        deletedCounts.userChallenges = userChallengesData.length;
-        await supabase.from('user_challenges').delete().neq('id', '');
-      }
-
-      // Clear user achievements (has foreign key to users)
-      const { data: userAchievementsData } = await supabase
-        .from('user_achievements')
-        .select('id');
-      if (userAchievementsData) {
-        deletedCounts.userAchievements = userAchievementsData.length;
-        await supabase.from('user_achievements').delete().neq('id', '');
-      }
-
-      // Clear messages (has foreign key to users)
-      const { data: messagesData } = await supabase
-        .from('messages')
-        .select('id');
-      if (messagesData) {
-        deletedCounts.messages = messagesData.length;
-        await supabase.from('messages').delete().neq('id', '');
-      }
-
-      // Clear task completions (has foreign key to users)
-      const { data: taskCompletionsData } = await supabase
-        .from('task_completions')
-        .select('id');
-      if (taskCompletionsData) {
-        deletedCounts.taskCompletions = taskCompletionsData.length;
-        await supabase.from('task_completions').delete().neq('id', '');
-      }
-
-      // Clear sessions (may reference users)
-      const { data: sessionsData } = await supabase
-        .from('sessions')
-        .select('sid');
-      if (sessionsData) {
-        deletedCounts.sessions = sessionsData.length;
-        await supabase.from('sessions').delete().neq('sid', '');
-      }
-
-      // Finally clear users table
-      const { data: usersData } = await supabase
-        .from('users')
-        .select('id');
-      if (usersData) {
-        deletedCounts.users = usersData.length;
-        await supabase.from('users').delete().neq('id', '');
-      }
-
-      // Clear in-memory cache
-      this.mockUsers.clear();
+      this.users.clear();
+      this.taskCompletions.clear();
+      this.messages.clear();
+      this.userAchievements.clear();
+      this.userChallenges.clear();
 
       return {
         success: true,
@@ -746,4 +659,4 @@ export class SupabaseStorage implements IStorage {
   }
 }
 
-export const storage = new SupabaseStorage();
+export const storage = new MemoryStorage();

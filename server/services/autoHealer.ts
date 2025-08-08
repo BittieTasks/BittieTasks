@@ -1,4 +1,4 @@
-import { storage } from "../supabase-storage";
+import { storage } from "../memory-storage";
 import { analytics } from "./analyticsService";
 import { fraudDetection } from "./fraudDetection";
 import { fileManager } from "./fileManager";

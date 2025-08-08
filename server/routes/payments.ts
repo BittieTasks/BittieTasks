@@ -3,7 +3,7 @@ import { z } from "zod";
 import { paymentService } from "../services/paymentService";
 import { escrowService } from "../services/escrowService";
 import { paypalService } from "../services/paypalService";
-import { storage } from "../supabase-storage";
+import { storage } from "../memory-storage";
 
 const router = Router();
 

@@ -6,15 +6,13 @@ export const performanceMiddleware = (req: Request, res: Response, next: NextFun
   const start = Date.now();
   let cacheHit = false;
   
-  // Simple cache hit detection without modifying res.set
-  const originalJson = res.json;
-  res.json = function(body: any) {
-    // Check if this looks like a cache hit based on response time
-    const duration = Date.now() - start;
-    if (duration < 10 && req.path.includes('/api/')) {
+  // Simple cache hit detection without modifying res.json
+  const originalSetHeader = res.setHeader;
+  res.setHeader = function(name: string, value: string | string[]) {
+    if (name.toLowerCase() === 'x-cache-hit' && value === 'true') {
       cacheHit = true;
     }
-    return originalJson.call(this, body);
+    return originalSetHeader.call(this, name, value);
   };
   
   res.on('finish', () => {
