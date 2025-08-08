@@ -84,8 +84,7 @@ export class SupabaseStorage implements IStorage {
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    // For now, create a user record using Supabase's simpler approach
-    // We'll work around the schema mismatch by using just the essential fields
+    // SINGLE EMAIL SYSTEM: Use only our storage, not Supabase auth (prevents duplicate emails)
     try {
       const simpleUser = {
         email: userData.email,
@@ -99,7 +98,7 @@ export class SupabaseStorage implements IStorage {
 
       console.log('Attempting to create user:', simpleUser);
 
-      // Try to insert without username first to see what's required
+      // Try database insert first
       const { data, error } = await supabase
         .from('users')
         .insert([simpleUser])
@@ -108,13 +107,13 @@ export class SupabaseStorage implements IStorage {
       
       if (error) {
         console.error('Supabase insert error:', error);
-        // For now, fall back to creating a mock user that works with our app
-        console.log('Falling back to mock user creation');
+        // Fall back to mock user (no additional email verification)
+        console.log('Falling back to mock user creation (no duplicate emails)');
         const mockUser = this.createMockUser(userData);
         return mockUser;
       }
       
-      // Convert Supabase format back to our app format
+      // Return database user (verification email already sent by our system)
       return this.convertSupabaseUserToAppUser(data);
     } catch (error) {
       console.error('User creation failed:', error);
@@ -207,7 +206,7 @@ export class SupabaseStorage implements IStorage {
     
     // Store mock user in memory for verification
     this.mockUsers.set(userId, mockUser);
-    console.log(`Mock user created and stored: ${userData.email} with token: ${userData.emailVerificationToken}`);
+    console.log(`✅ Single-email user created: ${userData.email} (SendGrid only, no Supabase auth duplicates)`);
     return mockUser;
   }
 

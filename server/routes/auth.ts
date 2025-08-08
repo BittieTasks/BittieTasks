@@ -3,8 +3,7 @@ import bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import rateLimit from 'express-rate-limit';
 import { storage } from '../storage';
-import { supabase } from '../supabase';
-import { requireAuth, optionalAuth } from '../auth/supabase-auth';
+// Removed Supabase imports - using only SendGrid for email verification
 import type { InsertUser } from '@shared/schema';
 import { sendVerificationEmail } from '../services/emailService';
 
@@ -18,7 +17,7 @@ const authLimiter = rateLimit({
 });
 
 export function registerAuthRoutes(app: Express) {
-  // Sign up with Supabase
+  // Sign up (SendGrid email verification only)
   app.post('/api/auth/signup', authLimiter, async (req, res) => {
     try {
       const { email, password, firstName, lastName } = req.body;
