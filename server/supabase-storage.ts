@@ -84,7 +84,11 @@ export class SupabaseStorage implements IStorage {
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    // SINGLE EMAIL SYSTEM: Use only our storage, not Supabase auth (prevents duplicate emails)
+    // Store verification token in memory AND try database 
+    const mockUser = this.createMockUser(userData);
+    console.log(`📝 Created mock user with token: ${mockUser.emailVerificationToken}`);
+    
+    // Also try to store in database (schema permitting)
     try {
       const simpleUser = {
         email: userData.email,
@@ -93,34 +97,28 @@ export class SupabaseStorage implements IStorage {
         username: userData.username,
         password_hash: userData.passwordHash,
         is_email_verified: userData.isEmailVerified || false,
-        email_verification_token: userData.emailVerificationToken || null
+        email_verification_token: userData.emailVerificationToken
       };
 
-      console.log('Attempting to create user:', simpleUser);
-
-      // Try database insert first
+      console.log('Also attempting database storage:', simpleUser.email);
       const { data, error } = await supabase
         .from('users')
         .insert([simpleUser])
         .select()
         .maybeSingle();
       
-      if (error) {
-        console.error('Supabase insert error:', error);
-        // Fall back to mock user (no additional email verification)
-        console.log('Falling back to mock user creation (no duplicate emails)');
-        const mockUser = this.createMockUser(userData);
-        console.log(`📝 Created mock user with token: ${mockUser.emailVerificationToken}`);
-        return mockUser;
+      if (!error && data) {
+        console.log('✅ User also stored in database successfully');
+        return this.convertSupabaseUserToAppUser(data);
+      } else {
+        console.log('Database storage failed, using mock user:', error?.message);
       }
-      
-      // Return database user (verification email already sent by our system)
-      return this.convertSupabaseUserToAppUser(data);
     } catch (error) {
-      console.error('User creation failed:', error);
-      // Fall back to mock user for development
-      return this.createMockUser(userData);
+      console.log('Database error, proceeding with mock user');
     }
+    
+    // Return mock user regardless of database success/failure
+    return mockUser;
   }
 
   private createMockUser(userData: InsertUser): User {
