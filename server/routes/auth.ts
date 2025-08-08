@@ -169,24 +169,15 @@ export function registerAuthRoutes(app: Express) {
   // Legacy endpoint for compatibility
   app.get('/api/user/current', async (req, res) => {
     try {
-      console.log('🔍 User current check:');
-      console.log('  - SessionID:', req.sessionID);
-      console.log('  - Session data:', JSON.stringify(req.session, null, 2));
-      console.log('  - Cookies:', req.headers.cookie);
-      console.log('  - User-Agent:', req.headers['user-agent']);
-      
       if (!(req.session as any).userId) {
-        console.log('❌ No userId in session - returning 401');
         return res.status(401).json({ message: 'Not authenticated' });
       }
 
       const user = await storage.getUser((req.session as any).userId);
       if (!user) {
-        console.log('❌ User not found in storage');
         return res.status(404).json({ message: 'User not found' });
       }
 
-      console.log('✅ User authenticated:', user.email);
       res.json({
         id: user.id,
         email: user.email,

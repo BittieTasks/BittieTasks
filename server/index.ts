@@ -16,11 +16,13 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
   resave: false,
   saveUninitialized: false,
+  name: 'connect.sid', // Explicit cookie name
   cookie: {
     secure: false, // Set to true in production with HTTPS
-    httpOnly: false, // Allow JavaScript access for SPA
+    httpOnly: false, // Allow JavaScript access for SPA - CRITICAL for browser sessions
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'lax' // Allow cookies in cross-origin requests
+    sameSite: 'lax', // Allow cookies in cross-origin requests
+    domain: 'localhost' // Explicit domain for development
   }
 }));
 
