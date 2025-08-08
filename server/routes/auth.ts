@@ -60,8 +60,9 @@ export function registerAuthRoutes(app: Express) {
 
       const user = await storage.createUser(userData);
 
-      // Send verification email
-      await sendVerificationEmail(email, firstName, emailVerificationToken);
+      // Send verification email with full name
+      const displayName = `${firstName} ${lastName}`;
+      await sendVerificationEmail(email, displayName, emailVerificationToken);
 
       res.status(201).json({
         message: 'Account created successfully! Please check your email to verify your account.',
