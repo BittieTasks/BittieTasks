@@ -32,33 +32,35 @@ export default function SubscriptionCheckout() {
   // Subscription details
   const subscriptionDetails = {
     pro: {
-      name: 'TaskParent Pro',
-      price: 9.99,
+      name: 'BittieTasks Pro',
+      price: 19.99,
       priceId: 'price_pro_monthly', // This would be set from Stripe dashboard
       features: [
         '50 tasks per month',
-        '7% platform fee (vs 10%)',
-        'Priority support',
-        'Ad-free experience',
-        'Advanced analytics'
-      ],
-      icon: Crown,
-      color: 'text-blue-600'
-    },
-    premium: {
-      name: 'TaskParent Premium',
-      price: 19.99,
-      priceId: 'price_premium_monthly', // This would be set from Stripe dashboard
-      features: [
-        '200 tasks per month',
-        '5% platform fee (vs 10%)',
+        'Keep 85% of task earnings',
         'Priority support',
         'Ad-free experience',
         'Advanced analytics',
-        'Premium badge',
-        'Early access features'
+        'Pro badge on profile'
       ],
-      icon: Star,
+      icon: Zap,
+      color: 'text-blue-600'
+    },
+    premium: {
+      name: 'BittieTasks Premium',
+      price: 39.99,
+      priceId: 'price_premium_monthly', // This would be set from Stripe dashboard
+      features: [
+        'Unlimited tasks per month',
+        'Keep 90% of task earnings',
+        '24/7 phone support',
+        'Ad-free experience',
+        'Advanced analytics',
+        'Premium badge & priority listing',
+        'Exclusive high-paying tasks',
+        '1-on-1 success coaching'
+      ],
+      icon: Crown,
       color: 'text-purple-600'
     }
   };

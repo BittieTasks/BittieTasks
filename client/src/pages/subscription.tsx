@@ -45,7 +45,7 @@ export default function SubscriptionPage() {
     {
       id: "pro",
       name: "BittieTasks Pro",
-      price: "$9.99",
+      price: "$19.99",
       period: "per month",
       description: "For active parents earning regular income",
       icon: Zap,
@@ -54,20 +54,20 @@ export default function SubscriptionPage() {
       popular: true,
       features: [
         "Complete up to 50 tasks per month",
+        "Keep 85% of task earnings (vs 90% on free)",
         "Priority task visibility",
-        "Reduced platform fee (7% instead of 10%)",
         "Ad-free experience",
         "Priority customer support",
         "Advanced earnings analytics",
         "Early access to sponsored tasks",
         "Pro badge on profile"
       ],
-      savings: "Save $36+ monthly in platform fees"
+      savings: "Keep 85% of earnings vs 90% on free plan"
     },
     {
       id: "premium",
       name: "BittieTasks Premium",
-      price: "$19.99",
+      price: "$39.99",
       period: "per month",
       description: "For power users maximizing their earnings",
       icon: Crown,
@@ -75,7 +75,7 @@ export default function SubscriptionPage() {
       borderColor: "border-purple-300",
       features: [
         "Unlimited monthly tasks",
-        "Lowest platform fee (5%)",
+        "Keep 90% of task earnings (vs 90% on free)",
         "Premium badge & priority listing",
         "Exclusive high-paying tasks",
         "1-on-1 success coaching",
@@ -84,7 +84,7 @@ export default function SubscriptionPage() {
         "24/7 phone support",
         "Early access to new features"
       ],
-      savings: "Save $60+ monthly in platform fees"
+      savings: "Keep 90% of earnings + exclusive high-value tasks"
     }
   ];
 

@@ -17,31 +17,33 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const plans = [
   {
-    id: 'premium',
-    name: 'Premium',
-    price: 29.99,
-    description: 'Perfect for active parents',
+    id: 'pro',
+    name: 'BittieTasks Pro',
+    price: 19.99,
+    description: 'For active parents earning regular income',
     features: [
-      'Keep 80% of task earnings',
+      'Complete up to 50 tasks per month',
+      'Keep 85% of task earnings',
       'Priority customer support',
+      'Ad-free experience',
       'Advanced analytics dashboard',
-      'Higher task visibility',
-      'Exclusive premium tasks'
+      'Pro badge on profile'
     ],
     popular: true
   },
   {
-    id: 'pro',
-    name: 'Pro',
-    price: 49.99,
-    description: 'For serious earners',
+    id: 'premium',
+    name: 'BittieTasks Premium',
+    price: 39.99,
+    description: 'For power users maximizing their earnings',
     features: [
-      'Keep 85% of task earnings',
-      'VIP customer support',
+      'Unlimited monthly tasks',
+      'Keep 90% of task earnings',
+      '24/7 phone support',
       'Advanced analytics & insights',
-      'Maximum task visibility',
-      'Exclusive high-value tasks',
-      'Early access to new features'
+      'Premium badge & priority listing',
+      'Exclusive high-paying tasks',
+      '1-on-1 success coaching'
     ],
     popular: false
   }
