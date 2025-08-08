@@ -27,24 +27,10 @@ export function registerAuthRoutes(app: Express) {
         return res.status(400).json({ message: 'All fields are required' });
       }
 
-      // Create user in Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-          }
-        }
-      });
-
-      if (authError) {
-        return res.status(400).json({ message: authError.message });
-      }
-
-      if (!authData.user) {
-        return res.status(400).json({ message: 'Failed to create user' });
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: 'User already exists with this email' });
       }
 
       // Create user record in our database
@@ -58,13 +44,13 @@ export function registerAuthRoutes(app: Express) {
         lastName,
         isEmailVerified: false,
         emailVerificationToken,
-        username: `${firstName.toLowerCase()}_${lastName.toLowerCase()}`
+        username: `${firstName.toLowerCase()}_${lastName.toLowerCase()}_${Date.now()}`
       };
 
       const user = await storage.createUser(userData);
 
       // Send verification email
-      await sendVerificationEmail(email, emailVerificationToken);
+      await sendVerificationEmail(email, firstName, emailVerificationToken);
 
       res.status(201).json({
         message: 'Account created successfully! Please check your email to verify your account.',
@@ -176,13 +162,19 @@ export function registerAuthRoutes(app: Express) {
     try {
       const { token } = req.query;
 
+      console.log(`Verification request with token: ${token}`);
+
       if (!token) {
         return res.status(400).json({ message: 'Verification token required' });
       }
 
       // Find user by verification token
       const users = await storage.getUsers();
+      console.log(`Total users in database: ${users.length}`);
+      console.log('Users with verification tokens:', users.filter(u => u.emailVerificationToken).map(u => ({ email: u.email, token: u.emailVerificationToken })));
+      
       const user = users.find(u => u.emailVerificationToken === token);
+      console.log(`User found for token: ${user ? 'YES' : 'NO'}`);
 
       if (!user) {
         return res.status(400).json({ message: 'Invalid or expired verification token' });

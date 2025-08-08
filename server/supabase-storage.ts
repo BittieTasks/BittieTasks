@@ -91,6 +91,7 @@ export class SupabaseStorage implements IStorage {
         email: userData.email,
         first_name: userData.firstName,
         last_name: userData.lastName,
+        username: userData.username,
         password_hash: userData.passwordHash,
         is_email_verified: userData.isEmailVerified || false,
         email_verification_token: userData.emailVerificationToken || null
@@ -124,7 +125,7 @@ export class SupabaseStorage implements IStorage {
 
   private createMockUser(userData: InsertUser): User {
     const userId = randomUUID();
-    return {
+    const mockUser: User = {
       id: userId,
       username: userData.username || `${userData.firstName?.toLowerCase()}_${userData.lastName?.toLowerCase()}`,
       email: userData.email,
@@ -202,7 +203,12 @@ export class SupabaseStorage implements IStorage {
       localAdsOnly: false,
       ethicalAdsOnly: true,
       adPersonalization: true
-    } as User;
+    };
+    
+    // Store mock user in memory for verification
+    this.mockUsers.set(userId, mockUser);
+    console.log(`Mock user created and stored: ${userData.email} with token: ${userData.emailVerificationToken}`);
+    return mockUser;
   }
 
   private convertSupabaseUserToAppUser(data: any): User {

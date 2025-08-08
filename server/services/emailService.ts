@@ -44,9 +44,12 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
 }
 
 export async function sendVerificationEmail(userEmail: string, userName: string, verificationToken: string): Promise<boolean> {
+  console.log(`Attempting to send verification email to: ${userEmail}`);
+  
   if (!process.env.SENDGRID_API_KEY) {
-    console.log('SendGrid not configured, skipping verification email');
-    return false;
+    console.log('SendGrid not configured, creating mock verification email');
+    console.log(`Mock verification URL: http://localhost:5000/verify-email?token=${verificationToken}`);
+    return true; // Return true so signup continues
   }
 
   // Use the current environment URL for verification
