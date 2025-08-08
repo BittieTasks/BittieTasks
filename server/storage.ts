@@ -17,7 +17,6 @@ import {
   type InsertDailyChallenge,
   type UserChallenge,
   type InsertUserChallenge,
-  type UserActivity
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
@@ -1073,7 +1072,7 @@ export class MemStorage implements IStorage {
     if (date) {
       const targetDate = date.toDateString();
       return challenges.filter(challenge => 
-        challenge.assignedAt.toDateString() === targetDate
+        challenge.assignedDate?.toDateString() === targetDate
       );
     }
     
@@ -1095,7 +1094,7 @@ export class MemStorage implements IStorage {
       userId,
       challengeId,
       status: 'assigned',
-      assignedAt: new Date(),
+      assignedDate: new Date(),
       completedAt: null,
       reflection: null,
       pointsEarned: 0
@@ -1535,8 +1534,8 @@ export class DatabaseStorage {
         userId,
         challengeId,
         status: 'assigned',
-        assignedAt: new Date(),
-        completed: false,
+        assignedDate: new Date(),
+        completedAt: null,
       })
       .returning();
     return newChallenge;
@@ -1547,7 +1546,7 @@ export class DatabaseStorage {
       .update(userChallenges)
       .set({ 
         status: 'completed', 
-        completed: true, 
+        status: 'completed', 
         completedAt: new Date(),
         reflection 
       })
@@ -1562,7 +1561,7 @@ export class DatabaseStorage {
     return await db.select().from(userChallenges)
       .where(and(
         eq(userChallenges.userId, userId),
-        gte(userChallenges.assignedAt, today)
+        gte(userChallenges.assignedDate, today)
       ));
   }
 
@@ -1619,7 +1618,6 @@ export class DatabaseStorage {
     const existing = await this.getDailyChallenges();
     if (existing.length === 0) {
       await this.createDailyChallenge({
-        id: randomUUID(),
         title: "Quick Walk",
         description: "Take a 10-minute walk around your neighborhood",
         category: "wellness",
@@ -1637,7 +1635,6 @@ export class DatabaseStorage {
     const existing = await db.select().from(taskCategories).where(eq(taskCategories.id, 'barter'));
     if (existing.length === 0) {
       await this.createTaskCategory({
-        id: 'barter',
         name: 'Barter & Trade',
         icon: 'handshake',
         color: '#10b981',
