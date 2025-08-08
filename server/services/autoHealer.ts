@@ -1,4 +1,4 @@
-import { storage } from "../storage";
+import { storage } from "../simple-storage";
 import { analytics } from "./analyticsService";
 import { fraudDetection } from "./fraudDetection";
 import { fileManager } from "./fileManager";

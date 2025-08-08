@@ -1,4 +1,4 @@
-import { storage } from "../storage";
+import { storage } from "../simple-storage";
 
 interface FraudCheck {
   userId: string;
