@@ -1,4 +1,4 @@
-import { supabase } from './db';
+// Storage interface and implementations
 import { 
   type User, 
   type InsertUser,
@@ -1687,5 +1687,5 @@ export class DatabaseStorage {
   }
 }
 
-// Using DatabaseStorage for production - proper database persistence
-export const storage = new DatabaseStorage();
+// Export Supabase storage for production
+export { storage } from './supabase-storage';

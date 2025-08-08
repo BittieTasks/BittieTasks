@@ -1,5 +1,4 @@
-// Note: This file is deprecated - use database-storage.ts instead
-// import { supabase } from './db';
+import { supabase } from './supabase';
 import { 
   type User, 
   type InsertUser,
@@ -59,7 +58,7 @@ export class SupabaseStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     // Check mock users first
-    for (const user of this.mockUsers.values()) {
+    for (const user of Array.from(this.mockUsers.values())) {
       if (user.email === email) {
         return user;
       }
@@ -431,8 +430,8 @@ export class SupabaseStorage implements IStorage {
       netEarnings: "0.00",
       isBarterTransaction: false,
       taxFormRequired: false,
-      status: "pending",
-      ...completion
+      ...completion,
+      status: "pending"
     } as TaskCompletion;
     return newCompletion;
   }
@@ -735,7 +734,7 @@ export class SupabaseStorage implements IStorage {
         deletedCounts
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error clearing user data:', error);
       return {
         success: false,

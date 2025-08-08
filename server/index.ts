@@ -1,5 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
-import session from "express-session";
+// Removed express-session - using Supabase authentication
 import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -11,18 +11,7 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Configure session middleware with memory store for development
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'taskparent-dev-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: false, // Set to false in development for HTTP
-    httpOnly: true,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
-    sameSite: 'lax' // Allow same-site requests
-  }
-}));
+// Using Supabase authentication instead of sessions
 
 app.use((req, res, next) => {
   const start = Date.now();

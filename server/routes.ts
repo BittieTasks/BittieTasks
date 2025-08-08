@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { registerSubscriptionRoutes } from "./routes/subscription";
-import { storage } from "./memory-storage";
+import { storage } from "./storage";
 import affiliateProductsRouter from "./routes/affiliate-products";
 import { ethicalPartnershipMatcher, type PartnershipCandidate } from "./services/ethicalPartnershipMatcher";
 import { advertisingMatcher, type AdvertisingCandidate } from "./services/advertisingMatcher";
@@ -20,6 +20,7 @@ import smsRoutes from './routes/smsRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import emailRoutes from './routes/emailRoutes';
 import { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
+import { registerAuthRoutes } from './routes/auth';
 import { autoHealer } from "./services/autoHealer";
 import { fraudDetection } from "./services/fraudDetection";
 import { analytics } from "./services/analyticsService";
@@ -74,6 +75,9 @@ const apiLimiter = rateLimit({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Apply performance monitoring middleware
   app.use(performanceMiddleware);
+  
+  // Register Supabase authentication routes
+  registerAuthRoutes(app);
   
   // Apply security middleware
   app.use(helmet({
