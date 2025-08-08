@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { registerSubscriptionRoutes } from "./routes/subscription";
-import { storage } from "./storage";
+import { storage } from "./simple-storage";
 import affiliateProductsRouter from "./routes/affiliate-products";
 import { ethicalPartnershipMatcher, type PartnershipCandidate } from "./services/ethicalPartnershipMatcher";
 import { advertisingMatcher, type AdvertisingCandidate } from "./services/advertisingMatcher";

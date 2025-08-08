@@ -1,3 +1,4 @@
+import { supabase } from './db';
 import { 
   type User, 
   type InsertUser,
