@@ -34,7 +34,7 @@ export default function AuthPage() {
 
   const loginMutation = useMutation({
     mutationFn: (data: { email: string; password: string }) =>
-      apiRequest("POST", "/api/auth/login", data),
+      apiRequest("POST", "/api/auth/signin", data),
     onSuccess: () => {
       // Force refresh user data
       queryClient.invalidateQueries({ queryKey: ["/api/user/current"] });

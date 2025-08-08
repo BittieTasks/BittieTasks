@@ -63,7 +63,7 @@ export function registerAuthRoutes(app: Express) {
     }
   });
 
-  // Sign in with Supabase
+  // Sign in (using our own storage for development)
   app.post('/api/auth/signin', authLimiter, async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -72,29 +72,32 @@ export function registerAuthRoutes(app: Express) {
         return res.status(400).json({ message: 'Email and password are required' });
       }
 
-      // Sign in with Supabase
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (authError) {
+      // Get user from our database/storage
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
-      if (!authData.session) {
-        return res.status(401).json({ message: 'Failed to create session' });
+      // Verify password
+      const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+      if (!passwordMatch) {
+        return res.status(401).json({ message: 'Invalid credentials' });
       }
 
-      // Get user from our database
-      const user = await storage.getUserByEmail(email);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found in database' });
-      }
+      // Create session
+      (req.session as any).userId = user.id;
+      (req.session as any).user = {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isEmailVerified: user.isEmailVerified
+      };
+
+      console.log(`✅ User logged in successfully: ${user.email}`);
 
       res.json({
         message: 'Login successful',
-        accessToken: authData.session.access_token,
         user: {
           id: user.id,
           email: user.email,
@@ -111,25 +114,34 @@ export function registerAuthRoutes(app: Express) {
   });
 
   // Sign out
-  app.post('/api/auth/signout', requireAuth, async (req, res) => {
+  app.post('/api/auth/signout', async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (authHeader && authHeader.startsWith('Bearer ')) {
-        const token = authHeader.substring(7);
-        await supabase.auth.signOut();
-      }
-      
-      res.json({ message: 'Logged out successfully' });
+      req.session.destroy((err: any) => {
+        if (err) {
+          console.error('Session destroy error:', err);
+          return res.status(500).json({ message: 'Logout failed' });
+        }
+        res.clearCookie('connect.sid');
+        res.json({ message: 'Logged out successfully' });
+      });
     } catch (error) {
       console.error('Signout error:', error);
       res.status(500).json({ message: 'Logout failed' });
     }
   });
 
-  // Get current user
-  app.get('/api/auth/user', requireAuth, async (req, res) => {
+  // Get current user (using session)
+  app.get('/api/auth/user', async (req, res) => {
     try {
-      const user = req.user;
+      if (!(req.session as any).userId) {
+        return res.status(401).json({ message: 'Not authenticated' });
+      }
+
+      const user = await storage.getUser((req.session as any).userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
       res.json({
         id: user.id,
         email: user.email,
@@ -147,10 +159,32 @@ export function registerAuthRoutes(app: Express) {
   });
 
   // Legacy endpoint for compatibility
-  app.get('/api/user/current', requireAuth, async (req, res) => {
+  app.get('/api/user/current', async (req, res) => {
     try {
-      const user = req.user;
-      res.json(user);
+      if (!(req.session as any).userId) {
+        return res.status(401).json({ message: 'Not authenticated' });
+      }
+
+      const user = await storage.getUser((req.session as any).userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json({
+        id: user.id,
+        email: user.email,
+        rating: user.rating,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        totalEarnings: user.totalEarnings,
+        completedTasks: user.completedTasks,
+        currentStreak: user.currentStreak,
+        isEmailVerified: user.isEmailVerified,
+        subscriptionTier: user.subscriptionTier,
+        subscriptionStatus: user.subscriptionStatus,
+        monthlyTaskLimit: user.monthlyTaskLimit,
+        monthlyTasksCompleted: user.monthlyTasksCompleted
+      });
     } catch (error) {
       console.error('Get current user error:', error);
       res.status(500).json({ message: 'Failed to get user' });
