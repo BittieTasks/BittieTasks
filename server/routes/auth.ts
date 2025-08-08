@@ -94,17 +94,25 @@ export function registerAuthRoutes(app: Express) {
         isEmailVerified: user.isEmailVerified
       };
 
-      console.log(`✅ User logged in successfully: ${user.email}`);
-
-      res.json({
-        message: 'Login successful',
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          isEmailVerified: user.isEmailVerified
+      // Explicitly save the session before responding
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ message: 'Login failed' });
         }
+
+        console.log(`✅ User logged in successfully: ${user.email}`);
+
+        res.json({
+          message: 'Login successful',
+          user: {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            isEmailVerified: user.isEmailVerified
+          }
+        });
       });
 
     } catch (error) {
