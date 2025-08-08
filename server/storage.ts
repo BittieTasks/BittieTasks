@@ -1304,11 +1304,96 @@ export class DatabaseStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
-    return user;
+    try {
+      // Create complete user data with all required fields
+      const userData = {
+        username: insertUser.username,
+        email: insertUser.email,
+        passwordHash: insertUser.passwordHash,
+        firstName: insertUser.firstName,
+        lastName: insertUser.lastName,
+        profilePicture: insertUser.profilePicture || null,
+        totalEarnings: insertUser.totalEarnings || "0.00",
+        rating: insertUser.rating || "5.0",
+        completedTasks: insertUser.completedTasks || 0,
+        currentStreak: insertUser.currentStreak || 0,
+        skills: insertUser.skills || [],
+        availability: insertUser.availability || null,
+        isEmailVerified: insertUser.isEmailVerified || false,
+        emailVerificationToken: insertUser.emailVerificationToken || null,
+        passwordResetToken: insertUser.passwordResetToken || null,
+        passwordResetExpires: insertUser.passwordResetExpires || null,
+        lastLogin: insertUser.lastLogin || null,
+        failedLoginAttempts: insertUser.failedLoginAttempts || 0,
+        accountLocked: insertUser.accountLocked || false,
+        lockUntil: insertUser.lockUntil || null,
+        // Set defaults for required fields not in InsertUser
+        isPhoneVerified: false,
+        isIdentityVerified: false,
+        isBackgroundChecked: false,
+        phoneNumber: null,
+        phoneVerificationCode: null,
+        phoneVerificationExpires: null,
+        identityDocuments: [],
+        trustScore: 0,
+        riskScore: 0,
+        identityScore: 0,
+        isCaptchaVerified: false,
+        captchaScore: "0.0",
+        deviceFingerprint: null,
+        ipAddress: null,
+        userAgent: null,
+        signupMethod: "email",
+        behaviorScore: 0,
+        lastCaptchaVerification: null,
+        governmentIdUploaded: false,
+        governmentIdVerified: false,
+        faceVerificationCompleted: false,
+        livelinessCheckPassed: false,
+        mouseMovementAnalyzed: false,
+        keystrokePatternAnalyzed: false,
+        sessionBehaviorScore: 0,
+        humanVerificationLevel: "basic",
+        twoFactorEnabled: false,
+        twoFactorSecret: null,
+        backupCodes: [],
+        subscriptionTier: "free",
+        subscriptionStatus: "active",
+        subscriptionStartDate: null,
+        subscriptionEndDate: null,
+        stripeCustomerId: null,
+        stripeSubscriptionId: null,
+        monthlyTaskLimit: 5,
+        monthlyTasksCompleted: 0,
+        lastMonthlyReset: new Date(),
+        prioritySupport: false,
+        adFree: false,
+        premiumBadge: false,
+        referralCode: null,
+        referredBy: null,
+        referralCount: 0,
+        referralEarnings: "0.00",
+        adFrequency: 5,
+        adRelevance: 7,
+        adTypes: ["native_feed", "sponsored_task"],
+        adCategories: ["education", "health-wellness", "retail"],
+        maxAdBudget: 100,
+        minAdBudget: 10,
+        familyFriendlyOnly: true,
+        localAdsOnly: false,
+        ethicalAdsOnly: true,
+        adPersonalization: true
+      };
+
+      const [user] = await db
+        .insert(users)
+        .values(userData)
+        .returning();
+      return user;
+    } catch (error) {
+      console.error('DatabaseStorage.createUser error:', error);
+      throw new Error('Failed to create user in database');
+    }
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
