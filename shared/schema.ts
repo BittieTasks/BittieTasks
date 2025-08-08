@@ -488,4 +488,118 @@ export type AccountabilityPartnership = typeof accountabilityPartnerships.$infer
 
 // Schema types already defined above with original table definitions
 
+// Corporate Partners and Sponsorship Tables
+export const corporatePartners = pgTable("corporate_partners", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  companyName: text("company_name").notNull(),
+  contactEmail: text("contact_email").notNull(),
+  contactName: text("contact_name").notNull(),
+  website: text("website").notNull(),
+  industry: text("industry").notNull(),
+  approvalTier: text("approval_tier").notNull(), // premium, standard, basic
+  ethicalScore: integer("ethical_score").notNull(),
+  monthlyBudget: decimal("monthly_budget").notNull(),
+  taskTypes: text("task_types").array().default([]),
+  isActive: boolean("is_active").default(true),
+  partnerSince: timestamp("partner_since").default(sql`CURRENT_TIMESTAMP`),
+  totalSpent: decimal("total_spent").default("0.00"),
+  tasksCreated: integer("tasks_created").default(0),
+  averageRating: decimal("average_rating").default("0.00"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
+});
+
+export const sponsorshipApplications = pgTable("sponsorship_applications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  companyName: text("company_name").notNull(),
+  contactEmail: text("contact_email").notNull(),
+  contactName: text("contact_name").notNull(),
+  website: text("website").notNull(),
+  industry: text("industry").notNull(),
+  companySize: text("company_size").notNull(),
+  monthlyBudget: decimal("monthly_budget").notNull(),
+  taskTypes: text("task_types").array().default([]),
+  targetAudience: text("target_audience").notNull(),
+  ethicalScore: integer("ethical_score").notNull(),
+  approvalTier: text("approval_tier").notNull(),
+  status: text("status").notNull().default("pending"), // pending, approved, rejected
+  applicationData: jsonb("application_data"),
+  submittedAt: timestamp("submitted_at").default(sql`CURRENT_TIMESTAMP`),
+  reviewedAt: timestamp("reviewed_at"),
+  reviewedBy: text("reviewed_by"),
+  reviewNotes: text("review_notes")
+});
+
+export const ethicalEvaluations = pgTable("ethical_evaluations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  applicationId: varchar("application_id").references(() => sponsorshipApplications.id),
+  hrcScore: integer("hrc_score"), // HRC Corporate Equality Index score
+  deiLeadership: boolean("dei_leadership").default(false),
+  lgbtqSupport: boolean("lgbtq_support").default(false),
+  environmentalPractices: text("environmental_practices"),
+  laborStandards: text("labor_standards"),
+  familySafetyCompliance: boolean("family_safety_compliance").default(false),
+  dataPrivacyCompliance: boolean("data_privacy_compliance").default(false),
+  overallScore: integer("overall_score").notNull(),
+  evaluatedAt: timestamp("evaluated_at").default(sql`CURRENT_TIMESTAMP`),
+  evaluatedBy: text("evaluated_by")
+});
+
+export const sponsoredTasks = pgTable("sponsored_tasks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  partnerId: varchar("partner_id").references(() => corporatePartners.id),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  payment: decimal("payment").notNull(), // What each participant earns
+  platformFee: decimal("platform_fee").notNull(), // Our fee per participant
+  totalBudget: decimal("total_budget").notNull(), // Total cost to company
+  duration: integer("duration_minutes").notNull(),
+  categoryId: varchar("category_id").references(() => taskCategories.id),
+  maxParticipants: integer("max_participants").notNull(),
+  currentParticipants: integer("current_participants").default(0),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  requirements: text("requirements").array().default([]),
+  status: text("status").notNull().default("active"), // active, paused, completed, cancelled
+  brandName: text("brand_name").notNull(),
+  brandLogo: text("brand_logo"),
+  brandColor: text("brand_color"),
+  targetAudience: text("target_audience"),
+  specialReward: text("special_reward"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
+});
+
+export const sponsoredTaskParticipations = pgTable("sponsored_task_participations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  taskId: varchar("task_id").references(() => sponsoredTasks.id),
+  userId: varchar("user_id").references(() => users.id),
+  joinedAt: timestamp("joined_at").default(sql`CURRENT_TIMESTAMP`),
+  status: text("status").notNull().default("active"), // active, completed, dropped
+  paymentStatus: text("payment_status").notNull().default("pending"), // pending, paid, failed
+  completedAt: timestamp("completed_at"),
+  earnings: decimal("earnings").notNull(),
+  rating: integer("rating"), // 1-5 rating of the task
+  feedback: text("feedback")
+});
+
+// Insert schemas for sponsorship tables
+export const insertCorporatePartnerSchema = createInsertSchema(corporatePartners);
+export type InsertCorporatePartner = z.infer<typeof insertCorporatePartnerSchema>;
+export type CorporatePartner = typeof corporatePartners.$inferSelect;
+
+export const insertSponsorshipApplicationSchema = createInsertSchema(sponsorshipApplications);
+export type InsertSponsorshipApplication = z.infer<typeof insertSponsorshipApplicationSchema>;
+export type SponsorshipApplication = typeof sponsorshipApplications.$inferSelect;
+
+export const insertEthicalEvaluationSchema = createInsertSchema(ethicalEvaluations);
+export type InsertEthicalEvaluation = z.infer<typeof insertEthicalEvaluationSchema>;
+export type EthicalEvaluation = typeof ethicalEvaluations.$inferSelect;
+
+export const insertSponsoredTaskSchema = createInsertSchema(sponsoredTasks);
+export type InsertSponsoredTask = z.infer<typeof insertSponsoredTaskSchema>;
+export type SponsoredTask = typeof sponsoredTasks.$inferSelect;
+
+export const insertSponsoredTaskParticipationSchema = createInsertSchema(sponsoredTaskParticipations);
+export type InsertSponsoredTaskParticipation = z.infer<typeof insertSponsoredTaskParticipationSchema>;
+export type SponsoredTaskParticipation = typeof sponsoredTaskParticipations.$inferSelect;
+
 // Type exports (consolidated to avoid duplicates)

@@ -38,6 +38,8 @@ import AdPreferences from "@/pages/ad-preferences";
 import AITaskGeneratorPage from "@/pages/ai-task-generator";
 import VerifyEmailPage from "@/pages/verify-email";
 import PaymentMethods from "@/pages/payment-methods";
+import Partners from "@/pages/partners";
+import RevenueDashboard from "@/pages/revenue-dashboard";
 import type { User } from "@shared/schema";
 import { initGA } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
@@ -115,6 +117,8 @@ function Router() {
           <Route path="/payment/error" component={PaymentError} />
           <Route path="/referrals" component={() => <AuthenticatedRoute component={ReferralsPage} />} />
           <Route path="/barter" component={() => <AuthenticatedRoute component={Barter} />} />
+          <Route path="/partners" component={Partners} />
+          <Route path="/revenue" component={() => <AuthenticatedRoute component={RevenueDashboard} />} />
           <Route path="/company-application" component={CompanyApplication} />
           <Route path="/ethical-partnerships" component={EthicalPartnerships} />
           <Route path="/advertising-portal" component={AdvertisingPortal} />

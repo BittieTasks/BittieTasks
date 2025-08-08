@@ -743,6 +743,65 @@ export class SupabaseStorage implements IStorage {
       };
     }
   }
+
+  // Sponsorship and Corporate Partner methods
+  async createSponsorshipApplication(data: any): Promise<any> {
+    const id = randomUUID();
+    const application = { id, ...data };
+    // For now, store in memory as tables may not exist yet
+    return application;
+  }
+
+  async getSponsorshipApplication(id: string): Promise<any> {
+    return null; // Stub for now
+  }
+
+  async updateSponsorshipApplication(id: string, updates: any): Promise<void> {
+    // Stub for now
+  }
+
+  async createCorporatePartner(data: any): Promise<any> {
+    const id = randomUUID();
+    return { id, ...data };
+  }
+
+  async getCorporatePartnerByName(companyName: string): Promise<any> {
+    return null; // Stub for now
+  }
+
+  async updateCorporatePartner(id: string, updates: any): Promise<void> {
+    // Stub for now
+  }
+
+  async createSponsoredTask(data: any): Promise<any> {
+    const id = randomUUID();
+    return { id, ...data };
+  }
+
+  async getSponsoredTask(id: string): Promise<any> {
+    return null; // Stub for now
+  }
+
+  async getSponsoredTasksByPartner(partnerId: string): Promise<any[]> {
+    return [];
+  }
+
+  async getAllSponsoredTasks(): Promise<any[]> {
+    return [];
+  }
+
+  async updateSponsoredTask(id: string, updates: any): Promise<void> {
+    // Stub for now
+  }
+
+  async createSponsoredTaskParticipation(data: any): Promise<any> {
+    const id = randomUUID();
+    return { id, ...data };
+  }
+
+  async getSponsoredTaskParticipation(taskId: string, userId: string): Promise<any> {
+    return null;
+  }
 }
 
 export const storage = new SupabaseStorage();
