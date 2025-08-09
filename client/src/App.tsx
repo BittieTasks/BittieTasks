@@ -45,11 +45,11 @@ import type { User } from "@shared/schema";
 import { initGA } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
 import { AnalyticsProvider } from "./components/AnalyticsProvider";
-import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { useSimpleAuth } from "./hooks/useSimpleAuth";
 import { useEffect } from "react";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
-  const { user, loading } = useAuth();
+  const { user, loading } = useSimpleAuth();
 
   if (loading) {
     return (
@@ -76,7 +76,7 @@ function AuthenticatedRoute({ component: Component }: { component: React.Compone
 }
 
 function SmartLanding() {
-  const { user, loading } = useAuth();
+  const { user, loading } = useSimpleAuth();
 
   console.log('SmartLanding render - Loading:', loading, 'User:', user ? user.email : 'none');
 
@@ -191,14 +191,12 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AnalyticsProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
-        </AnalyticsProvider>
-      </AuthProvider>
+      <AnalyticsProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </AnalyticsProvider>
     </QueryClientProvider>
   );
 }

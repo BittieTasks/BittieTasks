@@ -1,13 +1,13 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { DollarSign, Users, Calendar, Star, Shield, TrendingUp } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useSimpleAuth } from "@/hooks/useSimpleAuth";
 import { useEffect } from "react";
 
 export default function LandingPage() {
   console.log('🏠 Landing page render');
   
-  const { user, loading } = useAuth();
+  const { user, loading } = useSimpleAuth();
   const [, setLocation] = useLocation();
 
   // Redirect authenticated users to their dashboard

@@ -94,5 +94,70 @@ export interface IStorage {
   clearAllUserData(): Promise<{ success: boolean; message: string; deletedCounts: any }>;
 }
 
-// Note: Using Supabase authentication - storage managed by Supabase
-// Local storage implementations have been removed in favor of Supabase
+// Simple placeholder storage for compatibility
+class MemStorage implements IStorage {
+  // Placeholder methods - actual data handled by Supabase
+  async getUsers(): Promise<User[]> { return []; }
+  async getUser(id: string): Promise<User | undefined> { return undefined; }
+  async getUserByEmail(email: string): Promise<User | undefined> { return undefined; }
+  async getUserByVerificationToken(token: string): Promise<User | undefined> { return undefined; }
+  async createUser(user: InsertUser): Promise<User> { throw new Error('Use Supabase'); }
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> { return undefined; }
+  
+  async getTaskCategories(): Promise<TaskCategory[]> { return []; }
+  async createTaskCategory(category: InsertTaskCategory): Promise<TaskCategory> { throw new Error('Use Supabase'); }
+  
+  async getTasks(): Promise<Task[]> { return []; }
+  async getTask(id: string): Promise<Task | undefined> { return undefined; }
+  async getTasksByCategory(categoryId: string): Promise<Task[]> { return []; }
+  async createTask(task: InsertTask): Promise<Task> { throw new Error('Use Supabase'); }
+  
+  async getTaskCompletions(userId: string): Promise<TaskCompletion[]> { return []; }
+  async createTaskCompletion(completion: InsertTaskCompletion): Promise<TaskCompletion> { throw new Error('Use Supabase'); }
+  async updateTaskCompletion(id: string, updates: Partial<TaskCompletion>): Promise<TaskCompletion | undefined> { return undefined; }
+  
+  async getMessages(userId: string): Promise<Message[]> { return []; }
+  async createMessage(message: InsertMessage): Promise<Message> { throw new Error('Use Supabase'); }
+  async markMessageAsRead(id: string): Promise<void> {}
+  
+  async getUserAchievements(userId: string): Promise<UserAchievement[]> { return []; }
+  async createUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement> { throw new Error('Use Supabase'); }
+  async getAchievementDefinitions(): Promise<AchievementDefinition[]> { return []; }
+  async createAchievementDefinition(definition: InsertAchievementDefinition): Promise<AchievementDefinition> { throw new Error('Use Supabase'); }
+  async updateUserAchievementProgress(userId: string, achievementType: string, progress: number): Promise<UserAchievement | undefined> { return undefined; }
+
+  async getDailyChallenges(): Promise<DailyChallenge[]> { return []; }
+  async createDailyChallenge(challenge: InsertDailyChallenge): Promise<DailyChallenge> { throw new Error('Use Supabase'); }
+  async getUserChallenges(userId: string, date?: Date): Promise<UserChallenge[]> { return []; }
+  
+  async getUserActivity(userId: string, hours: number): Promise<any[]> { return []; }
+  async logSuspiciousActivity(userId: string, activity: any): Promise<void> {}
+  async assignDailyChallenge(userId: string, challengeId: string): Promise<UserChallenge> { throw new Error('Use Supabase'); }
+  async completeChallenge(userChallengeId: string, reflection?: string): Promise<UserChallenge | undefined> { return undefined; }
+  async getTodaysChallenges(userId: string): Promise<UserChallenge[]> { return []; }
+  
+  async updateUserVerification(userId: string, verificationData: Partial<User>): Promise<User | undefined> { return undefined; }
+  async getUserVerificationStatus(userId: string): Promise<any> { return null; }
+  async logVerificationActivity(userId: string, activityType: string, metadata?: any): Promise<void> {}
+  async incrementRiskScore(userId: string, amount: number): Promise<void> {}
+  async lockUserAccount(userId: string, reason: string): Promise<void> {}
+
+  async getAllUsers(): Promise<User[]> { return []; }
+  async getAllTasks(): Promise<Task[]> { return []; }
+  async getAllTaskCompletions(): Promise<TaskCompletion[]> { return []; }
+  async getTaskCompletion(id: string): Promise<TaskCompletion | undefined> { return undefined; }
+  initializeDailyChallenges(): void {}
+
+  async getBarterTasks(): Promise<Task[]> { return []; }
+  async createBarterTask(task: InsertTask): Promise<Task> { throw new Error('Use Supabase'); }
+  async createBarterTransaction(transaction: any): Promise<any> { throw new Error('Use Supabase'); }
+  async getUserBarterTransactions(userId: string): Promise<any[]> { return []; }
+  async updateBarterTransaction(id: string, updates: any): Promise<any> { return null; }
+  async ensureBarterCategory(): Promise<void> {}
+
+  async clearAllUserData(): Promise<{ success: boolean; message: string; deletedCounts: any }> { 
+    return { success: false, message: 'Use Supabase', deletedCounts: {} }; 
+  }
+}
+
+export const storage = new MemStorage();

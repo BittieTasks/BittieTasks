@@ -1,8 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { registerSubscriptionRoutes } from "./routes/subscription";
-import { supabaseAdmin, verifySupabaseJWT } from "./lib/supabase.js";
-// Note: Using Supabase authentication - local storage removed
+import { supabaseAdmin, verifySupabaseJWT } from "./lib/supabase";
+import { storage } from "./storage";
 import affiliateProductsRouter from "./routes/affiliate-products";
 import { ethicalPartnershipMatcher, type PartnershipCandidate } from "./services/ethicalPartnershipMatcher";
 import { advertisingMatcher, type AdvertisingCandidate } from "./services/advertisingMatcher";
@@ -158,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Legacy admin login removed - using Supabase auth with RLS admin policies instead
 
   // Authentication middleware
-  const requireAuth = async (req, res, next) => {
+  const requireAuth = async (req: any, res: any, next: any) => {
     try {
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -220,20 +220,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let { data: profile, error } = await supabaseAdmin
         .from('profiles')
         .select('*')
-        .eq('id', req.user.id)
+        .eq('id', (req as any).user.id)
         .single();
 
       // If profile doesn't exist, create it for verified users
-      if (error && error.code === 'PGRST116' && req.user.email_confirmed_at) {
-        console.log('Creating profile for verified user:', req.user.email);
+      if (error && error.code === 'PGRST116' && (req as any).user.email_confirmed_at) {
+        console.log('Creating profile for verified user:', (req as any).user.email);
         
         // Create profile with only the columns that exist in Supabase
         const newProfileData = {
-          id: req.user.id,
-          email: req.user.email,
-          first_name: req.user.user_metadata?.first_name || null,
-          last_name: req.user.user_metadata?.last_name || null,
-          username: req.user.email?.split('@')[0] || 'user',
+          id: (req as any).user.id,
+          email: (req as any).user.email,
+          first_name: (req as any).user.user_metadata?.first_name || null,
+          last_name: (req as any).user.user_metadata?.last_name || null,
+          username: (req as any).user.email?.split('@')[0] || 'user',
         };
         
         const { data: newProfile, error: createError } = await supabaseAdmin
@@ -247,7 +247,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           profile = null;
         } else {
           profile = newProfile;
-          console.log('Profile created successfully for:', req.user.email);
+          console.log('Profile created successfully for:', (req as any).user.email);
         }
       } else if (error && error.code !== 'PGRST116') {
         console.error("Profile fetch error:", error);
@@ -256,10 +256,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json({
-        id: req.user.id,
-        email: req.user.email,
-        name: req.user.user_metadata?.full_name || `${req.user.user_metadata?.first_name || ''} ${req.user.user_metadata?.last_name || ''}`.trim(),
-        isEmailVerified: req.user.email_confirmed_at ? true : false,
+        id: (req as any).user.id,
+        email: (req as any).user.email,
+        name: (req as any).user.user_metadata?.full_name || `${(req as any).user.user_metadata?.first_name || ''} ${(req as any).user.user_metadata?.last_name || ''}`.trim(),
+        isEmailVerified: (req as any).user.email_confirmed_at ? true : false,
         profile: profile || null
       });
     } catch (error) {
