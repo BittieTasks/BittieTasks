@@ -42,9 +42,9 @@ import PaymentMethods from "@/pages/payment-methods";
 import Partners from "@/pages/partners";
 import RevenueDashboard from "@/pages/revenue-dashboard";
 import type { User } from "@shared/schema";
-import { initGA } from "./lib/analytics";
-import { useAnalytics } from "./hooks/use-analytics";
-import { AnalyticsProvider } from "./components/AnalyticsProvider";
+import { initGA } from "./lib/simpleAnalytics";
+import { useSimpleAnalytics as useAnalytics } from "./hooks/use-simple-analytics";
+import { SimpleAnalyticsProvider } from "./components/SimpleAnalyticsProvider";
 import { useSimpleAuth } from "./hooks/useSimpleAuth";
 import { useEffect } from "react";
 
@@ -191,12 +191,12 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AnalyticsProvider>
+      <SimpleAnalyticsProvider>
         <TooltipProvider>
           <Toaster />
           <Router />
         </TooltipProvider>
-      </AnalyticsProvider>
+      </SimpleAnalyticsProvider>
     </QueryClientProvider>
   );
 }
