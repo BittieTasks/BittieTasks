@@ -147,7 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             first_name: firstName,
             last_name: lastName,
           },
-          emailRedirectTo: `${window.location.origin}/verify-email`
+          emailRedirectTo: `${window.location.origin}/verify-email?type=signup`
         }
       })
 

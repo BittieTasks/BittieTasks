@@ -15,71 +15,77 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     const handleEmailVerification = async () => {
-      // Check if this is a Supabase email verification callback
-      const urlParams = new URLSearchParams(window.location.search);
-      const access_token = urlParams.get('access_token');
-      const refresh_token = urlParams.get('refresh_token');
-      const type = urlParams.get('type');
+      try {
+        console.log('Current URL:', window.location.href);
+        console.log('URL search:', window.location.search);
+        console.log('URL hash:', window.location.hash);
+        
+        // Check if this is a Supabase email verification callback
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        
+        const access_token = urlParams.get('access_token') || hashParams.get('access_token');
+        const refresh_token = urlParams.get('refresh_token') || hashParams.get('refresh_token');
+        const type = urlParams.get('type') || hashParams.get('type');
+        const error_description = urlParams.get('error_description') || hashParams.get('error_description');
+        
+        console.log('Parsed tokens:', { access_token: !!access_token, refresh_token: !!refresh_token, type, error_description });
 
-      // Also check URL hash for tokens (Supabase sometimes uses hash)
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const hashAccessToken = hashParams.get('access_token');
-      const hashRefreshToken = hashParams.get('refresh_token');
-      const hashType = hashParams.get('type');
+        // Handle verification error
+        if (error_description) {
+          setStatus('error');
+          setMessage(`Verification failed: ${error_description}`);
+          return;
+        }
 
-      const finalAccessToken = access_token || hashAccessToken;
-      const finalRefreshToken = refresh_token || hashRefreshToken;
-      const finalType = type || hashType;
-
-      if (finalType === 'signup' && finalAccessToken) {
-        try {
-          // Set the session with the tokens from the verification email
+        // Handle verification success with tokens
+        if (access_token && type === 'signup') {
+          console.log('Setting session with tokens...');
           const { data, error } = await supabase.auth.setSession({
-            access_token: finalAccessToken,
-            refresh_token: finalRefreshToken || '',
+            access_token: access_token,
+            refresh_token: refresh_token || '',
           });
 
           if (error) {
-            console.error('Verification error:', error);
+            console.error('Session error:', error);
             setStatus('error');
-            setMessage(error.message || 'Email verification failed');
+            setMessage(`Session error: ${error.message}`);
             return;
           }
 
-          if (data.user) {
+          if (data.session?.user) {
+            console.log('User verified successfully:', data.session.user.email);
             setStatus('success');
-            setMessage('Your email has been successfully verified!');
+            setMessage('Your email has been successfully verified! Redirecting...');
             
             // Redirect to home after a short delay
             setTimeout(() => {
               setLocation('/');
             }, 2000);
+          } else {
+            setStatus('error');
+            setMessage('Session created but no user found');
           }
-        } catch (error) {
-          console.error('Verification error:', error);
-          setStatus('error');
-          setMessage('An error occurred during email verification');
-        }
-      } else if (user) {
-        // User is already authenticated, check if email is verified
-        if (user.email_confirmed_at) {
+        } else if (user?.email_confirmed_at) {
+          // User is already verified
           setStatus('success');
           setMessage('Your email is already verified!');
           setTimeout(() => {
             setLocation('/');
           }, 2000);
-        } else {
+        } else if (!access_token && !user) {
+          // No tokens and no user - might be a direct visit
           setStatus('error');
-          setMessage('Email verification is still pending. Please check your email.');
+          setMessage('No verification information found. Please check your email for the verification link.');
         }
-      } else {
-        // No verification tokens and no user
+      } catch (error) {
+        console.error('Verification error:', error);
         setStatus('error');
-        setMessage('No verification information found. Please check your email or try signing up again.');
+        setMessage(`An error occurred: ${error.message}`);
       }
     };
 
-    // Wait a moment for auth to load, then handle verification
+    // Wait for auth to load, then handle verification
     if (!loading) {
       handleEmailVerification();
     }
