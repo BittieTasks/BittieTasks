@@ -46,6 +46,8 @@ import EarningsDashboard from "@/pages/EarningsDashboard";
 import PaymentFlow from "@/pages/PaymentFlow";
 import CorporateSponsorship from "@/pages/CorporateSponsorship";
 import SubscriptionPage from "@/pages/SubscriptionPage";
+import RegistrationFlow from "@/pages/RegistrationFlow";
+import WelcomePage from "@/pages/WelcomePage";
 import type { User } from "@shared/schema";
 import { initGA } from "./lib/simpleAnalytics";
 import { useSimpleAnalytics as useAnalytics } from "./hooks/use-simple-analytics";
@@ -110,9 +112,9 @@ function SmartLanding() {
     return <Home />;
   }
 
-  // If not authenticated, show landing page
-  console.log('SmartLanding: No user, showing Landing');
-  return <Landing />;
+  // If not authenticated, show welcome page
+  console.log('SmartLanding: No user, showing WelcomePage');
+  return <WelcomePage />;
 }
 
 function Router() {
@@ -138,6 +140,8 @@ function Router() {
           <Route path="/verify-email" component={VerifyEmailPage} />
           <Route path="/resend-verification" component={ResendVerificationPage} />
           <Route path="/admin-login" component={AdminLogin} />
+          <Route path="/registration" component={RegistrationFlow} />
+          <Route path="/welcome" component={WelcomePage} />
           
           {/* Smart home route - shows Landing for unauth, Home for auth */}
           <Route path="/" component={SmartLanding} />
@@ -177,6 +181,7 @@ function Router() {
           <Route path="/payment/:taskId" component={() => <AuthenticatedRoute component={PaymentFlow} />} />
           <Route path="/sponsorship" component={() => <AuthenticatedRoute component={CorporateSponsorship} />} />
           <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
+          <Route path="/registration" component={RegistrationFlow} />
           
           {/* Fallback route */}
           <Route component={NotFound} />

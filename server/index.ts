@@ -100,13 +100,12 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // TEMPORARILY DISABLE VITE - it's causing display issues
-  // We'll re-enable it once authentication is working
-  // if (app.get("env") === "development") {
-  //   await setupVite(app, server);
-  // } else {
-  //   serveStatic(app);
-  // }
+  // Enable Vite for development and static serving for production
+  if (app.get("env") === "development") {
+    await setupVite(app, server);
+  } else {
+    serveStatic(app);
+  }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
   // Other ports are firewalled. Default to 5000 if not specified.

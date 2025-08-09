@@ -521,6 +521,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User Profile Setup
+  app.post('/api/user/profile', async (req, res) => {
+    try {
+      const { firstName, lastName, location, bio } = req.body;
+      
+      // Mock user profile creation (replace with actual database storage)
+      const userProfile = {
+        id: 'user-' + Date.now(),
+        firstName,
+        lastName,
+        location,
+        bio,
+        verified: true,
+        subscriptionTier: 'free',
+        createdAt: new Date().toISOString()
+      };
+
+      res.json({
+        success: true,
+        user: userProfile,
+        message: 'Profile created successfully'
+      });
+
+    } catch (error: any) {
+      console.error('Profile creation error:', error);
+      res.status(500).json({ 
+        error: 'Profile creation failed',
+        message: error.message 
+      });
+    }
+  });
+
+  // Plan Selection During Registration
+  app.post('/api/subscription/select', async (req, res) => {
+    try {
+      const { planId, userEmail } = req.body;
+      
+      const validPlans = ['free', 'pro', 'premium'];
+      if (!validPlans.includes(planId)) {
+        return res.status(400).json({ error: 'Invalid plan selection' });
+      }
+
+      // For free plan, just confirm selection
+      if (planId === 'free') {
+        return res.json({
+          success: true,
+          plan: planId,
+          message: 'Free plan selected successfully'
+        });
+      }
+
+      // For paid plans, this would integrate with Stripe subscription creation
+      // For now, return success to complete registration flow
+      res.json({
+        success: true,
+        plan: planId,
+        message: `${planId} plan selected successfully`,
+        requiresPayment: true
+      });
+
+    } catch (error: any) {
+      console.error('Plan selection error:', error);
+      res.status(500).json({ 
+        error: 'Plan selection failed',
+        message: error.message 
+      });
+    }
+  });
+
+  // Get registration status
+  app.get('/api/registration/status/:email', async (req, res) => {
+    try {
+      const { email } = req.params;
+      
+      // Mock registration status check
+      const registrationData = {
+        email,
+        emailVerified: true,
+        profileComplete: false,
+        planSelected: false,
+        registrationComplete: false
+      };
+
+      res.json(registrationData);
+
+    } catch (error: any) {
+      console.error('Registration status error:', error);
+      res.status(500).json({ 
+        error: 'Failed to check registration status',
+        message: error.message 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
