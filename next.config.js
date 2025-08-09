@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: true,
+    serverActions: {
+      allowedOrigins: ["*"],
+    },
   },
   env: {
     // Expose all VITE_ prefixed variables as NEXT_PUBLIC_
@@ -20,4 +22,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig
