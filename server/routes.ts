@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { registerSubscriptionRoutes } from "./routes/subscription";
-import { supabaseAdmin, verifySupabaseJWT } from "./lib/supabase";
+// import { supabaseAdmin, verifySupabaseJWT } from "./lib/supabase";
 import { storage } from "./storage";
 import affiliateProductsRouter from "./routes/affiliate-products";
 import { ethicalPartnershipMatcher, type PartnershipCandidate } from "./services/ethicalPartnershipMatcher";

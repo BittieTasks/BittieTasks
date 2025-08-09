@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import compression from "compression";
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "./routes-minimal";
 import { setupVite, serveStatic, log } from "./vite";
 // import { autoHealer } from "./services/autoHealer"; // DISABLED - causing spam requests
 
