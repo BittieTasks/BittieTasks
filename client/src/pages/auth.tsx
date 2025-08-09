@@ -57,8 +57,18 @@ export default function AuthPage() {
       return;
     }
 
-    // Password validation
-    if (signupData.password.length < 6) {
+    // Enhanced password validation for Supabase
+    if (signupData.password.length < 8) {
+      return;
+    }
+    
+    // Check for required character types
+    const hasLower = /[a-z]/.test(signupData.password);
+    const hasUpper = /[A-Z]/.test(signupData.password);
+    const hasNumber = /[0-9]/.test(signupData.password);
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?`~]/.test(signupData.password);
+    
+    if (!hasLower || !hasUpper || !hasNumber || !hasSpecial) {
       return;
     }
 
@@ -191,11 +201,14 @@ export default function AuthPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signupPassword">Password</Label>
+                  <div className="text-xs text-gray-600 mb-2">
+                    Must include: uppercase, lowercase, number, special character
+                  </div>
                   <div className="relative">
                     <Input
                       id="signupPassword"
                       type={showSignupPassword ? "text" : "password"}
-                      placeholder="At least 6 characters"
+                      placeholder="Create a strong password"
                       value={signupData.password}
                       onChange={(e) => setSignupData(prev => ({ ...prev, password: e.target.value }))}
                       required
