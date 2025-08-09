@@ -41,6 +41,8 @@ import ResendVerificationPage from "@/pages/resend-verification-page";
 import PaymentMethods from "@/pages/payment-methods";
 import Partners from "@/pages/partners";
 import RevenueDashboard from "@/pages/revenue-dashboard";
+import TaskMarketplace from "@/pages/TaskMarketplace";
+import EarningsDashboard from "@/pages/EarningsDashboard";
 import type { User } from "@shared/schema";
 import { initGA } from "./lib/simpleAnalytics";
 import { useSimpleAnalytics as useAnalytics } from "./hooks/use-simple-analytics";
@@ -167,6 +169,8 @@ function Router() {
           <Route path="/ad-preferences" component={() => <AuthenticatedRoute component={AdPreferences} />} />
           <Route path="/ai-tasks" component={() => <AuthenticatedRoute component={AITaskGeneratorPage} />} />
           <Route path="/payment-methods" component={() => <AuthenticatedRoute component={PaymentMethods} />} />
+          <Route path="/marketplace" component={() => <AuthenticatedRoute component={TaskMarketplace} />} />
+          <Route path="/dashboard" component={() => <AuthenticatedRoute component={EarningsDashboard} />} />
           
           {/* Fallback route */}
           <Route component={NotFound} />

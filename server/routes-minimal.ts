@@ -84,13 +84,166 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Temporary auth user endpoint
+  // Mock API endpoints for development
   app.get('/api/auth/user', (req, res) => {
     res.json({ 
-      id: 'test-user', 
-      email: 'test@example.com',
-      message: 'Temporary user for debugging'
+      id: 'dev-user-001', 
+      email: 'admin@bittietasks.com',
+      firstName: 'Admin',
+      lastName: 'User',
+      verified: true,
+      totalEarnings: 1247.50,
+      tasksCompleted: 23,
+      activeReferrals: 5
     });
+  });
+
+  // Tasks API
+  app.get('/api/tasks', (req, res) => {
+    const mockTasks = [
+      {
+        id: '1',
+        title: 'Soccer Practice Carpool',
+        description: 'Share the ride to kids soccer practice. Split gas costs and earn together!',
+        category: 'Sports Events',
+        earningPotential: 25,
+        maxParticipants: 4,
+        currentParticipants: 2,
+        duration: '2 hours',
+        location: 'Community Sports Center',
+        hostName: 'Sarah M.',
+        status: 'open',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '2',
+        title: 'Grocery Shopping Group',
+        description: 'Bulk shopping trip to warehouse store. Save money and earn cash!',
+        category: 'Grocery Shopping',
+        earningPotential: 35,
+        maxParticipants: 6,
+        currentParticipants: 3,
+        duration: '3 hours',
+        location: 'Costco Wholesale',
+        hostName: 'Mike D.',
+        status: 'open',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '3',
+        title: 'Park Playdate Coordination',
+        description: 'Organize group playdate at the park. Parents earn while kids play!',
+        category: 'Playdates',
+        earningPotential: 20,
+        maxParticipants: 8,
+        currentParticipants: 5,
+        duration: '2 hours',
+        location: 'Riverside Park',
+        hostName: 'You',
+        status: 'active',
+        createdAt: new Date().toISOString()
+      }
+    ];
+    res.json(mockTasks);
+  });
+
+  app.post('/api/tasks', (req, res) => {
+    const newTask = {
+      id: Date.now().toString(),
+      ...req.body,
+      hostName: 'You',
+      currentParticipants: 0,
+      status: 'open',
+      createdAt: new Date().toISOString()
+    };
+    res.json(newTask);
+  });
+
+  app.post('/api/tasks/:id/join', (req, res) => {
+    res.json({ success: true, message: 'Successfully joined task!' });
+  });
+
+  // Earnings API
+  app.get('/api/earnings', (req, res) => {
+    res.json({
+      totalEarnings: 1247.50,
+      thisMonth: 387.25,
+      thisWeek: 142.75,
+      today: 35.00,
+      tasksCompleted: 23,
+      activeReferrals: 5,
+      monthlyGoal: 500.00,
+      weeklyStreak: 4
+    });
+  });
+
+  app.get('/api/earnings/transactions', (req, res) => {
+    const mockTransactions = [
+      {
+        id: '1',
+        type: 'task_completion',
+        amount: 35.00,
+        description: 'Completed: Soccer Practice Carpool',
+        taskTitle: 'Soccer Practice Carpool',
+        date: new Date().toISOString(),
+        status: 'completed'
+      },
+      {
+        id: '2',
+        type: 'corporate_sponsorship',
+        amount: 50.00,
+        description: 'Sponsored Task Bonus',
+        taskTitle: 'Community Garden Workshop',
+        date: new Date(Date.now() - 86400000).toISOString(),
+        status: 'completed'
+      },
+      {
+        id: '3',
+        type: 'referral_bonus',
+        amount: 25.00,
+        description: 'Referral Bonus - New Member',
+        date: new Date(Date.now() - 172800000).toISOString(),
+        status: 'processing'
+      }
+    ];
+    res.json(mockTransactions);
+  });
+
+  // Achievements API
+  app.get('/api/achievements', (req, res) => {
+    const mockAchievements = [
+      {
+        id: '1',
+        title: 'First Task',
+        description: 'Complete your first shared task',
+        earned: true,
+        earnedDate: new Date(Date.now() - 604800000).toISOString()
+      },
+      {
+        id: '2',
+        title: 'Community Builder',
+        description: 'Host 5 successful tasks',
+        earned: true,
+        earnedDate: new Date(Date.now() - 259200000).toISOString()
+      },
+      {
+        id: '3',
+        title: 'Earning Streak',
+        description: 'Earn money for 7 consecutive days',
+        earned: false,
+        progress: 4,
+        maxProgress: 7
+      },
+      {
+        id: '4',
+        title: 'Top Earner',
+        description: 'Earn $1000 in a single month',
+        earned: false,
+        progress: 387,
+        maxProgress: 1000
+      }
+    ];
+    res.json(mockAchievements);
   });
 
   const httpServer = createServer(app);
