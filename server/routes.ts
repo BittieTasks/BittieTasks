@@ -180,10 +180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   };
 
-  // Test route for static welcome page
-  app.get("/test-welcome", (req, res) => {
-    res.sendFile(path.join(__dirname, "../client/static-welcome.html"));
-  });
+  // Test route removed - Next.js handles all routing
 
   // Route removed - Next.js now handles /welcome
 
