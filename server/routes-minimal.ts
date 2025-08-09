@@ -17,6 +17,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Static test page to bypass Vite issues
+  app.get('/test', (req, res) => {
+    res.sendFile('/home/runner/workspace/static-test.html');
+  });
+
   // Temporary auth user endpoint
   app.get('/api/auth/user', (req, res) => {
     res.json({ 
