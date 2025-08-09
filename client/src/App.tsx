@@ -78,8 +78,11 @@ function AuthenticatedRoute({ component: Component }: { component: React.Compone
 function SmartLanding() {
   const { user, loading } = useAuth();
 
+  console.log('SmartLanding render - Loading:', loading, 'User:', user ? user.email : 'none');
+
   // Show loading while checking auth
   if (loading) {
+    console.log('SmartLanding: Showing loading state');
     return (
       <div 
         className="max-w-md mx-auto bg-white shadow-xl min-h-screen flex items-center justify-center"
@@ -98,10 +101,12 @@ function SmartLanding() {
 
   // If authenticated, show home page
   if (user) {
+    console.log('SmartLanding: User authenticated, showing Home');
     return <Home />;
   }
 
   // If not authenticated, show landing page
+  console.log('SmartLanding: No user, showing Landing');
   return <Landing />;
 }
 

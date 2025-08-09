@@ -47,13 +47,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+      console.log('🔍 Getting initial session...')
+      const { data: { session }, error } = await supabase.auth.getSession()
+      console.log('Session data:', session ? 'Found session' : 'No session', error ? 'Error: ' + error.message : '')
+      
       setSession(session)
       setUser(session?.user ?? null)
       
       if (session?.user) {
+        console.log('User found:', session.user.email, 'Verified:', !!session.user.email_confirmed_at)
         const profile = await loadProfile(session.user.id)
         setProfile(profile)
+      } else {
+        console.log('No user session found')
       }
       
       setLoading(false)

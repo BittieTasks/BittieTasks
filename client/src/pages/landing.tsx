@@ -103,9 +103,9 @@ export default function LandingPage() {
 
         {/* Main Call to Action */}
         <div className="space-y-4 mb-8">
-          <Link href="/">
+          <Link href="/auth">
             <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white font-medium py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
-              Explore Tasks & Start Earning
+              Get Started - Sign In / Sign Up
             </Button>
           </Link>
           
@@ -127,6 +127,16 @@ export default function LandingPage() {
           <Link href="/advertising-portal" className="flex-1">
             <Button className="w-full text-xs py-2 px-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
               Advertise with Us
+            </Button>
+          </Link>
+        </div>
+
+        {/* Additional Login Options */}
+        <div className="text-center mb-6">
+          <p className="text-sm text-gray-600 mb-3">Already have an account?</p>
+          <Link href="/auth">
+            <Button variant="outline" className="w-full py-3 px-6 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all duration-200">
+              Sign In to Your Dashboard
             </Button>
           </Link>
         </div>
