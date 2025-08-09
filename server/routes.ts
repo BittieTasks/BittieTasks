@@ -217,13 +217,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/user/current", requireAuth, async (req, res) => {
     try {
       // Get user profile from Supabase
-      const { data: profile, error } = await supabaseAdmin
+      let { data: profile, error } = await supabaseAdmin
         .from('profiles')
         .select('*')
         .eq('id', req.user.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+      // If profile doesn't exist, create it for verified users
+      if (error && error.code === 'PGRST116' && req.user.email_confirmed_at) {
+        console.log('Creating profile for verified user:', req.user.email);
+        
+        // Create profile with only the columns that exist in Supabase
+        const newProfileData = {
+          id: req.user.id,
+          email: req.user.email,
+          first_name: req.user.user_metadata?.first_name || null,
+          last_name: req.user.user_metadata?.last_name || null,
+          username: req.user.email?.split('@')[0] || 'user',
+        };
+        
+        const { data: newProfile, error: createError } = await supabaseAdmin
+          .from('profiles')
+          .insert(newProfileData)
+          .select()
+          .single();
+          
+        if (createError) {
+          console.error("Profile creation error:", createError);
+          profile = null;
+        } else {
+          profile = newProfile;
+          console.log('Profile created successfully for:', req.user.email);
+        }
+      } else if (error && error.code !== 'PGRST116') {
         console.error("Profile fetch error:", error);
         return res.status(500).json({ error: "Failed to fetch profile" });
       }

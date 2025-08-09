@@ -81,7 +81,7 @@ export default function VerifyEmailPage() {
       } catch (error) {
         console.error('Verification error:', error);
         setStatus('error');
-        setMessage(`An error occurred: ${error.message}`);
+        setMessage(`An error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     };
 
