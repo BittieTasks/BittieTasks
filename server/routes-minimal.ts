@@ -27,6 +27,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile('/home/runner/workspace/auth-page.html');
   });
 
+  // Email debugging page
+  app.get('/email-debug', (req, res) => {
+    res.sendFile('/home/runner/workspace/auth-debug.html');
+  });
+
+  // Test email endpoint
+  app.post('/api/send-test-email', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      // Test with SendGrid directly
+      const sgMail = require('@sendgrid/mail');
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      
+      const msg = {
+        to: email,
+        from: 'noreply@bittietasks.com',
+        subject: 'BittieTasks - Email Test',
+        text: 'This is a test email from BittieTasks to verify email delivery.',
+        html: '<p>This is a test email from <strong>BittieTasks</strong> to verify email delivery.</p>'
+      };
+      
+      await sgMail.send(msg);
+      res.json({ success: true, message: 'Test email sent successfully' });
+      
+    } catch (error) {
+      res.json({ success: false, error: error.message });
+    }
+  });
+
   // Temporary auth user endpoint
   app.get('/api/auth/user', (req, res) => {
     res.json({ 

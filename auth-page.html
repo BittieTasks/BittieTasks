@@ -92,6 +92,12 @@
                 Need an account? Sign Up
             </button>
             
+            <div style="margin-top: 15px; font-size: 12px;">
+                <a href="/email-debug" style="color: #ccc; text-decoration: underline;">
+                    Not receiving emails? Debug email system
+                </a>
+            </div>
+            
             <div id="message" class="message" style="display:none;"></div>
         </div>
         
@@ -175,9 +181,20 @@
             
             try {
                 if (isSignUp) {
-                    const { error } = await supabase.auth.signUp({ email, password });
+                    const { data, error } = await supabase.auth.signUp({ 
+                        email, 
+                        password,
+                        options: {
+                            emailRedirectTo: window.location.origin + '/auth'
+                        }
+                    });
                     if (error) throw error;
-                    showMessage('Check your email for verification link!', 'success');
+                    
+                    if (data.user && !data.session) {
+                        showMessage('Account created! Check your email for verification link. If no email arrives within 5 minutes, try the Email Debug page.', 'success');
+                    } else if (data.session) {
+                        showMessage('Account created and signed in successfully!', 'success');
+                    }
                 } else {
                     const { error } = await supabase.auth.signInWithPassword({ email, password });
                     if (error) throw error;
