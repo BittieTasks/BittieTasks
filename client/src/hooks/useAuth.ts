@@ -5,8 +5,9 @@ export function useAuth() {
   const { data: user, isLoading, error, refetch } = useQuery<User>({
     queryKey: ["/api/auth/user"],
     retry: false,
-    refetchOnWindowFocus: false,
-    staleTime: 30000, // 30 seconds
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 0, // Always check auth status
   });
 
   return {

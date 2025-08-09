@@ -41,13 +41,13 @@ export default function AuthPage() {
         description: "Login successful! Loading your dashboard...",
       });
       
-      // Clear all cached queries to force fresh data fetch
+      // Invalidate all queries to force fresh data fetch
       queryClient.clear();
       
-      // Wait a moment for session to be established, then redirect
+      // Wait a moment for the query cache to clear, then navigate
       setTimeout(() => {
-        window.location.href = "/"; // Force full page reload to ensure session is recognized
-      }, 500);
+        setLocation("/");
+      }, 100);
     },
     onError: (error: any) => {
       console.error("Login error:", error);
