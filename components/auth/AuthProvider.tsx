@@ -51,25 +51,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Prevent hydration mismatch by not rendering auth-dependent content until mounted
-  if (!mounted) {
-    return (
-      <AuthContext.Provider
-        value={{
-          user: null,
-          session: null,
-          loading: true,
-          isAuthenticated: false,
-          isVerified: false,
-          signIn: async () => {},
-          signUp: async () => {},
-          signOut: async () => {},
-          resetPassword: async () => {},
-        }}
-      >
-        {children}
-      </AuthContext.Provider>
-    )
+  // Prevent hydration mismatch by using consistent initial state
+  const contextValue = {
+    user: mounted ? user : null,
+    session: mounted ? session : null,
+    loading: mounted ? loading : true,
+    isAuthenticated: mounted ? !!user : false,
+    isVerified: mounted ? !!(user?.email_confirmed_at) : false,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
   }
 
   const createUserProfile = async (authUser: User) => {

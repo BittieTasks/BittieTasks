@@ -20,8 +20,13 @@ export default function HomePage() {
     }
   }, [isAuthenticated, loading, router, mounted])
 
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!mounted || loading) {
+  // Always show WelcomePage to prevent hydration mismatch
+  // Authentication redirect happens after mount
+  if (!mounted) {
+    return null // Return nothing during SSR
+  }
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 text-center">
