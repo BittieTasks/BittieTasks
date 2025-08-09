@@ -70,8 +70,8 @@ export default function WelcomePage() {
               display: 'inline-block',
               transition: 'background-color 0.2s'
             }}
-            onMouseOver={(e) => e.target.style.background = '#2563eb'}
-            onMouseOut={(e) => e.target.style.background = '#3b82f6'}
+            onMouseOver={(e) => (e.target as HTMLElement).style.background = '#2563eb'}
+            onMouseOut={(e) => (e.target as HTMLElement).style.background = '#3b82f6'}
           >
             Get Started Free →
           </a>
@@ -89,8 +89,8 @@ export default function WelcomePage() {
               display: 'inline-block',
               transition: 'background-color 0.2s'
             }}
-            onMouseOver={(e) => e.target.style.background = '#f3f4f6'}
-            onMouseOut={(e) => e.target.style.background = 'transparent'}
+            onMouseOver={(e) => (e.target as HTMLElement).style.background = '#f3f4f6'}
+            onMouseOut={(e) => (e.target as HTMLElement).style.background = 'transparent'}
           >
             Sign In
           </a>
