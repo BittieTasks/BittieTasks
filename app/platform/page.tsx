@@ -195,7 +195,10 @@ export default function PlatformPage() {
                   <span className="text-gray-400">Platform Fee</span>
                   <span className="text-white">10%</span>
                 </div>
-                <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 mt-4">
+                <Button 
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 mt-4"
+                  onClick={() => router.push('/subscriptions')}
+                >
                   Upgrade Plan
                 </Button>
               </CardContent>
@@ -219,6 +222,7 @@ export default function PlatformPage() {
                   : 'bg-gray-700 text-gray-500 cursor-not-allowed'
                 }`}
                 disabled={!isVerified}
+                onClick={() => router.push('/create-task')}
               >
                 <div className="text-center">
                   <div className="text-2xl mb-1">➕</div>
@@ -232,6 +236,7 @@ export default function PlatformPage() {
                   : 'bg-gray-700 text-gray-500 cursor-not-allowed'
                 }`}
                 disabled={!isVerified}
+                onClick={() => router.push('/marketplace')}
               >
                 <div className="text-center">
                   <div className="text-2xl mb-1">🔍</div>
@@ -245,6 +250,7 @@ export default function PlatformPage() {
                   : 'bg-gray-700 text-gray-500 cursor-not-allowed'
                 }`}
                 disabled={!isVerified}
+                onClick={() => router.push('/earnings')}
               >
                 <div className="text-center">
                   <div className="text-2xl mb-1">📊</div>
