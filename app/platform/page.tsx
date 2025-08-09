@@ -49,246 +49,208 @@ export default function PlatformPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px',
-    }}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
-      <div className="max-w-6xl mx-auto mb-8">
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.95)',
-          borderRadius: '16px',
-          padding: '24px',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          <div className="flex items-center gap-4">
-            <div style={{
-              width: '50px',
-              height: '50px',
-              background: '#3b82f6',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '24px',
-            }}>
-              👥
+      <div className="px-6 pt-8 pb-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">B</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">BittieTasks</h1>
+                <p className="text-gray-400">Welcome back, {user?.user_metadata?.firstName || 'User'}!</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold">Welcome to BittieTasks</h1>
-              <p className="text-gray-600">Your community earnings platform</p>
-            </div>
+            <Button 
+              onClick={handleSignOut}
+              variant="outline" 
+              className="border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
+            >
+              Sign Out
+            </Button>
           </div>
-          <Button variant="outline" onClick={handleSignOut}>
-            Sign Out
-          </Button>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* User Profile Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Your Profile
-              </CardTitle>
-              <CardDescription>Account information and verification status</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-gray-400" />
-                <span className="text-sm">{user?.email}</span>
-                {isVerified ? (
-                  <Badge variant="default" className="gap-1">
-                    <CheckCircle className="h-3 w-3" />
-                    Verified
-                  </Badge>
-                ) : (
-                  <Badge variant="destructive" className="gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    Unverified
-                  </Badge>
-                )}
-              </div>
-              
-              {user?.user_metadata?.firstName && (
-                <div>
-                  <p className="text-sm text-gray-600">Name</p>
-                  <p className="font-medium">
-                    {user.user_metadata.firstName} {user.user_metadata.lastName}
-                  </p>
+      {/* Main Content */}
+      <div className="px-6 pb-12">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Verification Status */}
+          {!isVerified && (
+            <Card className="bg-yellow-500/10 border-yellow-500/20 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="h-6 w-6 text-yellow-500" />
+                  <div>
+                    <h3 className="text-yellow-500 font-semibold">Email Verification Required</h3>
+                    <p className="text-gray-300">Please check your email and verify your account to access all earning features.</p>
+                  </div>
                 </div>
-              )}
+              </CardContent>
+            </Card>
+          )}
 
-              <div>
-                <p className="text-sm text-gray-600">Member Since</p>
-                <p className="font-medium">
-                  {new Date(user?.created_at || '').toLocaleDateString()}
-                </p>
-              </div>
+          {/* Stats Grid */}
+          <div className="grid md:grid-cols-3 gap-6">
+            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+                    <DollarSign className="h-6 w-6 text-green-400" />
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Total Earnings</p>
+                    <p className="text-2xl font-bold text-white">$0.00</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              {!isVerified && (
-                <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-sm text-yellow-800">
-                    Please check your email to verify your account and unlock all features.
-                  </p>
+            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                    <Target className="h-6 w-6 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Active Tasks</p>
+                    <p className="text-2xl font-bold text-white">0</p>
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Subscription Status */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Crown className="h-5 w-5" />
-                Subscription
-              </CardTitle>
-              <CardDescription>Your current plan and benefits</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Badge variant="outline" className="text-lg font-semibold">
-                  Free Plan
-                </Badge>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Monthly Tasks</span>
-                  <span className="font-medium">0 / 5</span>
+            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                    <Calendar className="h-6 w-6 text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">This Month</p>
+                    <p className="text-2xl font-bold text-white">0 Tasks</p>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Platform Fee</span>
-                  <span className="font-medium">10%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Priority Support</span>
-                  <span className="text-red-500">No</span>
-                </div>
-              </div>
+              </CardContent>
+            </Card>
+          </div>
 
-              <Button className="w-full" disabled={!isVerified}>
-                {isVerified ? 'Upgrade to Pro' : 'Verify Email to Upgrade'}
-              </Button>
-            </CardContent>
-          </Card>
+          {/* Account & Subscription Info */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <User className="h-5 w-5" />
+                  Account Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Email</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white">{user?.email}</span>
+                    {isVerified ? (
+                      <Badge className="bg-green-500/20 text-green-400 border-green-500/20">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Verified
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/20">
+                        <AlertCircle className="w-3 h-3 mr-1" />
+                        Pending
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Member Since</span>
+                  <span className="text-white">{user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Today'}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Profile</span>
+                  <span className="text-white">{user?.user_metadata?.firstName} {user?.user_metadata?.lastName}</span>
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Earnings Dashboard */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
-                Earnings Overview
-              </CardTitle>
-              <CardDescription>Your income and achievements</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">Total Earned</p>
-                  <p className="text-2xl font-bold text-green-600">$0.00</p>
+            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Crown className="h-5 w-5 text-yellow-500" />
+                  Subscription Plan
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Current Plan</span>
+                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/20">Free</Badge>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">This Month</p>
-                  <p className="text-2xl font-bold text-blue-600">$0.00</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Monthly Tasks</span>
+                  <span className="text-white">5 remaining</span>
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Tasks Completed</span>
-                  <span className="font-medium">0</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Platform Fee</span>
+                  <span className="text-white">10%</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Active Tasks</span>
-                  <span className="font-medium">0</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Referrals</span>
-                  <span className="font-medium">0</span>
-                </div>
-              </div>
-
-              {isVerified ? (
-                <Button className="w-full">
-                  Create Your First Task
+                <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 mt-4">
+                  Upgrade Plan
                 </Button>
-              ) : (
-                <Button disabled className="w-full">
-                  Verify Email to Start Earning
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Quick Actions */}
-          <Card className="md:col-span-2 lg:col-span-3">
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>
+          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-white">Quick Actions</CardTitle>
+              <CardDescription className="text-gray-400">
                 {isVerified 
-                  ? "Start your BittieTasks journey with these actions"
-                  : "Verify your email to unlock these features"
-                }
+                  ? "Ready to start earning! Create your first task or browse opportunities." 
+                  : "Complete email verification to unlock earning features."}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Button 
-                  variant="outline" 
-                  className="h-auto p-4 flex flex-col items-center gap-2"
-                  disabled={!isVerified}
-                >
-                  <Calendar className="h-6 w-6" />
-                  <span className="font-medium">Share a Task</span>
-                  <span className="text-xs text-gray-600 text-center">
-                    Post daily activities neighbors can join
-                  </span>
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="h-auto p-4 flex flex-col items-center gap-2"
-                  disabled={!isVerified}
-                >
-                  <Target className="h-6 w-6" />
-                  <span className="font-medium">Browse Tasks</span>
-                  <span className="text-xs text-gray-600 text-center">
-                    Find tasks in your neighborhood
-                  </span>
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="h-auto p-4 flex flex-col items-center gap-2"
-                  disabled={!isVerified}
-                >
-                  <Crown className="h-6 w-6" />
-                  <span className="font-medium">Upgrade Plan</span>
-                  <span className="text-xs text-gray-600 text-center">
-                    Lower fees, more tasks, priority support
-                  </span>
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="h-auto p-4 flex flex-col items-center gap-2"
-                  disabled={!isVerified}
-                >
-                  <User className="h-6 w-6" />
-                  <span className="font-medium">Complete Profile</span>
-                  <span className="text-xs text-gray-600 text-center">
-                    Add location, bio, and preferences
-                  </span>
-                </Button>
-              </div>
+            <CardContent className="grid md:grid-cols-3 gap-4">
+              <Button 
+                className={`h-16 ${isVerified 
+                  ? 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border-blue-500/20' 
+                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                }`}
+                disabled={!isVerified}
+              >
+                <div className="text-center">
+                  <div className="text-2xl mb-1">➕</div>
+                  <div>Create Task</div>
+                </div>
+              </Button>
+              
+              <Button 
+                className={`h-16 ${isVerified 
+                  ? 'bg-green-500/20 hover:bg-green-500/30 text-green-400 border-green-500/20' 
+                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                }`}
+                disabled={!isVerified}
+              >
+                <div className="text-center">
+                  <div className="text-2xl mb-1">🔍</div>
+                  <div>Browse Tasks</div>
+                </div>
+              </Button>
+              
+              <Button 
+                className={`h-16 ${isVerified 
+                  ? 'bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border-purple-500/20' 
+                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                }`}
+                disabled={!isVerified}
+              >
+                <div className="text-center">
+                  <div className="text-2xl mb-1">📊</div>
+                  <div>View Earnings</div>
+                </div>
+              </Button>
             </CardContent>
           </Card>
         </div>
