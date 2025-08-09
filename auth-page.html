@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BittieTasks - Authentication</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            min-width: 400px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        button:hover { background: #45a049; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .error { background: rgba(255,0,0,0.2); }
+        .success { background: rgba(0,255,0,0.2); }
+        .user-info {
+            background: rgba(0,255,0,0.2);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BittieTasks</h1>
+        <p>Little Tasks, Real Income</p>
+        
+        <div id="authForm">
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" id="submitBtn">Sign In</button>
+            </form>
+            
+            <button type="button" class="toggle-btn" id="toggleMode">
+                Need an account? Sign Up
+            </button>
+            
+            <div id="message" class="message" style="display:none;"></div>
+        </div>
+        
+        <div id="userDashboard" style="display:none;">
+            <div class="user-info">
+                <h2>✅ Authentication Successful!</h2>
+                <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                <p><strong>Status:</strong> <span id="emailStatus"></span></p>
+            </div>
+            
+            <button id="signOutBtn" style="background: #f44336;">Sign Out</button>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin-top: 20px; text-align: left;">
+                <h3>System Status:</h3>
+                <ul>
+                    <li>✅ Supabase authentication working</li>
+                    <li>✅ Email verification enabled</li>
+                    <li>✅ Session management active</li>
+                    <li>✅ Ready for access control implementation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+        
+        const supabase = createClient(
+            'https://ttgbotlcbzmmyqawnjpj.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0Z2JvdGxjYnptbXlxYXduanBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MDA4NzksImV4cCI6MjA3MDE3Njg3OX0.jc_PZay5gUyleINrGC5d5Sd2mCkHjonP56KCLJJNM1k'
+        );
+        
+        let isSignUp = false;
+        
+        // DOM elements
+        const authForm = document.getElementById('authForm');
+        const userDashboard = document.getElementById('userDashboard');
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const submitBtn = document.getElementById('submitBtn');
+        const toggleBtn = document.getElementById('toggleMode');
+        const messageDiv = document.getElementById('message');
+        const userEmail = document.getElementById('userEmail');
+        const emailStatus = document.getElementById('emailStatus');
+        const signOutBtn = document.getElementById('signOutBtn');
+        
+        // Check initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user) {
+                showUserDashboard(session.user);
+            }
+        });
+        
+        // Listen for auth changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (session?.user) {
+                showUserDashboard(session.user);
+            } else {
+                showAuthForm();
+            }
+        });
+        
+        // Toggle between sign in and sign up
+        toggleBtn.addEventListener('click', () => {
+            isSignUp = !isSignUp;
+            submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
+            toggleBtn.textContent = isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up';
+            clearMessage();
+        });
+        
+        // Handle form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Loading...';
+            
+            try {
+                if (isSignUp) {
+                    const { error } = await supabase.auth.signUp({ email, password });
+                    if (error) throw error;
+                    showMessage('Check your email for verification link!', 'success');
+                } else {
+                    const { error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                }
+            } catch (error) {
+                showMessage(error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
+            }
+        });
+        
+        // Sign out
+        signOutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+        });
+        
+        function showAuthForm() {
+            authForm.style.display = 'block';
+            userDashboard.style.display = 'none';
+        }
+        
+        function showUserDashboard(user) {
+            authForm.style.display = 'none';
+            userDashboard.style.display = 'block';
+            userEmail.textContent = user.email;
+            emailStatus.textContent = user.email_confirmed_at ? 'Verified' : 'Pending Verification';
+        }
+        
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+        }
+        
+        function clearMessage() {
+            messageDiv.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

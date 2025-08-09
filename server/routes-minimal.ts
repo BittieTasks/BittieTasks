@@ -22,6 +22,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile('/home/runner/workspace/static-test.html');
   });
 
+  // Authentication app
+  app.get('/auth', (req, res) => {
+    res.sendFile('/home/runner/workspace/auth-page.html');
+  });
+
   // Temporary auth user endpoint
   app.get('/api/auth/user', (req, res) => {
     res.json({ 
