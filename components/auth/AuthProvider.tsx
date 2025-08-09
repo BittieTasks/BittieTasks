@@ -1,10 +1,11 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { User, Session } from '@supabase/supabase-js'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { User } from '@supabase/supabase-js'
 import { supabase } from '../../lib/supabase'
+import type { Session } from '@supabase/supabase-js'
 
-interface AuthContextType {
+type AuthContextType = {
   user: User | null
   session: Session | null
   loading: boolean
@@ -18,7 +19,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+interface AuthProviderProps {
+  children: React.ReactNode
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
@@ -26,7 +31,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true)
-    
+  }, [])
+
+  useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
@@ -50,19 +57,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => subscription.unsubscribe()
   }, [])
-
-  // Prevent hydration mismatch by using consistent initial state
-  const contextValue = {
-    user: mounted ? user : null,
-    session: mounted ? session : null,
-    loading: mounted ? loading : true,
-    isAuthenticated: mounted ? !!user : false,
-    isVerified: mounted ? !!(user?.email_confirmed_at) : false,
-    signIn,
-    signUp,
-    signOut,
-    resetPassword,
-  }
 
   const createUserProfile = async (authUser: User) => {
     try {
@@ -90,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
@@ -99,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, userData?: any) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -125,11 +119,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const value: AuthContextType = {
-    user,
-    session,
-    loading,
-    isAuthenticated: !!user,
-    isVerified: user?.email_confirmed_at != null,
+    user: mounted ? user : null,
+    session: mounted ? session : null,
+    loading: mounted ? loading : true,
+    isAuthenticated: mounted ? !!user : false,
+    isVerified: mounted ? !!(user?.email_confirmed_at) : false,
     signIn,
     signUp,
     signOut,

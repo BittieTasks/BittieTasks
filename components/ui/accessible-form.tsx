@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AccessibleInput } from './accessible-input';
 import { AccessibleButton } from './accessible-button';
-import { useAccessibleForm, useScreenReader } from '@/hooks/useAccessibility';
+import { useAccessibleForm, useScreenReader } from '../../hooks/useAccessibility';
 import { cn } from '@/lib/utils';
 import { formAccessibility } from '@/lib/accessibility';
 

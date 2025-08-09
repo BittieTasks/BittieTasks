@@ -1,167 +1,114 @@
-import { useEffect, useState } from 'react';
-import { colorContrast, announceToScreenReader } from '@/lib/accessibility';
+import { useEffect, useRef, useState } from 'react'
+import { announceToScreenReader } from '@/lib/accessibility'
 
-// Hook for detecting user accessibility preferences
-export const useAccessibilityPreferences = () => {
-  const [preferences, setPreferences] = useState({
-    prefersReducedMotion: false,
-    prefersHighContrast: false,
-    prefersDarkMode: false
-  });
+// Hook for accessible form management
+export const useAccessibleForm = () => {
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [announcements, setAnnouncements] = useState<string[]>([])
 
-  useEffect(() => {
-    const updatePreferences = () => {
-      setPreferences({
-        prefersReducedMotion: colorContrast.prefersReducedMotion(),
-        prefersHighContrast: colorContrast.isHighContrastMode(),
-        prefersDarkMode: colorContrast.prefersDarkMode()
-      });
-    };
+  const announceError = (fieldName: string, message: string) => {
+    setErrors(prev => ({ ...prev, [fieldName]: message }))
+    announceToScreenReader(`Error in ${fieldName}: ${message}`)
+  }
 
-    // Initial check
-    updatePreferences();
+  const clearError = (fieldName: string) => {
+    setErrors(prev => {
+      const newErrors = { ...prev }
+      delete newErrors[fieldName]
+      return newErrors
+    })
+  }
 
-    // Listen for changes
-    const mediaQueries = [
-      window.matchMedia('(prefers-reduced-motion: reduce)'),
-      window.matchMedia('(prefers-contrast: high)'),
-      window.matchMedia('(prefers-color-scheme: dark)')
-    ];
-
-    const handleChange = () => updatePreferences();
-    
-    mediaQueries.forEach(mq => {
-      mq.addEventListener('change', handleChange);
-    });
-
-    return () => {
-      mediaQueries.forEach(mq => {
-        mq.removeEventListener('change', handleChange);
-      });
-    };
-  }, []);
-
-  return preferences;
-};
-
-// Hook for managing focus and keyboard navigation
-export const useFocusManagement = () => {
-  const [focusedElement, setFocusedElement] = useState<HTMLElement | null>(null);
-
-  const saveFocus = () => {
-    setFocusedElement(document.activeElement as HTMLElement);
-  };
-
-  const restoreFocus = () => {
-    if (focusedElement && focusedElement.focus) {
-      focusedElement.focus();
-      setFocusedElement(null);
-    }
-  };
-
-  const trapFocus = (container: HTMLElement) => {
-    const focusableElements = container.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    
-    if (focusableElements.length === 0) return () => {};
-
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-    const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key === 'Tab') {
-        if (e.shiftKey && document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement.focus();
-        } else if (!e.shiftKey && document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement.focus();
-        }
-      }
-    };
-
-    container.addEventListener('keydown', handleTabKey);
-    firstElement.focus();
-
-    return () => {
-      container.removeEventListener('keydown', handleTabKey);
-    };
-  };
+  const announceSuccess = (message: string) => {
+    announceToScreenReader(message)
+    setAnnouncements(prev => [...prev, message])
+  }
 
   return {
-    saveFocus,
-    restoreFocus,
-    trapFocus,
-    focusedElement
-  };
-};
+    errors,
+    announceError,
+    clearError,
+    announceSuccess,
+    announcements,
+  }
+}
 
 // Hook for screen reader announcements
 export const useScreenReader = () => {
   const announce = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
-    announceToScreenReader(message, priority);
-  };
+    announceToScreenReader(message)
+  }
 
-  const announceNavigation = (pageName: string) => {
-    announce(`Navigated to ${pageName}`, 'polite');
-  };
+  return { announce }
+}
 
-  const announceError = (error: string) => {
-    announce(`Error: ${error}`, 'assertive');
-  };
+// Hook for focus management
+export const useFocusManagement = () => {
+  const focusElementRef = useRef<HTMLElement | null>(null)
 
-  const announceSuccess = (message: string) => {
-    announce(`Success: ${message}`, 'polite');
-  };
+  const setFocusElement = (element: HTMLElement | null) => {
+    focusElementRef.current = element
+  }
+
+  const focusElement = () => {
+    if (focusElementRef.current) {
+      focusElementRef.current.focus()
+    }
+  }
+
+  const moveFocusToElement = (selector: string) => {
+    const element = document.querySelector(selector) as HTMLElement
+    if (element) {
+      element.focus()
+      setFocusElement(element)
+    }
+  }
 
   return {
-    announce,
-    announceNavigation,
-    announceError,
-    announceSuccess
-  };
-};
+    setFocusElement,
+    focusElement,
+    moveFocusToElement,
+  }
+}
 
-// Hook for managing loading states accessibly
-export const useAccessibleLoading = (isLoading: boolean, loadingMessage?: string) => {
-  const { announce } = useScreenReader();
+// Hook for keyboard navigation
+export const useKeyboardNavigation = (items: HTMLElement[] = []) => {
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (items.length === 0) return
+
+    switch (event.key) {
+      case 'ArrowDown':
+      case 'ArrowRight':
+        event.preventDefault()
+        setCurrentIndex(prev => (prev + 1) % items.length)
+        break
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        event.preventDefault()
+        setCurrentIndex(prev => (prev - 1 + items.length) % items.length)
+        break
+      case 'Home':
+        event.preventDefault()
+        setCurrentIndex(0)
+        break
+      case 'End':
+        event.preventDefault()
+        setCurrentIndex(items.length - 1)
+        break
+    }
+  }
 
   useEffect(() => {
-    if (isLoading && loadingMessage) {
-      announce(loadingMessage, 'polite');
+    if (items[currentIndex]) {
+      items[currentIndex].focus()
     }
-  }, [isLoading, loadingMessage, announce]);
+  }, [currentIndex, items])
 
   return {
-    loadingProps: {
-      'aria-busy': isLoading,
-      'aria-live': 'polite' as const,
-      role: 'status' as const
-    }
-  };
-};
-
-// Hook for form accessibility
-export const useAccessibleForm = () => {
-  const { announceError } = useScreenReader();
-
-  const announceFormErrors = (errors: Record<string, string>) => {
-    const errorCount = Object.keys(errors).length;
-    if (errorCount > 0) {
-      const message = `Form has ${errorCount} error${errorCount > 1 ? 's' : ''}. Please review and correct.`;
-      announceError(message);
-    }
-  };
-
-  const generateFieldIds = (fieldName: string) => ({
-    fieldId: fieldName,
-    errorId: `${fieldName}-error`,
-    descriptionId: `${fieldName}-description`
-  });
-
-  return {
-    announceFormErrors,
-    generateFieldIds
-  };
-};
+    currentIndex,
+    setCurrentIndex,
+    handleKeyDown,
+  }
+}

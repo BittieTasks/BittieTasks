@@ -43,11 +43,11 @@ export const AccessibleButton = React.forwardRef<HTMLButtonElement, AccessibleBu
     React.useEffect(() => {
       if (announceStateChange) {
         if (isLoading && !prevLoadingRef.current) {
-          announceToScreenReader(loadingText, 'polite');
+          announceToScreenReader(loadingText);
         } else if (isSuccess && !prevSuccessRef.current) {
-          announceToScreenReader(successText, 'polite');
+          announceToScreenReader(successText);
         } else if (isError && !prevErrorRef.current) {
-          announceToScreenReader(errorText, 'assertive');
+          announceToScreenReader(errorText);
         }
       }
       
