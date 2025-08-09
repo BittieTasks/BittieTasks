@@ -246,6 +246,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(mockAchievements);
   });
 
+  // Stripe Payment Processing
+  app.post('/api/create-payment-intent', async (req, res) => {
+    try {
+      const stripe = await import('stripe');
+      const stripeClient = new stripe.default(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2025-07-30.basil',
+      });
+
+      const { taskId, amount, participants } = req.body;
+      
+      // Calculate platform fee (5%)
+      const platformFee = Math.round(amount * 0.05 * 100);
+      const totalAmount = Math.round(amount * 100); // Convert to cents
+
+      const paymentIntent = await stripeClient.paymentIntents.create({
+        amount: totalAmount,
+        currency: 'usd',
+        application_fee_amount: platformFee,
+        metadata: {
+          taskId,
+          participants: JSON.stringify(participants),
+          platformType: 'bittietasks'
+        },
+        description: `BittieTasks - Shared Task Payment`,
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+        platformFee: platformFee / 100
+      });
+
+    } catch (error: any) {
+      console.error('Stripe payment error:', error);
+      res.status(500).json({ 
+        error: 'Payment setup failed',
+        message: error.message 
+      });
+    }
+  });
+
+  // Split payment for task completion
+  app.post('/api/complete-task-payment', async (req, res) => {
+    try {
+      const stripe = await import('stripe');
+      const stripeClient = new stripe.default(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2025-07-30.basil',
+      });
+
+      const { taskId, participants, totalAmount } = req.body;
+      const amountPerPerson = Math.round((totalAmount / participants.length) * 100);
+
+      // Create payment intents for each participant
+      const paymentPromises = participants.map(async (participant: any) => {
+        return await stripeClient.paymentIntents.create({
+          amount: amountPerPerson,
+          currency: 'usd',
+          metadata: {
+            taskId,
+            participantId: participant.id,
+            earningType: 'task_completion'
+          },
+          description: `Earnings from shared task - ${participant.name}`,
+        });
+      });
+
+      const payments = await Promise.all(paymentPromises);
+      
+      res.json({
+        success: true,
+        payments: payments.map(p => ({
+          id: p.id,
+          amount: p.amount / 100,
+          clientSecret: p.client_secret
+        }))
+      });
+
+    } catch (error: any) {
+      console.error('Split payment error:', error);
+      res.status(500).json({ 
+        error: 'Payment distribution failed',
+        message: error.message 
+      });
+    }
+  });
+
+  // Corporate sponsorship payment
+  app.post('/api/sponsor-payment', async (req, res) => {
+    try {
+      const stripe = await import('stripe');
+      const stripeClient = new stripe.default(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2025-07-30.basil',
+      });
+
+      const { sponsorId, taskId, sponsorshipAmount, communityBonus } = req.body;
+      const totalAmount = Math.round((sponsorshipAmount + communityBonus) * 100);
+
+      const paymentIntent = await stripeClient.paymentIntents.create({
+        amount: totalAmount,
+        currency: 'usd',
+        metadata: {
+          sponsorId,
+          taskId,
+          sponsorshipAmount: sponsorshipAmount.toString(),
+          communityBonus: communityBonus.toString(),
+          paymentType: 'corporate_sponsorship'
+        },
+        description: `Corporate Sponsorship - Community Task Funding`,
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+        totalAmount: totalAmount / 100
+      });
+
+    } catch (error: any) {
+      console.error('Sponsorship payment error:', error);
+      res.status(500).json({ 
+        error: 'Sponsorship payment failed',
+        message: error.message 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -43,6 +43,8 @@ import Partners from "@/pages/partners";
 import RevenueDashboard from "@/pages/revenue-dashboard";
 import TaskMarketplace from "@/pages/TaskMarketplace";
 import EarningsDashboard from "@/pages/EarningsDashboard";
+import PaymentFlow from "@/pages/PaymentFlow";
+import CorporateSponsorship from "@/pages/CorporateSponsorship";
 import type { User } from "@shared/schema";
 import { initGA } from "./lib/simpleAnalytics";
 import { useSimpleAnalytics as useAnalytics } from "./hooks/use-simple-analytics";
@@ -171,6 +173,8 @@ function Router() {
           <Route path="/payment-methods" component={() => <AuthenticatedRoute component={PaymentMethods} />} />
           <Route path="/marketplace" component={() => <AuthenticatedRoute component={TaskMarketplace} />} />
           <Route path="/dashboard" component={() => <AuthenticatedRoute component={EarningsDashboard} />} />
+          <Route path="/payment/:taskId" component={() => <AuthenticatedRoute component={PaymentFlow} />} />
+          <Route path="/sponsorship" component={() => <AuthenticatedRoute component={CorporateSponsorship} />} />
           
           {/* Fallback route */}
           <Route component={NotFound} />
