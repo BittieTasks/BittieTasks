@@ -62,10 +62,10 @@ Preferred communication style: Simple, everyday language.
 ### Third-Party Integrations
 - **Stripe**: Payment processing for subscription billing and platform fees.
 - **Escrow.com**: Transaction protection for high-value transactions.
-- **SendGrid**: Email service for account verification, password resets, and notifications.
+- **SendGrid**: SMTP provider for Supabase authentication emails and business communications.
 - **Twilio**: SMS notification system for real-time task updates and security alerts.
 - **Google Analytics**: Platform analytics and user behavior tracking.
-- **Supabase**: Production-ready authentication system with user profiles.
+- **Supabase**: Production-ready authentication system with SMTP email delivery via SendGrid.
 - **Claude 4.0 Sonnet**: AI for content moderation and intelligent task generation.
 - **PayPal**: Alternative payment processing.
 
