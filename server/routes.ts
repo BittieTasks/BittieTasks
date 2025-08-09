@@ -1846,7 +1846,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const success = await sendVerificationEmail(
         req.body.email || "test@example.com",
-        req.body.username || "TestUser",
+        req.body.firstName || "Test",
+        req.body.lastName || "User",
         "test-token-123"
       );
 

@@ -43,14 +43,19 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
   }
 }
 
-export async function sendVerificationEmail(userEmail: string, userName: string, verificationToken: string): Promise<boolean> {
-  console.log(`Attempting to send verification email to: ${userEmail} for user: ${userName}`);
+export async function sendVerificationEmail(userEmail: string, userFirstName: string | null | undefined, userLastName: string | null | undefined, verificationToken: string): Promise<boolean> {
+  // Construct a proper display name
+  const displayName = [userFirstName, userLastName]
+    .filter(name => name && name.trim())
+    .join(' ') || userEmail.split('@')[0] || 'Friend';
+    
+  console.log(`Attempting to send verification email to: ${userEmail} for user: ${displayName}`);
   
   if (!process.env.SENDGRID_API_KEY) {
     console.log('SendGrid not configured, creating mock verification email');
     const mockBaseUrl = process.env.NODE_ENV === 'production' ? 'https://bittietasks.com' : 'http://localhost:5000';
     console.log(`Mock verification URL: ${mockBaseUrl}/api/auth/verify/${verificationToken}`);
-    console.log(`Mock email would be addressed to: ${userName} at ${userEmail}`);
+    console.log(`Mock email would be addressed to: ${displayName} at ${userEmail}`);
     return true; // Return true so signup continues
   }
 
@@ -79,7 +84,7 @@ export async function sendVerificationEmail(userEmail: string, userName: string,
           <h1>Verify Your Email</h1>
         </div>
         <div class="content">
-          <h2>Hi ${userName},</h2>
+          <h2>Hi ${displayName},</h2>
           <p>Welcome to BittieTasks! To complete your registration and start earning money from everyday tasks, please verify your email address.</p>
           
           <a href="${verificationUrl}" class="button">Verify Email Address</a>
@@ -126,7 +131,7 @@ export async function sendVerificationEmail(userEmail: string, userName: string,
       from: sender,
       subject: 'Verify Your Email - BittieTasks Account',
       html: verificationHtml,
-      text: `Welcome to BittieTasks, ${userName}! Please verify your email by visiting: ${verificationUrl}`
+      text: `Welcome to BittieTasks, ${displayName}! Please verify your email by visiting: ${verificationUrl}`
     });
 
     if (success) {
@@ -139,7 +144,11 @@ export async function sendVerificationEmail(userEmail: string, userName: string,
   return false;
 }
 
-export async function sendWelcomeEmail(userEmail: string, userName: string): Promise<boolean> {
+export async function sendWelcomeEmail(userEmail: string, userFirstName: string | null | undefined, userLastName: string | null | undefined): Promise<boolean> {
+  // Construct a proper display name
+  const displayName = [userFirstName, userLastName]
+    .filter(name => name && name.trim())
+    .join(' ') || userEmail.split('@')[0] || 'Friend';
   if (!process.env.SENDGRID_API_KEY) {
     console.log('SendGrid not configured, skipping welcome email');
     return false;
@@ -163,7 +172,7 @@ export async function sendWelcomeEmail(userEmail: string, userName: string): Pro
           <h1>Welcome to BittieTasks!</h1>
         </div>
         <div class="content">
-          <h2>Hi ${userName},</h2>
+          <h2>Hi ${displayName},</h2>
           <p>Welcome to BittieTasks - where little tasks create real income! We're excited to have you join our community of parents earning money through everyday activities.</p>
           
           <h3>What you can do now:</h3>
@@ -195,7 +204,7 @@ export async function sendWelcomeEmail(userEmail: string, userName: string): Pro
     from: 'support@bittietasks.com',
     subject: 'Welcome to BittieTasks - Start Earning Today!',
     html: welcomeHtml,
-    text: `Welcome to BittieTasks, ${userName}! Start earning money from everyday tasks. Visit https://bittietasks.com to get started.`
+    text: `Welcome to BittieTasks, ${displayName}! Start earning money from everyday tasks. Visit https://bittietasks.com to get started.`
   });
 }
 
@@ -249,7 +258,11 @@ export async function sendPasswordResetEmail(userEmail: string, resetToken: stri
   });
 }
 
-export async function sendUpgradeConfirmationEmail(userEmail: string, userName: string, planName: string): Promise<boolean> {
+export async function sendUpgradeConfirmationEmail(userEmail: string, userFirstName: string | null | undefined, userLastName: string | null | undefined, planName: string): Promise<boolean> {
+  // Construct a proper display name
+  const displayName = [userFirstName, userLastName]
+    .filter(name => name && name.trim())
+    .join(' ') || userEmail.split('@')[0] || 'Friend';
   if (!process.env.SENDGRID_API_KEY) {
     console.log('SendGrid not configured, skipping upgrade confirmation email');
     return false;
@@ -273,7 +286,7 @@ export async function sendUpgradeConfirmationEmail(userEmail: string, userName: 
           <h1>Welcome to ${planName}!</h1>
         </div>
         <div class="content">
-          <h2>Hi ${userName},</h2>
+          <h2>Hi ${displayName},</h2>
           <p>Congratulations! Your BittieTasks account has been upgraded to ${planName}. You now have access to premium features that will help you earn even more.</p>
           
           <h3>Your new benefits include:</h3>
