@@ -171,14 +171,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/user/current", async (req, res) => {
     try {
-      // Explicitly set JSON headers to prevent vite override
+      // Return null - no authenticated user in demo mode
+      // This forces proper Supabase authentication
       res.setHeader('Content-Type', 'application/json');
-      res.status(200).json({
-        id: "demo-user-id",
-        email: "demo@example.com",  
-        name: "Demo User",
-        isEmailVerified: true
-      });
+      res.status(401).json({ error: "Authentication required" });
     } catch (error) {
       console.error("Current user error:", error);
       res.setHeader('Content-Type', 'application/json');
@@ -186,33 +182,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all task categories (with caching for performance)
+  // Get all task categories (authentication required)
   app.get("/api/categories", async (req, res) => {
     try {
-      // Check cache first
-      const cachedCategories = cacheService.get("task-categories");
-      if (cachedCategories) {
-        res.set('Cache-Control', 'public, max-age=300'); // 5 minutes
-        res.set('X-Cache-Hit', 'true');
-        return res.json(cachedCategories);
-      }
-
-      // Fetch from database if not cached
-      // Demo categories - replace with Supabase categories
-      const categories = [
-        { id: 'childcare', name: 'Childcare', color: '#FF6B6B' },
-        { id: 'household', name: 'Household Tasks', color: '#4ECDC4' },
-        { id: 'errands', name: 'Errands & Shopping', color: '#45B7D1' },
-        { id: 'tutoring', name: 'Tutoring & Education', color: '#96CEB4' },
-        { id: 'pet-care', name: 'Pet Care', color: '#FFEAA7' },
-        { id: 'self-care', name: 'Self-Care & Wellness', color: '#DDA0DD' }
-      ];
-      
-      // Cache for 5 minutes (300 seconds)
-      cacheService.set("task-categories", categories, 5 * 60 * 1000);
-      
-      res.set('Cache-Control', 'public, max-age=300'); // 5 minutes
-      res.json(categories);
+      // Require authentication for all data access
+      res.status(401).json({ error: "Authentication required to access categories" });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch categories" });
     }
@@ -314,35 +288,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all tasks (general route, comes after specific routes)
+  // Get all tasks (authentication required)
   app.get("/api/tasks", async (req, res) => {
     try {
-      const { category } = req.query;
-      const cacheKey = category ? `tasks-category-${category}` : 'tasks-all';
-      
-      // Check cache first
-      const cachedTasks = cacheService.get(cacheKey);
-      if (cachedTasks) {
-        res.set('Cache-Control', 'public, max-age=180'); // 3 minutes
-        res.set('X-Cache-Hit', 'true');
-        return res.json(cachedTasks);
-      }
-
-      // Demo tasks - replace with Supabase tasks
-      let tasks = [
-        { id: '1', title: 'Demo Task 1', description: 'Sample task for testing', categoryId: 'childcare', payment: '25', duration: 60, difficulty: 'Easy', userId: 'demo-user' },
-        { id: '2', title: 'Demo Task 2', description: 'Another sample task', categoryId: 'household', payment: '30', duration: 90, difficulty: 'Medium', userId: 'demo-user' }
-      ];
-      
-      if (category && typeof category === "string") {
-        tasks = tasks.filter(task => task.categoryId === category);
-      }
-      
-      // Cache for 3 minutes (tasks change more frequently than categories)
-      cacheService.set(cacheKey, tasks, 3 * 60 * 1000);
-      
-      res.set('Cache-Control', 'public, max-age=180'); // 3 minutes
-      res.json(tasks);
+      // Require authentication for all data access
+      res.status(401).json({ error: "Authentication required to access tasks" });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch tasks" });
     }

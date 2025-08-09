@@ -91,43 +91,49 @@ function Router() {
       
       <main role="main" id="main-content">
         <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/landing" component={Landing} />
+          {/* Public routes - no authentication required */}
           <Route path="/auth" component={Auth} />
+          <Route path="/landing" component={Landing} />
+          <Route path="/how-it-works" component={HowItWorks} />
+          <Route path="/verify-email" component={VerifyEmailPage} />
+          <Route path="/resend-verification" component={ResendVerificationPage} />
+          <Route path="/admin-login" component={AdminLogin} />
+          
+          {/* All other routes require authentication */}
+          <Route path="/" component={() => <AuthenticatedRoute component={Home} />} />
+          <Route path="/home" component={() => <AuthenticatedRoute component={Home} />} />
           <Route path="/task/:id" component={() => <AuthenticatedRoute component={TaskDetail} />} />
           <Route path="/create-task" component={() => <AuthenticatedRoute component={CreateTask} />} />
           <Route path="/earnings" component={() => <AuthenticatedRoute component={Earnings} />} />
           <Route path="/profile" component={() => <AuthenticatedRoute component={Profile} />} />
           <Route path="/messages" component={() => <AuthenticatedRoute component={Messages} />} />
-          <Route path="/search" component={Search} />
+          <Route path="/search" component={() => <AuthenticatedRoute component={Search} />} />
           <Route path="/achievements" component={() => <AuthenticatedRoute component={Achievements} />} />
           <Route path="/challenges" component={() => <AuthenticatedRoute component={DailyChallenges} />} />
           <Route path="/compliance" component={() => <AuthenticatedRoute component={Compliance} />} />
-          <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin-access" component={() => <AuthenticatedRoute component={AdminAccess} />} />
           <Route path="/admin" component={() => <AuthenticatedRoute component={Admin} />} />
-          <Route path="/subscription" component={SubscriptionPage} />
+          <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
           <Route path="/subscription/checkout/:tier" component={() => <AuthenticatedRoute component={SubscriptionCheckout} />} />
           <Route path="/subscription-upgrade" component={() => <AuthenticatedRoute component={SubscriptionUpgrade} />} />
           <Route path="/system-status" component={() => <AuthenticatedRoute component={SystemStatus} />} />
           <Route path="/analytics" component={() => <AuthenticatedRoute component={AnalyticsDashboard} />} />
           <Route path="/payment/:id" component={() => <AuthenticatedRoute component={Payment} />} />
           <Route path="/checkout" component={() => <AuthenticatedRoute component={Checkout} />} />
-          <Route path="/payment/success" component={PaymentSuccess} />
-          <Route path="/payment/error" component={PaymentError} />
+          <Route path="/payment/success" component={() => <AuthenticatedRoute component={PaymentSuccess} />} />
+          <Route path="/payment/error" component={() => <AuthenticatedRoute component={PaymentError} />} />
           <Route path="/referrals" component={() => <AuthenticatedRoute component={ReferralsPage} />} />
           <Route path="/barter" component={() => <AuthenticatedRoute component={Barter} />} />
-          <Route path="/partners" component={Partners} />
+          <Route path="/partners" component={() => <AuthenticatedRoute component={Partners} />} />
           <Route path="/revenue" component={() => <AuthenticatedRoute component={RevenueDashboard} />} />
-          <Route path="/company-application" component={CompanyApplication} />
-          <Route path="/ethical-partnerships" component={EthicalPartnerships} />
-          <Route path="/advertising-portal" component={AdvertisingPortal} />
+          <Route path="/company-application" component={() => <AuthenticatedRoute component={CompanyApplication} />} />
+          <Route path="/ethical-partnerships" component={() => <AuthenticatedRoute component={EthicalPartnerships} />} />
+          <Route path="/advertising-portal" component={() => <AuthenticatedRoute component={AdvertisingPortal} />} />
           <Route path="/ad-preferences" component={() => <AuthenticatedRoute component={AdPreferences} />} />
-          <Route path="/ai-tasks" component={AITaskGeneratorPage} />
-          <Route path="/verify-email" component={VerifyEmailPage} />
-          <Route path="/resend-verification" component={ResendVerificationPage} />
+          <Route path="/ai-tasks" component={() => <AuthenticatedRoute component={AITaskGeneratorPage} />} />
           <Route path="/payment-methods" component={() => <AuthenticatedRoute component={PaymentMethods} />} />
-          <Route path="/how-it-works" component={HowItWorks} />
+          
+          {/* Fallback route */}
           <Route component={NotFound} />
         </Switch>
       </main>
