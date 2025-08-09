@@ -19,7 +19,7 @@ export default function MinimalLanding() {
             Earn $200-600/week doing what you already do.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Button 
               size="lg" 
               className="bg-white text-purple-600 hover:bg-gray-100 font-semibold px-8 py-3"
@@ -34,6 +34,17 @@ export default function MinimalLanding() {
               onClick={() => window.location.href = '/auth'}
             >
               Sign In to Dashboard
+            </Button>
+          </div>
+          
+          <div className="mb-16">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.location.href = '/debug'}
+              className="border-white/50 text-white/80 hover:bg-white hover:text-purple-600"
+            >
+              Debug Authentication
             </Button>
           </div>
 

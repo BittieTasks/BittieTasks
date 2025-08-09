@@ -7,6 +7,7 @@ import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import MinimalLanding from "@/pages/minimal-landing";
 import SimpleAuth from "@/pages/simple-auth";
 import SimpleHome from "@/pages/simple-home";
+import AuthDebug from "@/pages/auth-debug";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
@@ -36,6 +37,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/auth" component={SimpleAuth} />
+      <Route path="/debug" component={AuthDebug} />
       {!loading && user ? (
         <>
           <Route path="/" component={SimpleHome} />
