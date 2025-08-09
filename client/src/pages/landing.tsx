@@ -18,12 +18,18 @@ export default function LandingPage() {
   return (
     <div className="max-w-md mx-auto bg-white shadow-xl min-h-screen">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-green-500 text-white px-6 py-8 text-center">
-        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <DollarSign className="text-white" size={32} />
+      <header className="bg-gradient-to-br from-blue-600 via-purple-600 to-green-500 text-white px-6 py-10 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative z-10">
+          <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <DollarSign className="text-white" size={36} />
+          </div>
+          <h1 className="text-3xl font-bold mb-2 tracking-tight">BittieTasks</h1>
+          <p className="text-blue-100 font-medium">Turn daily routines into steady income</p>
+          <div className="mt-4 text-sm text-blue-200">
+            $200-600/week • 10,000+ parents earning
+          </div>
         </div>
-        <h1 className="text-2xl font-bold mb-2">BittieTasks</h1>
-        <p className="text-blue-100">Turn your daily routines into income</p>
       </header>
 
       {/* Main Content */}
@@ -102,54 +108,68 @@ export default function LandingPage() {
         </div>
 
         {/* Main Call to Action */}
-        <div className="space-y-4 mb-8">
+        <div className="space-y-3 mb-8">
           <Link href="/auth">
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white font-medium py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
-              Get Started - Sign In / Sign Up
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200">
+              Start Earning Today
             </Button>
           </Link>
           
+          <div className="text-center">
+            <p className="text-xs text-gray-500 mb-2">Already a member?</p>
+            <Link href="/auth">
+              <Button variant="outline" className="w-full py-3 px-6 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-medium rounded-xl transition-all duration-200">
+                Sign In to Dashboard
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Secondary Actions */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
           <Link href="/subscription">
-            <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
-              View Subscription Plans
-            </Button>
-          </Link>
-        </div>
-
-        {/* Business Partnership */}
-        <div className="flex space-x-3 mb-6">
-          <Link href="/company-application" className="flex-1">
-            <Button className="w-full text-xs py-2 px-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
-              Corporate Partnership
+            <Button variant="outline" className="w-full py-3 px-4 text-sm border-purple-500 text-purple-600 hover:bg-purple-50 rounded-xl transition-all duration-200">
+              View Plans
             </Button>
           </Link>
           
-          <Link href="/advertising-portal" className="flex-1">
-            <Button className="w-full text-xs py-2 px-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
-              Advertise with Us
+          <Link href="/how-it-works">
+            <Button variant="outline" className="w-full py-3 px-4 text-sm border-green-500 text-green-600 hover:bg-green-50 rounded-xl transition-all duration-200">
+              How It Works
             </Button>
           </Link>
         </div>
 
-        {/* Additional Login Options */}
-        <div className="text-center mb-6">
-          <p className="text-sm text-gray-600 mb-3">Already have an account?</p>
-          <Link href="/auth">
-            <Button variant="outline" className="w-full py-3 px-6 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all duration-200">
-              Sign In to Your Dashboard
+        {/* Business Partnership - Smaller */}
+        <div className="grid grid-cols-2 gap-2 mb-6">
+          <Link href="/company-application">
+            <Button variant="ghost" className="w-full text-xs py-2 px-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200">
+              Corporate Partners
+            </Button>
+          </Link>
+          
+          <Link href="/advertising-portal">
+            <Button variant="ghost" className="w-full text-xs py-2 px-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200">
+              Advertise
             </Button>
           </Link>
         </div>
 
         {/* Trust Indicators */}
-        <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-          <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
-            <div className="flex items-center space-x-1">
-              <Star className="text-yellow-400 fill-current" size={16} />
-              <span>4.8/5 rating</span>
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="grid grid-cols-3 gap-4 text-center text-xs text-gray-600">
+            <div className="flex flex-col items-center">
+              <Star className="text-yellow-500 fill-current mb-1" size={16} />
+              <span className="font-medium">4.8★</span>
             </div>
-            <div>10,000+ parents</div>
-            <div>$2M+ earned</div>
+            <div className="flex flex-col items-center">
+              <Users className="text-blue-500 mb-1" size={16} />
+              <span className="font-medium">10K+ users</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <TrendingUp className="text-green-500 mb-1" size={16} />
+              <span className="font-medium">$2M+ earned</span>
+            </div>
           </div>
         </div>
 
