@@ -1,1 +1,0 @@
-// Backup of original server - Next.js migration in progress
