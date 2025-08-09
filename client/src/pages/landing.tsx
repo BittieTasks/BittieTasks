@@ -92,53 +92,34 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Call to Action */}
+        {/* Main Call to Action */}
         <div className="space-y-4 mb-8">
-          <Link href="/auth?mode=register">
+          <Link href="/auth">
             <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white font-medium py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
-              🚀 Get Started - Sign Up Free
+              Get Started - Sign Up / Log In
             </Button>
           </Link>
           
-          <Link href="/auth?mode=login">
-            <Button variant="outline" className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium py-4 px-6 rounded-lg transition-all duration-200">
-              Already have an account? Log In
+          <Link href="/how-it-works">
+            <Button variant="outline" className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium py-3 px-6 rounded-lg transition-all duration-200">
+              Learn More
             </Button>
           </Link>
         </div>
 
-        <div className="space-y-3">
-          <div className="p-2 bg-white rounded-xl shadow-sm">
-            <Link href="/how-it-works">
-              <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-lg">
-                Learn How It Works
-              </Button>
-            </Link>
-          </div>
+        {/* Business Partnership */}
+        <div className="flex space-x-3 mb-6">
+          <Link href="/company-application" className="flex-1">
+            <Button variant="outline" className="w-full text-xs py-2 px-3 border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg">
+              Corporate Partnership
+            </Button>
+          </Link>
           
-          <div className="p-2 bg-white rounded-xl shadow-sm">
-            <Link href="/how-it-works">
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white py-3 rounded-lg shadow-lg">
-                Learn More
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="p-2 bg-white rounded-xl shadow-sm">
-            <Link href="/company-application">
-              <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-500 hover:from-indigo-700 hover:to-purple-600 text-white py-3 rounded-lg shadow-lg">
-                Corporate Partnership
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="p-2 bg-white rounded-xl shadow-sm">
-            <Link href="/advertising-portal">
-              <Button className="w-full bg-gradient-to-r from-orange-600 to-pink-500 hover:from-orange-700 hover:to-pink-600 text-white py-3 rounded-lg shadow-lg">
-                Advertise with Us
-              </Button>
-            </Link>
-          </div>
+          <Link href="/advertising-portal" className="flex-1">
+            <Button variant="outline" className="w-full text-xs py-2 px-3 border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg">
+              Advertise with Us
+            </Button>
+          </Link>
         </div>
 
         {/* Trust Indicators */}
