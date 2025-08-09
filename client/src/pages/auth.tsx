@@ -1,20 +1,17 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { Eye, EyeOff, Mail } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Eye, EyeOff, Mail, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const { signIn, signUp, loading } = useAuth();
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -32,65 +29,49 @@ export default function AuthPage() {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const loginMutation = useMutation({
-    mutationFn: (data: { email: string; password: string }) =>
-      apiRequest("POST", "/api/auth/login", data),
-    onSuccess: async () => {
-      toast({
-        title: "Welcome back!",
-        description: "Login successful! Loading your dashboard...",
-      });
-      
-      // Invalidate all queries to force fresh data fetch
-      queryClient.clear();
-      
-      // Wait a moment for the query cache to clear, then navigate
-      setTimeout(() => {
-        setLocation("/");
-      }, 100);
-    },
-    onError: (error: any) => {
-      console.error("Login error:", error);
-      
-      // Check if it's an email verification error
-      if (error.message?.includes("verify your email")) {
-        toast({
-          title: "Email Verification Required",
-          description: "Please check your email and click the verification link before logging in.",
-          variant: "destructive",
-          duration: 10000,
-        });
-      } else {
-        toast({
-          title: "Login Failed",
-          description: error.message || "Invalid email or password",
-          variant: "destructive",
-        });
-      }
-    },
-  });
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    const { error } = await signIn(loginData.email, loginData.password);
+    
+    if (!error) {
+      setLocation("/");
+    }
+    
+    setIsSubmitting(false);
+  };
 
-  const signupMutation = useMutation({
-    mutationFn: (data: { firstName: string; lastName: string; email: string; password: string }) =>
-      apiRequest("POST", "/api/auth/signup", data),
-    onSuccess: (response: any) => {
-      const data = response;
-      
-      if (data.needsVerification) {
-        toast({
-          title: "Account Created!",
-          description: "Please check your email and click the verification link to complete your registration.",
-          duration: 10000,
-        });
-      } else {
-        toast({
-          title: "Welcome to BittieTasks!",
-          description: "Account created successfully! You can now log in.",
-          duration: 5000,
-        });
-      }
-      
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(signupData.email)) {
+      return;
+    }
+    
+    if (signupData.password !== signupData.confirmPassword) {
+      return;
+    }
+
+    // Password validation
+    if (signupData.password.length < 6) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    const { error } = await signUp(
+      signupData.email, 
+      signupData.password, 
+      signupData.firstName, 
+      signupData.lastName
+    );
+    
+    if (!error) {
       // Clear form data after successful signup
       setSignupData({
         firstName: "",
@@ -99,61 +80,9 @@ export default function AuthPage() {
         password: "",
         confirmPassword: ""
       });
-    },
-    onError: (error: any) => {
-      console.error("Signup error:", error);
-      toast({
-        title: "Signup Failed", 
-        description: error.message || "Failed to create account",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    loginMutation.mutate(loginData);
-  };
-
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(signupData.email)) {
-      toast({
-        title: "Invalid Email",
-        description: "Please enter a valid email address",
-        variant: "destructive",
-      });
-      return;
     }
     
-    if (signupData.password !== signupData.confirmPassword) {
-      toast({
-        title: "Passwords don't match",
-        description: "Please make sure both passwords are the same",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Password validation
-    if (signupData.password.length < 6) {
-      toast({
-        title: "Password too short",
-        description: "Password must be at least 6 characters long",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    signupMutation.mutate({
-      firstName: signupData.firstName,
-      lastName: signupData.lastName,
-      email: signupData.email,
-      password: signupData.password,
-    });
+    setIsSubmitting(false);
   };
 
   return (
@@ -218,9 +147,9 @@ export default function AuthPage() {
                 <Button 
                   type="submit" 
                   className="w-full"
-                  disabled={loginMutation.isPending}
+                  disabled={isSubmitting || loading || !loginData.email || !loginData.password}
                 >
-                  {loginMutation.isPending ? "Logging in..." : "Login"}
+                  {isSubmitting || loading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
             </TabsContent>
@@ -317,9 +246,9 @@ export default function AuthPage() {
                 <Button 
                   type="submit" 
                   className="w-full"
-                  disabled={signupMutation.isPending}
+                  disabled={isSubmitting || loading}
                 >
-                  {signupMutation.isPending ? "Creating Account..." : "Create Account"}
+                  {isSubmitting || loading ? "Creating Account..." : "Create Account"}
                 </Button>
               </form>
             </TabsContent>

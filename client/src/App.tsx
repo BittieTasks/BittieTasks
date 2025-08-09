@@ -45,13 +45,13 @@ import type { User } from "@shared/schema";
 import { initGA } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
 import { AnalyticsProvider } from "./components/AnalyticsProvider";
-import { useAuth } from "./hooks/useAuth";
+import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { useEffect } from "react";
 
 function AuthenticatedRoute({ component: Component }: { component: React.ComponentType }) {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div 
         className="max-w-md mx-auto bg-white shadow-xl min-h-screen flex items-center justify-center"
@@ -68,8 +68,8 @@ function AuthenticatedRoute({ component: Component }: { component: React.Compone
     );
   }
 
-  if (!isAuthenticated) {
-    return <Landing />;
+  if (!user) {
+    return <Auth />;
   }
 
   return <Component />;
@@ -147,12 +147,14 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AnalyticsProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </AnalyticsProvider>
+      <AuthProvider>
+        <AnalyticsProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </AnalyticsProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

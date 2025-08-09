@@ -8,15 +8,12 @@ import TaskCard from "@/components/ui/task-card";
 import EarningsOverview from "@/components/ui/earnings-overview";
 import ProgressRing from "@/components/ui/progress-ring";
 import SubscriptionBanner from "@/components/SubscriptionBanner";
-import { apiRequest } from "@/lib/queryClient";
-import type { User, TaskCategory, Task } from "@shared/schema";
+import { useAuth } from "@/hooks/useAuth";
+import type { TaskCategory, Task } from "@shared/schema";
 
 export default function HomePage() {
   const queryClient = useQueryClient();
-  
-  const { data: user, isLoading: userLoading } = useQuery<User>({
-    queryKey: ["/api/user/current"]
-  });
+  const { user, profile, loading, signOut } = useAuth();
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<TaskCategory[]>({
     queryKey: ["/api/categories"]
@@ -26,7 +23,7 @@ export default function HomePage() {
     queryKey: ["/api/tasks"]
   });
 
-  if (userLoading || categoriesLoading || tasksLoading) {
+  if (loading || categoriesLoading || tasksLoading) {
     return (
       <div 
         className="max-w-md mx-auto bg-white shadow-xl min-h-screen"
@@ -61,7 +58,7 @@ export default function HomePage() {
       </a>
       
       {/* Subscription Banner */}
-      {user && <SubscriptionBanner user={user} />}
+      {profile && <SubscriptionBanner user={profile} />}
 
       {/* Header Navigation */}
       <header 
@@ -90,19 +87,13 @@ export default function HomePage() {
                 3
               </span>
             </button>
-            {user?.email && !user?.email.includes("example.com") ? (
+            {user ? (
               <Button 
                 variant="outline" 
                 size="sm" 
                 className="mr-2" 
                 onClick={async () => {
-                  try {
-                    await apiRequest("POST", "/api/auth/logout");
-                    queryClient.clear();
-                    window.location.reload();
-                  } catch (error) {
-                    console.error("Logout failed:", error);
-                  }
+                  await signOut();
                 }}
               >
                 Logout
@@ -116,7 +107,7 @@ export default function HomePage() {
             )}
             <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-medium">
-                {user?.firstName?.[0] || "U"}
+                {profile?.first_name?.[0] || user?.email?.[0] || "U"}
               </span>
             </div>
           </div>
@@ -131,14 +122,14 @@ export default function HomePage() {
         >
           <div className="mb-4">
             <h2 id="welcome-heading" className="text-2xl font-bold text-gray-900 mb-2">
-              Good morning, {user?.firstName || "Parent"}!
+              Good morning, {profile?.first_name || user?.email?.split('@')[0] || "Parent"}!
             </h2>
             <p className="text-gray-600">Ready to earn money from your daily routines?</p>
           </div>
           
           <div aria-labelledby="earnings-overview">
             <h3 id="earnings-overview" className="sr-only">Your earnings overview</h3>
-            <EarningsOverview user={user} />
+            <EarningsOverview user={profile} />
           </div>
         </section>
 
