@@ -13,7 +13,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    redirectTo: `${window.location.origin}/verify-email`
+    redirectTo: `${window.location.origin}/verify-email`,
+    confirmationUrl: `${window.location.origin}/verify-email`
   }
 })
 
