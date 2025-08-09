@@ -1,11 +1,20 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { DollarSign, Users, Calendar, Star, Shield, TrendingUp } from "lucide-react";
-
-
-
+import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from "react";
 
 export default function LandingPage() {
+  const { user, loading } = useAuth();
+  const [, setLocation] = useLocation();
+
+  // Redirect authenticated users to their dashboard
+  useEffect(() => {
+    if (!loading && user) {
+      console.log('Authenticated user detected, redirecting to home');
+      setLocation('/');
+    }
+  }, [user, loading, setLocation]);
   return (
     <div className="max-w-md mx-auto bg-white shadow-xl min-h-screen">
       {/* Header */}

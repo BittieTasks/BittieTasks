@@ -75,6 +75,36 @@ function AuthenticatedRoute({ component: Component }: { component: React.Compone
   return <Component />;
 }
 
+function SmartLanding() {
+  const { user, loading } = useAuth();
+
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div 
+        className="max-w-md mx-auto bg-white shadow-xl min-h-screen flex items-center justify-center"
+        role="status"
+        aria-live="polite"
+        aria-label="Loading BittieTasks application"
+      >
+        <div 
+          className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"
+          aria-hidden="true"
+        />
+        <span className="sr-only">Loading application, please wait...</span>
+      </div>
+    );
+  }
+
+  // If authenticated, show home page
+  if (user) {
+    return <Home />;
+  }
+
+  // If not authenticated, show landing page
+  return <Landing />;
+}
+
 function Router() {
   // Track page views when routes change
   useAnalytics();
@@ -99,8 +129,8 @@ function Router() {
           <Route path="/resend-verification" component={ResendVerificationPage} />
           <Route path="/admin-login" component={AdminLogin} />
           
-          {/* All other routes require authentication */}
-          <Route path="/" component={() => <AuthenticatedRoute component={Home} />} />
+          {/* Smart home route - shows Landing for unauth, Home for auth */}
+          <Route path="/" component={SmartLanding} />
           <Route path="/home" component={() => <AuthenticatedRoute component={Home} />} />
           <Route path="/task/:id" component={() => <AuthenticatedRoute component={TaskDetail} />} />
           <Route path="/create-task" component={() => <AuthenticatedRoute component={CreateTask} />} />
