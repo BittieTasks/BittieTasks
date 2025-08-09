@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { announceToScreenReader } from '@/lib/accessibility'
+import { announceToScreenReader } from '../lib/accessibility'
 
 // Hook for accessible form management
 export const useAccessibleForm = () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, ButtonProps } from '@/components/ui/button';
-import { ARIA_LABELS, announceToScreenReader } from '@/lib/accessibility';
+import { ARIA_LABELS, announceToScreenReader } from '../../lib/accessibility';
 
 interface AccessibleButtonProps extends ButtonProps {
   // Accessibility props

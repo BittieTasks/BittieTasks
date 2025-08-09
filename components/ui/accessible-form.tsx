@@ -33,8 +33,8 @@ export const AccessibleForm: React.FC<AccessibleFormProps> = ({
   errorMessage,
   successMessage
 }) => {
-  const { announceFormErrors } = useAccessibleForm();
-  const { announceError, announceSuccess } = useScreenReader();
+  const { announceError: formAnnounceError, announceSuccess: formAnnounceSuccess } = useAccessibleForm();
+  const { announce } = useScreenReader();
   
   const methods = useForm({
     resolver: zodResolver(schema),
