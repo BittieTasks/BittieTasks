@@ -97,9 +97,12 @@ router.post('/signup', authLimiter, async (req, res) => {
 
     // Send verification email
     try {
-      const verificationUrl = `https://${req.get('host')}/verify-email?token=${verificationToken}`;
+      // Use HTTP for local development, HTTPS for production
+      const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+      const verificationUrl = `${protocol}://${req.get('host')}/verify-email?token=${verificationToken}`;
       await sendVerificationEmail(email, firstName, verificationToken);
       console.log(`✅ User created and verification email sent: ${user.email}`);
+      console.log(`🔗 Verification token: ${verificationToken}`);
     } catch (emailError) {
       console.error('Failed to send verification email:', emailError);
       // Continue anyway - user can resend verification email later
@@ -243,7 +246,8 @@ router.post('/resend-verification', authLimiter, async (req, res) => {
     });
 
     // Send verification email
-    const verificationUrl = `https://${req.get('host')}/verify-email?token=${verificationToken}`;
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    const verificationUrl = `${protocol}://${req.get('host')}/verify-email?token=${verificationToken}`;
     await sendVerificationEmail(email, user.firstName, verificationToken);
 
     res.json({ message: 'Verification email sent! Please check your inbox.' });
@@ -251,6 +255,59 @@ router.post('/resend-verification', authLimiter, async (req, res) => {
   } catch (error) {
     console.error('Resend verification error:', error);
     res.status(500).json({ message: 'Failed to send verification email' });
+  }
+});
+
+// Email verification endpoint
+router.get('/verify/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+    
+    if (!token) {
+      return res.status(400).json({ message: 'Verification token is required' });
+    }
+
+    // Find user by verification token
+    const user = await storage.getUserByVerificationToken(token);
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired verification token' });
+    }
+
+    // Update user as verified
+    await storage.updateUser(user.id, {
+      isEmailVerified: true,
+      emailVerificationToken: null
+    });
+
+    res.json({ 
+      message: 'Email verified successfully! You can now log in.',
+      verified: true
+    });
+
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({ message: 'Verification failed' });
+  }
+});
+
+// Development endpoint to see verification tokens
+router.get('/debug-users', async (req, res) => {
+  if (process.env.NODE_ENV !== 'development') {
+    return res.status(404).json({ message: 'Not found' });
+  }
+  
+  try {
+    const users = await storage.getUsers();
+    const debugInfo = users.map(u => ({
+      id: u.id,
+      email: u.email,
+      firstName: u.firstName,
+      isEmailVerified: u.isEmailVerified,
+      emailVerificationToken: u.emailVerificationToken
+    }));
+    res.json(debugInfo);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch debug info' });
   }
 });
 

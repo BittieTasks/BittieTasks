@@ -49,7 +49,7 @@ export async function sendVerificationEmail(userEmail: string, userName: string,
   if (!process.env.SENDGRID_API_KEY) {
     console.log('SendGrid not configured, creating mock verification email');
     const mockBaseUrl = process.env.NODE_ENV === 'production' ? 'https://bittietasks.com' : 'http://localhost:5000';
-    console.log(`Mock verification URL: ${mockBaseUrl}/verify-email?token=${verificationToken}`);
+    console.log(`Mock verification URL: ${mockBaseUrl}/api/auth/verify/${verificationToken}`);
     console.log(`Mock email would be addressed to: ${userName} at ${userEmail}`);
     return true; // Return true so signup continues
   }
@@ -58,7 +58,7 @@ export async function sendVerificationEmail(userEmail: string, userName: string,
   const baseUrl = process.env.NODE_ENV === 'production' 
     ? 'https://bittietasks.com' 
     : `http://localhost:5000`;
-  const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
+  const verificationUrl = `${baseUrl}/api/auth/verify/${verificationToken}`;
   
   const verificationHtml = `
     <!DOCTYPE html>

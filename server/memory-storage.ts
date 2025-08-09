@@ -192,6 +192,15 @@ export class MemoryStorage implements IStorage {
     return undefined;
   }
 
+  async getUserByVerificationToken(token: string): Promise<User | undefined> {
+    for (const user of this.users.values()) {
+      if (user.emailVerificationToken === token) {
+        return user;
+      }
+    }
+    return undefined;
+  }
+
   async createUser(userData: InsertUser): Promise<User> {
     const id = randomUUID();
     const user: User = {
