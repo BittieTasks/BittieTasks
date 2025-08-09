@@ -146,7 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.user && !data.session) {
         toast({
           title: "Check Your Email",
-          description: "Please check your email to verify your account before signing in.",
+          description: "Supabase has sent you a verification email. Please check your inbox and click the verification link.",
         })
       }
 

@@ -7,7 +7,7 @@ if (!process.env.SENDGRID_API_KEY) {
 const mailService = new MailService();
 if (process.env.SENDGRID_API_KEY) {
   mailService.setApiKey(process.env.SENDGRID_API_KEY);
-  console.log('✓ SendGrid email service initialized successfully');
+  console.log('✓ SendGrid service available for non-auth emails only');
 }
 
 interface EmailParams {

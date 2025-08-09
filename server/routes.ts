@@ -18,7 +18,8 @@ import moderationRoutes from './routes/moderationRoutes';
 import smsRoutes from './routes/smsRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import emailRoutes from './routes/emailRoutes';
-import { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
+// SendGrid removed from authentication - using Supabase only
+// import { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
 // Note: Admin migration routes removed - migration complete
 import { autoHealer } from "./services/autoHealer";
 import { fraudDetection } from "./services/fraudDetection";
@@ -1865,39 +1866,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Test verification email with multiple senders
-  app.post("/api/test-verification", async (req, res) => {
-    try {
-      console.log('🧪 Testing verification email with multiple sender addresses...');
-      
-      const success = await sendVerificationEmail(
-        req.body.email || "test@example.com",
-        req.body.firstName || "Test",
-        req.body.lastName || "User",
-        "test-token-123"
-      );
-
-      if (success) {
-        res.json({
-          status: "success",
-          message: "Verification email sent successfully!",
-          note: "At least one sender address is working"
-        });
-      } else {
-        res.status(500).json({
-          status: "error", 
-          message: "All sender addresses failed",
-          recommendation: "Domain verification still needed in SendGrid dashboard"
-        });
-      }
-    } catch (error: any) {
-      res.status(500).json({
-        status: "error",
-        message: "Verification email test failed",
-        error: error.message
-      });
-    }
-  });
+  // SendGrid test route removed - using Supabase authentication only
 
   // Add simple sponsorship endpoint directly for immediate revenue
   app.post("/api/sponsorship/apply", apiLimiter, async (req, res) => {
