@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import { storage } from '../storage';
 import rateLimit from 'express-rate-limit';
+import { sendVerificationEmail } from '../services/emailService';
 
 const router = Router();
 
@@ -31,15 +32,18 @@ router.post('/signup', authLimiter, async (req, res) => {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Create user - immediately verified
+    // Generate verification token
+    const verificationToken = randomUUID();
+    
+    // Create user - needs verification
     const user = await storage.createUser({
       username: email.split('@')[0],
       email,
       passwordHash,
       firstName,
       lastName,
-      isEmailVerified: true, // Skip verification for now
-      emailVerificationToken: null,
+      isEmailVerified: false,
+      emailVerificationToken: verificationToken,
       totalEarnings: "0.00",
       rating: "0.00",
       completedTasks: 0,
@@ -91,10 +95,20 @@ router.post('/signup', authLimiter, async (req, res) => {
       thirdPartySharing: false
     });
 
-    console.log(`✅ User created successfully: ${user.email}`);
+    // Send verification email
+    try {
+      const verificationUrl = `https://${req.get('host')}/verify-email?token=${verificationToken}`;
+      await sendVerificationEmail(email, firstName, verificationToken);
+      console.log(`✅ User created and verification email sent: ${user.email}`);
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Continue anyway - user can resend verification email later
+    }
+
     res.status(201).json({ 
-      message: 'Account created successfully! You can now log in.',
-      user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
+      message: 'Account created successfully! Please check your email to verify your account.',
+      user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName },
+      needsVerification: true
     });
 
   } catch (error) {
@@ -122,6 +136,14 @@ router.post('/login', authLimiter, async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, user.passwordHash);
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Check if email is verified
+    if (!user.isEmailVerified) {
+      return res.status(401).json({ 
+        message: 'Please verify your email address before logging in. Check your inbox for the verification email.',
+        needsVerification: true 
+      });
     }
 
     // Create session
@@ -158,6 +180,78 @@ router.get('/user', (req, res) => {
     return res.status(401).json({ message: 'Not authenticated' });
   }
   res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName });
+});
+
+// Email verification endpoint
+router.get('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({ message: 'Verification token is required' });
+    }
+
+    // Find user by verification token
+    const users = await storage.getUsers();
+    const user = users.find(u => u.emailVerificationToken === token);
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired verification token' });
+    }
+
+    if (user.isEmailVerified) {
+      return res.status(400).json({ message: 'Email is already verified' });
+    }
+
+    // Update user as verified
+    await storage.updateUser(user.id, {
+      isEmailVerified: true,
+      emailVerificationToken: null
+    });
+
+    console.log(`✅ Email verified for user: ${user.email}`);
+    res.json({ message: 'Email verified successfully! You can now log in.' });
+
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({ message: 'Failed to verify email' });
+  }
+});
+
+// Resend verification email
+router.post('/resend-verification', authLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const user = await storage.getUserByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.isEmailVerified) {
+      return res.status(400).json({ message: 'Email is already verified' });
+    }
+
+    // Generate new verification token
+    const verificationToken = randomUUID();
+    await storage.updateUser(user.id, {
+      emailVerificationToken: verificationToken
+    });
+
+    // Send verification email
+    const verificationUrl = `https://${req.get('host')}/verify-email?token=${verificationToken}`;
+    await sendVerificationEmail(email, user.firstName, verificationToken);
+
+    res.json({ message: 'Verification email sent! Please check your inbox.' });
+
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    res.status(500).json({ message: 'Failed to send verification email' });
+  }
 });
 
 export default router;

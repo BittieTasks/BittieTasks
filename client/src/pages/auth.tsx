@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail } from "lucide-react";
+import { Link } from "wouter";
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
@@ -51,23 +52,44 @@ export default function AuthPage() {
     },
     onError: (error: any) => {
       console.error("Login error:", error);
-      toast({
-        title: "Login Failed",
-        description: error.message || "Invalid email or password",
-        variant: "destructive",
-      });
+      
+      // Check if it's an email verification error
+      if (error.message?.includes("verify your email")) {
+        toast({
+          title: "Email Verification Required",
+          description: "Please check your email and click the verification link before logging in.",
+          variant: "destructive",
+          duration: 10000,
+        });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: error.message || "Invalid email or password",
+          variant: "destructive",
+        });
+      }
     },
   });
 
   const signupMutation = useMutation({
     mutationFn: (data: { firstName: string; lastName: string; email: string; password: string }) =>
       apiRequest("POST", "/api/auth/signup", data),
-    onSuccess: () => {
-      toast({
-        title: "Welcome to BittieTasks!",
-        description: "Account created successfully! You can now log in.",
-        duration: 5000,
-      });
+    onSuccess: (response: any) => {
+      const data = response;
+      
+      if (data.needsVerification) {
+        toast({
+          title: "Account Created!",
+          description: "Please check your email and click the verification link to complete your registration.",
+          duration: 10000,
+        });
+      } else {
+        toast({
+          title: "Welcome to BittieTasks!",
+          description: "Account created successfully! You can now log in.",
+          duration: 5000,
+        });
+      }
       
       // Clear form data after successful signup
       setSignupData({
@@ -143,7 +165,7 @@ export default function AuthPage() {
             Turn your daily routines into income
           </CardDescription>
           <div className="text-sm text-center text-gray-600 mt-2">
-            Simple signup - just 6+ character password needed
+            Simple signup with email verification required
           </div>
         </CardHeader>
         <CardContent>
@@ -303,6 +325,17 @@ export default function AuthPage() {
             </TabsContent>
           </Tabs>
           
+          <div className="mt-6 pt-4 border-t text-center">
+            <p className="text-sm text-gray-600">
+              Need to verify your email?
+            </p>
+            <Link href="/resend-verification">
+              <Button variant="ghost" size="sm" className="mt-2">
+                <Mail className="w-4 h-4 mr-2" />
+                Resend Verification Email
+              </Button>
+            </Link>
+          </div>
 
         </CardContent>
       </Card>
