@@ -57,7 +57,7 @@ export default function WelcomePage() {
 
         <div style={{ marginBottom: '40px' }}>
           <a 
-            href="/registration" 
+            href="/auth" 
             style={{
               background: '#3b82f6',
               color: 'white',
