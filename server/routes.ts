@@ -185,6 +185,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(__dirname, "../client/static-welcome.html"));
   });
 
+  // Fallback route for browser compatibility
+  app.get("/welcome", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/static-welcome.html"));
+  });
+
   // Auth endpoints for Supabase integration
   app.get("/api/auth/user", async (req, res) => {
     try {

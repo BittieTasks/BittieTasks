@@ -1,4 +1,20 @@
 export default function WelcomePage() {
+  // Detect if CSS is not loading and redirect to static version
+  const useStaticFallback = () => {
+    const testElement = document.createElement('div');
+    testElement.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    document.body.appendChild(testElement);
+    const computedStyle = getComputedStyle(testElement);
+    document.body.removeChild(testElement);
+    
+    // If gradient isn't supported or CSS isn't loading, use static version
+    if (!computedStyle.backgroundImage.includes('gradient')) {
+      window.location.href = '/welcome';
+      return true;
+    }
+    return false;
+  };
+
   const containerStyle = {
     minHeight: '100vh',
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -39,6 +55,11 @@ export default function WelcomePage() {
     color: '#3b82f6',
     border: '2px solid #3b82f6'
   };
+
+  // Check for CSS support on component mount
+  if (typeof window !== 'undefined' && useStaticFallback()) {
+    return <div>Redirecting to optimized version...</div>;
+  }
 
   return (
     <div style={containerStyle}>
