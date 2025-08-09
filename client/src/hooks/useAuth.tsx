@@ -64,13 +64,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email)
+        console.log('Auth state changed:', event, session?.user?.email, 'Email confirmed:', session?.user?.email_confirmed_at)
         
         setSession(session)
         setUser(session?.user ?? null)
         
         if (session?.user) {
-          const profile = await loadProfile(session.user.id)
+          // Create profile if it doesn't exist (for newly verified users)
+          let profile = await loadProfile(session.user.id)
+          
+          if (!profile && session.user.email_confirmed_at) {
+            // Create profile for newly verified user
+            const newProfileData = {
+              id: session.user.id,
+              email: session.user.email,
+              first_name: session.user.user_metadata?.first_name,
+              last_name: session.user.user_metadata?.last_name,
+              username: session.user.email?.split('@')[0], // Generate username from email
+              subscription_tier: 'free',
+              subscription_status: 'active',
+              monthly_task_limit: 5,
+              monthly_tasks_completed: 0,
+              is_active: true,
+              verification_status: 'verified',
+            }
+            
+            try {
+              const { data, error } = await supabase
+                .from('profiles')
+                .insert([newProfileData])
+                .select()
+                .single()
+              
+              if (!error && data) {
+                profile = data as Profile
+                toast({
+                  title: "Welcome to BittieTasks!",
+                  description: "Your profile has been created successfully.",
+                })
+              }
+            } catch (error) {
+              console.error('Error creating profile:', error)
+            }
+          }
+          
           setProfile(profile)
         } else {
           setProfile(null)
@@ -92,7 +129,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: {
             first_name: firstName,
             last_name: lastName,
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/verify-email`
         }
       })
 

@@ -3,45 +3,87 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, XCircle, Loader2, Mail } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function VerifyEmailPage() {
-  const [location] = useLocation();
+  const [, setLocation] = useLocation();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const handleEmailVerification = async () => {
+      // Check if this is a Supabase email verification callback
+      const urlParams = new URLSearchParams(window.location.search);
+      const access_token = urlParams.get('access_token');
+      const refresh_token = urlParams.get('refresh_token');
+      const type = urlParams.get('type');
 
-    if (!token) {
-      setStatus('error');
-      setMessage('No verification token found in URL');
-      return;
-    }
+      // Also check URL hash for tokens (Supabase sometimes uses hash)
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const hashAccessToken = hashParams.get('access_token');
+      const hashRefreshToken = hashParams.get('refresh_token');
+      const hashType = hashParams.get('type');
 
-    // Verify the email token
-    const verifyEmail = async () => {
-      try {
-        const response = await apiRequest('GET', `/api/auth/verify/${token}`);
-        const data = await response.json();
-        
-        if (response.ok) {
+      const finalAccessToken = access_token || hashAccessToken;
+      const finalRefreshToken = refresh_token || hashRefreshToken;
+      const finalType = type || hashType;
+
+      if (finalType === 'signup' && finalAccessToken) {
+        try {
+          // Set the session with the tokens from the verification email
+          const { data, error } = await supabase.auth.setSession({
+            access_token: finalAccessToken,
+            refresh_token: finalRefreshToken || '',
+          });
+
+          if (error) {
+            console.error('Verification error:', error);
+            setStatus('error');
+            setMessage(error.message || 'Email verification failed');
+            return;
+          }
+
+          if (data.user) {
+            setStatus('success');
+            setMessage('Your email has been successfully verified!');
+            
+            // Redirect to home after a short delay
+            setTimeout(() => {
+              setLocation('/');
+            }, 2000);
+          }
+        } catch (error) {
+          console.error('Verification error:', error);
+          setStatus('error');
+          setMessage('An error occurred during email verification');
+        }
+      } else if (user) {
+        // User is already authenticated, check if email is verified
+        if (user.email_confirmed_at) {
           setStatus('success');
-          setMessage(data.message);
+          setMessage('Your email is already verified!');
+          setTimeout(() => {
+            setLocation('/');
+          }, 2000);
         } else {
           setStatus('error');
-          setMessage(data.message || 'Verification failed');
+          setMessage('Email verification is still pending. Please check your email.');
         }
-      } catch (error) {
+      } else {
+        // No verification tokens and no user
         setStatus('error');
-        setMessage('An error occurred during verification');
+        setMessage('No verification information found. Please check your email or try signing up again.');
       }
     };
 
-    verifyEmail();
-  }, []);
+    // Wait a moment for auth to load, then handle verification
+    if (!loading) {
+      handleEmailVerification();
+    }
+  }, [user, loading, setLocation]);
 
   return (
     <div className="max-w-md mx-auto bg-white shadow-xl min-h-screen">
