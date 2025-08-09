@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
-import App from "./App";
-import "./index.css";
+import SimpleWelcome from "./SimpleWelcome";
+// import "./index.css";
 
 console.log('🚀 Starting working BittieTasks app...');
 
@@ -13,7 +13,7 @@ if (rootElement) {
   try {
     const root = createRoot(rootElement);
     console.log('🔍 React root created successfully');
-    root.render(<App />);
+    root.render(<SimpleWelcome />);
     console.log('🔍 App component rendered');
   } catch (error) {
     console.error('❌ Error creating/rendering React app:', error);
