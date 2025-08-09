@@ -20,7 +20,7 @@ import smsRoutes from './routes/smsRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import emailRoutes from './routes/emailRoutes';
 import { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail, sendUpgradeConfirmationEmail } from "./services/emailService";
-import { registerAuthRoutes } from './routes/auth';
+import authSimpleRouter from './routes/auth-simple';
 import { requireAuth, optionalAuth } from './auth/supabase-auth';
 import { autoHealer } from "./services/autoHealer";
 import { fraudDetection } from "./services/fraudDetection";
@@ -78,7 +78,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use(performanceMiddleware);
   
   // Register Supabase authentication routes
-  registerAuthRoutes(app);
+  // Use simple auth without email verification
+  app.use('/api/auth', authSimpleRouter);
   
   // Apply security middleware - more permissive for development
   app.use(helmet({
