@@ -4,6 +4,7 @@ const nextConfig = {
     serverActions: {
       allowedOrigins: ["*"],
     },
+    allowedDevOrigins: ["*"],
   },
   env: {
     // Expose all VITE_ prefixed variables as NEXT_PUBLIC_
