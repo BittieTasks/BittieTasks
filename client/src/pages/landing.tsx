@@ -24,7 +24,7 @@ export default function LandingPage() {
           <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
             <DollarSign className="text-white" size={36} />
           </div>
-          <h1 className="text-3xl font-bold mb-2 tracking-tight">BittieTasks</h1>
+          <h1 className="text-3xl font-bold mb-2 tracking-tight">BittieTasks 2.0</h1>
           <p className="text-blue-100 font-medium">Turn daily routines into steady income</p>
           <div className="mt-4 text-sm text-blue-200">
             $200-600/week • 10,000+ parents earning
