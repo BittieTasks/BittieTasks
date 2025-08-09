@@ -1,21 +1,61 @@
 export default function StaticWelcome() {
+  // Force CSS by creating style element if not present
+  if (typeof window !== 'undefined') {
+    let existingStyle = document.getElementById('force-welcome-styles');
+    if (!existingStyle) {
+      const style = document.createElement('style');
+      style.id = 'force-welcome-styles';
+      style.textContent = `
+        .welcome-container {
+          min-height: 100vh !important;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+          padding: 20px !important;
+          font-family: system-ui, -apple-system, sans-serif !important;
+          margin: 0 !important;
+          box-sizing: border-box !important;
+        }
+        .welcome-card-forced {
+          max-width: 800px !important;
+          margin: 0 auto !important;
+          background: rgba(255, 255, 255, 0.95) !important;
+          border-radius: 16px !important;
+          padding: 40px !important;
+          color: #333 !important;
+          text-align: center !important;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+          box-sizing: border-box !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }
+
   return (
-    <div className="gradient-bg" style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    }}>
-      <div className="welcome-card" style={{
-        maxWidth: '800px',
-        margin: '0 auto',
-        background: 'rgba(255, 255, 255, 0.95)',
-        borderRadius: '16px',
-        padding: '40px',
-        color: '#333',
-        textAlign: 'center',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
-      }}>
+    <div 
+      className="welcome-container gradient-bg" 
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: '20px',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        margin: '0',
+        boxSizing: 'border-box'
+      }}
+    >
+      <div 
+        className="welcome-card-forced welcome-card" 
+        style={{
+          maxWidth: '800px',
+          margin: '0 auto',
+          background: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: '16px',
+          padding: '40px',
+          color: '#333',
+          textAlign: 'center',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+          boxSizing: 'border-box'
+        }}
+      >
         <div style={{ 
           width: '80px', 
           height: '80px', 

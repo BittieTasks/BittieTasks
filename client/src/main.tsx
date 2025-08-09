@@ -2,6 +2,26 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
+// Add emergency fallback CSS if needed
+if (typeof window !== 'undefined') {
+  const addFallbackCSS = () => {
+    const existingFallback = document.getElementById('emergency-styles');
+    if (!existingFallback) {
+      const link = document.createElement('link');
+      link.id = 'emergency-styles';
+      link.rel = 'stylesheet';
+      link.href = '/client/force-styles.css';
+      document.head.appendChild(link);
+    }
+  };
+  
+  // Add immediately and after DOM load
+  addFallbackCSS();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addFallbackCSS);
+  }
+}
+
 console.log('🚀 Starting working BittieTasks app...');
 
 // Debug: Check if root element exists
