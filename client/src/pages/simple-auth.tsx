@@ -18,23 +18,28 @@ export default function SimpleAuth() {
     setLoading(true);
     
     try {
-      const { error } = await signInWithEmail(email, password);
+      console.log('🔐 Attempting sign in with:', email);
+      const { data, error } = await signInWithEmail(email, password);
+      
       if (error) {
+        console.error('🔐 Sign in error:', error);
         toast({
           title: "Sign In Failed",
-          description: error.message,
+          description: `${error.message} (Code: ${error.status || 'Unknown'})`,
           variant: "destructive",
         });
       } else {
+        console.log('🔐 Sign in successful:', data);
         toast({
           title: "Welcome back!",
           description: "You've been signed in successfully.",
         });
       }
     } catch (error: any) {
+      console.error('🔐 Sign in exception:', error);
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Connection Error",
+        description: `Failed to connect: ${error.message}`,
         variant: "destructive",
       });
     } finally {
@@ -47,23 +52,28 @@ export default function SimpleAuth() {
     setLoading(true);
     
     try {
-      const { error } = await signUpWithEmail(email, password);
+      console.log('🔐 Attempting sign up with:', email);
+      const { data, error } = await signUpWithEmail(email, password);
+      
       if (error) {
+        console.error('🔐 Sign up error:', error);
         toast({
           title: "Sign Up Failed",
-          description: error.message,
+          description: `${error.message} (Code: ${error.status || 'Unknown'})`,
           variant: "destructive",
         });
       } else {
+        console.log('🔐 Sign up successful:', data);
         toast({
           title: "Check your email!",
           description: "We've sent you a verification link.",
         });
       }
     } catch (error: any) {
+      console.error('🔐 Sign up exception:', error);
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Connection Error",
+        description: `Failed to connect: ${error.message}`,
         variant: "destructive",
       });
     } finally {
