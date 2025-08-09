@@ -74,13 +74,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           let profile = await loadProfile(session.user.id)
           
           if (!profile && session.user.email_confirmed_at) {
-            // Create profile for newly verified user
+            // Profile should be created automatically by trigger, but let's try manual creation as fallback
             const newProfileData = {
               id: session.user.id,
               email: session.user.email,
               first_name: session.user.user_metadata?.first_name,
               last_name: session.user.user_metadata?.last_name,
-              username: session.user.email?.split('@')[0], // Generate username from email
+              username: session.user.email?.split('@')[0],
               subscription_tier: 'free',
               subscription_status: 'active',
               monthly_task_limit: 5,
@@ -92,19 +92,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             try {
               const { data, error } = await supabase
                 .from('profiles')
-                .insert([newProfileData])
+                .upsert(newProfileData, { onConflict: 'id' })
                 .select()
                 .single()
               
               if (!error && data) {
                 profile = data as Profile
+                console.log('Profile created successfully for verified user')
                 toast({
                   title: "Welcome to BittieTasks!",
                   description: "Your profile has been created successfully.",
                 })
+              } else {
+                console.error('Profile creation error:', error)
+                // Still set a minimal profile so user can proceed
+                profile = {
+                  id: session.user.id,
+                  email: session.user.email,
+                  verification_status: 'verified',
+                  subscription_tier: 'free'
+                } as Profile
               }
             } catch (error) {
-              console.error('Error creating profile:', error)
+              console.error('Profile creation failed:', error)
+              // Fallback profile
+              profile = {
+                id: session.user.id,
+                email: session.user.email,
+                verification_status: 'verified',
+                subscription_tier: 'free'
+              } as Profile
             }
           }
           
