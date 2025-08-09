@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import App from "./App-ultra-simple";
+import App from "./App";
 import "./index.css";
 
 console.log('🚀 Starting working BittieTasks app...');

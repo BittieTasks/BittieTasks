@@ -20,7 +20,6 @@ import DailyChallenges from "@/pages/DailyChallenges";
 import AdminLogin from "@/pages/admin-login";
 import AdminAccess from "@/pages/admin-access";
 import Admin from "@/pages/admin";
-import SubscriptionPage from "@/pages/subscription";
 import SubscriptionCheckout from "@/pages/subscription-checkout";
 import SubscriptionUpgrade from "@/pages/subscription-upgrade";
 import SystemStatus from "@/pages/system-status";
