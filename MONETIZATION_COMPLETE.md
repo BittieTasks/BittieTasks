@@ -5,7 +5,7 @@
 ### Real Revenue Generation Implemented
 - **Stripe Integration**: Live payment processing with API keys configured
 - **Split Payments**: Automatic distribution between task participants
-- **Platform Fees**: 5% fee collection for platform sustainability
+- **Platform Fees**: 10% fee collection for platform sustainability
 - **Corporate Sponsorship**: Premium payments for company-sponsored tasks
 
 ### Core Monetization Features
@@ -14,7 +14,7 @@
 - **Shared Task Payments**: Parents split costs and earn together
 - **Earning Potential**: $5-500 per task based on complexity
 - **Payment Distribution**: Automatic split between participants
-- **Platform Fee**: 5% automatically collected
+- **Platform Fee**: 10% automatically collected
 
 #### 2. Corporate Sponsorship Revenue  
 - **Sponsored Tasks**: Companies pay premium for community engagement
@@ -43,7 +43,7 @@
 
 ### Revenue Streams Active
 1. **Task Participation Fees**: Users pay to join shared tasks
-2. **Platform Commission**: 5% fee on all transactions
+2. **Platform Commission**: 10% fee on all transactions
 3. **Corporate Sponsorships**: Premium partner payments
 4. **Community Bonuses**: Enhanced earnings from sponsors
 

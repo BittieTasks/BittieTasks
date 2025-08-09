@@ -242,7 +242,7 @@ export default function PaymentFlow(props: PaymentFlowProps) {
               <div className="text-sm text-muted-foreground">
                 <div className="flex items-center gap-2 mb-2">
                   <AlertCircle className="w-4 h-4" />
-                  <span>Platform Fee (5%): ${(props.totalAmount * 0.05).toFixed(2)}</span>
+                  <span>Platform Fee (10%): ${(props.totalAmount * 0.10).toFixed(2)}</span>
                 </div>
                 <p>The platform fee helps maintain BittieTasks and ensures secure payments.</p>
               </div>

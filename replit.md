@@ -39,7 +39,7 @@ Preferred communication style: Senior programming engineer level technical commu
 - **Access Control**: Platform enforces user verification before accessing monetization features.
 - **Development Route**: `/platform` provides authenticated access for testing core functionality.
 - **Monetization Ready**: Task marketplace and earnings dashboard implemented with mock data.
-- **Payment Processing**: Stripe integration complete with split payments and platform fees.
+- **Payment Processing**: Stripe integration complete with split payments and 10% platform fees.
 - **Corporate Sponsorship**: Ethical partner system with sponsored tasks and community bonuses.
 
 ### Business Model and Monetization

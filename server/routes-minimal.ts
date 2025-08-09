@@ -256,8 +256,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { taskId, amount, participants } = req.body;
       
-      // Calculate platform fee (5%)
-      const platformFee = Math.round(amount * 0.05 * 100);
+      // Calculate platform fee (10%)
+      const platformFee = Math.round(amount * 0.10 * 100);
       const totalAmount = Math.round(amount * 100); // Convert to cents
 
       const paymentIntent = await stripeClient.paymentIntents.create({
