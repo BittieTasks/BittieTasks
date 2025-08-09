@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/lib/supabase';
+import { AuthDiagnostics, type DiagnosticResult } from '@/lib/auth-diagnostics';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AuthDebug() {
@@ -11,11 +12,42 @@ export default function AuthDebug() {
   const [email, setEmail] = useState('test@example.com');
   const [password, setPassword] = useState('password123');
   const [logs, setLogs] = useState<string[]>([]);
+  const [diagnosticResults, setDiagnosticResults] = useState<DiagnosticResult[]>([]);
   const { toast } = useToast();
+  
+  useEffect(() => {
+    // Run initial diagnostics on component mount
+    runDiagnostics();
+  }, []);
 
   const addLog = (message: string) => {
     console.log(message);
     setLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
+
+  const runDiagnostics = async () => {
+    setLoading(true);
+    addLog('🔍 Running comprehensive authentication diagnostics...');
+    
+    try {
+      const diagnostics = new AuthDiagnostics();
+      const results = await diagnostics.runFullDiagnostic();
+      setDiagnosticResults(results);
+      
+      const failures = diagnostics.getFailedTests();
+      if (failures.length === 0) {
+        addLog('✅ All diagnostic tests passed');
+      } else {
+        addLog(`❌ ${failures.length} diagnostic test(s) failed`);
+        failures.forEach(failure => {
+          addLog(`   - ${failure.test}: ${failure.message}`);
+        });
+      }
+    } catch (error: any) {
+      addLog(`💥 Diagnostic error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const testConnection = async () => {
@@ -134,8 +166,11 @@ export default function AuthDebug() {
             <CardDescription>Testing connection and authentication flow</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              <Button onClick={testConnection} disabled={loading}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <Button onClick={runDiagnostics} disabled={loading}>
+                Run Diagnostics
+              </Button>
+              <Button onClick={testConnection} disabled={loading} variant="outline">
                 Test Connection
               </Button>
               <Button onClick={testSignUp} disabled={loading} variant="outline">
@@ -173,6 +208,38 @@ export default function AuthDebug() {
             </div>
           </CardContent>
         </Card>
+
+        {diagnosticResults.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Diagnostic Results</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {diagnosticResults.map((result, index) => (
+                  <div 
+                    key={index} 
+                    className={`p-3 rounded-lg border ${
+                      result.status === 'pass' ? 'bg-green-50 border-green-200' :
+                      result.status === 'fail' ? 'bg-red-50 border-red-200' :
+                      'bg-yellow-50 border-yellow-200'
+                    }`}
+                  >
+                    <div className="font-medium">
+                      {result.status === 'pass' ? '✅' : result.status === 'fail' ? '❌' : '⚠️'} {result.test}
+                    </div>
+                    <div className="text-sm text-gray-600">{result.message}</div>
+                    {result.details && (
+                      <pre className="text-xs bg-gray-100 p-2 mt-1 rounded overflow-auto">
+                        {JSON.stringify(result.details, null, 2)}
+                      </pre>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>
