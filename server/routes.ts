@@ -2068,6 +2068,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Debug route for environment validation
+  app.get('/api/debug/env', (req, res) => {
+    const envCheck = {
+      VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? 'SET' : 'MISSING',
+      VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ? 'SET' : 'MISSING',
+      nodeEnv: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(envCheck);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
