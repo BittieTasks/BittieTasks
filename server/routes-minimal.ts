@@ -374,6 +374,153 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Stripe Subscription Management
+  app.post('/api/create-subscription', async (req, res) => {
+    try {
+      const stripe = await import('stripe');
+      const stripeClient = new stripe.default(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2025-07-30.basil',
+      });
+
+      const { planId, userEmail, userId } = req.body;
+      
+      // Plan pricing (monthly)
+      const planPrices = {
+        free: { price: 0, priceId: null },
+        pro: { price: 999, priceId: process.env.STRIPE_PRO_PRICE_ID }, // $9.99
+        premium: { price: 1999, priceId: process.env.STRIPE_PREMIUM_PRICE_ID } // $19.99
+      };
+
+      if (!planPrices[planId as keyof typeof planPrices]) {
+        return res.status(400).json({ error: 'Invalid plan ID' });
+      }
+
+      // For free plan, just update user locally
+      if (planId === 'free') {
+        return res.json({
+          success: true,
+          subscriptionId: null,
+          clientSecret: null,
+          message: 'Free plan activated'
+        });
+      }
+
+      // Create or retrieve Stripe customer
+      let customer;
+      try {
+        const customers = await stripeClient.customers.list({
+          email: userEmail,
+          limit: 1
+        });
+        customer = customers.data[0];
+      } catch (error) {
+        console.log('Customer lookup failed, creating new customer');
+      }
+
+      if (!customer) {
+        customer = await stripeClient.customers.create({
+          email: userEmail,
+          metadata: { userId }
+        });
+      }
+
+      // Create subscription
+      const subscription = await stripeClient.subscriptions.create({
+        customer: customer.id,
+        items: [{
+          price: planPrices[planId as keyof typeof planPrices].priceId,
+        }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: { save_default_payment_method: 'on_subscription' },
+        expand: ['latest_invoice.payment_intent'],
+        metadata: {
+          userId,
+          planId
+        }
+      });
+
+      res.json({
+        success: true,
+        subscriptionId: subscription.id,
+        customerId: customer.id,
+        clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
+        planId
+      });
+
+    } catch (error: any) {
+      console.error('Subscription creation error:', error);
+      res.status(500).json({ 
+        error: 'Subscription creation failed',
+        message: error.message 
+      });
+    }
+  });
+
+  // Cancel subscription
+  app.post('/api/cancel-subscription', async (req, res) => {
+    try {
+      const stripe = await import('stripe');
+      const stripeClient = new stripe.default(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2025-07-30.basil',
+      });
+
+      const { subscriptionId } = req.body;
+
+      if (!subscriptionId) {
+        return res.status(400).json({ error: 'Subscription ID required' });
+      }
+
+      const subscription = await stripeClient.subscriptions.cancel(subscriptionId);
+
+      res.json({
+        success: true,
+        cancelled: true,
+        subscriptionId: subscription.id,
+        status: subscription.status
+      });
+
+    } catch (error: any) {
+      console.error('Subscription cancellation error:', error);
+      res.status(500).json({ 
+        error: 'Subscription cancellation failed',
+        message: error.message 
+      });
+    }
+  });
+
+  // Get subscription status
+  app.get('/api/subscription/:subscriptionId', async (req, res) => {
+    try {
+      const stripe = await import('stripe');
+      const stripeClient = new stripe.default(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2025-07-30.basil',
+      });
+
+      const { subscriptionId } = req.params;
+
+      const subscription = await stripeClient.subscriptions.retrieve(subscriptionId);
+
+      res.json({
+        success: true,
+        subscription: {
+          id: subscription.id,
+          status: subscription.status,
+          currentPeriodStart: subscription.current_period_start,
+          currentPeriodEnd: subscription.current_period_end,
+          cancelAtPeriodEnd: subscription.cancel_at_period_end,
+          customerId: subscription.customer
+        }
+      });
+
+    } catch (error: any) {
+      console.error('Subscription retrieval error:', error);
+      res.status(500).json({ 
+        error: 'Subscription retrieval failed',
+        message: error.message 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

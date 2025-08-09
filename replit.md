@@ -40,6 +40,7 @@ Preferred communication style: Senior programming engineer level technical commu
 - **Development Route**: `/platform` provides authenticated access for testing core functionality.
 - **Monetization Ready**: Task marketplace and earnings dashboard implemented with mock data.
 - **Payment Processing**: Stripe integration complete with split payments and 10% platform fees.
+- **Subscription System**: Three-tier subscription model (Free/Pro/Premium) with Stripe billing.
 - **Corporate Sponsorship**: Ethical partner system with sponsored tasks and community bonuses.
 
 ### Business Model and Monetization

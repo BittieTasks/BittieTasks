@@ -45,6 +45,7 @@ import TaskMarketplace from "@/pages/TaskMarketplace";
 import EarningsDashboard from "@/pages/EarningsDashboard";
 import PaymentFlow from "@/pages/PaymentFlow";
 import CorporateSponsorship from "@/pages/CorporateSponsorship";
+import SubscriptionPage from "@/pages/SubscriptionPage";
 import type { User } from "@shared/schema";
 import { initGA } from "./lib/simpleAnalytics";
 import { useSimpleAnalytics as useAnalytics } from "./hooks/use-simple-analytics";
@@ -175,6 +176,7 @@ function Router() {
           <Route path="/dashboard" component={() => <AuthenticatedRoute component={EarningsDashboard} />} />
           <Route path="/payment/:taskId" component={() => <AuthenticatedRoute component={PaymentFlow} />} />
           <Route path="/sponsorship" component={() => <AuthenticatedRoute component={CorporateSponsorship} />} />
+          <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
           
           {/* Fallback route */}
           <Route component={NotFound} />

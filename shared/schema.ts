@@ -45,6 +45,19 @@ export const users = pgTable("users", {
   tasksCompleted: integer("tasks_completed").default(0),
   activeReferrals: integer("active_referrals").default(0),
   monthlyGoal: decimal("monthly_goal", { precision: 10, scale: 2 }).default('500.00'),
+  // Subscription fields
+  subscriptionTier: varchar("subscription_tier").default('free'), // free, pro, premium
+  subscriptionStatus: varchar("subscription_status").default('active'), // active, cancelled, past_due
+  stripeCustomerId: varchar("stripe_customer_id"),
+  stripeSubscriptionId: varchar("stripe_subscription_id"),
+  subscriptionStartDate: timestamp("subscription_start_date"),
+  subscriptionEndDate: timestamp("subscription_end_date"),
+  monthlyTaskLimit: integer("monthly_task_limit").default(5),
+  monthlyTasksCompleted: integer("monthly_tasks_completed").default(0),
+  lastMonthlyReset: timestamp("last_monthly_reset"),
+  prioritySupport: boolean("priority_support").default(false),
+  adFree: boolean("ad_free").default(false),
+  premiumBadge: boolean("premium_badge").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
