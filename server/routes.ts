@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { registerSubscriptionRoutes } from "./routes/subscription";
+import { supabaseAdmin, verifySupabaseJWT } from "./lib/supabase.js";
 // Note: Using Supabase authentication - local storage removed
 import affiliateProductsRouter from "./routes/affiliate-products";
 import { ethicalPartnershipMatcher, type PartnershipCandidate } from "./services/ethicalPartnershipMatcher";
@@ -156,12 +157,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Legacy admin login removed - using Supabase auth with RLS admin policies instead
 
+  // Authentication middleware
+  const requireAuth = async (req, res, next) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: "Authentication token required" });
+      }
+
+      const token = authHeader.split(' ')[1];
+      const { user, error } = await verifySupabaseJWT(token);
+      
+      if (error || !user) {
+        return res.status(401).json({ error: "Invalid authentication token" });
+      }
+
+      req.user = user;
+      next();
+    } catch (error) {
+      console.error("Auth middleware error:", error);
+      res.status(401).json({ error: "Authentication failed" });
+    }
+  };
+
   // Auth endpoints for Supabase integration
   app.get("/api/auth/user", async (req, res) => {
     try {
-      // Explicitly set JSON headers to prevent vite override
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(200).json(null);
+      }
+
+      const token = authHeader.split(' ')[1];
+      const { user, error } = await verifySupabaseJWT(token);
+      
+      if (error || !user) {
+        return res.status(200).json(null);
+      }
+
+      // Get user profile from Supabase
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
       res.setHeader('Content-Type', 'application/json');
-      res.status(200).json(null);
+      res.status(200).json({ 
+        ...user, 
+        profile: profile || null 
+      });
     } catch (error) {
       console.error("Auth user error:", error);
       res.setHeader('Content-Type', 'application/json');
@@ -169,12 +214,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/user/current", async (req, res) => {
+  app.get("/api/user/current", requireAuth, async (req, res) => {
     try {
-      // Return null - no authenticated user in demo mode
-      // This forces proper Supabase authentication
+      // Get user profile from Supabase
+      const { data: profile, error } = await supabaseAdmin
+        .from('profiles')
+        .select('*')
+        .eq('id', req.user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error("Profile fetch error:", error);
+        return res.status(500).json({ error: "Failed to fetch profile" });
+      }
+
       res.setHeader('Content-Type', 'application/json');
-      res.status(401).json({ error: "Authentication required" });
+      res.status(200).json({
+        id: req.user.id,
+        email: req.user.email,
+        name: req.user.user_metadata?.full_name || `${req.user.user_metadata?.first_name || ''} ${req.user.user_metadata?.last_name || ''}`.trim(),
+        isEmailVerified: req.user.email_confirmed_at ? true : false,
+        profile: profile || null
+      });
     } catch (error) {
       console.error("Current user error:", error);
       res.setHeader('Content-Type', 'application/json');
@@ -183,11 +244,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all task categories (authentication required)
-  app.get("/api/categories", async (req, res) => {
+  app.get("/api/categories", requireAuth, async (req, res) => {
     try {
-      // Require authentication for all data access
-      res.status(401).json({ error: "Authentication required to access categories" });
+      // Check cache first
+      const cachedCategories = cacheService.get("task-categories");
+      if (cachedCategories) {
+        res.set('Cache-Control', 'public, max-age=300');
+        res.set('X-Cache-Hit', 'true');
+        return res.json(cachedCategories);
+      }
+
+      // Try to get categories from Supabase
+      const { data: categories, error } = await supabaseAdmin
+        .from('task_categories')
+        .select('*')
+        .eq('is_active', true);
+
+      if (error) {
+        console.error("Categories fetch error:", error);
+        // Fallback to default categories if database query fails
+        const defaultCategories = [
+          { id: 'childcare', name: 'Childcare', color: '#FF6B6B' },
+          { id: 'household', name: 'Household Tasks', color: '#4ECDC4' },
+          { id: 'errands', name: 'Errands & Shopping', color: '#45B7D1' },
+          { id: 'tutoring', name: 'Tutoring & Education', color: '#96CEB4' },
+          { id: 'pet-care', name: 'Pet Care', color: '#FFEAA7' },
+          { id: 'self-care', name: 'Self-Care & Wellness', color: '#DDA0DD' }
+        ];
+        
+        cacheService.set("task-categories", defaultCategories, 5 * 60 * 1000);
+        res.set('Cache-Control', 'public, max-age=300');
+        return res.json(defaultCategories);
+      }
+
+      // Cache for 5 minutes
+      cacheService.set("task-categories", categories, 5 * 60 * 1000);
+      res.set('Cache-Control', 'public, max-age=300');
+      res.json(categories);
     } catch (error) {
+      console.error("Categories error:", error);
       res.status(500).json({ message: "Failed to fetch categories" });
     }
   });
@@ -289,11 +384,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all tasks (authentication required)
-  app.get("/api/tasks", async (req, res) => {
+  app.get("/api/tasks", requireAuth, async (req, res) => {
     try {
-      // Require authentication for all data access
-      res.status(401).json({ error: "Authentication required to access tasks" });
+      const { category } = req.query;
+      const cacheKey = category ? `tasks-category-${category}` : 'tasks-all';
+      
+      // Check cache first
+      const cachedTasks = cacheService.get(cacheKey);
+      if (cachedTasks) {
+        res.set('Cache-Control', 'public, max-age=180');
+        res.set('X-Cache-Hit', 'true');
+        return res.json(cachedTasks);
+      }
+
+      // Try to get tasks from Supabase
+      let query = supabaseAdmin
+        .from('tasks')
+        .select('*')
+        .eq('is_active', true);
+
+      if (category && typeof category === "string") {
+        query = query.eq('category_id', category);
+      }
+
+      const { data: tasks, error } = await query;
+
+      if (error) {
+        console.error("Tasks fetch error:", error);
+        // Return empty tasks array if database query fails
+        const emptyTasks = [];
+        cacheService.set(cacheKey, emptyTasks, 3 * 60 * 1000);
+        res.set('Cache-Control', 'public, max-age=180');
+        return res.json(emptyTasks);
+      }
+
+      // Cache for 3 minutes
+      cacheService.set(cacheKey, tasks, 3 * 60 * 1000);
+      res.set('Cache-Control', 'public, max-age=180');
+      res.json(tasks);
     } catch (error) {
+      console.error("Tasks error:", error);
       res.status(500).json({ message: "Failed to fetch tasks" });
     }
   });
