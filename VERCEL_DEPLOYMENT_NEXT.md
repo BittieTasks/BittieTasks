@@ -1,46 +1,50 @@
-# 🚀 Deploy to Vercel - Final Steps
+# 🚀 Vercel Deployment Setup - Get Your Revenue Platform Live
 
-## Your code is now on GitHub! Time to deploy.
+## Step 1: Connect GitHub to Vercel
 
-### Step 1: Deploy to Vercel
-1. Go to **https://vercel.com**
-2. Click **"Sign up"** or **"Login"** 
-3. Choose **"Continue with GitHub"**
-4. Click **"New Project"**
-5. Find your **"bittietasks"** repository
-6. Click **"Import"**
-7. Vercel will auto-detect Next.js - just click **"Deploy"**
+### Go to Vercel Dashboard:
+1. Visit: https://vercel.com/dashboard
+2. Click **"Add New..." → "Project"**
+3. Under **"Import Git Repository"**, find **"BittieTasks"**
+4. Click **"Import"**
 
-### Step 2: Add Environment Variables
-Once deployed, go to:
-**Project Dashboard → Settings → Environment Variables**
+### Configure Deployment:
+- **Framework Preset**: Next.js (should auto-detect)
+- **Root Directory**: `.` (leave as default)
+- **Build Command**: `npm run build` (should auto-fill)
+- **Output Directory**: `.next` (should auto-fill)
 
-Add these 4 variables:
+## Step 2: Add Environment Variables
+
+Click **"Environment Variables"** and add these:
+
+### Required for Authentication:
 ```
-NEXT_PUBLIC_SUPABASE_URL = [your Supabase project URL]
-NEXT_PUBLIC_SUPABASE_ANON_KEY = [your Supabase anon key]
-STRIPE_SECRET_KEY = [your Stripe secret key]
-SENDGRID_API_KEY = [your SendGrid API key]
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
-### Step 3: Redeploy
-After adding variables, go to **Deployments** tab and click **"Redeploy"** on the latest deployment.
+### Required for Payments:
+```
+STRIPE_SECRET_KEY=your_stripe_secret_key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_public_key
+```
 
-## Result: Live Revenue Platform!
-Your platform will be live at:
-**https://bittietasks.vercel.app**
+### Required for Email:
+```
+SENDGRID_API_KEY=your_sendgrid_api_key
+```
 
-## What Goes Live:
-✅ Task marketplace with real earning opportunities
-✅ Subscription tiers: Free (10%) → Pro (7%) → Premium (5%)
-✅ Corporate sponsorship portal
-✅ Real-time earnings dashboard
-✅ Email verification access control
-✅ Professional mobile-first interface
+## Step 3: Deploy
+Click **"Deploy"** - Your revenue platform will be live in 2-3 minutes!
 
-## Ongoing Development:
-- Continue building features here in Replit
-- Push updates with `git push` when ready
-- Vercel auto-deploys on every push
+## Your Live URL:
+Will be something like: `https://bittie-tasks.vercel.app`
 
-**Your complete monetization platform is minutes away from generating revenue!**
+## Revenue Features Going Live:
+- Task marketplace with real earning opportunities
+- Subscription tiers (10%/7%/5% platform fees)
+- Corporate sponsorship portal  
+- Real-time earnings dashboard
+- Email verification system
