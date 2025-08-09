@@ -34,7 +34,7 @@ export default function AuthPage() {
 
   const loginMutation = useMutation({
     mutationFn: (data: { email: string; password: string }) =>
-      apiRequest("POST", "/api/auth/signin", data),
+      apiRequest("POST", "/api/auth/login", data),
     onSuccess: async () => {
       toast({
         title: "Welcome back!",
@@ -65,7 +65,7 @@ export default function AuthPage() {
     onSuccess: () => {
       toast({
         title: "Welcome to BittieTasks!",
-        description: "Account created! Please check your email to verify your account.",
+        description: "Account created successfully! You can now log in.",
         duration: 5000,
       });
       

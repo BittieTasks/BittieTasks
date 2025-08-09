@@ -33,7 +33,6 @@ router.post('/signup', authLimiter, async (req, res) => {
 
     // Create user - immediately verified
     const user = await storage.createUser({
-      id: randomUUID(),
       username: email.split('@')[0],
       email,
       passwordHash,
