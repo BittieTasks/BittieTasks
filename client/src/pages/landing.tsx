@@ -94,15 +94,15 @@ export default function LandingPage() {
 
         {/* Main Call to Action */}
         <div className="space-y-4 mb-8">
-          <Link href="/auth">
+          <Link href="/">
             <Button className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white font-medium py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
-              Get Started - Sign Up / Log In
+              Explore Tasks & Start Earning
             </Button>
           </Link>
           
-          <Link href="/how-it-works">
+          <Link href="/subscription">
             <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
-              Learn More
+              View Subscription Plans
             </Button>
           </Link>
         </div>

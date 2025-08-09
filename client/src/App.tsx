@@ -91,21 +91,22 @@ function Router() {
       
       <main role="main" id="main-content">
         <Switch>
-          <Route path="/" component={() => <AuthenticatedRoute component={Home} />} />
+          <Route path="/" component={Home} />
+          <Route path="/landing" component={Landing} />
           <Route path="/auth" component={Auth} />
           <Route path="/task/:id" component={() => <AuthenticatedRoute component={TaskDetail} />} />
           <Route path="/create-task" component={() => <AuthenticatedRoute component={CreateTask} />} />
           <Route path="/earnings" component={() => <AuthenticatedRoute component={Earnings} />} />
           <Route path="/profile" component={() => <AuthenticatedRoute component={Profile} />} />
           <Route path="/messages" component={() => <AuthenticatedRoute component={Messages} />} />
-          <Route path="/search" component={() => <AuthenticatedRoute component={Search} />} />
+          <Route path="/search" component={Search} />
           <Route path="/achievements" component={() => <AuthenticatedRoute component={Achievements} />} />
           <Route path="/challenges" component={() => <AuthenticatedRoute component={DailyChallenges} />} />
           <Route path="/compliance" component={() => <AuthenticatedRoute component={Compliance} />} />
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin-access" component={() => <AuthenticatedRoute component={AdminAccess} />} />
           <Route path="/admin" component={() => <AuthenticatedRoute component={Admin} />} />
-          <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
+          <Route path="/subscription" component={SubscriptionPage} />
           <Route path="/subscription/checkout/:tier" component={() => <AuthenticatedRoute component={SubscriptionCheckout} />} />
           <Route path="/subscription-upgrade" component={() => <AuthenticatedRoute component={SubscriptionUpgrade} />} />
           <Route path="/system-status" component={() => <AuthenticatedRoute component={SystemStatus} />} />
