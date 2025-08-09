@@ -3,7 +3,7 @@ import session from "express-session";
 import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { autoHealer } from "./services/autoHealer";
+// import { autoHealer } from "./services/autoHealer"; // DISABLED - causing spam requests
 
 const app = express();
 // Add response compression for better performance
@@ -121,9 +121,9 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
     
-    // Start automated monitoring and self-healing system
-    setTimeout(() => {
-      autoHealer.start();
-    }, 5000); // Start after 5 seconds to let server fully initialize
+    // AutoHealer disabled - was causing spam requests every 30 seconds
+    // setTimeout(() => {
+    //   autoHealer.start();
+    // }, 5000);
   });
 })();
