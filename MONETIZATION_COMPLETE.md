@@ -14,7 +14,7 @@
 - **Shared Task Payments**: Parents split costs and earn together
 - **Earning Potential**: $5-500 per task based on complexity
 - **Payment Distribution**: Automatic split between participants
-- **Platform Fee**: 10% automatically collected
+- **Platform Fees**: Tiered structure (10% Free, 7% Pro, 5% Premium)
 
 #### 2. Corporate Sponsorship Revenue  
 - **Sponsored Tasks**: Companies pay premium for community engagement
@@ -39,13 +39,15 @@
 - **Task Marketplace**: `/marketplace` - Create and join earning tasks
 - **Earnings Dashboard**: `/dashboard` - Track income and analytics
 - **Payment Flow**: `/payment/:taskId` - Process task payments
+- **Subscription Management**: `/subscription` - Plan selection and billing
 - **Corporate Sponsorship**: `/sponsorship` - Ethical partner integration
 
 ### Revenue Streams Active
 1. **Task Participation Fees**: Users pay to join shared tasks
-2. **Platform Commission**: 10% fee on all transactions
-3. **Corporate Sponsorships**: Premium partner payments
-4. **Community Bonuses**: Enhanced earnings from sponsors
+2. **Platform Commission**: Tiered fees (10% Free, 7% Pro, 5% Premium)
+3. **Subscription Revenue**: $9.99/month Pro, $19.99/month Premium plans
+4. **Corporate Sponsorships**: Premium partner payments
+5. **Community Bonuses**: Enhanced earnings from sponsors
 
 ### Technical Implementation
 - **Database Schema**: Complete monetization data model

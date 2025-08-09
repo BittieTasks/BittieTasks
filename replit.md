@@ -45,8 +45,8 @@ Preferred communication style: Senior programming engineer level technical commu
 
 ### Business Model and Monetization
 - **Core Innovation**: Community-based earning model where parents earn by sharing tasks.
-- **Revenue Streams**: Sponsored tasks (companies pay for community engagement, meeting ethical standards), advertising (native feed ads, local service providers), and affiliate marketing (task-based product recommendations).
-- **Payment Infrastructure**: Enterprise-grade processing system including Stripe Connect for split payments and automatic platform fee collection, and Escrow.com integration for high-value transactions.
+- **Revenue Streams**: Tiered subscription plans ($9.99 Pro, $19.99 Premium), platform fees (10%/7%/5% based on tier), sponsored tasks (companies pay for community engagement), advertising (native feed ads), and affiliate marketing (task-based product recommendations).
+- **Payment Infrastructure**: Enterprise-grade processing system including Stripe Connect for split payments, recurring subscription billing, tiered platform fee collection, and Escrow.com integration for high-value transactions.
 - **Ethical Partnership Standards**: Automated evaluation system screens corporate partners using criteria like HRC Corporate Equality Index, DEI leadership, LGBTQ+ support, environmental responsibility, and labor practices. Includes a Corporate Partner Portal for applications and custom task proposals.
 
 ## External Dependencies
