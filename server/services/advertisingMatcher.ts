@@ -1,4 +1,4 @@
-import { storage } from "../storage";
+// Note: Using Supabase authentication - storage removed
 
 export interface AdvertisingCriteria {
   hrcScore: number; // Human Rights Campaign Corporate Equality Index (0-100)

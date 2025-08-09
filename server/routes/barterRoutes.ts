@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { storage } from "../storage";
+// Note: Using Supabase authentication - storage removed
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { tasks, barterTransactions } from "@shared/schema";

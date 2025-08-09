@@ -1,5 +1,5 @@
 import express from 'express';
-import { contentModerationService } from '../services/contentModerationFixed';
+import { contentModeration } from '../services/contentModeration';
 // Moderation routes - no auth required for basic moderation checks
 
 const router = express.Router();

@@ -1,4 +1,4 @@
-import { storage } from "../memory-storage";
+// Note: Using Supabase authentication - storage reference removed
 import { analytics } from "./analyticsService";
 import { fraudDetection } from "./fraudDetection";
 import { fileManager } from "./fileManager";

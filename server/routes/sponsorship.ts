@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { eq, desc, and } from "drizzle-orm";
 import { sponsoredTasks, corporatePartners, ethicalEvaluations, sponsorshipApplications } from "../../shared/schema";
-import { storage } from "../storage";
+// Note: Using Supabase authentication - storage removed
 import { requireAuth } from "../auth/supabase-auth";
 
 const router = Router();

@@ -94,5 +94,5 @@ export interface IStorage {
   clearAllUserData(): Promise<{ success: boolean; message: string; deletedCounts: any }>;
 }
 
-// Export memory storage for development (single database solution)
-export { storage } from './memory-storage';
+// Note: Using Supabase authentication - storage managed by Supabase
+// Local storage implementations have been removed in favor of Supabase

@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { storage } from "../storage";
+// Note: Using Supabase authentication - storage removed
 
 export function registerSubscriptionRoutes(app: Express) {
   // Get subscription plans
