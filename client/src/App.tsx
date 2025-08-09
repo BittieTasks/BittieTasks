@@ -177,10 +177,7 @@ function Router() {
           <Route path="/payment-methods" component={() => <AuthenticatedRoute component={PaymentMethods} />} />
           <Route path="/marketplace" component={() => <AuthenticatedRoute component={TaskMarketplace} />} />
           <Route path="/dashboard" component={() => <AuthenticatedRoute component={EarningsDashboard} />} />
-          <Route path="/payment/:taskId" component={() => <AuthenticatedRoute component={PaymentFlow} />} />
           <Route path="/sponsorship" component={() => <AuthenticatedRoute component={CorporateSponsorship} />} />
-          <Route path="/subscription" component={() => <AuthenticatedRoute component={SubscriptionPage} />} />
-          <Route path="/registration" component={RegistrationFlow} />
           
           {/* Fallback route */}
           <Route component={NotFound} />
