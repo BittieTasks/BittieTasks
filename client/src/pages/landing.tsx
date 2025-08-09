@@ -101,7 +101,7 @@ export default function LandingPage() {
           </Link>
           
           <Link href="/how-it-works">
-            <Button variant="outline" className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium py-3 px-6 rounded-lg transition-all duration-200">
+            <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
               Learn More
             </Button>
           </Link>
@@ -110,13 +110,13 @@ export default function LandingPage() {
         {/* Business Partnership */}
         <div className="flex space-x-3 mb-6">
           <Link href="/company-application" className="flex-1">
-            <Button variant="outline" className="w-full text-xs py-2 px-3 border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg">
+            <Button className="w-full text-xs py-2 px-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
               Corporate Partnership
             </Button>
           </Link>
           
           <Link href="/advertising-portal" className="flex-1">
-            <Button variant="outline" className="w-full text-xs py-2 px-3 border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg">
+            <Button className="w-full text-xs py-2 px-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
               Advertise with Us
             </Button>
           </Link>
