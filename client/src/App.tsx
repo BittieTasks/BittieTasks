@@ -46,7 +46,7 @@ import PaymentFlow from "@/pages/PaymentFlow";
 import CorporateSponsorship from "@/pages/CorporateSponsorship";
 import SubscriptionPage from "@/pages/SubscriptionPage";
 import RegistrationFlow from "@/pages/RegistrationFlow";
-import WelcomePage from "@/pages/WelcomePage";
+import StaticWelcome from "@/pages/StaticWelcome";
 import type { User } from "@shared/schema";
 import { initGA } from "./lib/simpleAnalytics";
 import { useSimpleAnalytics as useAnalytics } from "./hooks/use-simple-analytics";
@@ -112,8 +112,8 @@ function SmartLanding() {
   }
 
   // If not authenticated, show welcome page
-  console.log('SmartLanding: No user, showing WelcomePage');
-  return <WelcomePage />;
+  console.log('SmartLanding: No user, showing StaticWelcome');
+  return <StaticWelcome />;
 }
 
 function Router() {
@@ -140,7 +140,7 @@ function Router() {
           <Route path="/resend-verification" component={ResendVerificationPage} />
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/registration" component={RegistrationFlow} />
-          <Route path="/welcome" component={WelcomePage} />
+          <Route path="/welcome" component={StaticWelcome} />
           
           {/* Smart home route - shows Landing for unauth, Home for auth */}
           <Route path="/" component={SmartLanding} />
