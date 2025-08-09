@@ -37,6 +37,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile('/home/runner/workspace/bypass-auth.html');
   });
 
+  // Supabase setup guide
+  app.get('/supabase-setup', (req, res) => {
+    res.sendFile('/home/runner/workspace/supabase-setup-guide.html');
+  });
+
   // Test email endpoint
   app.post('/api/send-test-email', async (req, res) => {
     try {
