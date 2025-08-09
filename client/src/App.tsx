@@ -177,8 +177,11 @@ function Router() {
 }
 
 function App() {
+  console.log('🎯 App render');
+  
   // Initialize Google Analytics when app loads
   useEffect(() => {
+    console.log('🚀 App mounting...');
     if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
       console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
     } else {

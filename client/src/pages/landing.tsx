@@ -5,6 +5,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 
 export default function LandingPage() {
+  console.log('🏠 Landing page render');
+  
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
 
