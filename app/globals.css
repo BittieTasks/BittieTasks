@@ -103,7 +103,7 @@ body {
 
 /* BittieTasks UI Enhancements */
 .gradient-text {
-  background: linear-gradient(135deg, hsl(var(--bittie-blue)), hsl(var(--bittie-purple)));
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #10b981);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -111,9 +111,9 @@ body {
 
 .hero-gradient {
   background: linear-gradient(135deg, 
-    hsl(var(--bittie-blue)) 0%, 
-    hsl(var(--bittie-purple)) 50%, 
-    hsl(var(--bittie-green)) 100%);
+    #1e40af 0%, 
+    #7c3aed 50%, 
+    #059669 100%);
 }
 
 .card-hover {

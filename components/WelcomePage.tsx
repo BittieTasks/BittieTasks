@@ -65,7 +65,9 @@ function EarningsCalculator() {
 
 export default function WelcomePage() {
   return (
-    <div className="min-h-screen hero-gradient relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden" style={{
+      background: 'linear-gradient(135deg, #1e40af 0%, #7c3aed 50%, #059669 100%)'
+    }}>
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl"></div>
