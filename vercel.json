@@ -6,6 +6,6 @@
   "devCommand": "npm run dev",
   "public": true,
   "github": {
-    "enabled": false
+    "enabled": true
   }
 }
