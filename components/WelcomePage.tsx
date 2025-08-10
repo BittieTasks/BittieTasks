@@ -1,5 +1,68 @@
 'use client'
 
+import { useState } from 'react'
+
+// Interactive Earnings Calculator Component
+function EarningsCalculator() {
+  const [tasksPerWeek, setTasksPerWeek] = useState(3)
+  const [avgTaskValue, setAvgTaskValue] = useState(35)
+  
+  const weeklyEarnings = tasksPerWeek * avgTaskValue
+  const monthlyEarnings = weeklyEarnings * 4.33 // Average weeks per month
+  const yearlyEarnings = monthlyEarnings * 12
+  
+  return (
+    <div className="space-y-8">
+      <div className="grid md:grid-cols-2 gap-8">
+        <div>
+          <label className="block text-white text-lg font-semibold mb-3">Tasks per week:</label>
+          <div className="flex items-center space-x-4">
+            <input 
+              type="range" 
+              min="1" 
+              max="10" 
+              value={tasksPerWeek}
+              onChange={(e) => setTasksPerWeek(Number(e.target.value))}
+              className="flex-1 h-3 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+            />
+            <span className="text-white text-xl font-bold w-8">{tasksPerWeek}</span>
+          </div>
+        </div>
+        <div>
+          <label className="block text-white text-lg font-semibold mb-3">Average task value:</label>
+          <div className="flex items-center space-x-4">
+            <input 
+              type="range" 
+              min="15" 
+              max="75" 
+              step="5"
+              value={avgTaskValue}
+              onChange={(e) => setAvgTaskValue(Number(e.target.value))}
+              className="flex-1 h-3 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+            />
+            <span className="text-white text-xl font-bold w-12">${avgTaskValue}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="grid md:grid-cols-3 gap-6 pt-8 border-t border-white/20">
+        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20">
+          <div className="text-3xl font-bold gradient-text">${weeklyEarnings}</div>
+          <p className="text-white/80 text-lg">Per Week</p>
+        </div>
+        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20">
+          <div className="text-3xl font-bold gradient-text">${monthlyEarnings.toFixed(0)}</div>
+          <p className="text-white/80 text-lg">Per Month</p>
+        </div>
+        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20">
+          <div className="text-3xl font-bold gradient-text">${yearlyEarnings.toFixed(0)}</div>
+          <p className="text-white/80 text-lg">Per Year</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function WelcomePage() {
   return (
     <div className="min-h-screen hero-gradient relative overflow-hidden">
@@ -125,6 +188,16 @@ export default function WelcomePage() {
                 Get paid immediately when tasks complete. Track earnings and grow your income effortlessly.
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Earnings Calculator */}
+      <div className="relative z-10 px-6 pb-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-600/20 border border-white/30 rounded-3xl p-12 backdrop-blur-sm">
+            <h3 className="text-3xl font-bold text-white text-center mb-8">Calculate Your Potential Earnings</h3>
+            <EarningsCalculator />
           </div>
         </div>
       </div>
