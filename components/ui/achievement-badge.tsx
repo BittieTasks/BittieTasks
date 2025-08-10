@@ -12,6 +12,7 @@ interface AchievementDefinition {
   targetValue: number;
   rewardType: string;
   rewardValue: number;
+  rarity?: string;
 }
 
 interface UserAchievement {
