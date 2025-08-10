@@ -216,15 +216,17 @@ export const insertCategorySchema = createInsertSchema(categories).omit({
 });
 
 // Form schemas with additional validation
-export const taskFormSchema = insertTaskSchema.extend({
-  earningPotential: z.number().min(5).max(500),
-  maxParticipants: z.number().min(1).max(20),
+export const taskFormSchema = z.object({
   title: z.string().min(1).max(100),
   description: z.string().min(10).max(500),
+  earningPotential: z.number().min(5).max(500),
+  maxParticipants: z.number().min(1).max(20),
   location: z.string().min(1).max(200),
+  duration: z.string().optional(),
+  requirements: z.string().optional(),
 });
 
-export const userFormSchema = insertUserSchema.extend({
+export const userFormSchema = z.object({
   email: z.string().email(),
   firstName: z.string().min(1).max(50).optional(),
   lastName: z.string().min(1).max(50).optional(),

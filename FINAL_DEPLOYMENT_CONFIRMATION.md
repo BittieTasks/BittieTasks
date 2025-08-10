@@ -2,7 +2,7 @@
 
 ## BittieTasks Platform Successfully Deployed
 
-**✅ LIVE PRODUCTION URL:** https://bittie-tasks-oylj323fb-bittie-tasks.vercel.app
+**✅ LIVE PRODUCTION URL:** https://bittie-tasks-7cy2sarog-bittie-tasks.vercel.app
 
 ### Build Status: SUCCESSFUL
 - ✅ Compiled successfully in 8.0s (optimized performance)

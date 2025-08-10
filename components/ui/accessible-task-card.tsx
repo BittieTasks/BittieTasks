@@ -76,15 +76,15 @@ export const AccessibleTaskCard: React.FC<AccessibleTaskCardProps> = ({
           <div className="flex flex-col items-end space-y-1">
             <span 
               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getDifficultyColor(task.difficulty || 'medium')}`}
-              aria-label={`Difficulty: ${task.difficulty}`}
+              aria-label={`Difficulty: ${task.difficulty || 'medium'}`}
             >
-              {task.difficulty}
+              {task.difficulty || 'medium'}
             </span>
             <span 
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}
-              aria-label={`Status: ${task.status}`}
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(task.status || 'open')}`}
+              aria-label={`Status: ${task.status || 'open'}`}
             >
-              {task.status}
+              {task.status || 'open'}
             </span>
           </div>
         </div>
@@ -104,16 +104,16 @@ export const AccessibleTaskCard: React.FC<AccessibleTaskCardProps> = ({
             <DollarSign className="h-4 w-4 text-green-600" aria-hidden="true" />
             <span>
               <span className="sr-only">Payment: </span>
-              {formatCurrency(task.payment)}
+              {formatCurrency(Number(task.earningPotential))}
             </span>
           </div>
           
-          {task.scheduledFor && (
+          {task.scheduledDate && (
             <div className="flex items-center space-x-2">
               <Clock className="h-4 w-4 text-blue-600" aria-hidden="true" />
               <span>
                 <span className="sr-only">Scheduled for: </span>
-                {formatDate(task.scheduledFor)}
+                {formatDate(task.scheduledDate.toISOString())}
               </span>
             </div>
           )}
@@ -140,14 +140,12 @@ export const AccessibleTaskCard: React.FC<AccessibleTaskCardProps> = ({
         </div>
 
         {/* Requirements */}
-        {task.requirements && task.requirements.length > 0 && (
+        {task.requirements && (
           <div>
             <h4 className="font-medium text-gray-900 mb-2">Requirements:</h4>
-            <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-              {task.requirements.map((requirement: string, index: number) => (
-                <li key={index}>{requirement}</li>
-              ))}
-            </ul>
+            <div className="text-sm text-gray-600">
+              {task.requirements}
+            </div>
           </div>
         )}
 
