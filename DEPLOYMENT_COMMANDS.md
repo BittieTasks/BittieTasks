@@ -1,58 +1,42 @@
-# 🚀 Deploy BittieTasks - Copy These Commands
+# 🚀 BittieTasks Vercel Deployment Commands
 
-## Step 1: Create GitHub Repository
-1. Go to https://github.com/new
-2. Repository name: `bittietasks`
-3. Keep it public or private (your choice)
-4. **Don't** check "Add a README file"
-5. Click "Create repository"
-
-## Step 2: Copy Your GitHub URL
-After creating the repo, copy the HTTPS URL that looks like:
-`https://github.com/YOUR_USERNAME/bittietasks.git`
-
-## Step 3: Run These Commands in Replit Shell
+## Step 1: Install Vercel CLI
 ```bash
-# Initialize git (if not already done)
-git init
-
-# Add all your files
-git add .
-
-# Make first commit
-git commit -m "Complete BittieTasks monetization platform ready for deployment"
-
-# Set main branch
-git branch -M main
-
-# Add your GitHub repo (replace YOUR_USERNAME with your actual username)
-git remote add origin https://github.com/YOUR_USERNAME/bittietasks.git
-
-# Push to GitHub
-git push -u origin main
+npm install -g vercel
 ```
 
-## Step 4: Deploy to Vercel
-1. Go to https://vercel.com
-2. Sign up/login with GitHub
-3. Click "New Project"
-4. Import your `bittietasks` repository
-5. Click "Deploy" (Vercel auto-detects Next.js)
+## Step 2: Login to Vercel
+```bash
+vercel login
+```
+(Check your email for verification)
 
-## Step 5: Add Environment Variables in Vercel
-In Vercel Dashboard → Project → Settings → Environment Variables:
+## Step 3: Deploy Your Revenue Platform
+```bash
+vercel --prod
+```
 
-Add these variables:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `STRIPE_SECRET_KEY`
-- `SENDGRID_API_KEY`
+## Step 4: Add Environment Variables
+```bash
+vercel env add NEXT_PUBLIC_SUPABASE_URL production
+```
+Enter: `https://ttgbotlcbzmmyqawnjpj.supabase.co`
 
-## Result: Live Revenue Platform!
-Your platform will be live at: `https://bittietasks.vercel.app`
+```bash
+vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
+```
+Enter: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0Z2JvdGxjYnptbXlxYXduanBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MDA4NzksImV4cCI6MjA3MDE3Njg3OX0.jc_PZay5gUyleINrGC5d5Sd2mCkHjonP56KCLJJNM1k`
 
-**Ready to start earning immediately with:**
-- Task marketplace
-- Subscription tiers (10%/7%/5% fees)
-- Corporate sponsorships
-- Real-time earnings tracking
+## Step 5: Redeploy with Environment Variables
+```bash
+vercel --prod
+```
+
+## Result:
+Your complete revenue platform will be live with:
+- Task marketplace with real earning opportunities
+- Subscription tiers (10%/7%/5% platform fees)
+- Corporate sponsorship portal
+- Real-time earnings dashboard
+
+The CLI deployment bypasses the confusing web interface completely!
