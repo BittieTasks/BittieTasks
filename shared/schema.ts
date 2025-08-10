@@ -86,6 +86,7 @@ export const tasks = pgTable("tasks", {
   currentParticipants: integer("current_participants").default(0),
   duration: varchar("duration"),
   location: varchar("location"),
+  difficulty: varchar("difficulty", { enum: ["easy", "medium", "hard"] }).default("medium"),
   requirements: text("requirements"),
   sponsorId: varchar("sponsor_id"),
   sponsorBudget: decimal("sponsor_budget", { precision: 10, scale: 2 }),

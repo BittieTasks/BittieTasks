@@ -75,7 +75,7 @@ export const AccessibleTaskCard: React.FC<AccessibleTaskCardProps> = ({
           </CardTitle>
           <div className="flex flex-col items-end space-y-1">
             <span 
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getDifficultyColor(task.difficulty)}`}
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getDifficultyColor(task.difficulty || 'medium')}`}
               aria-label={`Difficulty: ${task.difficulty}`}
             >
               {task.difficulty}
