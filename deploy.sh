@@ -1,30 +1,20 @@
 #!/bin/bash
+set -e
 
-# BittieTasks Deployment Script
-echo "🚀 Starting BittieTasks deployment..."
+echo "🚀 Deploying BittieTasks Revenue Platform to Vercel"
 
-# Export Next.js application
-echo "📦 Building application..."
-npx next build
+# Set Vercel token if authentication works
+export VERCEL_TOKEN=""
 
-if [ $? -eq 0 ]; then
-    echo "✅ Build successful! Your monetization platform is ready for deployment."
-    echo ""
-    echo "🎯 DEPLOYMENT READY:"
-    echo "• Complete task marketplace with earnings system"
-    echo "• Subscription tiers: Free (10%) → Pro (7%) → Premium (5%) platform fees"
-    echo "• Corporate sponsorship portal with ethical partner evaluation"
-    echo "• Email verification access control system"
-    echo "• Real-time earnings dashboard and goal tracking"
-    echo ""
-    echo "💰 REVENUE FEATURES INCLUDED:"
-    echo "• Platform automatically calculates fees in real-time"
-    echo "• Sponsored tasks offering 25-50% higher payouts"
-    echo "• Achievement rewards system"
-    echo "• Comprehensive analytics and growth insights"
-    echo ""
-    echo "🎯 Next step: Use Replit's Deploy button to make this live!"
-else
-    echo "❌ Build failed. Check the errors above."
-    exit 1
-fi
+# Deploy using direct API approach
+npx vercel --prod --token=$VERCEL_TOKEN --confirm --force
+
+# Add environment variables
+npx vercel env add NEXT_PUBLIC_SUPABASE_URL production --token=$VERCEL_TOKEN <<< "https://ttgbotlcbzmmyqawnjpj.supabase.co"
+npx vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production --token=$VERCEL_TOKEN <<< "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0Z2JvdGxjYnptbXlxYXduanBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MDA4NzksImV4cCI6MjA3MDE3Njg3OX0.jc_PZay5gUyleINrGC5d5Sd2mCkHjonP56KCLJJNM1k"
+
+# Final deployment with environment variables
+npx vercel --prod --token=$VERCEL_TOKEN --confirm
+
+echo "✅ BittieTasks revenue platform deployed successfully!"
+echo "Features live: Task marketplace, subscription tiers, corporate sponsorship, earnings dashboard"
