@@ -144,7 +144,7 @@ export const AccessibleTaskCard: React.FC<AccessibleTaskCardProps> = ({
           <div>
             <h4 className="font-medium text-gray-900 mb-2">Requirements:</h4>
             <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-              {task.requirements.map((requirement, index) => (
+              {task.requirements.map((requirement: string, index: number) => (
                 <li key={index}>{requirement}</li>
               ))}
             </ul>

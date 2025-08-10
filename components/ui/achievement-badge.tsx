@@ -2,7 +2,27 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
-import { AchievementDefinition, UserAchievement } from "@shared/schema";
+// Temporary interfaces for achievement system
+interface AchievementDefinition {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  category: string;
+  targetValue: number;
+  rewardType: string;
+  rewardValue: number;
+}
+
+interface UserAchievement {
+  id: string;
+  achievementId: string;
+  currentValue: number;
+  unlockedAt?: Date;
+  isUnlocked: boolean;
+  progress?: number;
+  maxProgress?: number;
+}
 
 interface AchievementBadgeProps {
   achievement: AchievementDefinition;

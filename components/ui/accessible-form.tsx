@@ -49,26 +49,26 @@ export const AccessibleForm: React.FC<AccessibleFormProps> = ({
     if (errorEntries.length > 0) {
       const errorMessages = errorEntries.reduce((acc, [key, error]) => {
         if (error?.message) {
-          acc[key] = error.message;
+          acc[key] = typeof error.message === 'string' ? error.message : String(error.message);
         }
         return acc;
       }, {} as Record<string, string>);
-      announceFormErrors(errorMessages);
+      formAnnounceError('Form validation errors', JSON.stringify(errorMessages));
     }
-  }, [errors, announceFormErrors]);
+  }, [errors, formAnnounceError]);
 
   // Announce success/error messages
   React.useEffect(() => {
     if (errorMessage) {
-      announceError(errorMessage);
+      formAnnounceError('Form error', errorMessage);
     }
-  }, [errorMessage, announceError]);
+  }, [errorMessage, formAnnounceError]);
 
   React.useEffect(() => {
     if (successMessage) {
-      announceSuccess(successMessage);
+      formAnnounceSuccess(successMessage);
     }
-  }, [successMessage, announceSuccess]);
+  }, [successMessage, formAnnounceSuccess]);
 
   const handleFormSubmit = async (data: any) => {
     try {

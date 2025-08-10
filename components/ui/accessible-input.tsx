@@ -31,8 +31,8 @@ export const AccessibleInput = React.forwardRef<HTMLInputElement, AccessibleInpu
     onChange,
     ...props
   }, ref) => {
-    const errorId = formAccessibility.generateErrorId(id);
-    const descriptionId = formAccessibility.generateDescriptionId(id);
+    const errorId = formAccessibility.getErrorId(id);
+    const descriptionId = formAccessibility.getHelpId(id);
     const characterCountId = `${id}-character-count`;
     
     const currentLength = typeof value === 'string' ? value.length : 0;

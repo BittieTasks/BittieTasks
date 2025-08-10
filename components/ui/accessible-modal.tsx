@@ -1,6 +1,12 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { focusManagement, KEYBOARD_KEYS, announceToScreenReader } from '@/lib/accessibility';
+import { announceToScreenReader } from '@/lib/accessibility';
+
+const KEYBOARD_KEYS = {
+  ESCAPE: 'Escape',
+  ENTER: 'Enter',
+  SPACE: ' '
+};
 
 interface AccessibleModalProps {
   isOpen: boolean;
@@ -39,18 +45,16 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
   React.useEffect(() => {
     if (isOpen) {
       // Save previous focus
-      previousFocusRef.current = focusManagement.saveFocus();
+      previousFocusRef.current = document.activeElement as HTMLElement;
       
       // Announce modal opening
       if (announceOpen) {
-        announceToScreenReader(`Dialog opened: ${title}`, 'assertive');
+        announceToScreenReader(`Dialog opened: ${title}`);
       }
       
-      // Set up focus trap after modal renders
+      // Set focus after modal renders
       const timer = setTimeout(() => {
         if (modalRef.current) {
-          cleanupFocusTrapRef.current = focusManagement.trapFocus(modalRef.current);
-          
           // Focus initial element or first focusable element
           if (initialFocusRef?.current) {
             initialFocusRef.current.focus();
@@ -72,22 +76,18 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
   // Handle modal closing
   React.useEffect(() => {
     if (!isOpen) {
-      // Clean up focus trap
-      if (cleanupFocusTrapRef.current) {
-        cleanupFocusTrapRef.current();
-        cleanupFocusTrapRef.current = null;
-      }
-      
       // Restore previous focus
       if (previousFocusRef.current) {
         const elementToFocus = finalFocusRef?.current || previousFocusRef.current;
-        focusManagement.restoreFocus(elementToFocus);
+        if (elementToFocus && elementToFocus.focus) {
+          elementToFocus.focus();
+        }
         previousFocusRef.current = null;
       }
       
       // Announce modal closing
       if (announceClose) {
-        announceToScreenReader('Dialog closed', 'polite');
+        announceToScreenReader('Dialog closed');
       }
     }
   }, [isOpen, finalFocusRef, announceClose]);

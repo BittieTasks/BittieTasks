@@ -1,6 +1,19 @@
 import React from 'react';
 import { Link, useLocation } from 'wouter';
-import { ARIA_LABELS, KEYBOARD_KEYS } from '@/lib/accessibility';
+import { ARIA_LABELS } from '@/lib/accessibility';
+
+const KEYBOARD_KEYS = {
+  ESCAPE: 'Escape',
+  ENTER: 'Enter',
+  SPACE: ' ',
+  ARROW_UP: 'ArrowUp',
+  ARROW_DOWN: 'ArrowDown',
+  ARROW_LEFT: 'ArrowLeft',
+  ARROW_RIGHT: 'ArrowRight',
+  TAB: 'Tab',
+  HOME: 'Home',
+  END: 'End'
+};
 
 interface NavItem {
   path: string;
