@@ -2,7 +2,7 @@
 
 ## BittieTasks Platform is Now Live
 
-**Production URL:** https://bittie-tasks-pqdq4tbnu-bittie-tasks.vercel.app
+**Production URL:** https://bittie-tasks-n2sz3t0gf-bittie-tasks.vercel.app
 
 ## Successfully Resolved All Blocking Issues:
 ✅ Package.json configuration fixed for Next.js

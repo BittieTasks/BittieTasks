@@ -13,6 +13,7 @@ interface AchievementDefinition {
   rewardType: string;
   rewardValue: number;
   rarity?: string;
+  color?: string;
 }
 
 interface UserAchievement {
