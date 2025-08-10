@@ -46,16 +46,31 @@ function EarningsCalculator() {
       </div>
       
       <div className="grid md:grid-cols-3 gap-6 pt-8 border-t border-white/20">
-        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20">
-          <div className="text-3xl font-bold gradient-text">${weeklyEarnings}</div>
+        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm">
+          <div className="text-3xl font-bold text-white" style={{
+            background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>${weeklyEarnings}</div>
           <p className="text-white/80 text-lg">Per Week</p>
         </div>
-        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20">
-          <div className="text-3xl font-bold gradient-text">${monthlyEarnings.toFixed(0)}</div>
+        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm">
+          <div className="text-3xl font-bold text-white" style={{
+            background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>${monthlyEarnings.toFixed(0)}</div>
           <p className="text-white/80 text-lg">Per Month</p>
         </div>
-        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20">
-          <div className="text-3xl font-bold gradient-text">${yearlyEarnings.toFixed(0)}</div>
+        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm">
+          <div className="text-3xl font-bold text-white" style={{
+            background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>${yearlyEarnings.toFixed(0)}</div>
           <p className="text-white/80 text-lg">Per Year</p>
         </div>
       </div>
@@ -103,7 +118,12 @@ export default function WelcomePage() {
           
           <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight">
             Turn Daily Tasks Into
-            <span className="gradient-text block mt-2">
+            <span className="block mt-2" style={{
+              background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>
               Real Income
             </span>
           </h1>
@@ -152,7 +172,12 @@ export default function WelcomePage() {
       <div className="relative z-10 px-6 pb-32">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 gradient-text">
+            <h2 className="text-5xl md:text-6xl font-bold text-white mb-6" style={{
+              background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>
               How It Works
             </h2>
             <p className="text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
@@ -210,15 +235,30 @@ export default function WelcomePage() {
           <div className="bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-600/20 border border-white/30 rounded-3xl p-16 text-center backdrop-blur-sm">
             <div className="grid md:grid-cols-3 gap-12">
               <div className="group">
-                <div className="text-5xl font-bold gradient-text mb-4 group-hover:scale-110 transition-transform duration-300">$150+</div>
+                <div className="text-5xl font-bold mb-4 group-hover:scale-110 transition-transform duration-300" style={{
+                  background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}>$150+</div>
                 <p className="text-white text-lg font-semibold">Average monthly earnings</p>
               </div>
               <div className="group">
-                <div className="text-5xl font-bold gradient-text mb-4 group-hover:scale-110 transition-transform duration-300">2,500+</div>
+                <div className="text-5xl font-bold mb-4 group-hover:scale-110 transition-transform duration-300" style={{
+                  background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}>2,500+</div>
                 <p className="text-white text-lg font-semibold">Active families</p>
               </div>
               <div className="group">
-                <div className="text-5xl font-bold gradient-text mb-4 group-hover:scale-110 transition-transform duration-300">98%</div>
+                <div className="text-5xl font-bold mb-4 group-hover:scale-110 transition-transform duration-300" style={{
+                  background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}>98%</div>
                 <p className="text-white text-lg font-semibold">Satisfaction rate</p>
               </div>
             </div>
@@ -229,7 +269,12 @@ export default function WelcomePage() {
       {/* CTA Section */}
       <div className="relative z-10 px-6 pb-20">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 gradient-text">
+          <h2 className="text-5xl md:text-6xl font-bold text-white mb-8" style={{
+            background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
             Ready to Start Earning?
           </h2>
           <p className="text-xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed">
