@@ -39,7 +39,7 @@ export default function AchievementBadge({
 }: AchievementBadgeProps) {
   const isEarned = !!userAchievement;
   const progress = userAchievement?.progress || 0;
-  const maxProgress = userAchievement?.maxProgress || (achievement.criteria as any)?.requiredCount || 1;
+  const maxProgress = userAchievement?.maxProgress || achievement.targetValue || 1;
   const progressPercentage = (progress / maxProgress) * 100;
 
   const getSizeClasses = () => {
