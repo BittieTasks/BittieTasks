@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 interface AchievementDefinition {
   id: string;
   title: string;
+  name: string;
   description: string;
   icon: string;
   category: string;
