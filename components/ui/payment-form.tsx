@@ -45,17 +45,19 @@ export function PaymentForm({
     try {
       if (useEscrow) {
         // For escrow payments, redirect to Escrow.com
-        window.open(
-          `https://www.escrow.com/pay?amount=${amount}&description=${encodeURIComponent(taskTitle)}`,
-          '_blank'
-        );
+        if (typeof window !== 'undefined') {
+          window.open(
+            `https://www.escrow.com/pay?amount=${amount}&description=${encodeURIComponent(taskTitle)}`,
+            '_blank'
+          );
+        }
         onSuccess?.();
       } else {
         // For Stripe payments, confirm payment
         const { error } = await stripe.confirmPayment({
           elements,
           confirmParams: {
-            return_url: `${window.location.origin}/payment-success`,
+            return_url: typeof window !== 'undefined' ? `${window.location.origin}/payment-success` : 'https://www.bittietasks.com/payment-success',
           },
         });
 

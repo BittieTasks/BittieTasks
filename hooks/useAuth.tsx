@@ -153,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             first_name: firstName,
             last_name: lastName,
           },
-          emailRedirectTo: `${window.location.origin}/verify-email?type=signup`
+          emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/verify-email?type=signup` : 'http://localhost:3000/verify-email?type=signup'
         }
       })
 
