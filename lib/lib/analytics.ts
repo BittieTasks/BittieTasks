@@ -8,7 +8,7 @@ declare global {
 
 // Initialize Google Analytics
 export const initGA = () => {
-  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+  const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   if (!measurementId) {
     console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
@@ -38,7 +38,7 @@ export const initGA = () => {
 export const trackPageView = (url: string) => {
   if (typeof window === 'undefined' || !window.gtag) return;
   
-  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+  const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   if (!measurementId) return;
   
   window.gtag('config', measurementId, {

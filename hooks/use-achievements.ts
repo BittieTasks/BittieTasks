@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import type { UserAchievement, AchievementDefinition } from "@shared/schema";
+import { apiRequest } from "@/lib/lib/queryClient";
+import type { UserAchievement } from "@shared/schema";
 
 export function useUserAchievements() {
   return useQuery<UserAchievement[]>({
@@ -9,7 +10,7 @@ export function useUserAchievements() {
 }
 
 export function useAchievementDefinitions() {
-  return useQuery<AchievementDefinition[]>({
+  return useQuery<any[]>({
     queryKey: ['/api/achievements/definitions'],
   });
 }
@@ -18,13 +19,13 @@ export function useCheckAchievements() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: () => apiRequest('/api/achievements/check', { method: 'POST' }),
-    onSuccess: (data) => {
+    mutationFn: () => apiRequest('POST', '/api/achievements/check'),
+    onSuccess: (data: any) => {
       // Invalidate user achievements to refetch with new ones
       queryClient.invalidateQueries({ queryKey: ['/api/achievements/user'] });
       
       // Show toast notifications for new achievements
-      if (data.newAchievements && data.newAchievements.length > 0) {
+      if (data?.newAchievements && data.newAchievements.length > 0) {
         // You can add toast notifications here if needed
         console.log('New achievements earned:', data.newAchievements);
       }
