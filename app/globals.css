@@ -11,25 +11,33 @@
     --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 262.1 83.3% 57.8%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 262.1 83.3% 57.8%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
     --radius: 0.75rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    
+    /* BittieTasks Brand Colors */
+    --bittie-blue: 221.2 83.2% 53.3%;
+    --bittie-green: 142.1 76.2% 36.3%;
+    --bittie-purple: 262.1 83.3% 57.8%;
+    --bittie-orange: 24.6 95% 53.1%;
+    --bittie-gradient-start: 221.2 83.2% 53.3%;
+    --bittie-gradient-end: 262.1 83.3% 57.8%;
   }
 
   .dark {
@@ -91,6 +99,39 @@ body {
   color: #333;
   text-align: center;
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* BittieTasks UI Enhancements */
+.gradient-text {
+  background: linear-gradient(135deg, hsl(var(--bittie-blue)), hsl(var(--bittie-purple)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, 
+    hsl(var(--bittie-blue)) 0%, 
+    hsl(var(--bittie-purple)) 50%, 
+    hsl(var(--bittie-green)) 100%);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
 }
 
 /* Accessibility */
