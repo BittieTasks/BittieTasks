@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { supabase } from "@/lib/supabase";
 import type { UserAchievement, AchievementDefinition } from "@shared/schema";
 
 export function useUserAchievements() {

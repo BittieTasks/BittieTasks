@@ -22,6 +22,7 @@ interface UserAchievement {
   achievementId: string;
   currentValue: number;
   unlockedAt?: Date;
+  earnedAt?: Date;
   isUnlocked: boolean;
   progress?: number;
   maxProgress?: number;
@@ -110,9 +111,9 @@ export default function AchievementBadge({
         </p>
       )}
       
-      {achievement.rewardPoints && achievement.rewardPoints > 0 && (
+      {achievement.rewardValue && achievement.rewardValue > 0 && (
         <div className="flex items-center text-xs text-green-600">
-          <span>🎯 +{achievement.rewardPoints} points</span>
+          <span>🎯 +{achievement.rewardValue} {achievement.rewardType}</span>
         </div>
       )}
     </div>
