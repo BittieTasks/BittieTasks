@@ -34,8 +34,8 @@ export class AuthDiagnostics {
   }
 
   private checkEnvironmentVariables() {
-    const url = import.meta.env.VITE_SUPABASE_URL;
-    const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     
     if (!url) {
       this.addResult('env-url', 'fail', 'VITE_SUPABASE_URL is missing');
@@ -79,10 +79,10 @@ export class AuthDiagnostics {
 
   private async checkNetworkConnectivity() {
     try {
-      const response = await fetch(import.meta.env.VITE_SUPABASE_URL + '/rest/v1/', {
+      const response = await fetch(process.env.NEXT_PUBLIC_SUPABASE_URL + '/rest/v1/', {
         method: 'HEAD',
         headers: {
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
         },
       });
       
