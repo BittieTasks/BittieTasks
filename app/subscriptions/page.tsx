@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
 import { Check, Crown, Star, Zap, Shield, TrendingUp, Users, DollarSign } from 'lucide-react'
+import Navigation from '@/components/Navigation'
 
 const plans = [
   {
@@ -110,7 +111,9 @@ export default function SubscriptionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="max-w-7xl mx-auto text-center">
@@ -337,5 +340,6 @@ export default function SubscriptionsPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }

@@ -5,6 +5,7 @@ import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import Navigation from '@/components/Navigation'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
 import { 
@@ -126,7 +127,9 @@ export default function EarningsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="max-w-7xl mx-auto">
@@ -425,5 +428,6 @@ export default function EarningsPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }

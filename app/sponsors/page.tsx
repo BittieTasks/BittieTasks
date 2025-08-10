@@ -20,6 +20,7 @@ import {
   CheckCircle,
   Building
 } from 'lucide-react'
+import Navigation from '@/components/Navigation'
 
 // Mock data for corporate sponsors
 const mockSponsors = [
@@ -125,7 +126,9 @@ export default function SponsorsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="max-w-7xl mx-auto">
@@ -441,5 +444,6 @@ export default function SponsorsPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }

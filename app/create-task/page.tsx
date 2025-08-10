@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
 import { useToast } from '../../hooks/use-toast'
 import { MapPin, Clock, Users, DollarSign, Calendar, AlertCircle, CheckCircle, Info } from 'lucide-react'
+import Navigation from '@/components/Navigation'
 
 const categories = [
   { id: 'childcare', name: 'Childcare', icon: '👶', description: 'School pickups, babysitting, playdates' },
@@ -131,7 +132,9 @@ export default function CreateTaskPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="max-w-4xl mx-auto">
@@ -513,5 +516,6 @@ export default function CreateTaskPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }

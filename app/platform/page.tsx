@@ -3,6 +3,7 @@
 import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import Navigation from '@/components/Navigation'
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
 import { Loader2, User, Mail, CheckCircle, AlertCircle, Crown, DollarSign, Calendar, Target } from 'lucide-react'
@@ -49,7 +50,9 @@ export default function PlatformPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="max-w-6xl mx-auto">
@@ -262,5 +265,6 @@ export default function PlatformPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }
