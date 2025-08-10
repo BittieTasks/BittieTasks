@@ -37,8 +37,8 @@ export function useAchievementProgress(achievementType: string) {
   const { data: userAchievements } = useUserAchievements();
   const { data: definitions } = useAchievementDefinitions();
   
-  const userAchievement = userAchievements?.find(a => a.achievementType === achievementType);
-  const definition = definitions?.find(d => d.type === achievementType);
+  const definition = definitions?.find(d => d.name === achievementType);
+  const userAchievement = userAchievements?.find(a => a.achievementId === definition?.id);
   
   if (!definition) return null;
   
