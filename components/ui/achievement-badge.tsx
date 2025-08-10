@@ -87,7 +87,7 @@ export default function AchievementBadge({
   const getTooltipContent = () => (
     <div className="space-y-2 max-w-xs">
       <div className="flex items-center justify-between">
-        <h4 className="font-semibold">{achievement.name}</h4>
+        <h4 className="font-semibold">{achievement.title}</h4>
         <Badge variant={isEarned ? "default" : "secondary"} className="text-xs">
           {achievement.rarity}
         </Badge>
