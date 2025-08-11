@@ -3,11 +3,11 @@ import { createServerClient } from '../../../../../lib/supabase'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = createServerClient()
-    const { id: taskId } = params
+    const { id: taskId } = await context.params
     
     // Get user from authentication header
     const authHeader = request.headers.get('authorization')
