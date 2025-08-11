@@ -7,10 +7,20 @@ import Navigation from '@/components/Navigation'
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
 import { Loader2, User, Mail, CheckCircle, AlertCircle, Crown, DollarSign, Calendar, Target } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 export default function PlatformPage() {
   const { user, session, loading, isAuthenticated, isVerified, signOut } = useAuth()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   if (loading) {
     return (

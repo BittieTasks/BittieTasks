@@ -60,11 +60,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const createUserProfile = async (authUser: User) => {
     try {
+      // Get fresh session to ensure valid token
+      const { data: { session: currentSession } } = await supabase.auth.getSession()
+      
+      if (!currentSession?.access_token) {
+        console.error('No valid session token for profile creation')
+        return
+      }
+
       const response = await fetch('/api/auth/profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token}`,
+          'Authorization': `Bearer ${currentSession.access_token}`,
         },
         body: JSON.stringify({
           id: authUser.id,
@@ -119,11 +127,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   const value: AuthContextType = {
-    user: mounted ? user : null,
-    session: mounted ? session : null,
-    loading: mounted ? loading : true,
-    isAuthenticated: mounted ? !!user : false,
-    isVerified: mounted ? !!(user?.email_confirmed_at) : false,
+    user,
+    session,
+    loading: loading || !mounted,
+    isAuthenticated: mounted && !!user,
+    isVerified: mounted && !!(user?.email_confirmed_at),
     signIn,
     signUp,
     signOut,
@@ -132,7 +140,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {mounted ? children : null}
     </AuthContext.Provider>
   )
 }
