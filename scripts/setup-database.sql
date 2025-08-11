@@ -84,6 +84,16 @@ INSERT INTO categories (name, description, icon, color) VALUES
   ('Social Events', 'Community events, parties, social gatherings', 'Users', 'bg-indigo-100 text-indigo-700')
 ON CONFLICT (name) DO NOTHING;
 
+-- Create BittieTasks system profile for sponsored tasks
+INSERT INTO profiles (id, first_name, last_name, email, subscription_tier) 
+VALUES (
+  '00000000-0000-0000-0000-000000000001',
+  'BittieTasks',
+  'Platform',
+  'platform@bittietasks.com',
+  'premium'
+) ON CONFLICT (id) DO NOTHING;
+
 -- Enable Row Level Security
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
