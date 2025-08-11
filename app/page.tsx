@@ -1,10 +1,24 @@
 'use client'
 
 import { useAuth } from '../components/auth/AuthProvider'
-import WelcomePage from '../components/WelcomePage'
-import { ClientOnly } from '../components/ClientOnly'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+
+// Dynamically import WelcomePage with no SSR to prevent hydration issues
+const WelcomePage = dynamic(() => import('../components/WelcomePage'), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen bg-gradient-to-br from-green-500 via-blue-500 to-green-600 flex items-center justify-center">
+      <div className="bg-white/90 backdrop-blur-sm border border-green-200 rounded-2xl p-8 text-center shadow-lg">
+        <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <span className="text-white font-bold text-2xl">B</span>
+        </div>
+        <p className="text-gray-700">Loading BittieTasks...</p>
+      </div>
+    </div>
+  )
+})
 
 export default function HomePage() {
   const { isAuthenticated, loading } = useAuth()
@@ -21,7 +35,7 @@ export default function HomePage() {
     }
   }, [isAuthenticated, loading, router, mounted])
 
-  // Show loading screen during SSR and mounting
+  // Show loading screen during mounting
   if (!mounted || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-500 via-blue-500 to-green-600 flex items-center justify-center">
@@ -35,18 +49,5 @@ export default function HomePage() {
     )
   }
 
-  return (
-    <ClientOnly fallback={
-      <div className="min-h-screen bg-gradient-to-br from-green-500 via-blue-500 to-green-600 flex items-center justify-center">
-        <div className="bg-white/90 backdrop-blur-sm border border-green-200 rounded-2xl p-8 text-center shadow-lg">
-          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <span className="text-white font-bold text-2xl">B</span>
-          </div>
-          <p className="text-gray-700">Loading BittieTasks...</p>
-        </div>
-      </div>
-    }>
-      <WelcomePage />
-    </ClientOnly>
-  )
+  return <WelcomePage />
 }

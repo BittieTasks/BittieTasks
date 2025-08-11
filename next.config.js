@@ -15,7 +15,15 @@ const nextConfig = {
     NEXT_PUBLIC_STRIPE_PUBLIC_KEY: process.env.VITE_STRIPE_PUBLIC_KEY,
     NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.VITE_GA_MEASUREMENT_ID,
   },
-
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["*"],
+    },
+  },
+  // Add suppressHydrationWarning for components with client-only behavior
+  compiler: {
+    styledComponents: true,
+  },
 }
 
 export default nextConfig
