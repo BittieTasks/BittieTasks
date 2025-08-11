@@ -3,8 +3,8 @@
 import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import BoldNavigation from '@/components/BoldNavigation'
-import BoldLayout from '@/components/BoldLayout'
+import CleanNavigation from '@/components/CleanNavigation'
+import CleanLayout from '@/components/CleanLayout'
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
 import { Loader2, User, Mail, CheckCircle, AlertCircle, Crown, Coins, Calendar, Target, TrendingUp, Users, BarChart3 } from 'lucide-react'
@@ -25,23 +25,14 @@ export default function PlatformPage() {
 
   if (loading) {
     return (
-      <BoldLayout>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            borderRadius: '16px',
-            padding: '48px',
-            textAlign: 'center',
-            maxWidth: '400px',
-            margin: '0 auto'
-          }}>
-            <Loader2 style={{ margin: '0 auto 16px auto', animation: 'spin 1s linear infinite' }} size={48} color="white" />
-            <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: 0 }}>Loading your BittieTasks platform...</p>
+      <CleanLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="bg-white rounded-xl shadow-lg p-12 text-center max-w-md mx-auto">
+            <Loader2 className="h-12 w-12 mx-auto mb-4 animate-spin text-teal-600" />
+            <p className="text-gray-600">Loading your BittieTasks platform...</p>
           </div>
         </div>
-      </BoldLayout>
+      </CleanLayout>
     )
   }
 
@@ -51,16 +42,16 @@ export default function PlatformPage() {
   }
 
   return (
-    <BoldLayout>
-      <BoldNavigation />
+    <CleanLayout>
+      <CleanNavigation />
       
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px, 6vw, 48px) clamp(16px, 4vw, 24px)' }}>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
-        <div style={{ marginBottom: 'clamp(20px, 5vw, 32px)' }}>
-          <h1 style={{ fontSize: 'clamp(24px, 6vw, 36px)', fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">
             Welcome back, {user?.user_metadata?.firstName || 'User'}!
           </h1>
-          <p style={{ fontSize: 'clamp(14px, 3vw, 18px)', color: 'rgba(255, 255, 255, 0.8)' }}>
+          <p className="text-lg text-gray-600">
             Here's your BittieTasks dashboard
           </p>
         </div>
@@ -166,6 +157,6 @@ export default function PlatformPage() {
           </div>
         </div>
       </main>
-    </BoldLayout>
+    </CleanLayout>
   )
 }

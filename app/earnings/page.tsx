@@ -5,12 +5,12 @@ import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import BoldNavigation from '@/components/BoldNavigation'
-import BoldLayout from '@/components/BoldLayout'
+import CleanNavigation from '@/components/CleanNavigation'
+import CleanLayout from '@/components/CleanLayout'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
 import { 
-  DollarSign, 
+  Coins, 
   TrendingUp, 
   Calendar, 
   Target, 
@@ -98,22 +98,16 @@ export default function EarningsPage() {
   const monthProgress = (mockEarnings.thisMonth / mockEarnings.monthlyGoal) * 100
 
   return (
-    <BoldLayout>
-      <BoldNavigation />
+    <CleanLayout>
+      <CleanNavigation />
       
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ 
-            fontSize: '36px', 
-            fontWeight: 'bold', 
-            marginBottom: '8px', 
-            background: 'linear-gradient(to right, rgb(244, 114, 182), rgb(196, 181, 253))',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            color: 'transparent'
-          }}>Earnings Dashboard</h1>
-          <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.8)' }}>
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">
+            Earnings Dashboard
+          </h1>
+          <p className="text-lg text-gray-600">
             Track your income and financial goals
           </p>
         </div>
@@ -138,7 +132,7 @@ export default function EarningsPage() {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-green-600" />
+                  <Coins className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
                   <p className="text-small text-muted-foreground">Total Earnings</p>
@@ -341,6 +335,6 @@ export default function EarningsPage() {
           </Button>
         </div>
       </main>
-    </BoldLayout>
+    </CleanLayout>
   )
 }

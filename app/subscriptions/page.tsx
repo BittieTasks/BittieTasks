@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
-import { Check, Crown, Star, Zap, Shield, TrendingUp, Users, DollarSign } from 'lucide-react'
-import BoldNavigation from '@/components/BoldNavigation'
-import BoldLayout from '@/components/BoldLayout'
+import { Check, Crown, Star, Zap, Shield, TrendingUp, Users, Coins } from 'lucide-react'
+import CleanNavigation from '@/components/CleanNavigation'
+import CleanLayout from '@/components/CleanLayout'
 
 const plans = [
   {
@@ -100,8 +100,8 @@ export default function SubscriptionsPage() {
   }
 
   return (
-    <BoldLayout>
-      <BoldNavigation />
+    <CleanLayout>
+      <CleanNavigation />
       
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
         {/* Header */}
@@ -326,6 +326,6 @@ export default function SubscriptionsPage() {
           </CardContent>
         </Card>
       </main>
-    </BoldLayout>
+    </CleanLayout>
   )
 }

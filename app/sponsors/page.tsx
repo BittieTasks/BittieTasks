@@ -10,7 +10,7 @@ import {
   Briefcase, 
   Star, 
   Users, 
-  DollarSign, 
+  Coins, 
   Zap, 
   Shield, 
   Heart,
@@ -20,8 +20,8 @@ import {
   CheckCircle,
   Building
 } from 'lucide-react'
-import BoldNavigation from '@/components/BoldNavigation'
-import BoldLayout from '@/components/BoldLayout'
+import CleanNavigation from '@/components/CleanNavigation'
+import CleanLayout from '@/components/CleanLayout'
 
 // Sample sponsor data
 const sampleSponsors = [
@@ -119,8 +119,8 @@ export default function SponsorsPage() {
   }
 
   return (
-    <BoldLayout>
-      <BoldNavigation />
+    <CleanLayout>
+      <CleanNavigation />
       
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
         {/* Header */}
@@ -165,7 +165,7 @@ export default function SponsorsPage() {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-green-600" />
+                  <Coins className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
                   <p className="text-small text-muted-foreground">Total Budget</p>
@@ -220,7 +220,7 @@ export default function SponsorsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <DollarSign className="h-8 w-8 text-green-600" />
+                  <Coins className="h-8 w-8 text-green-600" />
                 </div>
                 <h3 className="font-semibold mb-2">Higher Payouts</h3>
                 <p className="text-small text-muted-foreground">
@@ -371,6 +371,6 @@ export default function SponsorsPage() {
           </CardContent>
         </Card>
       </main>
-    </BoldLayout>
+    </CleanLayout>
   )
 }

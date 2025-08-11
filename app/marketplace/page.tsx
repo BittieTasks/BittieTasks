@@ -5,12 +5,12 @@ import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import BoldNavigation from '@/components/BoldNavigation'
-import BoldLayout from '@/components/BoldLayout'
+import CleanNavigation from '@/components/CleanNavigation'
+import CleanLayout from '@/components/CleanLayout'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
-import { Search, MapPin, Clock, Users, DollarSign, Filter, Star, Briefcase, Award, Target } from 'lucide-react'
+import { Search, MapPin, Clock, Users, Coins, Filter, Star, Briefcase, Award, Target } from 'lucide-react'
 
 // Sample task data
 import { comprehensiveTasks } from '../../data/comprehensiveTasks'
@@ -81,14 +81,14 @@ export default function MarketplacePage() {
   }
 
   return (
-    <BoldLayout>
-      <BoldNavigation />
+    <CleanLayout>
+      <CleanNavigation />
       
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px, 6vw, 48px) clamp(16px, 4vw, 24px)' }}>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
-        <div style={{ marginBottom: 'clamp(20px, 5vw, 32px)' }}>
-          <h1 style={{ fontSize: 'clamp(24px, 6vw, 36px)', fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>Task Marketplace</h1>
-          <p style={{ fontSize: 'clamp(14px, 3vw, 18px)', color: 'rgba(255, 255, 255, 0.8)' }}>
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">Task Marketplace</h1>
+          <p className="text-lg text-gray-600">
             Discover earning opportunities in your community. Join tasks or create your own!
           </p>
         </div>
@@ -305,6 +305,6 @@ export default function MarketplacePage() {
           </Card>
         )}
       </main>
-    </BoldLayout>
+    </CleanLayout>
   )
 }

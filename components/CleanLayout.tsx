@@ -1,15 +1,12 @@
 'use client'
 
-import { ReactNode } from 'react'
-
 interface CleanLayoutProps {
-  children: ReactNode
-  className?: string
+  children: React.ReactNode;
 }
 
-export default function CleanLayout({ children, className = '' }: CleanLayoutProps) {
+export default function CleanLayout({ children }: CleanLayoutProps) {
   return (
-    <div className={`min-h-screen bg-gray-50 ${className}`}>
+    <div className="min-h-screen bg-gray-50">
       {children}
     </div>
   )

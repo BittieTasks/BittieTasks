@@ -1,6 +1,171 @@
-import SafeWelcomePage from '@/components/SafeWelcomePage'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { 
+  Coins, 
+  Users, 
+  Star, 
+  TrendingUp, 
+  Shield, 
+  Heart,
+  ArrowRight,
+  CheckCircle,
+  Crown,
+  Target
+} from 'lucide-react'
 
 export default function HomePage() {
-  // Simplified homepage - no complex auth logic that could cause hydration issues
-  return <SafeWelcomePage />
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">B</span>
+              </div>
+              <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
+            </div>
+            
+            {/* Auth Buttons */}
+            <div className="flex items-center space-x-3">
+              <a
+                href="/auth"
+                className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium"
+              >
+                Sign In
+              </a>
+              <a
+                href="/auth"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg"
+              >
+                Join the Community
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            Turn Daily Tasks Into
+            <span className="text-teal-600 block">Community Earnings</span>
+          </h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Join parents in your neighborhood to share tasks, earn money, and build stronger communities. 
+            Transform routine activities into profitable opportunities.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/auth"
+              className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
+            >
+              Let's Get Started
+              <ArrowRight size={20} className="ml-2" />
+            </a>
+            <a
+              href="/marketplace"
+              className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
+            >
+              Explore Opportunities
+            </a>
+          </div>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <Card className="border-gray-200 hover:shadow-lg transition-shadow">
+            <CardHeader className="text-center pb-4">
+              <div className="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Coins size={32} className="text-teal-600" />
+              </div>
+              <CardTitle className="text-xl text-gray-900">Earn While You Parent</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 text-center">
+                Transform daily parenting tasks into income opportunities. Share school pickups, 
+                meal planning, and more with neighbors.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-gray-200 hover:shadow-lg transition-shadow">
+            <CardHeader className="text-center pb-4">
+              <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Users size={32} className="text-green-600" />
+              </div>
+              <CardTitle className="text-xl text-gray-900">Build Community</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 text-center">
+                Connect with trusted neighbors, create lasting friendships, and build a 
+                supportive community around shared parenting experiences.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-gray-200 hover:shadow-lg transition-shadow">
+            <CardHeader className="text-center pb-4">
+              <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Target size={32} className="text-purple-600" />
+              </div>
+              <CardTitle className="text-xl text-gray-900">Flexible Goals</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 text-center">
+                Set your own schedule, choose tasks that fit your lifestyle, and earn 
+                money on your terms while helping your community.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Stats Section */}
+        <div className="bg-white rounded-2xl p-8 mb-16 border border-gray-200">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Join Our Growing Community</h2>
+            <p className="text-lg text-gray-600">Parents helping parents, building stronger neighborhoods</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-teal-600 mb-2">2,500+</div>
+              <div className="text-gray-600">Active Parents</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600 mb-2">15,000+</div>
+              <div className="text-gray-600">Tasks Completed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-purple-600 mb-2">$250K+</div>
+              <div className="text-gray-600">Community Earnings</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-600 mb-2">95%</div>
+              <div className="text-gray-600">Satisfaction Rate</div>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="bg-teal-600 rounded-2xl p-12 text-center text-white">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
+          <p className="text-xl mb-8 text-teal-100">
+            Join thousands of parents earning money while building community
+          </p>
+          <a
+            href="/auth"
+            className="inline-flex items-center justify-center px-8 py-4 bg-white text-teal-600 hover:bg-gray-100 text-lg font-semibold rounded-lg transition-colors"
+          >
+            Welcome Back
+            <ArrowRight size={20} className="ml-2" />
+          </a>
+        </div>
+      </main>
+    </div>
+  )
 }

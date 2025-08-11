@@ -8,10 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import BoldNavigation from '@/components/BoldNavigation'
-import BoldLayout from '@/components/BoldLayout'
+import CleanNavigation from '@/components/CleanNavigation'
+import CleanLayout from '@/components/CleanLayout'
 import { 
-  Clock, Users, MapPin, DollarSign, Star, Upload, 
+  Clock, Users, MapPin, Coins, Star, Upload, 
   CheckCircle, ArrowLeft, AlertCircle, Camera, MessageSquare 
 } from 'lucide-react'
 
@@ -91,8 +91,8 @@ export default function TaskDetailPage() {
   }
 
   return (
-    <BoldLayout>
-      <BoldNavigation />
+    <CleanLayout>
+      <CleanNavigation />
       
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px, 6vw, 48px) clamp(16px, 4vw, 24px)' }}>
         {/* Back Button */}
@@ -156,7 +156,7 @@ export default function TaskDetailPage() {
                   </div>
                   
                   <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-muted-foreground" />
+                    <Coins className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="font-medium">Category</p>
                       <p className="text-small text-muted-foreground">{task.category}</p>
@@ -336,7 +336,7 @@ export default function TaskDetailPage() {
                   </div>
                 ) : (
                   <div className="text-center">
-                    <DollarSign className="h-8 w-8 text-green-600 mx-auto mb-3" />
+                    <Coins className="h-8 w-8 text-green-600 mx-auto mb-3" />
                     <p className="font-medium mb-2">Ready to Join?</p>
                     <p className="text-small text-muted-foreground mb-4">
                       Earn ${netEarnings} for this task
@@ -378,6 +378,6 @@ export default function TaskDetailPage() {
           </div>
         </div>
       </main>
-    </BoldLayout>
+    </CleanLayout>
   )
 }

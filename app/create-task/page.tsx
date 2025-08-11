@@ -9,15 +9,15 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import BoldNavigation from '@/components/BoldNavigation'
-import BoldLayout from '@/components/BoldLayout'
+import CleanNavigation from '@/components/CleanNavigation'
+import CleanLayout from '@/components/CleanLayout'
 import { useRouter } from 'next/navigation'
 import { 
   PlusCircle, 
   Users, 
   Clock, 
   MapPin, 
-  DollarSign, 
+  Coins, 
   Calendar,
   CheckCircle,
   Award,
@@ -87,8 +87,8 @@ export default function CreateTaskPage() {
   }
 
   return (
-    <BoldLayout>
-      <BoldNavigation />
+    <CleanLayout>
+      <CleanNavigation />
       
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
         {/* Header */}
@@ -387,6 +387,6 @@ export default function CreateTaskPage() {
           </div>
         </div>
       </main>
-    </BoldLayout>
+    </CleanLayout>
   )
 }
