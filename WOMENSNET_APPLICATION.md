@@ -20,16 +20,16 @@ I'm building this because I believe every parent deserves to feel valued, suppor
 
 This grant would be life-changing - not just for me, but for every parent who feels unseen and undervalued. Here's exactly how I would invest this money to build something that matters:
 
-**Creating Immediate Income Opportunities for Parents ($6,000)**
-The most important thing is putting money directly into parents' pockets as quickly as possible. I would use this funding to jumpstart our community by sponsoring initial tasks and creating guaranteed earning opportunities for our first users. This includes funding promotional campaigns where early adopters earn bonuses for completing tasks, creating sponsored self-care activities like walking groups and wellness workshops, and establishing a seed fund that ensures parents see immediate financial returns from day one. Every parent who joins needs to experience real income right away - not promises, but actual money in their accounts.
+**Finishing the Platform Development ($3,500)**
+Right now, BittieTasks exists but needs the final development push to make it truly ready for parents to earn money safely and easily. This funding would go toward completing essential features like payment processing systems, mobile optimization for parents juggling phones while managing kids, user dashboard improvements, and the messaging system that lets neighbors coordinate tasks seamlessly. I need the platform to work flawlessly because busy parents don't have time for technical glitches when they're trying to earn money.
 
-**Community Outreach to Find Parents Who Need This ($2,500)**
+**Creating Immediate Income Opportunities for Parents ($3,500)**
+Once the platform is solid, the most important thing is putting money directly into parents' pockets. I would use this funding to jumpstart our community by sponsoring initial tasks and creating guaranteed earning opportunities for our first users. This includes funding promotional campaigns where early adopters earn bonuses for completing tasks, creating sponsored self-care activities like walking groups and wellness workshops, and establishing a seed fund that ensures parents see immediate financial returns. Every parent who joins needs to experience real income right away - not promises, but actual money in their accounts.
+
+**Community Outreach to Find Parents Who Need This ($2,000)**
 I want to find the other moms sitting at their kitchen tables at midnight, wondering how they're going to make it work. This money would go toward grassroots community outreach - partnering with parent groups, community centers, and local organizations to share this opportunity with women who need flexible income but can't abandon their families to get it. It's about meeting parents where they are and showing them real earnings from real people in their community.
 
 **Trust and Safety Systems ($1,000)**
 Trust is everything when you're connecting neighbors around tasks and activities. I would invest in user verification systems and community safety features because parents need to feel completely confident in the people they're working with. This includes identity verification and rating systems that ensure every interaction feels safe and supportive.
-
-**Legal Foundation ($500)**
-I need to ensure the legal framework protects parents using this platform with proper terms of service and privacy policies that let parents focus on earning rather than worrying about liability.
 
 This grant isn't just funding a business - it's investing in a movement that proves parents' work has value by putting real money in their hands. Every dollar would go toward showing that when we lift up parents, especially mothers, we create immediate financial impact that changes lives.
