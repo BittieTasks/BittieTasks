@@ -123,6 +123,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     if (error) {
       console.error('Sign up error details:', error)
+      // Provide user-friendly error message
+      if (error.message.includes('Email not confirmed')) {
+        throw new Error('Please check your email and click the confirmation link before signing in.')
+      }
+      if (error.message.includes('User already registered')) {
+        throw new Error('An account with this email already exists. Try signing in instead.')
+      }
       throw error
     }
   }
