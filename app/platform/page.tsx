@@ -108,7 +108,7 @@ export default function PlatformPage() {
               </div>
               <div>
                 <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '4px' }}>Total Earnings</p>
-                <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', margin: 0 }}>0.00</p>
+                <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', margin: 0 }}>$0.00</p>
               </div>
             </div>
           </div>

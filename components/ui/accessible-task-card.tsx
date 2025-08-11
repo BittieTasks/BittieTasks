@@ -23,9 +23,8 @@ export const AccessibleTaskCard: React.FC<AccessibleTaskCardProps> = ({
 }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
-      style: 'decimal',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      style: 'currency',
+      currency: 'USD'
     }).format(amount);
   };
 

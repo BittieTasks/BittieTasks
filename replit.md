@@ -11,7 +11,7 @@ Development workflow: Uses Replit as development workspace, GitHub for version c
 
 ### UI/UX Decisions
 - **Design Principles**: Mobile-first responsive layout with clean, professional teal-based color scheme. Clean, Facebook-inspired design with minimal styling and trustworthy interface.
-- **Color Scheme**: Primary teal (#0d9488) with complementary emerald and slate accents. Removed all dollar signs per user preference.
+- **Color Scheme**: Primary teal (#0d9488) with complementary emerald and slate accents. Uses Coins icons instead of DollarSign icons for visual elements while maintaining $ currency symbols for actual amounts.
 - **Button Language**: Friendly, welcoming language - "Join the Community", "Welcome Back", "Let's Get Started", "Explore Opportunities".
 - **Typography**: Responsive typography using `clamp()` functions.
 - **Navigation**: Mobile hamburger navigation with full-screen overlay and bottom navigation on authenticated pages.
