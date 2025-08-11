@@ -1,4 +1,4 @@
-import { DollarSign, TrendingUp, Calendar } from "lucide-react";
+import { Coins, TrendingUp, Calendar } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { User } from "@shared/schema";
 
@@ -17,9 +17,9 @@ export default function EarningsOverview({ user }: EarningsOverviewProps) {
       <Card className="bg-white">
         <CardContent className="p-3 text-center">
           <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full mx-auto mb-2">
-            <DollarSign size={16} className="text-green-600" />
+            <Coins size={16} className="text-green-600" />
           </div>
-          <p className="text-lg font-bold text-gray-900">${totalEarnings.toFixed(0)}</p>
+          <p className="text-lg font-bold text-gray-900">{totalEarnings.toFixed(0)}</p>
           <p className="text-xs text-gray-600">Total Earned</p>
         </CardContent>
       </Card>

@@ -7,7 +7,7 @@ import BoldNavigation from '@/components/BoldNavigation'
 import BoldLayout from '@/components/BoldLayout'
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
-import { Loader2, User, Mail, CheckCircle, AlertCircle, Crown, DollarSign, Calendar, Target, TrendingUp, Users, BarChart3 } from 'lucide-react'
+import { Loader2, User, Mail, CheckCircle, AlertCircle, Crown, Coins, Calendar, Target, TrendingUp, Users, BarChart3 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 export default function PlatformPage() {
@@ -104,11 +104,11 @@ export default function PlatformPage() {
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <DollarSign size={24} color="white" />
+                <Coins size={24} color="white" />
               </div>
               <div>
                 <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '4px' }}>Total Earnings</p>
-                <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', margin: 0 }}>$0.00</p>
+                <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', margin: 0 }}>0.00</p>
               </div>
             </div>
           </div>

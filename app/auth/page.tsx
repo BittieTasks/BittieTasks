@@ -161,7 +161,7 @@ export default function AuthPage() {
 
                     <Button type="submit" className="w-full button-clean" disabled={loading}>
                       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Sign In
+                      Welcome Back
                     </Button>
                   </form>
                 </TabsContent>
@@ -264,7 +264,7 @@ export default function AuthPage() {
 
                     <Button type="submit" className="w-full button-clean" disabled={loading}>
                       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Create Account
+                      Join Community
                     </Button>
                   </form>
                 </TabsContent>

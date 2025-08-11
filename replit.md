@@ -10,11 +10,13 @@ Development workflow: Uses Replit as development workspace, GitHub for version c
 ## System Architecture
 
 ### UI/UX Decisions
-- **Design Principles**: Mobile-first responsive layout with consistent green/blue branding, gradient backgrounds, and glassmorphism effects.
+- **Design Principles**: Mobile-first responsive layout with clean, professional teal-based color scheme. Clean, Facebook-inspired design with minimal styling and trustworthy interface.
+- **Color Scheme**: Primary teal (#0d9488) with complementary emerald and slate accents. Removed all dollar signs per user preference.
+- **Button Language**: Friendly, welcoming language - "Join the Community", "Welcome Back", "Let's Get Started", "Explore Opportunities".
 - **Typography**: Responsive typography using `clamp()` functions.
 - **Navigation**: Mobile hamburger navigation with full-screen overlay and bottom navigation on authenticated pages.
 - **Component Library**: Radix UI primitives with shadcn/ui for accessible and professional components.
-- **Styling**: Tailwind CSS with custom color variables.
+- **Styling**: Tailwind CSS with custom color variables and teal theme.
 
 ### Technical Implementations
 - **Framework**: Next.js 15.4.6 with App Router.

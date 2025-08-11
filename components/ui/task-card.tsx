@@ -1,4 +1,4 @@
-import { Clock, Star, DollarSign, Award, Building2 } from "lucide-react";
+import { Clock, Star, Coins, Award, Building2 } from "lucide-react";
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +57,7 @@ export default function TaskCard({ task }: TaskCardProps) {
                 {task.title}
               </h3>
               <div className={`flex items-center font-bold text-sm ml-2 ${isSponsored ? 'text-purple-600' : 'text-green-600'}`}>
-                <DollarSign size={14} />
+                <Coins size={14} />
                 {task.earningPotential}
                 {isSponsored && <span className="text-xs ml-1">+bonus</span>}
               </div>

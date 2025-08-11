@@ -39,7 +39,7 @@ export default function CleanWelcomePage() {
                 onClick={handleSignUp}
                 className="px-4 py-2 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 transition-colors"
               >
-                Sign Up
+                Join Now
               </button>
             </div>
           </div>
@@ -62,13 +62,13 @@ export default function CleanWelcomePage() {
               onClick={handleSignUp}
               className="w-full sm:w-auto px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-lg"
             >
-              Get Started Free
+              Join the Community
             </button>
             <button
               onClick={handleViewTasks}
-              className="w-full sm:w-auto px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors text-lg"
+              className="w-full sm:w-auto px-8 py-3 border border-teal-300 text-teal-700 font-semibold rounded-lg hover:bg-teal-50 transition-colors text-lg"
             >
-              Browse Tasks
+              Explore Opportunities
             </button>
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function CleanWelcomePage() {
             onClick={handleSignUp}
             className="px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-lg"
           >
-            Sign Up Free Today
+            Let's Get Started
           </button>
         </div>
       </main>

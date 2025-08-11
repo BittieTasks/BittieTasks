@@ -7,7 +7,7 @@ import {
   Home, 
   Search, 
   PlusCircle, 
-  DollarSign, 
+  Coins, 
   User, 
   Settings,
   Crown,
@@ -21,7 +21,7 @@ import {
 const navigationItems = [
   { path: '/platform', label: 'Dashboard', icon: Home },
   { path: '/marketplace', label: 'Marketplace', icon: Search },
-  { path: '/earnings', label: 'Earnings', icon: DollarSign },
+  { path: '/earnings', label: 'Earnings', icon: Coins },
   { path: '/subscriptions', label: 'Plans', icon: Crown },
   { path: '/sponsors', label: 'Sponsors', icon: Briefcase },
   { path: '/create-task', label: 'Create', icon: PlusCircle },

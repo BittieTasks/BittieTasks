@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AccessibleButton } from './accessible-button';
 // import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin, DollarSign, Users } from 'lucide-react';
+import { Clock, MapPin, Coins, Users } from 'lucide-react';
 import { Link } from 'wouter';
 import type { Task } from '@shared/schema';
 
@@ -23,8 +23,9 @@ export const AccessibleTaskCard: React.FC<AccessibleTaskCardProps> = ({
 }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amount);
   };
 
@@ -101,7 +102,7 @@ export const AccessibleTaskCard: React.FC<AccessibleTaskCardProps> = ({
         {/* Task Details */}
         <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
           <div className="flex items-center space-x-2">
-            <DollarSign className="h-4 w-4 text-green-600" aria-hidden="true" />
+            <Coins className="h-4 w-4 text-green-600" aria-hidden="true" />
             <span>
               <span className="sr-only">Payment: </span>
               {formatCurrency(Number(task.earningPotential))}
