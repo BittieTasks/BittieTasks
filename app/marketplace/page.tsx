@@ -9,78 +9,11 @@ import Navigation from '@/components/Navigation'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
-import { Search, MapPin, Clock, Users, DollarSign, Filter, Star, Briefcase } from 'lucide-react'
+import { Search, MapPin, Clock, Users, DollarSign, Filter, Star, Briefcase, Award, Target } from 'lucide-react'
+import { allTasks, getTasksByType, getAvailableTasks, calculatePlatformFee, getNetEarnings, type TaskData } from '../../lib/taskData'
 
-// Mock data for now - this will be replaced with real API data
-const mockTasks = [
-  {
-    id: '1',
-    title: 'School Pickup Share',
-    description: 'Looking for someone to share daily school pickup duties. Great for parents in the Westfield Elementary area.',
-    category: 'Childcare',
-    earningPotential: 45.00,
-    maxParticipants: 2,
-    currentParticipants: 0,
-    location: 'Westfield Elementary',
-    duration: '30 min daily',
-    hostName: 'Sarah M.',
-    hostRating: 4.9,
-    type: 'shared',
-    urgency: 'medium',
-    scheduledDate: '2025-01-15',
-  },
-  {
-    id: '2',
-    title: 'Grocery Shopping Partner',
-    description: 'Weekly Costco runs - split gas, time, and bulk purchases. Perfect for busy families.',
-    category: 'Shopping',
-    earningPotential: 32.50,
-    maxParticipants: 3,
-    currentParticipants: 1,
-    location: 'Costco Warehouse',
-    duration: '2 hours weekly',
-    hostName: 'Mike D.',
-    hostRating: 4.7,
-    type: 'shared',
-    urgency: 'low',
-    scheduledDate: '2025-01-12',
-  },
-  {
-    id: '3',
-    title: 'After-School Activity Carpool',
-    description: 'Soccer practice carpool for kids aged 8-12. Share driving duties and earn while helping other families.',
-    category: 'Transportation',
-    earningPotential: 28.00,
-    maxParticipants: 4,
-    currentParticipants: 2,
-    location: 'Central Soccer Fields',
-    duration: '1 hour, 3x/week',
-    hostName: 'Lisa K.',
-    hostRating: 5.0,
-    type: 'shared',
-    urgency: 'high',
-    scheduledDate: '2025-01-10',
-  },
-  {
-    id: '4',
-    title: 'Corporate Wellness Challenge',
-    description: 'Help promote healthy family habits through our sponsored wellness program. Earn rewards for tracking family activities.',
-    category: 'Wellness',
-    earningPotential: 75.00,
-    maxParticipants: 50,
-    currentParticipants: 12,
-    location: 'Virtual/Home',
-    duration: '2 weeks',
-    hostName: 'HealthTech Solutions',
-    hostRating: 4.8,
-    type: 'sponsored',
-    sponsor: 'HealthTech Solutions',
-    urgency: 'medium',
-    scheduledDate: '2025-01-20',
-  }
-]
-
-const categories = ['All', 'Childcare', 'Shopping', 'Transportation', 'Wellness', 'Household', 'Educational']
+// Get comprehensive categories from real task data
+const categories = ['All', 'Home Organization', 'Education', 'Meal Planning', 'Health & Fitness', 'Transportation', 'Event Planning', 'Safety & Preparedness', 'Child Development', 'Digital Organization', 'Financial Education', 'Family Traditions', 'Nutrition', 'Skill Exchange', 'Community Support', 'Physical Wellness', 'Mental Wellness', 'Personal Development']
 
 export default function MarketplacePage() {
   const { user, isAuthenticated, isVerified } = useAuth()
@@ -88,7 +21,8 @@ export default function MarketplacePage() {
   const [mounted, setMounted] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [sortBy, setSortBy] = useState('earning')
+  const [selectedType, setSelectedType] = useState('all')
+  const [sortBy, setSortBy] = useState('payout')
 
   useEffect(() => {
     setMounted(true)
@@ -103,228 +37,279 @@ export default function MarketplacePage() {
     return null
   }
 
-  const filteredTasks = mockTasks
+  // Filter and sort real tasks
+  const filteredTasks = allTasks
     .filter(task => 
       selectedCategory === 'All' || task.category === selectedCategory
     )
     .filter(task =>
+      selectedType === 'all' || task.type === selectedType
+    )
+    .filter(task =>
       searchTerm === '' || 
       task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchTerm.toLowerCase())
+      task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.category.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => {
-      if (sortBy === 'earning') return b.earningPotential - a.earningPotential
-      if (sortBy === 'date') return new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime()
-      if (sortBy === 'participants') return a.currentParticipants - b.currentParticipants
+      if (sortBy === 'payout') return b.payout - a.payout
+      if (sortBy === 'deadline') {
+        if (!a.deadline && !b.deadline) return 0
+        if (!a.deadline) return 1
+        if (!b.deadline) return -1
+        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+      }
+      if (sortBy === 'participants') return (a.max_participants - a.current_participants) - (b.max_participants - b.current_participants)
       return 0
     })
-
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case 'high': return 'bg-red-500/20 text-red-400 border-red-500/20'
-      case 'medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/20'
-      case 'low': return 'bg-green-500/20 text-green-400 border-green-500/20'
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/20'
-    }
-  }
+    .slice(0, 24) // Show first 24 tasks for performance
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'sponsored': return 'bg-purple-500/20 text-purple-400 border-purple-500/20'
-      case 'shared': return 'bg-blue-500/20 text-blue-400 border-blue-500/20'
-      case 'solo': return 'bg-green-500/20 text-green-400 border-green-500/20'
+      case 'solo': return 'bg-blue-500/20 text-blue-400 border-blue-500/20'
+      case 'shared': return 'bg-green-500/20 text-green-400 border-green-500/20'
+      case 'self_care': return 'bg-purple-500/20 text-purple-400 border-purple-500/20'
       default: return 'bg-gray-500/20 text-gray-400 border-gray-500/20'
     }
   }
 
-  return (
-    <>
-      <Navigation />
-      <div className="min-h-screen platform-gradient">
-      {/* Header */}
-      <div className="px-6 pt-8 pb-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white/90 backdrop-blur-sm border border-green-200 rounded-2xl p-6 shadow-lg">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">Task Marketplace</h1>
-                <p className="text-gray-600">Find earning opportunities in your community</p>
-              </div>
-              <Button 
-                onClick={() => router.push('/create-task')}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 border-0 shadow-lg"
-                disabled={!isVerified}
-              >
-                Create Task
-              </Button>
-            </div>
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'easy': return 'bg-green-500/20 text-green-400'
+      case 'medium': return 'bg-yellow-500/20 text-yellow-400'
+      case 'hard': return 'bg-red-500/20 text-red-400'
+      default: return 'bg-gray-500/20 text-gray-400'
+    }
+  }
 
-            {/* Search and Filters */}
-            <div className="grid md:grid-cols-4 gap-4">
-              <div className="md:col-span-2 relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+  // Mock user subscription tier for platform fee calculation
+  const userSubscriptionTier = 'free' // This would come from actual user data
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
+      <Navigation />
+      
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
+            Task Marketplace
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Discover over 110 real earning opportunities. Transform daily tasks into income while building community connections.
+          </p>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <Card className="bg-white/70 backdrop-blur-sm border-green-200">
+            <CardContent className="p-4 text-center">
+              <Target className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-green-600">{allTasks.length}</div>
+              <div className="text-sm text-gray-600">Total Opportunities</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/70 backdrop-blur-sm border-blue-200">
+            <CardContent className="p-4 text-center">
+              <DollarSign className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-blue-600">
+                ${Math.round(allTasks.reduce((sum, task) => sum + task.payout, 0))}
+              </div>
+              <div className="text-sm text-gray-600">Total Earning Potential</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/70 backdrop-blur-sm border-green-200">
+            <CardContent className="p-4 text-center">
+              <Users className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-green-600">
+                {allTasks.filter(task => task.current_participants < task.max_participants).length}
+              </div>
+              <div className="text-sm text-gray-600">Available Now</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/70 backdrop-blur-sm border-blue-200">
+            <CardContent className="p-4 text-center">
+              <Award className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-blue-600">
+                {allTasks.filter(task => task.is_sponsored).length}
+              </div>
+              <div className="text-sm text-gray-600">Sponsored Tasks</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filters */}
+        <Card className="bg-white/70 backdrop-blur-sm border-green-200 mb-8">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
                   placeholder="Search tasks..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-white border-green-200 text-gray-800 placeholder-gray-500"
+                  className="pl-10 border-green-200 focus:border-green-400"
                 />
               </div>
               
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="bg-white border-green-200 text-gray-800">
+                <SelectTrigger className="border-green-200 focus:border-green-400">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-green-200">
+                <SelectContent>
                   {categories.map(category => (
-                    <SelectItem key={category} value={category} className="text-gray-800 hover:bg-green-50">
+                    <SelectItem key={category} value={category}>
                       {category}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
 
+              <Select value={selectedType} onValueChange={setSelectedType}>
+                <SelectTrigger className="border-green-200 focus:border-green-400">
+                  <SelectValue placeholder="Task Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="solo">Solo Tasks</SelectItem>
+                  <SelectItem value="shared">Community Tasks</SelectItem>
+                  <SelectItem value="self_care">Self-Care Tasks</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="bg-white border-green-200 text-gray-800">
+                <SelectTrigger className="border-green-200 focus:border-green-400">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-green-200">
-                  <SelectItem value="earning" className="text-gray-800 hover:bg-green-50">Highest Earning</SelectItem>
-                  <SelectItem value="date" className="text-gray-800 hover:bg-green-50">Soonest Date</SelectItem>
-                  <SelectItem value="participants" className="text-gray-800 hover:bg-green-50">Spots Available</SelectItem>
+                <SelectContent>
+                  <SelectItem value="payout">Highest Payout</SelectItem>
+                  <SelectItem value="deadline">Deadline</SelectItem>
+                  <SelectItem value="participants">Available Spots</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          </div>
-        </div>
-      </div>
+          </CardContent>
+        </Card>
 
-      {/* Verification Banner */}
-      {!isVerified && (
-        <div className="px-6 pb-6">
-          <div className="max-w-7xl mx-auto">
-            <Card className="bg-yellow-500/10 border-yellow-500/20 backdrop-blur-sm">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Filter className="h-5 w-5 text-yellow-500" />
-                  <div>
-                    <h3 className="text-yellow-500 font-semibold">Email Verification Required</h3>
-                    <p className="text-gray-300 text-sm">Complete email verification to join tasks and start earning.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
-
-      {/* Task Grid */}
-      <div className="px-6 pb-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredTasks.map((task) => (
-              <Card key={task.id} className="bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-gray-600 transition-all duration-200 hover:transform hover:scale-105">
-                <CardHeader className="pb-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2">
-                      <Badge className={getTypeColor(task.type)}>
-                        {task.type === 'sponsored' && <Briefcase className="w-3 h-3 mr-1" />}
-                        {task.type.charAt(0).toUpperCase() + task.type.slice(1)}
+        {/* Task Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredTasks.map((task) => {
+            const platformFee = calculatePlatformFee(task.payout, userSubscriptionTier)
+            const netEarnings = getNetEarnings(task.payout, userSubscriptionTier)
+            
+            return (
+              <Card 
+                key={task.id} 
+                className="bg-white/80 backdrop-blur-sm border-green-200 hover:border-green-300 transition-all duration-200 hover:shadow-lg group"
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between mb-2">
+                    <Badge className={getTypeColor(task.type)} variant="outline">
+                      {task.type === 'solo' ? 'Solo' : task.type === 'shared' ? 'Community' : 'Self-Care'}
+                    </Badge>
+                    {task.is_sponsored && (
+                      <Badge className="bg-yellow-500/20 text-yellow-600 border-yellow-500/20" variant="outline">
+                        <Star className="w-3 h-3 mr-1" />
+                        Sponsored
                       </Badge>
-                      <Badge className={getUrgencyColor(task.urgency)}>
-                        {task.urgency}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                      <span className="text-sm text-gray-300">{task.hostRating}</span>
-                    </div>
+                    )}
                   </div>
                   
-                  <CardTitle className="text-white text-lg">{task.title}</CardTitle>
-                  <CardDescription className="text-gray-400 line-clamp-2">
+                  <CardTitle className="text-lg text-gray-800 group-hover:text-green-700 transition-colors">
+                    {task.title}
+                  </CardTitle>
+                  
+                  <CardDescription className="text-sm text-gray-600 line-clamp-2">
                     {task.description}
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-4">
-                  {/* Earning Potential */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-green-400" />
-                      <span className="text-green-400 font-semibold">${task.earningPotential.toFixed(2)}</span>
-                      <span className="text-gray-400 text-sm">potential</span>
+                <CardContent className="pt-0">
+                  <div className="space-y-3">
+                    {/* Earnings */}
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                      <div className="flex items-center space-x-2">
+                        <DollarSign className="w-4 h-4 text-green-600" />
+                        <span className="font-semibold text-green-700">${netEarnings.toFixed(2)}</span>
+                        <span className="text-xs text-gray-500">net</span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        ${task.payout} - ${platformFee.toFixed(2)} fee
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-300 text-sm">
-                        {task.currentParticipants}/{task.maxParticipants}
+
+                    {/* Task Details */}
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="flex items-center space-x-2">
+                        <Clock className="w-4 h-4 text-gray-400" />
+                        <span className="text-gray-600">{task.time_estimate}</span>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Users className="w-4 h-4 text-gray-400" />
+                        <span className="text-gray-600">
+                          {task.current_participants}/{task.max_participants}
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <span className="text-gray-600 capitalize">{task.location_type}</span>
+                      </div>
+                      
+                      <Badge className={getDifficultyColor(task.difficulty)} variant="outline">
+                        {task.difficulty}
+                      </Badge>
+                    </div>
+
+                    {/* Category and Sponsor */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                        {task.category}
                       </span>
+                      {task.sponsor_name && (
+                        <span className="text-xs text-yellow-600 font-medium">
+                          by {task.sponsor_name}
+                        </span>
+                      )}
                     </div>
-                  </div>
 
-                  {/* Location and Duration */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-300 text-sm">{task.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-300 text-sm">{task.duration}</span>
-                    </div>
+                    {/* Action Button */}
+                    <Button 
+                      className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white"
+                      disabled={task.current_participants >= task.max_participants}
+                    >
+                      {task.current_participants >= task.max_participants ? 'Full' : 'Join Task'}
+                    </Button>
                   </div>
-
-                  {/* Host Info */}
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-700">
-                    <span className="text-gray-400 text-sm">
-                      Hosted by <span className="text-white">{task.hostName}</span>
-                    </span>
-                    <span className="text-gray-400 text-sm">
-                      {new Date(task.scheduledDate).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  {/* Action Button */}
-                  <Button 
-                    className={`w-full ${
-                      isVerified 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0'
-                        : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                    }`}
-                    disabled={!isVerified || task.currentParticipants >= task.maxParticipants}
-                  >
-                    {task.currentParticipants >= task.maxParticipants 
-                      ? 'Task Full' 
-                      : isVerified 
-                        ? 'Join Task' 
-                        : 'Verify Email to Join'
-                    }
-                  </Button>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-
-          {filteredTasks.length === 0 && (
-            <div className="text-center py-12">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 max-w-md mx-auto">
-                <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-white text-lg font-semibold mb-2">No tasks found</h3>
-                <p className="text-gray-400 mb-4">Try adjusting your search criteria or create a new task.</p>
-                <Button 
-                  onClick={() => router.push('/create-task')}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0"
-                  disabled={!isVerified}
-                >
-                  Create New Task
-                </Button>
-              </div>
-            </div>
-          )}
+            )
+          })}
         </div>
+
+        {filteredTasks.length === 0 && (
+          <Card className="bg-white/70 backdrop-blur-sm border-green-200 text-center py-12">
+            <CardContent>
+              <Filter className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">No tasks found</h3>
+              <p className="text-gray-500">Try adjusting your filters to see more opportunities.</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Load More */}
+        {filteredTasks.length === 24 && (
+          <div className="text-center mt-8">
+            <Button 
+              variant="outline" 
+              className="border-green-300 text-green-700 hover:bg-green-50"
+            >
+              Load More Tasks
+            </Button>
+          </div>
+        )}
       </div>
     </div>
-    </>
   )
 }
