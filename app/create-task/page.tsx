@@ -9,61 +9,49 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { useRouter } from 'next/navigation'
-import { useToast } from '../../hooks/use-toast'
-import { MapPin, Clock, Users, DollarSign, Calendar, AlertCircle, CheckCircle, Info } from 'lucide-react'
 import Navigation from '@/components/Navigation'
+import { useRouter } from 'next/navigation'
+import { 
+  PlusCircle, 
+  Users, 
+  Clock, 
+  MapPin, 
+  DollarSign, 
+  Calendar,
+  CheckCircle,
+  Award,
+  Target,
+  Heart
+} from 'lucide-react'
 
 const categories = [
-  { id: 'childcare', name: 'Childcare', icon: '👶', description: 'School pickups, babysitting, playdates' },
-  { id: 'shopping', name: 'Shopping', icon: '🛒', description: 'Grocery runs, bulk shopping, errands' },
-  { id: 'transportation', name: 'Transportation', icon: '🚗', description: 'Carpools, airport runs, deliveries' },
-  { id: 'household', name: 'Household', icon: '🏠', description: 'Cleaning, maintenance, organization' },
-  { id: 'educational', name: 'Educational', icon: '📚', description: 'Tutoring, lessons, study groups' },
-  { id: 'wellness', name: 'Wellness', icon: '💪', description: 'Fitness, yoga, health activities' },
-  { id: 'pets', name: 'Pet Care', icon: '🐕', description: 'Walking, sitting, grooming' },
-  { id: 'events', name: 'Events', icon: '🎉', description: 'Parties, gatherings, celebrations' }
+  'Transportation', 'Meal Planning', 'Home Organization', 'Mental Wellness', 
+  'Community Support', 'Child Development', 'Education', 'Health & Fitness',
+  'Event Planning', 'Safety & Preparedness', 'Financial Education'
 ]
 
 const taskTypes = [
-  { 
-    id: 'shared', 
-    name: 'Shared Task', 
-    description: 'Split costs and effort with neighbors',
-    icon: '🤝',
-    color: 'blue'
-  },
-  { 
-    id: 'solo', 
-    name: 'Solo Opportunity', 
-    description: 'Individual earning opportunity',
-    icon: '⭐',
-    color: 'green'
-  }
+  { value: 'solo', label: 'Solo Task', description: 'Individual task completed independently' },
+  { value: 'shared', label: 'Shared Task', description: 'Collaborative task with other community members' },
+  { value: 'self_care', label: 'Self-Care Task', description: 'Personal wellness with optional accountability partners' }
 ]
 
 export default function CreateTaskPage() {
   const { user, isAuthenticated, isVerified } = useAuth()
   const router = useRouter()
-  const { toast } = useToast()
   const [mounted, setMounted] = useState(false)
-  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category: '',
-    type: 'shared',
-    earningPotential: '',
-    maxParticipants: '2',
+    type: '',
+    payout: '',
+    maxParticipants: '',
+    deadline: '',
     location: '',
-    duration: '',
-    requirements: '',
-    scheduledDate: '',
-    scheduledTime: ''
+    timeCommitment: '',
+    requirements: ''
   })
-  
-  const [loading, setLoading] = useState(false)
-  const [step, setStep] = useState(1)
 
   useEffect(() => {
     setMounted(true)
@@ -78,28 +66,6 @@ export default function CreateTaskPage() {
     return null
   }
 
-  if (!isVerified) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center px-6">
-        <Card className="max-w-md bg-gray-800/50 backdrop-blur-sm border-gray-700">
-          <CardContent className="p-8 text-center">
-            <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-white mb-2">Email Verification Required</h2>
-            <p className="text-gray-400 mb-6">
-              You need to verify your email address before creating tasks.
-            </p>
-            <Button 
-              onClick={() => router.push('/platform')}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0"
-            >
-              Go to Platform
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -107,424 +73,319 @@ export default function CreateTaskPage() {
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-
-    try {
-      // Here we would submit to the API
-      console.log('Task data:', formData)
-      
-      toast({
-        title: 'Task Created Successfully!',
-        description: 'Your task has been posted to the marketplace.',
-      })
-      
-      router.push('/marketplace')
-    } catch (error) {
-      toast({
-        title: 'Error Creating Task',
-        description: 'Please try again later.',
-        variant: 'destructive',
-      })
-    } finally {
-      setLoading(false)
-    }
+    // In a real app, this would submit to your API
+    console.log('Creating task:', formData)
+    // Redirect to marketplace after creation
+    router.push('/marketplace')
   }
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'shared': return 'bg-blue-500/20 text-blue-400 border-blue-500/20'
-      case 'solo': return 'bg-green-500/20 text-green-400 border-green-500/20'
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/20'
-    }
+  const calculatePlatformFee = (payout: number) => {
+    return Math.round(payout * 0.1) // 10% for Free users
   }
 
   return (
-    <>
+    <div className="page-layout">
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
-      <div className="px-6 pt-8 pb-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6">
-            <h1 className="text-3xl font-bold text-white mb-2">Create New Task</h1>
-            <p className="text-gray-400">Share your activities and start earning with your community</p>
-            
-            {/* Progress Steps */}
-            <div className="flex items-center gap-4 mt-6">
-              {[1, 2, 3].map((num) => (
-                <div key={num} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                    step >= num 
-                      ? 'bg-blue-500 text-white' 
-                      : 'bg-gray-700 text-gray-400'
-                  }`}>
-                    {step > num ? <CheckCircle className="w-4 h-4" /> : num}
-                  </div>
-                  {num < 3 && (
-                    <div className={`w-12 h-1 mx-2 ${
-                      step > num ? 'bg-blue-500' : 'bg-gray-700'
-                    }`} />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+      
+      <main className="page-content">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-heading mb-2">Create New Task</h1>
+          <p className="text-body text-muted-foreground">
+            Share a task with your community and start earning together
+          </p>
         </div>
-      </div>
 
-      {/* Form */}
-      <div className="px-6 pb-12">
-        <div className="max-w-4xl mx-auto">
-          <form onSubmit={handleSubmit}>
-            {step === 1 && (
-              <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Task Details</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Tell us about your task and what you need help with
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Title */}
-                  <div className="space-y-2">
-                    <Label htmlFor="title" className="text-gray-300">Task Title *</Label>
-                    <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => handleInputChange('title', e.target.value)}
-                      placeholder="e.g., School Pickup Share for Westfield Elementary"
-                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                      required
-                    />
-                  </div>
+        {/* Verification Notice */}
+        {!isVerified && (
+          <Card className="mb-6 border-yellow-200 bg-yellow-50">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Award className="h-5 w-5 text-yellow-600" />
+                <p className="text-yellow-800">
+                  <strong>Email verification required</strong> to create and publish tasks.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-                  {/* Description */}
-                  <div className="space-y-2">
-                    <Label htmlFor="description" className="text-gray-300">Description *</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => handleInputChange('description', e.target.value)}
-                      placeholder="Describe what you need help with, when, and how it benefits everyone involved..."
-                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 h-32"
-                      required
-                    />
-                  </div>
-
-                  {/* Category */}
-                  <div className="space-y-2">
-                    <Label className="text-gray-300">Category *</Label>
-                    <div className="grid md:grid-cols-4 gap-3">
-                      {categories.map((category) => (
-                        <button
-                          key={category.id}
-                          type="button"
-                          onClick={() => handleInputChange('category', category.id)}
-                          className={`p-3 rounded-lg border text-left transition-all ${
-                            formData.category === category.id
-                              ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-                              : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-gray-500'
-                          }`}
-                        >
-                          <div className="text-lg mb-1">{category.icon}</div>
-                          <div className="font-semibold text-sm">{category.name}</div>
-                          <div className="text-xs text-gray-400">{category.description}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Task Type */}
-                  <div className="space-y-2">
-                    <Label className="text-gray-300">Task Type *</Label>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {taskTypes.map((type) => (
-                        <button
-                          key={type.id}
-                          type="button"
-                          onClick={() => handleInputChange('type', type.id)}
-                          className={`p-4 rounded-lg border text-left transition-all ${
-                            formData.type === type.id
-                              ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-                              : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-gray-500'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-xl">{type.icon}</span>
-                            <span className="font-semibold">{type.name}</span>
-                          </div>
-                          <p className="text-sm text-gray-400">{type.description}</p>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end">
-                    <Button
-                      type="button"
-                      onClick={() => setStep(2)}
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0"
-                      disabled={!formData.title || !formData.description || !formData.category}
-                    >
-                      Next: Logistics
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {step === 2 && (
-              <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Logistics & Timing</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Set the practical details for your task
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {/* Location */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Form */}
+          <div className="lg:col-span-2">
+            <Card className="card-clean">
+              <CardHeader>
+                <CardTitle className="text-subheading">Task Details</CardTitle>
+                <CardDescription>Provide clear information to attract the right participants</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Basic Information */}
+                  <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="location" className="text-gray-300 flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        Location *
-                      </Label>
+                      <Label htmlFor="title">Task Title *</Label>
+                      <Input
+                        id="title"
+                        placeholder="e.g., School Pickup Share for Elementary Kids"
+                        value={formData.title}
+                        onChange={(e) => handleInputChange('title', e.target.value)}
+                        className="input-clean"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Description *</Label>
+                      <Textarea
+                        id="description"
+                        placeholder="Describe what the task involves, expectations, and any special requirements..."
+                        value={formData.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        className="min-h-24"
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="category">Category *</Label>
+                        <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.map(category => (
+                              <SelectItem key={category} value={category}>{category}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="type">Task Type *</Label>
+                        <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {taskTypes.map(type => (
+                              <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Logistics */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold">Logistics</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="payout">Total Payout ($) *</Label>
+                        <Input
+                          id="payout"
+                          type="number"
+                          placeholder="50"
+                          value={formData.payout}
+                          onChange={(e) => handleInputChange('payout', e.target.value)}
+                          className="input-clean"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="maxParticipants">Max Participants *</Label>
+                        <Input
+                          id="maxParticipants"
+                          type="number"
+                          placeholder="4"
+                          value={formData.maxParticipants}
+                          onChange={(e) => handleInputChange('maxParticipants', e.target.value)}
+                          className="input-clean"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="deadline">Deadline</Label>
+                        <Input
+                          id="deadline"
+                          type="date"
+                          value={formData.deadline}
+                          onChange={(e) => handleInputChange('deadline', e.target.value)}
+                          className="input-clean"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="timeCommitment">Time Commitment</Label>
+                        <Input
+                          id="timeCommitment"
+                          placeholder="e.g., 2 hours weekly"
+                          value={formData.timeCommitment}
+                          onChange={(e) => handleInputChange('timeCommitment', e.target.value)}
+                          className="input-clean"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="location">Location/Format</Label>
                       <Input
                         id="location"
+                        placeholder="e.g., Downtown Elementary, Virtual/Online, Your Home"
                         value={formData.location}
                         onChange={(e) => handleInputChange('location', e.target.value)}
-                        placeholder="e.g., Westfield Elementary School"
-                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                        required
+                        className="input-clean"
                       />
                     </div>
 
-                    {/* Duration */}
                     <div className="space-y-2">
-                      <Label htmlFor="duration" className="text-gray-300 flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        Duration *
-                      </Label>
-                      <Input
-                        id="duration"
-                        value={formData.duration}
-                        onChange={(e) => handleInputChange('duration', e.target.value)}
-                        placeholder="e.g., 30 minutes daily, 2 hours weekly"
-                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                        required
+                      <Label htmlFor="requirements">Requirements (Optional)</Label>
+                      <Textarea
+                        id="requirements"
+                        placeholder="Any specific skills, equipment, or qualifications needed..."
+                        value={formData.requirements}
+                        onChange={(e) => handleInputChange('requirements', e.target.value)}
+                        className="min-h-20"
                       />
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {/* Scheduled Date */}
-                    <div className="space-y-2">
-                      <Label htmlFor="scheduledDate" className="text-gray-300 flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        Start Date *
-                      </Label>
-                      <Input
-                        id="scheduledDate"
-                        type="date"
-                        value={formData.scheduledDate}
-                        onChange={(e) => handleInputChange('scheduledDate', e.target.value)}
-                        className="bg-gray-700 border-gray-600 text-white"
-                        required
-                      />
-                    </div>
-
-                    {/* Time */}
-                    <div className="space-y-2">
-                      <Label htmlFor="scheduledTime" className="text-gray-300">Start Time</Label>
-                      <Input
-                        id="scheduledTime"
-                        type="time"
-                        value={formData.scheduledTime}
-                        onChange={(e) => handleInputChange('scheduledTime', e.target.value)}
-                        className="bg-gray-700 border-gray-600 text-white"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Max Participants */}
-                  <div className="space-y-2">
-                    <Label htmlFor="maxParticipants" className="text-gray-300 flex items-center gap-2">
-                      <Users className="w-4 h-4" />
-                      Maximum Participants
-                    </Label>
-                    <Select value={formData.maxParticipants} onValueChange={(value) => handleInputChange('maxParticipants', value)}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
-                        {[1,2,3,4,5,6,8,10,15,20].map(num => (
-                          <SelectItem key={num} value={num.toString()} className="text-white hover:bg-gray-600">
-                            {num} {num === 1 ? 'person' : 'people'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Requirements */}
-                  <div className="space-y-2">
-                    <Label htmlFor="requirements" className="text-gray-300">Special Requirements</Label>
-                    <Textarea
-                      id="requirements"
-                      value={formData.requirements}
-                      onChange={(e) => handleInputChange('requirements', e.target.value)}
-                      placeholder="Any specific requirements, skills needed, or important details..."
-                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                    />
-                  </div>
-
-                  <div className="flex justify-between">
-                    <Button
-                      type="button"
-                      onClick={() => setStep(1)}
-                      variant="outline"
-                      className="border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600"
-                    >
-                      Back
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => setStep(3)}
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0"
-                      disabled={!formData.location || !formData.duration || !formData.scheduledDate}
-                    >
-                      Next: Earnings
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {step === 3 && (
-              <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Earnings & Review</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Set the earning potential and review your task
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Earning Potential */}
-                  <div className="space-y-2">
-                    <Label htmlFor="earningPotential" className="text-gray-300 flex items-center gap-2">
-                      <DollarSign className="w-4 h-4" />
-                      Earning Potential Per Person *
-                    </Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-3 text-gray-400">$</span>
-                      <Input
-                        id="earningPotential"
-                        type="number"
-                        step="0.01"
-                        min="1"
-                        value={formData.earningPotential}
-                        onChange={(e) => handleInputChange('earningPotential', e.target.value)}
-                        placeholder="25.00"
-                        className="pl-8 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                        required
-                      />
-                    </div>
-                    <p className="text-sm text-gray-400">
-                      Suggest a fair amount based on time saved, costs split, or value provided
-                    </p>
-                  </div>
-
-                  {/* Earnings Breakdown */}
-                  {formData.earningPotential && (
-                    <div className="bg-gray-700/30 rounded-lg p-4">
-                      <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                        <Info className="w-4 h-4" />
-                        Earnings Breakdown
-                      </h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Potential per participant:</span>
-                          <span className="text-white">${parseFloat(formData.earningPotential || '0').toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Platform fee (10%):</span>
-                          <span className="text-red-400">-${(parseFloat(formData.earningPotential || '0') * 0.1).toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between border-t border-gray-600 pt-2">
-                          <span className="text-gray-400">You earn per participant:</span>
-                          <span className="text-green-400 font-semibold">
-                            ${(parseFloat(formData.earningPotential || '0') * 0.9).toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Total potential ({formData.maxParticipants} participants):</span>
-                          <span className="text-green-400 font-semibold">
-                            ${(parseFloat(formData.earningPotential || '0') * 0.9 * parseInt(formData.maxParticipants)).toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Task Preview */}
-                  <div className="bg-gray-700/30 rounded-lg p-4">
-                    <h4 className="text-white font-semibold mb-3">Task Preview</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Badge className={getTypeColor(formData.type)}>
-                          {formData.type.charAt(0).toUpperCase() + formData.type.slice(1)}
-                        </Badge>
-                        {formData.category && (
-                          <Badge className="bg-gray-600 text-gray-300">
-                            {categories.find(c => c.id === formData.category)?.name}
-                          </Badge>
-                        )}
-                      </div>
-                      <h5 className="text-white font-semibold">{formData.title || 'Task Title'}</h5>
-                      <p className="text-gray-400">{formData.description || 'Task description...'}</p>
-                      <div className="flex items-center gap-4 text-xs text-gray-400">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {formData.location || 'Location'}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {formData.duration || 'Duration'}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          0/{formData.maxParticipants}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <Button
-                      type="button"
-                      onClick={() => setStep(2)}
-                      variant="outline"
-                      className="border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600"
-                    >
-                      Back
-                    </Button>
+                  {/* Submit Button */}
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <Button
                       type="submit"
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0"
-                      disabled={loading || !formData.earningPotential}
+                      className="button-clean"
+                      disabled={!isVerified || !formData.title || !formData.description}
                     >
-                      {loading ? 'Creating...' : 'Create Task'}
+                      {isVerified ? 'Create Task' : 'Verify Email to Create'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => router.push('/marketplace')}
+                      className="button-outline"
+                    >
+                      Cancel
                     </Button>
                   </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Task Type Info */}
+            {formData.type && (
+              <Card className="card-clean">
+                <CardHeader>
+                  <CardTitle className="text-lg">
+                    {taskTypes.find(t => t.value === formData.type)?.label}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-small text-muted-foreground">
+                    {taskTypes.find(t => t.value === formData.type)?.description}
+                  </p>
                 </CardContent>
               </Card>
             )}
-          </form>
+
+            {/* Payout Breakdown */}
+            {formData.payout && (
+              <Card className="card-clean">
+                <CardHeader>
+                  <CardTitle className="text-lg">Payout Breakdown</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span>Total Payout</span>
+                    <span className="font-semibold">${formData.payout}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Platform Fee (10%)</span>
+                    <span className="text-red-600">
+                      -${calculatePlatformFee(parseInt(formData.payout) || 0)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t font-semibold">
+                    <span>Your Cost</span>
+                    <span className="text-green-600">
+                      ${(parseInt(formData.payout) || 0) + calculatePlatformFee(parseInt(formData.payout) || 0)}
+                    </span>
+                  </div>
+                  <p className="text-small text-muted-foreground">
+                    <span className="text-primary cursor-pointer" onClick={() => router.push('/subscriptions')}>
+                      Upgrade your plan
+                    </span> to reduce platform fees
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Tips */}
+            <Card className="card-clean">
+              <CardHeader>
+                <CardTitle className="text-lg">Tips for Success</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-small">Be specific</p>
+                    <p className="text-small text-muted-foreground">Clear descriptions attract the right participants</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-small">Fair compensation</p>
+                    <p className="text-small text-muted-foreground">Consider time investment and local rates</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-small">Set expectations</p>
+                    <p className="text-small text-muted-foreground">Include timing, location, and requirements</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Community Guidelines */}
+            <Card className="card-clean">
+              <CardHeader>
+                <CardTitle className="text-lg">Community Guidelines</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <p className="text-small text-muted-foreground">
+                  • Tasks must be legal and family-friendly
+                </p>
+                <p className="text-small text-muted-foreground">
+                  • Respect all community members
+                </p>
+                <p className="text-small text-muted-foreground">
+                  • Provide accurate task descriptions
+                </p>
+                <p className="text-small text-muted-foreground">
+                  • Complete tasks as committed
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
-    </>
   )
 }

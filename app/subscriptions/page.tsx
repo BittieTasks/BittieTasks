@@ -75,14 +75,11 @@ const plans = [
   }
 ]
 
-const annualDiscount = 0.2 // 20% off
-
 export default function SubscriptionsPage() {
   const { user, isAuthenticated, isVerified } = useAuth()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
+  const [selectedPlan, setSelectedPlan] = useState('Pro')
 
   useEffect(() => {
     setMounted(true)
@@ -97,256 +94,237 @@ export default function SubscriptionsPage() {
     return null
   }
 
-  const handlePlanSelection = (planName: string) => {
-    if (planName === 'Free') return
-    
-    setSelectedPlan(planName)
-    // Here we would integrate with Stripe
-    console.log(`Selected plan: ${planName} - ${billingCycle}`)
-  }
-
-  const calculatePrice = (basePrice: number) => {
-    if (billingCycle === 'annual') {
-      return basePrice * 12 * (1 - annualDiscount)
-    }
-    return basePrice
-  }
-
-  const formatPrice = (price: number) => {
-    if (billingCycle === 'annual') {
-      return `$${(price / 12).toFixed(2)}/month`
-    }
-    return `$${price.toFixed(2)}/month`
+  const calculateAnnualSavings = (monthlyPrice: number) => {
+    return (monthlyPrice * 12 * 0.2).toFixed(2) // 20% annual discount
   }
 
   return (
-    <>
+    <div className="page-layout">
       <Navigation />
-      <div className="min-h-screen bittie-gradient-bg">
+      
+      <main className="page-content">
         {/* Header */}
-        <div className="bittie-container bittie-section">
-        <div className="text-center bittie-card p-8 bittie-fade-in">
-          <div className="inline-flex items-center space-x-2 bittie-badge-purple mb-6">
-            <Crown className="w-4 h-4" />
-            <span>Choose Your Earning Potential</span>
-          </div>
-          
-          <h1 className="bittie-heading-xl bittie-gradient-text mb-4">
-            Subscription Plans
-          </h1>
-          <p className="bittie-body-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Unlock higher earnings with lower platform fees and premium features
+        <div className="text-center mb-12">
+          <h1 className="text-display mb-4">Choose Your Plan</h1>
+          <p className="text-body text-muted-foreground max-w-2xl mx-auto">
+            Unlock more earning potential with reduced platform fees and premium features
           </p>
-
-            {/* Billing Toggle */}
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <span className={`text-sm ${billingCycle === 'monthly' ? 'text-white' : 'text-gray-400'}`}>
-                Monthly
-              </span>
-              <button
-                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  billingCycle === 'annual' ? 'bg-blue-600' : 'bg-gray-600'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    billingCycle === 'annual' ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-              <span className={`text-sm ${billingCycle === 'annual' ? 'text-white' : 'text-gray-400'}`}>
-                Annual
-              </span>
-              {billingCycle === 'annual' && (
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/20">
-                  Save 20%
-                </Badge>
-              )}
-            </div>
-          </div>
         </div>
-      </div>
 
-      {/* Pricing Cards */}
-      <div className="px-6 pb-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-8">
-            {plans.map((plan) => (
-              <Card 
-                key={plan.name} 
-                className={`relative bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-gray-600 transition-all duration-300 ${
-                  plan.popular ? 'ring-2 ring-blue-500/50 transform scale-105' : ''
-                } ${
-                  plan.current ? 'ring-2 ring-green-500/50' : ''
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-500 text-white px-4 py-1">
-                      <Star className="w-3 h-3 mr-1" />
-                      Most Popular
-                    </Badge>
+        {/* Current Plan Benefits */}
+        <Card className="card-clean mb-8 border-primary">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+                <Crown className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h3 className="text-subheading">Your Potential Savings</h3>
+                <p className="text-body text-muted-foreground">
+                  See how much you could save on platform fees
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-muted rounded-lg">
+                <div className="text-2xl font-bold text-red-600">10%</div>
+                <div className="text-small text-muted-foreground">Free Plan Fee</div>
+                <div className="text-small text-muted-foreground">On $100: $10 fee</div>
+              </div>
+              <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">7%</div>
+                <div className="text-small text-muted-foreground">Pro Plan Fee</div>
+                <div className="text-small text-green-600">On $100: $7 fee (Save $3)</div>
+              </div>
+              <div className="text-center p-4 bg-purple-50 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600">5%</div>
+                <div className="text-small text-muted-foreground">Premium Plan Fee</div>
+                <div className="text-small text-green-600">On $100: $5 fee (Save $5)</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Plan Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {plans.map((plan) => (
+            <Card 
+              key={plan.name} 
+              className={`card-clean relative ${
+                plan.popular ? 'border-primary shadow-lg scale-105' : ''
+              } ${plan.current ? 'border-green-500' : ''}`}
+            >
+              {plan.popular && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-primary text-primary-foreground px-4 py-1">
+                    Most Popular
+                  </Badge>
+                </div>
+              )}
+
+              {plan.current && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-green-500 text-white px-4 py-1">
+                    Current Plan
+                  </Badge>
+                </div>
+              )}
+
+              <CardHeader className="text-center pb-4">
+                <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-xl flex items-center justify-center">
+                  {plan.name === 'Free' && <Users className="h-8 w-8" />}
+                  {plan.name === 'Pro' && <Crown className="h-8 w-8 text-blue-600" />}
+                  {plan.name === 'Premium' && <Star className="h-8 w-8 text-purple-600" />}
+                </div>
+                
+                <CardTitle className="text-subheading">{plan.name}</CardTitle>
+                <CardDescription>{plan.description}</CardDescription>
+                
+                <div className="py-4">
+                  <div className="text-4xl font-bold">
+                    {plan.price === 0 ? 'Free' : `$${plan.price}`}
                   </div>
-                )}
-
-                {plan.current && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-green-500 text-white px-4 py-1">
-                      <Check className="w-3 h-3 mr-1" />
-                      Current Plan
-                    </Badge>
-                  </div>
-                )}
-
-                <CardHeader className="text-center pb-8">
-                  <div className="mb-4">
-                    {plan.name === 'Free' && <Users className="w-8 h-8 text-gray-400 mx-auto" />}
-                    {plan.name === 'Pro' && <TrendingUp className="w-8 h-8 text-blue-400 mx-auto" />}
-                    {plan.name === 'Premium' && <Crown className="w-8 h-8 text-yellow-500 mx-auto" />}
-                  </div>
-                  
-                  <CardTitle className="text-2xl font-bold text-white mb-2">
-                    {plan.name}
-                  </CardTitle>
-                  
-                  <CardDescription className="text-gray-400 mb-4">
-                    {plan.description}
-                  </CardDescription>
-
-                  <div className="text-center">
-                    {plan.price === 0 ? (
-                      <div className="text-4xl font-bold text-white">Free</div>
-                    ) : (
-                      <div>
-                        <div className="text-4xl font-bold text-white">
-                          {formatPrice(calculatePrice(plan.price))}
-                        </div>
-                        {billingCycle === 'annual' && (
-                          <div className="text-sm text-gray-400 mt-1">
-                            ${(calculatePrice(plan.price)).toFixed(2)} billed annually
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Key Metrics */}
-                  <div className="grid grid-cols-2 gap-4 mt-6 p-4 bg-gray-700/30 rounded-lg">
-                    <div className="text-center">
-                      <div className="text-sm text-gray-400">Platform Fee</div>
-                      <div className="text-lg font-bold text-white">{plan.platformFee}%</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-sm text-gray-400">Monthly Tasks</div>
-                      <div className="text-lg font-bold text-white">{plan.taskLimit}</div>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="space-y-6">
-                  {/* Features */}
-                  <div>
-                    <h4 className="text-white font-semibold mb-3">Included Features</h4>
-                    <ul className="space-y-2">
-                      {plan.features.map((feature, index) => (
-                        <li key={index} className="flex items-center gap-2 text-sm text-gray-300">
-                          <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Limitations (for Free plan) */}
-                  {plan.limitations && (
-                    <div>
-                      <h4 className="text-gray-400 font-semibold mb-3">Limitations</h4>
-                      <ul className="space-y-2">
-                        {plan.limitations.map((limitation, index) => (
-                          <li key={index} className="flex items-center gap-2 text-sm text-gray-400">
-                            <div className="w-4 h-4 rounded-full border border-gray-500 flex-shrink-0" />
-                            {limitation}
-                          </li>
-                        ))}
-                      </ul>
+                  {plan.price > 0 && (
+                    <div className="text-small text-muted-foreground">
+                      per {plan.period}
                     </div>
                   )}
-
-                  {/* Action Button */}
-                  <Button
-                    onClick={() => handlePlanSelection(plan.name)}
-                    className={`w-full ${
-                      plan.current
-                        ? 'bg-gray-600 text-gray-300 cursor-default'
-                        : plan.popular
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0'
-                        : 'bg-gray-700 hover:bg-gray-600 text-white border-gray-600'
-                    }`}
-                    disabled={plan.current || !isVerified}
-                  >
-                    {!isVerified ? 'Verify Email First' : plan.cta}
-                  </Button>
-
-                  {plan.name !== 'Free' && (
-                    <div className="text-center">
-                      <p className="text-xs text-gray-400">
-                        {billingCycle === 'monthly' ? 'No commitment • Cancel anytime' : 'Best value • Save 20%'}
-                      </p>
+                  {plan.price > 0 && (
+                    <div className="text-small text-green-600 mt-1">
+                      Save ${calculateAnnualSavings(plan.price)} annually
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Revenue Projection */}
-          <div className="mt-12">
-            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-              <CardHeader className="text-center">
-                <CardTitle className="text-white text-2xl mb-2">
-                  <DollarSign className="w-6 h-6 inline mr-2" />
-                  Potential Monthly Earnings Comparison
-                </CardTitle>
-                <CardDescription className="text-gray-400">
-                  See how much more you could earn with lower platform fees
-                </CardDescription>
+                </div>
               </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-3 gap-6">
-                  {plans.map((plan) => (
-                    <div key={plan.name} className="text-center p-4 bg-gray-700/30 rounded-lg">
-                      <h4 className="text-white font-semibold mb-2">{plan.name}</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="text-gray-400">
-                          Task earnings: <span className="text-white">$500</span>
-                        </div>
-                        <div className="text-gray-400">
-                          Platform fee ({plan.platformFee}%): <span className="text-red-400">-${(500 * plan.platformFee / 100).toFixed(0)}</span>
-                        </div>
-                        {plan.price > 0 && (
-                          <div className="text-gray-400">
-                            Subscription: <span className="text-yellow-400">-${plan.price}</span>
-                          </div>
-                        )}
-                        <div className="border-t border-gray-600 pt-2 font-semibold">
-                          <span className="text-gray-400">You keep: </span>
-                          <span className="text-green-400 text-lg">
-                            ${(500 * (1 - plan.platformFee / 100) - plan.price).toFixed(0)}
-                          </span>
-                        </div>
-                      </div>
+
+              <CardContent className="space-y-6">
+                {/* Platform Fee Highlight */}
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <div className="text-lg font-bold">{plan.platformFee}% Platform Fee</div>
+                  <div className="text-small text-muted-foreground">
+                    Task Limit: {plan.taskLimit} per month
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-3">
+                  {plan.features.map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                      <span className="text-small">{feature}</span>
                     </div>
                   ))}
                 </div>
-                <div className="text-center mt-6 text-sm text-gray-400">
-                  * Example based on $500 in monthly task earnings
-                </div>
+
+                {/* CTA Button */}
+                <Button
+                  className={`w-full ${plan.current ? 'button-outline' : 'button-clean'}`}
+                  variant={plan.current ? 'outline' : 'default'}
+                  disabled={plan.current}
+                  onClick={() => {
+                    if (!plan.current) {
+                      // In a real app, this would integrate with Stripe
+                      console.log(`Upgrading to ${plan.name}`)
+                    }
+                  }}
+                >
+                  {plan.cta}
+                </Button>
+
+                {plan.price > 0 && !plan.current && (
+                  <p className="text-center text-small text-muted-foreground">
+                    Cancel anytime • No hidden fees
+                  </p>
+                )}
               </CardContent>
             </Card>
-          </div>
+          ))}
         </div>
-      </div>
-    </>
+
+        {/* Feature Comparison */}
+        <Card className="card-clean mb-8">
+          <CardHeader>
+            <CardTitle className="text-subheading">Feature Comparison</CardTitle>
+            <CardDescription>See what's included with each plan</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4">Feature</th>
+                    <th className="text-center py-3 px-4">Free</th>
+                    <th className="text-center py-3 px-4">Pro</th>
+                    <th className="text-center py-3 px-4">Premium</th>
+                  </tr>
+                </thead>
+                <tbody className="text-small">
+                  <tr className="border-b">
+                    <td className="py-3 px-4">Platform Fee</td>
+                    <td className="text-center py-3 px-4">10%</td>
+                    <td className="text-center py-3 px-4 text-blue-600">7%</td>
+                    <td className="text-center py-3 px-4 text-purple-600">5%</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-3 px-4">Monthly Task Limit</td>
+                    <td className="text-center py-3 px-4">5 tasks</td>
+                    <td className="text-center py-3 px-4">25 tasks</td>
+                    <td className="text-center py-3 px-4">Unlimited</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-3 px-4">Priority Support</td>
+                    <td className="text-center py-3 px-4">-</td>
+                    <td className="text-center py-3 px-4"><Check className="h-4 w-4 text-green-600 mx-auto" /></td>
+                    <td className="text-center py-3 px-4"><Check className="h-4 w-4 text-green-600 mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-3 px-4">Advanced Analytics</td>
+                    <td className="text-center py-3 px-4">-</td>
+                    <td className="text-center py-3 px-4"><Check className="h-4 w-4 text-green-600 mx-auto" /></td>
+                    <td className="text-center py-3 px-4"><Check className="h-4 w-4 text-green-600 mx-auto" /></td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4">Corporate Sponsorships</td>
+                    <td className="text-center py-3 px-4">-</td>
+                    <td className="text-center py-3 px-4">-</td>
+                    <td className="text-center py-3 px-4"><Check className="h-4 w-4 text-green-600 mx-auto" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* FAQ */}
+        <Card className="card-clean">
+          <CardHeader>
+            <CardTitle className="text-subheading">Frequently Asked Questions</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="font-medium mb-2">Can I change plans anytime?</h4>
+              <p className="text-small text-muted-foreground">
+                Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="font-medium mb-2">How do platform fees work?</h4>
+              <p className="text-small text-muted-foreground">
+                Platform fees are automatically deducted from your earnings. Lower-tier plans have higher fees to support platform development.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="font-medium mb-2">What happens if I exceed my task limit?</h4>
+              <p className="text-small text-muted-foreground">
+                Free and Pro plans have monthly task limits. You'll be prompted to upgrade when you reach your limit.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
   )
 }

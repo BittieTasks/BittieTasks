@@ -93,4 +93,43 @@
   .input-clean {
     @apply border border-input bg-background px-3 py-2 rounded-md text-sm;
   }
+
+  /* Page Layout Consistency */
+  .page-layout {
+    @apply min-h-screen bg-background;
+  }
+  
+  .page-header {
+    @apply border-b bg-card;
+  }
+  
+  .page-content {
+    @apply container-clean section-clean;
+  }
+  
+  /* Navigation Consistency */
+  .nav-clean {
+    @apply bg-card border-b;
+  }
+  
+  .nav-container {
+    @apply container-clean py-4;
+  }
+  
+  /* Badge System */
+  .badge-neutral {
+    @apply bg-muted text-muted-foreground px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .badge-success {
+    @apply bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .badge-warning {
+    @apply bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .badge-error {
+    @apply bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium;
+  }
 }

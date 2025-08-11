@@ -23,9 +23,9 @@ const navigationItems = [
   { path: '/platform', label: 'Dashboard', icon: Home },
   { path: '/marketplace', label: 'Marketplace', icon: Search },
   { path: '/earnings', label: 'Earnings', icon: DollarSign },
-  { path: '/achievements', label: 'Achievements', icon: Star },
   { path: '/subscriptions', label: 'Plans', icon: Crown },
   { path: '/sponsors', label: 'Sponsors', icon: Briefcase },
+  { path: '/create-task', label: 'Create', icon: PlusCircle },
 ]
 
 export default function Navigation() {
@@ -39,7 +39,6 @@ export default function Navigation() {
     setMounted(true)
   }, [])
 
-  // Don't render anything during SSR to prevent location errors
   if (!mounted) {
     return null
   }
@@ -56,17 +55,15 @@ export default function Navigation() {
   return (
     <>
       {/* Desktop Navigation */}
-      <nav className="bittie-card border-b sticky top-0 z-50">
-        <div className="bittie-container">
+      <nav className="nav-clean sticky top-0 z-50">
+        <div className="nav-container">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center space-x-3 group cursor-pointer" onClick={() => router.push('/')}>
-              <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-sm">
-                <span className="text-white font-bold text-lg">B</span>
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+                <span className="text-primary-foreground font-bold text-lg">B</span>
               </div>
-              <span className="bittie-heading-sm bittie-gradient-text">
-                BittieTasks
-              </span>
+              <span className="text-subheading">BittieTasks</span>
             </div>
 
             {/* Desktop Navigation Links */}
@@ -74,153 +71,128 @@ export default function Navigation() {
               {navigationItems.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.path
-                const isDisabled = !isVerified && item.path !== '/platform'
                 
                 return (
-                  <button
+                  <Button
                     key={item.path}
-                    onClick={() => !isDisabled && router.push(item.path)}
-                    disabled={isDisabled}
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      isActive
-                        ? 'bg-gradient-to-r from-green-100 to-blue-100 text-green-700 shadow-sm'
-                        : isDisabled 
-                        ? 'text-gray-400 cursor-not-allowed opacity-50'
-                        : 'text-gray-600 hover:text-green-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50'
+                    variant={isActive ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => router.push(item.path)}
+                    className={`flex items-center space-x-2 ${
+                      isActive ? 'button-clean' : 'hover:bg-muted'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </button>
+                    <Icon className="h-4 w-4" />
+                    <span className="hidden lg:inline">{item.label}</span>
+                  </Button>
                 )
               })}
             </div>
 
             {/* User Menu */}
-            <div className="hidden md:flex items-center space-x-4">
-              <div className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border border-green-200">
-                <User className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-medium text-green-700">
-                  {user?.email?.split('@')[0] || 'User'}
+            <div className="hidden md:flex items-center space-x-3">
+              {!isVerified && (
+                <div className="badge-warning">
+                  Email verification required
+                </div>
+              )}
+              
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4" />
+                </div>
+                <span className="text-small font-medium">
+                  {user?.user_metadata?.firstName || 'User'}
                 </span>
-                {!isVerified && (
-                  <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">
-                    Verify Email
-                  </span>
-                )}
               </div>
+              
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSignOut}
-                className="bittie-button-secondary text-sm"
+                className="button-outline"
               >
                 Sign Out
               </Button>
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile menu button */}
             <div className="md:hidden">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-600 hover:text-green-700 hover:bg-green-50"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
             </div>
           </div>
         </div>
+      </nav>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-sm border-t border-green-200 bittie-fade-in">
-            <div className="px-4 py-6 space-y-3">
+      {/* Mobile Navigation */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-card border-b">
+          <div className="nav-container py-4 space-y-3">
+            {/* User Info */}
+            <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                <User className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <div>
+                <div className="font-medium">{user?.user_metadata?.firstName || 'User'}</div>
+                <div className="text-small text-muted-foreground">{user?.email}</div>
+              </div>
+            </div>
+
+            {/* Verification Status */}
+            {!isVerified && (
+              <div className="badge-warning text-center py-2">
+                Email verification required
+              </div>
+            )}
+
+            {/* Navigation Links */}
+            <div className="space-y-2">
               {navigationItems.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.path
-                const isDisabled = !isVerified && item.path !== '/platform'
                 
                 return (
-                  <button
+                  <Button
                     key={item.path}
-                    onClick={() => {
-                      if (!isDisabled) {
-                        router.push(item.path)
-                        setMobileMenuOpen(false)
-                      }
-                    }}
-                    disabled={isDisabled}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      isActive
-                        ? 'bg-gradient-to-r from-green-100 to-blue-100 text-green-700 shadow-sm'
-                        : isDisabled 
-                        ? 'text-gray-400 cursor-not-allowed opacity-50'
-                        : 'text-gray-600 hover:text-green-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50'
+                    variant={isActive ? "default" : "ghost"}
+                    className={`w-full justify-start ${
+                      isActive ? 'button-clean' : 'hover:bg-muted'
                     }`}
+                    onClick={() => {
+                      router.push(item.path)
+                      setMobileMenuOpen(false)
+                    }}
                   >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.label}</span>
-                  </button>
+                    <Icon className="h-4 w-4 mr-3" />
+                    {item.label}
+                  </Button>
                 )
               })}
-              
-              <div className="border-t border-green-200 pt-6 mt-6">
-                <div className="flex items-center space-x-3 px-4 py-3 mb-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl">
-                  <User className="w-5 h-5 text-green-600" />
-                  <div className="flex-1">
-                    <span className="text-sm font-medium text-green-700 block">
-                      {user?.email?.split('@')[0] || 'User'}
-                    </span>
-                    {!isVerified && (
-                      <span className="text-xs text-yellow-600">
-                        Please verify your email
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={handleSignOut}
-                  className="w-full bittie-button-secondary"
-                >
-                  Sign Out
-                </Button>
-              </div>
+            </div>
+
+            {/* Sign Out */}
+            <div className="pt-3 border-t">
+              <Button
+                variant="outline"
+                className="w-full button-outline"
+                onClick={() => {
+                  handleSignOut()
+                  setMobileMenuOpen(false)
+                }}
+              >
+                Sign Out
+              </Button>
             </div>
           </div>
-        )}
-      </nav>
-
-      {/* Bottom Navigation for Mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-green-200 z-50 safe-area-pb">
-        <div className="grid grid-cols-5 h-16">
-          {navigationItems.slice(0, 5).map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.path
-            const isDisabled = !isVerified && item.path !== '/platform'
-            
-            return (
-              <button
-                key={item.path}
-                onClick={() => !isDisabled && router.push(item.path)}
-                disabled={isDisabled}
-                className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
-                  isActive
-                    ? 'text-green-600 bg-gradient-to-b from-green-50 to-transparent scale-105'
-                    : isDisabled
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                <span className="text-xs font-medium">{item.label}</span>
-              </button>
-            )
-          })}
         </div>
-      </div>
+      )}
     </>
   )
 }

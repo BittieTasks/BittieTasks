@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Navigation from '@/components/Navigation'
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
-import { Loader2, User, Mail, CheckCircle, AlertCircle, Crown, DollarSign, Calendar, Target } from 'lucide-react'
+import { Loader2, User, Mail, CheckCircle, AlertCircle, Crown, DollarSign, Calendar, Target, TrendingUp, Users, BarChart3 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 export default function PlatformPage() {
@@ -24,23 +24,12 @@ export default function PlatformPage() {
 
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-      }}>
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.95)',
-          borderRadius: '16px',
-          padding: '40px',
-          textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-        }}>
-          <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600 mb-4" />
-          <p className="text-gray-600">Loading your BittieTasks platform...</p>
+      <div className="page-layout">
+        <div className="container-clean section-clean flex items-center justify-center min-h-screen">
+          <div className="card-clean p-12 text-center max-w-md mx-auto">
+            <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary mb-4" />
+            <p className="text-body text-muted-foreground">Loading your BittieTasks platform...</p>
+          </div>
         </div>
       </div>
     )
@@ -51,228 +40,184 @@ export default function PlatformPage() {
     return null
   }
 
-  const handleSignOut = async () => {
-    try {
-      await signOut()
-    } catch (error) {
-      console.error('Error signing out:', error)
-    }
-  }
-
   return (
-    <>
+    <div className="page-layout">
       <Navigation />
-      <div className="min-h-screen bittie-gradient-bg">
+      
+      <main className="page-content">
         {/* Header */}
-        <div className="bittie-container bittie-section">
-        <div className="bittie-card p-6 flex justify-between items-center bittie-fade-in">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-blue-600 rounded-xl flex items-center justify-center shadow-sm">
-              <span className="text-white font-bold text-lg">B</span>
-            </div>
-            <div>
-              <h1 className="bittie-heading-md text-gray-800">BittieTasks</h1>
-              <p className="bittie-body-md text-gray-600">Welcome back, {user?.user_metadata?.firstName || 'User'}!</p>
-            </div>
-          </div>
-          <Button 
-            onClick={handleSignOut}
-            variant="outline" 
-            className="bittie-button-secondary text-sm"
-          >
-            Sign Out
-          </Button>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-heading mb-2">Welcome back, {user?.user_metadata?.firstName || 'User'}!</h1>
+          <p className="text-body text-muted-foreground">
+            Here's your BittieTasks dashboard
+          </p>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="px-6 pb-12">
-        <div className="max-w-6xl mx-auto space-y-8">
-          {/* Verification Status */}
-          {!isVerified && (
-            <Card className="bg-yellow-50 border-yellow-200 backdrop-blur-sm shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <AlertCircle className="h-6 w-6 text-yellow-600" />
-                  <div>
-                    <h3 className="text-yellow-700 font-semibold">Email Verification Required</h3>
-                    <p className="text-gray-700">Please check your email and verify your account to access all earning features.</p>
-                  </div>
+        {/* Verification Status */}
+        {!isVerified && (
+          <Card className="mb-8 border-yellow-200 bg-yellow-50">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="h-6 w-6 text-yellow-600" />
+                <div>
+                  <h3 className="font-semibold text-yellow-800">Email Verification Required</h3>
+                  <p className="text-yellow-700">Please check your email and verify your account to access all earning features.</p>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-          {/* Stats Grid */}
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="bg-white/90 backdrop-blur-sm border-green-200 shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                    <DollarSign className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-gray-600 text-sm">Total Earnings</p>
-                    <p className="text-2xl font-bold text-gray-800">$0.00</p>
-                  </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="card-clean">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-green-600" />
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <p className="text-small text-muted-foreground">Total Earnings</p>
+                  <p className="text-2xl font-bold">$0.00</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card className="bg-white/90 backdrop-blur-sm border-blue-200 shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <Target className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-gray-600 text-sm">Active Tasks</p>
-                    <p className="text-2xl font-bold text-gray-800">0</p>
-                  </div>
+          <Card className="card-clean">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <Target className="h-6 w-6 text-blue-600" />
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <p className="text-small text-muted-foreground">Active Tasks</p>
+                  <p className="text-2xl font-bold">0</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card className="bg-white/90 backdrop-blur-sm border-green-200 shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-gray-600 text-sm">This Month</p>
-                    <p className="text-2xl font-bold text-gray-800">0 Tasks</p>
-                  </div>
+          <Card className="card-clean">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <Calendar className="h-6 w-6 text-purple-600" />
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Account & Subscription Info */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <User className="h-5 w-5" />
-                  Account Status
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Email</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-white">{user?.email}</span>
-                    {isVerified ? (
-                      <Badge className="bg-green-500/20 text-green-400 border-green-500/20">
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        Verified
-                      </Badge>
-                    ) : (
-                      <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/20">
-                        <AlertCircle className="w-3 h-3 mr-1" />
-                        Pending
-                      </Badge>
-                    )}
-                  </div>
+                <div>
+                  <p className="text-small text-muted-foreground">This Month</p>
+                  <p className="text-2xl font-bold">0 Tasks</p>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Member Since</span>
-                  <span className="text-white">{user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Today'}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Profile</span>
-                  <span className="text-white">{user?.user_metadata?.firstName} {user?.user_metadata?.lastName}</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <Crown className="h-5 w-5 text-yellow-500" />
-                  Subscription Plan
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Current Plan</span>
-                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/20">Free</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Monthly Tasks</span>
-                  <span className="text-white">5 remaining</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Platform Fee</span>
-                  <span className="text-white">10%</span>
-                </div>
-                <Button 
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 mt-4"
-                  onClick={() => router.push('/subscriptions')}
-                >
-                  Upgrade Plan
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quick Actions */}
-          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-white">Quick Actions</CardTitle>
-              <CardDescription className="text-gray-400">
-                {isVerified 
-                  ? "Ready to start earning! Create your first task or browse opportunities." 
-                  : "Complete email verification to unlock earning features."}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid md:grid-cols-3 gap-4">
-              <Button 
-                className={`h-16 ${isVerified 
-                  ? 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border-blue-500/20' 
-                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                }`}
-                disabled={!isVerified}
-                onClick={() => router.push('/create-task')}
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-1">➕</div>
-                  <div>Create Task</div>
-                </div>
-              </Button>
-              
-              <Button 
-                className={`h-16 ${isVerified 
-                  ? 'bg-green-500/20 hover:bg-green-500/30 text-green-400 border-green-500/20' 
-                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                }`}
-                disabled={!isVerified}
-                onClick={() => router.push('/marketplace')}
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-1">🔍</div>
-                  <div>Browse Tasks</div>
-                </div>
-              </Button>
-              
-              <Button 
-                className={`h-16 ${isVerified 
-                  ? 'bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border-purple-500/20' 
-                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                }`}
-                disabled={!isVerified}
-                onClick={() => router.push('/earnings')}
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-1">📊</div>
-                  <div>View Earnings</div>
-                </div>
-              </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
-      </div>
-    </>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <Button 
+            className="h-24 flex-col space-y-2 button-clean"
+            onClick={() => router.push('/marketplace')}
+          >
+            <BarChart3 className="h-6 w-6" />
+            <span>Browse Tasks</span>
+          </Button>
+
+          <Button 
+            className="h-24 flex-col space-y-2 button-outline"
+            onClick={() => router.push('/create-task')}
+            variant="outline"
+          >
+            <Target className="h-6 w-6" />
+            <span>Create Task</span>
+          </Button>
+
+          <Button 
+            className="h-24 flex-col space-y-2 button-outline"
+            onClick={() => router.push('/earnings')}
+            variant="outline"
+          >
+            <DollarSign className="h-6 w-6" />
+            <span>View Earnings</span>
+          </Button>
+
+          <Button 
+            className="h-24 flex-col space-y-2 button-outline"
+            onClick={() => router.push('/subscriptions')}
+            variant="outline"
+          >
+            <Crown className="h-6 w-6" />
+            <span>Upgrade Plan</span>
+          </Button>
+        </div>
+
+        {/* Getting Started */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="card-clean">
+            <CardHeader>
+              <CardTitle className="text-subheading">Getting Started</CardTitle>
+              <CardDescription>Complete these steps to start earning</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-3">
+                {isVerified ? (
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                ) : (
+                  <div className="w-5 h-5 border-2 border-muted rounded-full" />
+                )}
+                <span className={isVerified ? 'text-green-600' : 'text-muted-foreground'}>
+                  Verify your email address
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 border-2 border-muted rounded-full" />
+                <span className="text-muted-foreground">Complete your profile</span>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 border-2 border-muted rounded-full" />
+                <span className="text-muted-foreground">Join your first task</span>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 border-2 border-muted rounded-full" />
+                <span className="text-muted-foreground">Create your first task</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="card-clean">
+            <CardHeader>
+              <CardTitle className="text-subheading">Your Plan</CardTitle>
+              <CardDescription>Free plan with 10% platform fees</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span>Platform Fee</span>
+                  <span className="font-semibold">10%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Monthly Task Limit</span>
+                  <span className="font-semibold">5 tasks</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Support Level</span>
+                  <span className="font-semibold">Email</span>
+                </div>
+                
+                <Button 
+                  className="w-full button-clean mt-4"
+                  onClick={() => router.push('/subscriptions')}
+                >
+                  Upgrade to Pro
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
   )
 }

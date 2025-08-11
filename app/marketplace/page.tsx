@@ -10,10 +10,96 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, Clock, Users, DollarSign, Filter, Star, Briefcase, Award, Target } from 'lucide-react'
-import { allTasks, getTasksByType, getAvailableTasks, calculatePlatformFee, getNetEarnings, type TaskData } from '../../lib/taskData'
 
-// Get comprehensive categories from real task data
-const categories = ['All', 'Home Organization', 'Education', 'Meal Planning', 'Health & Fitness', 'Transportation', 'Event Planning', 'Safety & Preparedness', 'Child Development', 'Digital Organization', 'Financial Education', 'Family Traditions', 'Nutrition', 'Skill Exchange', 'Community Support', 'Physical Wellness', 'Mental Wellness', 'Personal Development']
+// Sample task data
+const sampleTasks = [
+  {
+    id: '1',
+    title: 'School Pickup Share',
+    description: 'Looking for parents to share daily school pickup duties for elementary school',
+    category: 'Transportation',
+    type: 'shared',
+    payout: 45,
+    max_participants: 4,
+    current_participants: 2,
+    deadline: '2025-01-15',
+    location: 'Downtown Elementary',
+    time_commitment: '30 min daily',
+    requirements: ['Valid driver license', 'Car insurance', 'Background check']
+  },
+  {
+    id: '2',
+    title: 'Meal Prep Sunday',
+    description: 'Weekly meal preparation session for busy parents',
+    category: 'Meal Planning',
+    type: 'shared',
+    payout: 35,
+    max_participants: 6,
+    current_participants: 3,
+    deadline: '2025-01-12',
+    location: 'Community Kitchen',
+    time_commitment: '3 hours weekly',
+    requirements: ['Basic cooking skills', 'Food handler permit']
+  },
+  {
+    id: '3',
+    title: 'Home Organization Challenge',
+    description: 'Transform your living space with this 30-day organization challenge',
+    category: 'Home Organization',
+    type: 'solo',
+    payout: 85,
+    max_participants: 1,
+    current_participants: 0,
+    deadline: '2025-02-01',
+    location: 'Your Home',
+    time_commitment: '1 hour daily',
+    requirements: ['Commitment to daily tasks', 'Photo documentation']
+  },
+  {
+    id: '4',
+    title: 'Morning Meditation Group',
+    description: 'Join a supportive meditation practice for stressed parents',
+    category: 'Mental Wellness',
+    type: 'self_care',
+    payout: 25,
+    max_participants: 8,
+    current_participants: 5,
+    deadline: '2025-01-20',
+    location: 'Virtual/Online',
+    time_commitment: '20 min daily',
+    requirements: ['Quiet space', 'Meditation app']
+  },
+  {
+    id: '5',
+    title: 'Weekend Farmers Market Run',
+    description: 'Coordinate weekly farmers market shopping for multiple families',
+    category: 'Community Support',
+    type: 'shared',
+    payout: 55,
+    max_participants: 5,
+    current_participants: 2,
+    deadline: '2025-01-18',
+    location: 'City Farmers Market',
+    time_commitment: '2 hours weekly',
+    requirements: ['Transportation', 'Market familiarity']
+  },
+  {
+    id: '6',
+    title: 'Kids Activity Planning',
+    description: 'Plan and organize weekly activities for neighborhood children',
+    category: 'Child Development',
+    type: 'shared',
+    payout: 65,
+    max_participants: 3,
+    current_participants: 1,
+    deadline: '2025-01-25',
+    location: 'Community Center',
+    time_commitment: '4 hours weekly',
+    requirements: ['Experience with children', 'Creative planning skills']
+  }
+]
+
+const categories = ['All', 'Transportation', 'Meal Planning', 'Home Organization', 'Mental Wellness', 'Community Support', 'Child Development']
 
 export default function MarketplacePage() {
   const { user, isAuthenticated, isVerified } = useAuth()
@@ -37,8 +123,8 @@ export default function MarketplacePage() {
     return null
   }
 
-  // Filter and sort real tasks
-  const filteredTasks = allTasks
+  // Filter and sort tasks
+  const filteredTasks = sampleTasks
     .filter(task => 
       selectedCategory === 'All' || task.category === selectedCategory
     )
@@ -54,263 +140,245 @@ export default function MarketplacePage() {
     .sort((a, b) => {
       if (sortBy === 'payout') return b.payout - a.payout
       if (sortBy === 'deadline') {
-        if (!a.deadline && !b.deadline) return 0
-        if (!a.deadline) return 1
-        if (!b.deadline) return -1
         return new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
       }
       if (sortBy === 'participants') return (a.max_participants - a.current_participants) - (b.max_participants - b.current_participants)
       return 0
     })
-    .slice(0, 24) // Show first 24 tasks for performance
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'solo': return 'bittie-badge-blue'
-      case 'shared': return 'bittie-badge-green'
-      case 'self_care': return 'bittie-badge-purple'
-      default: return 'bittie-badge-blue'
+      case 'solo': return 'bg-blue-100 text-blue-800'
+      case 'shared': return 'bg-green-100 text-green-800'
+      case 'self_care': return 'bg-purple-100 text-purple-800'
+      default: return 'bg-gray-100 text-gray-800'
     }
   }
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy': return 'bittie-badge-green'
-      case 'medium': return 'bittie-badge-yellow'
-      case 'hard': return 'bg-red-100 text-red-700 border border-red-200 px-3 py-1 rounded-full text-sm font-medium'
-      default: return 'bittie-badge-blue'
-    }
+  const getSpotsBadgeColor = (available: number) => {
+    if (available === 0) return 'bg-red-100 text-red-800'
+    if (available <= 2) return 'bg-yellow-100 text-yellow-800'
+    return 'bg-green-100 text-green-800'
   }
-
-  // Mock user subscription tier for platform fee calculation
-  const userSubscriptionTier = 'free' // This would come from actual user data
 
   return (
-    <div className="min-h-screen bittie-gradient-bg">
+    <div className="page-layout">
       <Navigation />
       
-      <div className="bittie-container bittie-section">
+      <main className="page-content">
         {/* Header */}
-        <div className="text-center mb-8 bittie-fade-in">
-          <h1 className="bittie-heading-lg bittie-gradient-text mb-4">
-            Task Marketplace
-          </h1>
-          <p className="bittie-body-lg text-gray-600 max-w-2xl mx-auto">
-            Discover over 110 real earning opportunities. Transform daily tasks into income while building community connections.
+        <div className="mb-8">
+          <h1 className="text-heading mb-2">Task Marketplace</h1>
+          <p className="text-body text-muted-foreground">
+            Discover earning opportunities in your community. Join tasks or create your own!
           </p>
         </div>
 
-        {/* Stats Overview */}
-        <div className="bittie-grid-4 mb-8 bittie-slide-up">
-          <Card className="bittie-card-hover">
-            <CardContent className="p-6 text-center">
-              <Target className="w-8 h-8 text-green-600 mx-auto mb-3" />
-              <div className="bittie-heading-sm text-green-600">{allTasks.length}</div>
-              <div className="bittie-body-sm text-gray-600">Total Opportunities</div>
-            </CardContent>
-          </Card>
-          <Card className="bittie-card-hover">
-            <CardContent className="p-6 text-center">
-              <DollarSign className="w-8 h-8 text-blue-600 mx-auto mb-3" />
-              <div className="bittie-heading-sm text-blue-600">
-                ${Math.round(allTasks.reduce((sum, task) => sum + task.payout, 0))}
+        {/* Verification Notice */}
+        {!isVerified && (
+          <Card className="mb-6 border-yellow-200 bg-yellow-50">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Award className="h-5 w-5 text-yellow-600" />
+                <p className="text-yellow-800">
+                  <strong>Email verification required</strong> to join tasks and start earning.
+                </p>
               </div>
-              <div className="bittie-body-sm text-gray-600">Total Earning Potential</div>
             </CardContent>
           </Card>
-          <Card className="bittie-card-hover">
-            <CardContent className="p-6 text-center">
-              <Users className="w-8 h-8 text-green-600 mx-auto mb-3" />
-              <div className="bittie-heading-sm text-green-600">
-                {allTasks.filter(task => task.current_participants < task.max_participants).length}
-              </div>
-              <div className="bittie-body-sm text-gray-600">Available Now</div>
-            </CardContent>
-          </Card>
-          <Card className="bittie-card-hover">
-            <CardContent className="p-6 text-center">
-              <Award className="w-8 h-8 text-blue-600 mx-auto mb-3" />
-              <div className="bittie-heading-sm text-blue-600">
-                {allTasks.filter(task => task.is_sponsored).length}
-              </div>
-              <div className="bittie-body-sm text-gray-600">Sponsored Tasks</div>
-            </CardContent>
-          </Card>
-        </div>
+        )}
 
         {/* Filters */}
-        <Card className="bittie-card mb-8 bittie-fade-in">
+        <Card className="card-clean mb-8">
           <CardContent className="p-6">
-            <div className="bittie-grid-4 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <Input
-                  placeholder="Search tasks..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-11 bittie-input bittie-body-md"
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <label className="text-small font-medium">Search Tasks</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by title, description..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 input-clean"
+                  />
+                </div>
               </div>
-              
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="bittie-input">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map(category => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
 
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="bittie-input">
-                  <SelectValue placeholder="Task Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="solo">Solo Tasks</SelectItem>
-                  <SelectItem value="shared">Community Tasks</SelectItem>
-                  <SelectItem value="self_care">Self-Care Tasks</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <label className="text-small font-medium">Category</label>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map(category => (
+                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="bittie-input">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="payout">Highest Payout</SelectItem>
-                  <SelectItem value="deadline">Deadline</SelectItem>
-                  <SelectItem value="participants">Available Spots</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <label className="text-small font-medium">Task Type</label>
+                <Select value={selectedType} onValueChange={setSelectedType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="solo">Solo Tasks</SelectItem>
+                    <SelectItem value="shared">Shared Tasks</SelectItem>
+                    <SelectItem value="self_care">Self-Care</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-small font-medium">Sort By</label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="payout">Highest Payout</SelectItem>
+                    <SelectItem value="deadline">Deadline</SelectItem>
+                    <SelectItem value="participants">Available Spots</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </CardContent>
         </Card>
 
+        {/* Task Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <Card className="card-clean">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-primary">{filteredTasks.length}</div>
+              <div className="text-small text-muted-foreground">Available Tasks</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="card-clean">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-green-600">
+                ${filteredTasks.reduce((sum, task) => sum + task.payout, 0)}
+              </div>
+              <div className="text-small text-muted-foreground">Total Earnings</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="card-clean">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-blue-600">
+                {filteredTasks.reduce((sum, task) => sum + (task.max_participants - task.current_participants), 0)}
+              </div>
+              <div className="text-small text-muted-foreground">Open Spots</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="card-clean">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-purple-600">
+                ${Math.round(filteredTasks.reduce((sum, task) => sum + task.payout, 0) / Math.max(filteredTasks.length, 1))}
+              </div>
+              <div className="text-small text-muted-foreground">Avg Payout</div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Task Grid */}
-        <div className="bittie-grid-3 bittie-scale-in">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTasks.map((task) => {
-            const platformFee = calculatePlatformFee(task.payout, userSubscriptionTier)
-            const netEarnings = getNetEarnings(task.payout, userSubscriptionTier)
-            
+            const availableSpots = task.max_participants - task.current_participants
+            const platformFee = Math.round(task.payout * 0.1) // 10% fee for Free users
+            const netEarnings = task.payout - platformFee
+
             return (
-              <Card 
-                key={task.id} 
-                className="bg-white/80 backdrop-blur-sm border-green-200 hover:border-green-300 transition-all duration-200 hover:shadow-lg group"
-              >
+              <Card key={task.id} className="card-clean hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between mb-2">
-                    <Badge className={getTypeColor(task.type)} variant="outline">
-                      {task.type === 'solo' ? 'Solo' : task.type === 'shared' ? 'Community' : 'Self-Care'}
+                    <Badge className={getTypeColor(task.type)}>
+                      {task.type.replace('_', ' ')}
                     </Badge>
-                    {task.is_sponsored && (
-                      <Badge className="bg-yellow-500/20 text-yellow-600 border-yellow-500/20" variant="outline">
-                        <Star className="w-3 h-3 mr-1" />
-                        Sponsored
-                      </Badge>
-                    )}
+                    <Badge className={getSpotsBadgeColor(availableSpots)}>
+                      {availableSpots} spot{availableSpots !== 1 ? 's' : ''} left
+                    </Badge>
                   </div>
-                  
-                  <CardTitle className="text-lg text-gray-800 group-hover:text-green-700 transition-colors">
-                    {task.title}
-                  </CardTitle>
-                  
-                  <CardDescription className="text-sm text-gray-600 line-clamp-2">
+                  <CardTitle className="text-lg">{task.title}</CardTitle>
+                  <CardDescription className="text-small">
                     {task.description}
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="pt-0">
-                  <div className="space-y-3">
-                    {/* Earnings */}
-                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
-                      <div className="flex items-center space-x-2">
-                        <DollarSign className="w-4 h-4 text-green-600" />
-                        <span className="font-semibold text-green-700">${netEarnings.toFixed(2)}</span>
-                        <span className="text-xs text-gray-500">net</span>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        ${task.payout} - ${platformFee.toFixed(2)} fee
-                      </div>
+                <CardContent className="space-y-4">
+                  {/* Earnings Info */}
+                  <div className="bg-muted rounded-lg p-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-small text-muted-foreground">Gross Payout</span>
+                      <span className="font-semibold">${task.payout}</span>
                     </div>
-
-                    {/* Task Details */}
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-600">{task.time_estimate}</span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <Users className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-600">
-                          {task.current_participants}/{task.max_participants}
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <MapPin className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-600 capitalize">{task.location_type}</span>
-                      </div>
-                      
-                      <Badge className={getDifficultyColor(task.difficulty)} variant="outline">
-                        {task.difficulty}
-                      </Badge>
+                    <div className="flex justify-between items-center">
+                      <span className="text-small text-muted-foreground">Platform Fee (10%)</span>
+                      <span className="text-small text-red-600">-${platformFee}</span>
                     </div>
-
-                    {/* Category and Sponsor */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
-                        {task.category}
-                      </span>
-                      {task.sponsor_name && (
-                        <span className="text-xs text-yellow-600 font-medium">
-                          by {task.sponsor_name}
-                        </span>
-                      )}
+                    <div className="flex justify-between items-center pt-2 border-t border-border">
+                      <span className="font-medium">Net Earnings</span>
+                      <span className="font-bold text-green-600">${netEarnings}</span>
                     </div>
-
-                    {/* Action Button */}
-                    <Button 
-                      onClick={() => router.push(`/task/${task.id}`)}
-                      className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white"
-                      disabled={task.current_participants >= task.max_participants}
-                    >
-                      {task.current_participants >= task.max_participants ? 'Full' : 'View Task'}
-                    </Button>
                   </div>
+
+                  {/* Task Details */}
+                  <div className="space-y-2 text-small">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <span>{task.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span>{task.time_commitment}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span>{task.current_participants}/{task.max_participants} participants</span>
+                    </div>
+                  </div>
+
+                  {/* Action Button */}
+                  <Button
+                    className="w-full button-clean"
+                    onClick={() => router.push(`/task/${task.id}`)}
+                    disabled={!isVerified || availableSpots === 0}
+                  >
+                    {!isVerified ? 'Verify Email to Join' : 
+                     availableSpots === 0 ? 'Task Full' : 'View Details'}
+                  </Button>
                 </CardContent>
               </Card>
             )
           })}
         </div>
 
+        {/* Empty State */}
         {filteredTasks.length === 0 && (
-          <Card className="bg-white/70 backdrop-blur-sm border-green-200 text-center py-12">
-            <CardContent>
-              <Filter className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">No tasks found</h3>
-              <p className="text-gray-500">Try adjusting your filters to see more opportunities.</p>
+          <Card className="card-clean">
+            <CardContent className="p-12 text-center">
+              <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-subheading mb-2">No tasks found</h3>
+              <p className="text-body text-muted-foreground mb-6">
+                Try adjusting your filters or search terms
+              </p>
+              <Button 
+                onClick={() => router.push('/create-task')}
+                className="button-clean"
+              >
+                Create Your Own Task
+              </Button>
             </CardContent>
           </Card>
         )}
-
-        {/* Load More */}
-        {filteredTasks.length === 24 && (
-          <div className="text-center mt-8">
-            <Button 
-              variant="outline" 
-              className="border-green-300 text-green-700 hover:bg-green-50"
-            >
-              Load More Tasks
-            </Button>
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   )
 }

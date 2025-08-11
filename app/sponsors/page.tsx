@@ -22,8 +22,8 @@ import {
 } from 'lucide-react'
 import Navigation from '@/components/Navigation'
 
-// Mock data for corporate sponsors
-const mockSponsors = [
+// Sample sponsor data
+const sampleSponsors = [
   {
     id: '1',
     name: 'HealthTech Solutions',
@@ -73,39 +73,29 @@ const mockSponsors = [
   {
     id: '3',
     name: 'SafeKids Initiative',
-    logo: '🛡️',
-    description: 'Child safety and family security solutions',
+    logo: '👶',
+    description: 'Child safety and development organization',
     ethicsScore: 95,
     tasksSponsored: 28,
     budget: 12000,
-    category: 'Safety',
+    category: 'Child Safety',
     verified: true,
-    values: ['Child Safety', 'Family Security', 'Community Protection'],
+    values: ['Child Protection', 'Safety Education', 'Community Support'],
     currentTasks: [
       {
-        title: 'Neighborhood Safety Walks',
-        budget: 300,
-        participants: 22,
-        description: 'Organize community safety patrol groups'
+        title: 'Neighborhood Safety Patrol',
+        budget: 600,
+        participants: 20,
+        description: 'Organize community safety monitoring'
       }
     ]
   }
-]
-
-const ethicsMetrics = [
-  { label: 'DEI Leadership', weight: 25 },
-  { label: 'Environmental Impact', weight: 20 },
-  { label: 'Labor Practices', weight: 20 },
-  { label: 'Community Investment', weight: 15 },
-  { label: 'LGBTQ+ Support', weight: 10 },
-  { label: 'Transparency', weight: 10 }
 ]
 
 export default function SponsorsPage() {
   const { user, isAuthenticated, isVerified } = useAuth()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
-  const [selectedSponsor, setSelectedSponsor] = useState<string | null>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -120,337 +110,266 @@ export default function SponsorsPage() {
     return null
   }
 
-  const getEthicsColor = (score: number) => {
+  const getEthicsScoreColor = (score: number) => {
     if (score >= 90) return 'text-green-600'
-    if (score >= 80) return 'text-yellow-600'
-    if (score >= 70) return 'text-orange-600'
+    if (score >= 80) return 'text-blue-600'
+    if (score >= 70) return 'text-yellow-600'
     return 'text-red-600'
   }
 
-  const getEthicsBadgeColor = (score: number) => {
-    if (score >= 90) return 'bittie-badge-green'
-    if (score >= 80) return 'bittie-badge-yellow'
-    if (score >= 70) return 'bg-orange-100 text-orange-700 border border-orange-200 px-3 py-1 rounded-full text-sm font-medium'
-    return 'bg-red-100 text-red-700 border border-red-200 px-3 py-1 rounded-full text-sm font-medium'
-  }
-
   return (
-    <>
+    <div className="page-layout">
       <Navigation />
-      <div className="min-h-screen bittie-gradient-bg">
+      
+      <main className="page-content">
         {/* Header */}
-        <div className="bittie-container bittie-section">
-        <div className="bittie-card p-6 bittie-fade-in">
-          <div className="inline-flex items-center space-x-2 bittie-badge-purple mb-6">
-            <Building className="w-4 h-4" />
-            <span>Ethical Corporate Partners</span>
-          </div>
-          
-          <h1 className="bittie-heading-xl bittie-gradient-text mb-4">
-            Corporate Sponsorship Portal
-          </h1>
-          <p className="bittie-body-xl text-gray-600 mb-8 max-w-3xl">
-            Partner with ethically-evaluated companies that align with community values and family well-being. Every sponsor is vetted for ethics, diversity, and community impact.
+        <div className="mb-8">
+          <h1 className="text-heading mb-2">Corporate Sponsors</h1>
+          <p className="text-body text-muted-foreground">
+            Discover ethical partner companies offering sponsored tasks with premium payouts
           </p>
-
-            {/* Key Metrics */}
-            <div className="grid md:grid-cols-4 gap-6">
-              <div className="bg-gray-700/30 rounded-lg p-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <Shield className="h-5 w-5 text-green-400" />
-                  <div>
-                    <p className="text-gray-400 text-sm">Ethics Rating</p>
-                    <p className="text-xl font-bold text-white">92%</p>
-                    <p className="text-green-400 text-xs">Average score</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-700/30 rounded-lg p-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <Briefcase className="h-5 w-5 text-blue-400" />
-                  <div>
-                    <p className="text-gray-400 text-sm">Active Sponsors</p>
-                    <p className="text-xl font-bold text-white">{mockSponsors.length}</p>
-                    <p className="text-blue-400 text-xs">Verified partners</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-700/30 rounded-lg p-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <DollarSign className="h-5 w-5 text-purple-400" />
-                  <div>
-                    <p className="text-gray-400 text-sm">Total Budget</p>
-                    <p className="text-xl font-bold text-white">
-                      ${mockSponsors.reduce((sum, sponsor) => sum + sponsor.budget, 0).toLocaleString()}
-                    </p>
-                    <p className="text-purple-400 text-xs">Available funding</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-700/30 rounded-lg p-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <Users className="h-5 w-5 text-yellow-400" />
-                  <div>
-                    <p className="text-gray-400 text-sm">Tasks Sponsored</p>
-                    <p className="text-xl font-bold text-white">
-                      {mockSponsors.reduce((sum, sponsor) => sum + sponsor.tasksSponsored, 0)}
-                    </p>
-                    <p className="text-yellow-400 text-xs">Community impact</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
 
-      <div className="px-6 pb-12">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* Ethics Evaluation Process */}
-          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Award className="h-5 w-5" />
-                Our Ethics Evaluation Process
-              </CardTitle>
-              <CardDescription className="text-gray-400">
-                Every corporate partner is evaluated across multiple criteria to ensure alignment with community values
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {ethicsMetrics.map((metric, index) => (
-                  <div key={index} className="text-center p-3 bg-gray-700/30 rounded-lg">
-                    <div className="text-2xl mb-2">
-                      {index === 0 && '🤝'}
-                      {index === 1 && '🌍'}
-                      {index === 2 && '⚖️'}
-                      {index === 3 && '❤️'}
-                      {index === 4 && '🏳️‍🌈'}
-                      {index === 5 && '📊'}
-                    </div>
-                    <h4 className="text-white font-semibold text-sm mb-1">{metric.label}</h4>
-                    <p className="text-gray-400 text-xs">{metric.weight}% weight</p>
-                  </div>
-                ))}
+        {/* Verification Notice */}
+        {!isVerified && (
+          <Card className="mb-6 border-yellow-200 bg-yellow-50">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Award className="h-5 w-5 text-yellow-600" />
+                <p className="text-yellow-800">
+                  <strong>Premium access requires email verification</strong> to participate in sponsored tasks.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Key Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="card-clean">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <Building className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-small text-muted-foreground">Active Sponsors</p>
+                  <p className="text-2xl font-bold">{sampleSponsors.length}</p>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Sponsor Cards */}
-          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {mockSponsors.map((sponsor) => (
-              <Card 
-                key={sponsor.id} 
-                className="bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-gray-600 transition-all duration-200"
-              >
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-3 mb-3">
+          <Card className="card-clean">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-small text-muted-foreground">Total Budget</p>
+                  <p className="text-2xl font-bold">
+                    ${sampleSponsors.reduce((sum, sponsor) => sum + sponsor.budget, 0).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="card-clean">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <Star className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-small text-muted-foreground">Avg Ethics Score</p>
+                  <p className="text-2xl font-bold">
+                    {Math.round(sampleSponsors.reduce((sum, sponsor) => sum + sponsor.ethicsScore, 0) / sampleSponsors.length)}%
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="card-clean">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-yellow-600" />
+                </div>
+                <div>
+                  <p className="text-small text-muted-foreground">Tasks Sponsored</p>
+                  <p className="text-2xl font-bold">
+                    {sampleSponsors.reduce((sum, sponsor) => sum + sponsor.tasksSponsored, 0)}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Benefits Section */}
+        <Card className="card-clean mb-8">
+          <CardHeader>
+            <CardTitle className="text-subheading">Why Choose Sponsored Tasks?</CardTitle>
+            <CardDescription>Premium opportunities with ethical partners</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <DollarSign className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Higher Payouts</h3>
+                <p className="text-small text-muted-foreground">
+                  Sponsored tasks offer 25-50% higher compensation than standard community tasks
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Shield className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Ethical Partners</h3>
+                <p className="text-small text-muted-foreground">
+                  All sponsors undergo ethics evaluation with minimum 85% score requirement
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Heart className="h-8 w-8 text-purple-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Community Impact</h3>
+                <p className="text-small text-muted-foreground">
+                  Support causes you care about while earning meaningful income
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Sponsor Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {sampleSponsors.map((sponsor) => (
+            <Card key={sponsor.id} className="card-clean">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
                     <div className="text-3xl">{sponsor.logo}</div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-white font-bold">{sponsor.name}</h3>
-                        {sponsor.verified && (
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                        )}
-                      </div>
-                      <Badge className="bg-gray-600 text-gray-300 text-xs">
-                        {sponsor.category}
-                      </Badge>
+                    <div>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        {sponsor.name}
+                        {sponsor.verified && <CheckCircle className="h-5 w-5 text-green-600" />}
+                      </CardTitle>
+                      <CardDescription>{sponsor.description}</CardDescription>
                     </div>
-                    <Badge className={getEthicsBadgeColor(sponsor.ethicsScore)}>
-                      <Star className="w-3 h-3 mr-1" />
-                      {sponsor.ethicsScore}%
-                    </Badge>
                   </div>
-                  
-                  <p className="text-gray-400 text-sm mb-4">{sponsor.description}</p>
-                  
-                  {/* Company Values */}
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <Badge className="badge-success">
+                    {sponsor.category}
+                  </Badge>
+                </div>
+              </CardHeader>
+
+              <CardContent className="space-y-6">
+                {/* Ethics Score */}
+                <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-5 w-5 text-yellow-500" />
+                    <span className="font-medium">Ethics Score</span>
+                  </div>
+                  <span className={`font-bold text-lg ${getEthicsScoreColor(sponsor.ethicsScore)}`}>
+                    {sponsor.ethicsScore}%
+                  </span>
+                </div>
+
+                {/* Key Metrics */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-muted rounded-lg">
+                    <div className="text-xl font-bold text-primary">{sponsor.tasksSponsored}</div>
+                    <div className="text-small text-muted-foreground">Tasks Sponsored</div>
+                  </div>
+                  <div className="text-center p-3 bg-muted rounded-lg">
+                    <div className="text-xl font-bold text-green-600">
+                      ${sponsor.budget.toLocaleString()}
+                    </div>
+                    <div className="text-small text-muted-foreground">Total Budget</div>
+                  </div>
+                </div>
+
+                {/* Values */}
+                <div>
+                  <h4 className="font-medium mb-2">Core Values</h4>
+                  <div className="flex flex-wrap gap-2">
                     {sponsor.values.map((value, index) => (
-                      <Badge key={index} className="bg-blue-500/20 text-blue-400 border-blue-500/20 text-xs">
+                      <Badge key={index} className="badge-neutral">
                         {value}
                       </Badge>
                     ))}
                   </div>
-                </CardHeader>
+                </div>
 
-                <CardContent className="space-y-4">
-                  {/* Sponsor Metrics */}
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                      <p className="text-gray-400 text-xs">Budget</p>
-                      <p className="text-white font-semibold">${(sponsor.budget / 1000)}k</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400 text-xs">Tasks</p>
-                      <p className="text-white font-semibold">{sponsor.tasksSponsored}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400 text-xs">Rating</p>
-                      <p className={`font-semibold ${getEthicsColor(sponsor.ethicsScore)}`}>
-                        {sponsor.ethicsScore}%
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Current Tasks */}
-                  <div>
-                    <h4 className="text-white font-semibold text-sm mb-2">Current Sponsored Tasks</h4>
-                    <div className="space-y-2">
-                      {sponsor.currentTasks.map((task, index) => (
-                        <div key={index} className="bg-gray-700/30 rounded p-2">
-                          <div className="flex justify-between items-start mb-1">
-                            <h5 className="text-white text-xs font-semibold">{task.title}</h5>
-                            <span className="text-green-400 text-xs font-semibold">${task.budget}</span>
-                          </div>
-                          <p className="text-gray-400 text-xs mb-1">{task.description}</p>
-                          <div className="flex items-center gap-2">
-                            <Users className="w-3 h-3 text-gray-400" />
-                            <span className="text-gray-400 text-xs">{task.participants} participants</span>
-                          </div>
+                {/* Current Tasks */}
+                <div>
+                  <h4 className="font-medium mb-3">Current Sponsored Tasks</h4>
+                  <div className="space-y-3">
+                    {sponsor.currentTasks.map((task, index) => (
+                      <div key={index} className="p-3 border border-border rounded-lg">
+                        <div className="flex justify-between items-start mb-2">
+                          <h5 className="font-medium">{task.title}</h5>
+                          <Badge className="bg-green-100 text-green-800">
+                            ${task.budget}
+                          </Badge>
                         </div>
-                      ))}
-                    </div>
+                        <p className="text-small text-muted-foreground mb-2">
+                          {task.description}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-small text-muted-foreground">
+                            {task.participants} participants
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Action Buttons */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button 
-                      className="text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border-blue-500/20"
-                      disabled={!isVerified}
-                    >
-                      View Tasks
-                    </Button>
-                    <Button 
-                      className="text-xs bg-green-500/20 hover:bg-green-500/30 text-green-400 border-green-500/20"
-                      disabled={!isVerified}
-                    >
-                      Partner Details
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Partnership Benefits */}
-          <div className="grid lg:grid-cols-2 gap-8">
-            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-red-400" />
-                  Community Benefits
-                </CardTitle>
-                <CardDescription className="text-gray-400">
-                  How corporate partnerships benefit our families
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-green-500/20 rounded flex items-center justify-center">
-                    <DollarSign className="w-4 h-4 text-green-400" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold text-sm">Higher Earnings</h4>
-                    <p className="text-gray-400 text-xs">Sponsored tasks offer 25-50% higher payouts</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded flex items-center justify-center">
-                    <Users className="w-4 h-4 text-blue-400" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold text-sm">Community Impact</h4>
-                    <p className="text-gray-400 text-xs">Tasks focused on health, education, and wellness</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-purple-500/20 rounded flex items-center justify-center">
-                    <Shield className="w-4 h-4 text-purple-400" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold text-sm">Ethical Standards</h4>
-                    <p className="text-gray-400 text-xs">All partners meet strict ethics and values criteria</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-yellow-500/20 rounded flex items-center justify-center">
-                    <Award className="w-4 h-4 text-yellow-400" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold text-sm">Exclusive Access</h4>
-                    <p className="text-gray-400 text-xs">Premium members get early access to sponsored tasks</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-green-400" />
-                  Earning Opportunities
-                </CardTitle>
-                <CardDescription className="text-gray-400">
-                  Current sponsored task categories
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-700/30 rounded p-3 text-center">
-                    <div className="text-lg mb-1">💪</div>
-                    <h4 className="text-white font-semibold text-sm">Wellness</h4>
-                    <p className="text-green-400 text-xs">$45-75 avg</p>
-                  </div>
-                  <div className="bg-gray-700/30 rounded p-3 text-center">
-                    <div className="text-lg mb-1">🌱</div>
-                    <h4 className="text-white font-semibold text-sm">Environment</h4>
-                    <p className="text-green-400 text-xs">$30-50 avg</p>
-                  </div>
-                  <div className="bg-gray-700/30 rounded p-3 text-center">
-                    <div className="text-lg mb-1">📚</div>
-                    <h4 className="text-white font-semibold text-sm">Education</h4>
-                    <p className="text-green-400 text-xs">$40-65 avg</p>
-                  </div>
-                  <div className="bg-gray-700/30 rounded p-3 text-center">
-                    <div className="text-lg mb-1">🛡️</div>
-                    <h4 className="text-white font-semibold text-sm">Safety</h4>
-                    <p className="text-green-400 text-xs">$35-55 avg</p>
-                  </div>
-                </div>
-                
-                <Button 
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0"
+                {/* Action Button */}
+                <Button
+                  className="w-full button-clean"
                   onClick={() => router.push('/marketplace')}
                   disabled={!isVerified}
                 >
-                  Browse Sponsored Tasks
+                  {isVerified ? 'View Sponsored Tasks' : 'Verify Email to Access'}
                 </Button>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Verification Notice */}
-          {!isVerified && (
-            <Card className="bg-yellow-500/10 border-yellow-500/20 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <Shield className="h-6 w-6 text-yellow-500" />
-                  <div>
-                    <h3 className="text-yellow-500 font-semibold">Email Verification Required</h3>
-                    <p className="text-gray-300">Complete email verification to access sponsored tasks and corporate partnership opportunities.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          ))}
         </div>
-      </div>
-    </>
+
+        {/* Become a Sponsor CTA */}
+        <Card className="card-clean mt-8">
+          <CardContent className="p-8 text-center">
+            <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Briefcase className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <h3 className="text-subheading mb-2">Interested in Becoming a Sponsor?</h3>
+            <p className="text-body text-muted-foreground mb-6 max-w-2xl mx-auto">
+              Partner with BittieTasks to reach engaged parent communities while supporting meaningful tasks
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button className="button-clean">
+                Learn About Sponsorship
+              </Button>
+              <Button variant="outline" className="button-outline">
+                Contact Partnership Team
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
   )
 }

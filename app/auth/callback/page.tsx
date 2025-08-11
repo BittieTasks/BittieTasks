@@ -37,24 +37,13 @@ function AuthCallbackContent() {
   }, [router, searchParams])
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-    }}>
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        borderRadius: '16px',
-        padding: '40px',
-        textAlign: 'center',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-      }}>
-        <Loader2 className="mx-auto h-12 w-12 animate-spin text-emerald-600 mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Verifying your account...</h2>
-        <p className="text-gray-600">Please wait while we complete your email verification.</p>
+    <div className="page-layout">
+      <div className="container-clean section-clean flex items-center justify-center min-h-screen">
+        <div className="card-clean p-12 text-center max-w-md mx-auto">
+          <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary mb-4" />
+          <h2 className="text-subheading mb-2">Verifying your account...</h2>
+          <p className="text-body text-muted-foreground">Please wait while we complete your email verification.</p>
+        </div>
       </div>
     </div>
   )
@@ -63,23 +52,12 @@ function AuthCallbackContent() {
 export default function AuthCallbackPage() {
   return (
     <Suspense fallback={
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-      }}>
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.95)',
-          borderRadius: '16px',
-          padding: '40px',
-          textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-        }}>
-          <Loader2 className="mx-auto h-12 w-12 animate-spin text-emerald-600 mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Loading...</h2>
+      <div className="page-layout">
+        <div className="container-clean section-clean flex items-center justify-center min-h-screen">
+          <div className="card-clean p-12 text-center max-w-md mx-auto">
+            <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary mb-4" />
+            <h2 className="text-subheading mb-2">Loading...</h2>
+          </div>
         </div>
       </div>
     }>
