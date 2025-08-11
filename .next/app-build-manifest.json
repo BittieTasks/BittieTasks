@@ -20,21 +20,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/auth/page.js"
-    ],
-    "/api/auth/signup/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/signup/route.js"
-    ],
-    "/platform/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/platform/page.js"
-    ],
-    "/api/auth/test-signin/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/test-signin/route.js"
     ]
   }
 }
