@@ -2,275 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Clean Professional Base - No Colors or Branding */
 @layer base {
   :root {
-    /* BittieTasks Design System - Consistent Brand Colors */
+    /* Neutral Professional Palette */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 224 15% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 224 15% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    
-    /* Primary Brand Colors - Green */
-    --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 100%;
-    
-    /* Secondary Brand Colors - Blue */
-    --secondary: 217 91% 60%;
-    --secondary-foreground: 0 0% 100%;
-    
-    /* Accent Colors */
-    --accent: 142 76% 96%;
-    --accent-foreground: 142 76% 18%;
-    
-    /* Neutral Colors */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 142 76% 36%;
-    
-    /* Status Colors */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
-    --info: 217 91% 60%;
-    --info-foreground: 0 0% 100%;
-    
-    /* Design System */
-    --radius: 0.75rem;
-    
-    /* BittieTasks Brand Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(217 91% 60%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(142 76% 96%) 0%, hsl(217 91% 97%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(142 76% 50%) 0%, hsl(217 91% 70%) 100%);
+    --popover-foreground: 224 15% 12%;
+    --primary: 224 30% 20%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 224 15% 12%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 224 12% 45%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 224 15% 12%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 224 30% 20%;
+    --radius: 6px;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 142 76% 45%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 142 76% 45%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
   
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
   }
   
-  /* Smooth scrolling */
   html {
     scroll-behavior: smooth;
   }
   
-  /* Focus styles */
   *:focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2;
   }
 }
 
+/* Professional Typography System */
 @layer components {
-  /* BittieTasks Brand Styles */
-  .bittie-gradient-bg {
-    background: linear-gradient(135deg, 
-      hsl(142 76% 96%) 0%, 
-      hsl(217 91% 97%) 50%, 
-      hsl(142 76% 96%) 100%);
+  .text-display {
+    @apply text-4xl md:text-5xl font-bold leading-tight tracking-tight;
   }
   
-  .bittie-gradient-text {
-    background: linear-gradient(135deg, 
-      hsl(142 76% 36%) 0%, 
-      hsl(217 91% 60%) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .text-heading {
+    @apply text-2xl md:text-3xl font-semibold leading-tight;
   }
   
-  .bittie-grid-2 {
-    @apply grid grid-cols-1 md:grid-cols-2;
+  .text-subheading {
+    @apply text-xl font-medium leading-normal;
   }
   
-  .bittie-body-lg {
-    @apply text-lg;
-  }
-  
-  .bittie-card {
-    @apply bg-white/80 backdrop-blur-sm border border-green-200 rounded-xl shadow-sm;
-  }
-  
-  .bittie-card-hover {
-    @apply bittie-card hover:border-green-300 hover:shadow-md transition-all duration-200;
-  }
-  
-  .bittie-button-primary {
-    @apply bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md;
-  }
-  
-  .bittie-button-secondary {
-    @apply bg-white border-2 border-green-300 text-green-700 hover:bg-green-50 font-medium px-6 py-3 rounded-lg transition-all duration-200;
-  }
-  
-  .bittie-input {
-    @apply border-green-200 focus:border-green-400 focus:ring-green-400 rounded-lg;
-  }
-  
-  .bittie-badge-green {
-    @apply bg-green-100 text-green-700 border border-green-200 px-3 py-1 rounded-full text-sm font-medium;
-  }
-  
-  .bittie-badge-blue {
-    @apply bg-blue-100 text-blue-700 border border-blue-200 px-3 py-1 rounded-full text-sm font-medium;
-  }
-  
-  .bittie-badge-purple {
-    @apply bg-purple-100 text-purple-700 border border-purple-200 px-3 py-1 rounded-full text-sm font-medium;
-  }
-  
-  .bittie-badge-yellow {
-    @apply bg-yellow-100 text-yellow-700 border border-yellow-200 px-3 py-1 rounded-full text-sm font-medium;
-  }
-  
-  /* Typography Scale */
-  .bittie-heading-xl {
-    @apply text-4xl md:text-5xl font-bold tracking-tight;
-  }
-  
-  .bittie-heading-lg {
-    @apply text-3xl md:text-4xl font-bold tracking-tight;
-  }
-  
-  .bittie-heading-md {
-    @apply text-2xl md:text-3xl font-semibold tracking-tight;
-  }
-  
-  .bittie-heading-sm {
-    @apply text-xl md:text-2xl font-semibold;
-  }
-  
-  .bittie-body-lg {
-    @apply text-lg leading-relaxed;
-  }
-  
-  .bittie-body-md {
+  .text-body {
     @apply text-base leading-relaxed;
   }
   
-  .bittie-body-sm {
-    @apply text-sm leading-relaxed;
+  .text-small {
+    @apply text-sm leading-normal;
   }
   
-  /* Layout Components */
-  .bittie-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  /* Clean Layout Components */
+  .container-clean {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
   }
   
-  .bittie-section {
-    @apply py-12 md:py-16 lg:py-20;
+  .section-clean {
+    @apply py-12 md:py-16;
   }
   
-  .bittie-grid-2 {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+  .card-clean {
+    @apply bg-card border border-border rounded-lg shadow-sm;
   }
   
-  .bittie-grid-3 {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  .button-clean {
+    @apply bg-primary text-primary-foreground px-6 py-2 rounded-md font-medium hover:opacity-90 transition-opacity;
   }
   
-  .bittie-grid-4 {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  .button-outline {
+    @apply border border-border bg-background text-foreground px-6 py-2 rounded-md font-medium hover:bg-muted transition-colors;
   }
   
-  /* Status Indicators */
-  .bittie-status-success {
-    @apply bg-green-50 border border-green-200 text-green-800 p-4 rounded-lg;
-  }
-  
-  .bittie-status-warning {
-    @apply bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-lg;
-  }
-  
-  .bittie-status-error {
-    @apply bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg;
-  }
-  
-  .bittie-status-info {
-    @apply bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg;
-  }
-  
-  /* Animations */
-  .bittie-fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  
-  .bittie-slide-up {
-    animation: slideUp 0.5s ease-out;
-  }
-  
-  .bittie-scale-in {
-    animation: scaleIn 0.3s ease-out;
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { 
-    opacity: 0; 
-    transform: translateY(20px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
-}
-
-@keyframes scaleIn {
-  from { 
-    opacity: 0; 
-    transform: scale(0.95); 
-  }
-  to { 
-    opacity: 1; 
-    transform: scale(1); 
-  }
-}
-
-/* Responsive utilities */
-@media (max-width: 640px) {
-  .bittie-container {
-    @apply px-4;
-  }
-  
-  .bittie-section {
-    @apply py-8;
+  .input-clean {
+    @apply border border-input bg-background px-3 py-2 rounded-md text-sm;
   }
 }
