@@ -39,12 +39,6 @@ export default function HomePage() {
               >
                 Sign In
               </a>
-              <a
-                href="/auth"
-                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg"
-              >
-                Join the Community
-              </a>
             </div>
           </div>
         </div>
