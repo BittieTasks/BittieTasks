@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '../../../../../lib/supabase'
+import { createServerClient, createServiceClient } from '../../../../../lib/supabase'
 
 export async function POST(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createServerClient()
+    const supabaseAuth = createServerClient() 
+    const supabaseDb = createServiceClient()
     const { id: taskId } = await context.params
     
     // Get user from authentication header
@@ -16,7 +17,7 @@ export async function POST(
     }
 
     const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token)
     
     if (authError || !user) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
@@ -25,7 +26,7 @@ export async function POST(
     const { message } = await request.json()
 
     // Check if user already applied
-    const { data: existingApplication } = await supabase
+    const { data: existingApplication } = await supabaseDb
       .from('task_participants')
       .select('id')
       .eq('task_id', taskId)
@@ -40,7 +41,7 @@ export async function POST(
     }
 
     // Get task to check if it's still available
-    const { data: task, error: taskError } = await supabase
+    const { data: task, error: taskError } = await supabaseDb
       .from('tasks')
       .select('max_participants, current_participants, creator_id')
       .eq('id', taskId)
@@ -65,7 +66,7 @@ export async function POST(
     }
 
     // Create application
-    const { data: application, error } = await supabase
+    const { data: application, error } = await supabaseDb
       .from('task_participants')
       .insert({
         task_id: taskId,
@@ -82,7 +83,7 @@ export async function POST(
     }
 
     // Update task participant count
-    await supabase
+    await supabaseDb
       .from('tasks')
       .update({ 
         current_participants: task.current_participants + 1 

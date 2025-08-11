@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '../../../lib/supabase'
+import { createServerClient, createServiceClient } from '../../../lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createServerClient()
+    const supabase = createServiceClient()
     const { searchParams } = new URL(request.url)
     
     const category = searchParams.get('category')
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerClient()
+    const supabase = createServiceClient()
     
     // Get user from authentication header
     const authHeader = request.headers.get('authorization')

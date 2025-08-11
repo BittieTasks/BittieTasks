@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '../../../../lib/supabase'
-import { supabase } from '../../../../lib/supabase'
+import { createServerClient, createServiceClient } from '../../../../lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,9 +36,9 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString()
     }
 
-    // Use the server client for database operations
-    const serverSupabase = createServerClient()
-    const { data: profile, error: profileError } = await serverSupabase
+    // Use the service role client for database operations
+    const serviceSupabase = createServiceClient()
+    const { data: profile, error: profileError } = await serviceSupabase
       .from('profiles')
       .upsert(profileData, { onConflict: 'id' })
       .select()
@@ -78,9 +77,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
-    // Get user profile from Supabase  
-    const serverSupabase = createServerClient()
-    const { data: profile, error: profileError } = await serverSupabase
+    // Get user profile from Supabase using service client
+    const serviceSupabase = createServiceClient()
+    const { data: profile, error: profileError } = await serviceSupabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
