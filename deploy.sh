@@ -1,20 +1,19 @@
 #!/bin/bash
-set -e
+# Deploy script to force Vercel deployment
 
-echo "🚀 Deploying BittieTasks Revenue Platform to Vercel"
+echo "🚀 Forcing Vercel deployment of latest commit..."
+echo "Current commit: $(git rev-parse HEAD)"
+echo "Timestamp: $(date)"
 
-# Set Vercel token if authentication works
-export VERCEL_TOKEN=""
+# Create a deployment marker
+echo "$(date): Deploy trigger" > .vercel-deploy-marker
 
-# Deploy using direct API approach
-npx vercel --prod --token=$VERCEL_TOKEN --confirm --force
-
-# Add environment variables
-npx vercel env add NEXT_PUBLIC_SUPABASE_URL production --token=$VERCEL_TOKEN <<< "https://ttgbotlcbzmmyqawnjpj.supabase.co"
-npx vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production --token=$VERCEL_TOKEN <<< "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0Z2JvdGxjYnptbXlxYXduanBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MDA4NzksImV4cCI6MjA3MDE3Njg3OX0.jc_PZay5gUyleINrGC5d5Sd2mCkHjonP56KCLJJNM1k"
-
-# Final deployment with environment variables
-npx vercel --prod --token=$VERCEL_TOKEN --confirm
-
-echo "✅ BittieTasks revenue platform deployed successfully!"
-echo "Features live: Task marketplace, subscription tiers, corporate sponsorship, earnings dashboard"
+# Instructions for manual deployment
+echo ""
+echo "📋 MANUAL DEPLOYMENT STEPS:"
+echo "1. Go to vercel.com/dashboard"
+echo "2. Find your BittieTasks project"
+echo "3. Click 'Redeploy' to force deploy latest commit"
+echo ""
+echo "🔍 Verify deployment uses commit: $(git rev-parse HEAD)"
+echo "✅ Expected result: Successful build with 16 static pages"
