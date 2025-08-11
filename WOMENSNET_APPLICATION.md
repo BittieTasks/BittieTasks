@@ -20,16 +20,16 @@ I'm building this because I believe every parent deserves to feel valued, suppor
 
 This grant would be life-changing - not just for me, but for every parent who feels unseen and undervalued. Here's exactly how I would invest this money to build something that matters:
 
-**Building Trust and Safety ($2,500)**
-As a mom, safety is everything to me. I would invest in comprehensive background check systems and child safety protocols because I know that for parents to trust this platform with their most precious responsibility - their children - we need ironclad safety measures. This includes insurance coverage for shared activities and verification systems that let parents feel confident in their community connections.
+**Reaching Other Parents Who Need This ($4,500)**
+I want to find the other moms sitting at their kitchen tables at midnight, wondering how they're going to make it work. This money would go toward grassroots community outreach - partnering with parent groups, community centers, and local organizations to share this opportunity with women who need flexible income but can't abandon their families to get it. It's about meeting parents where they are, not where traditional businesses think they should be. This includes developing referral programs that reward parents for bringing their trusted friends into the community.
 
-**Reaching Other Parents Who Need This ($4,000)**
-I want to find the other moms sitting at their kitchen tables at midnight, wondering how they're going to make it work. This money would go toward grassroots community outreach - partnering with schools, childcare centers, and parent groups to share this opportunity with women who need flexible income but can't abandon their families to get it. It's about meeting parents where they are, not where traditional businesses think they should be.
+**Building Trust and Verification ($2,500)**
+Trust is everything when you're connecting neighbors around tasks and activities. I would invest in comprehensive user verification systems and community safety features because parents need to feel completely confident in the people they're working with. This includes identity verification, rating systems, and community moderation tools that ensure every interaction feels safe and supportive.
 
-**Legal Foundation for Family Protection ($2,000)**
-Because we're dealing with families and children, I need to ensure every legal detail protects the parents using this platform. This means updating privacy policies for child protection, understanding state requirements, and creating terms of service that put family safety first. It's not just about compliance - it's about building something parents can trust completely.
+**Legal Foundation and Platform Protection ($2,000)**
+I need to ensure every legal detail protects the parents using this platform. This means creating bulletproof terms of service, privacy policies that protect family information, understanding state requirements for peer-to-peer marketplaces, and establishing the legal framework that lets parents focus on earning and connecting rather than worrying about liability.
 
-**Support That Actually Supports Parents ($1,500)**
-Parents don't work 9-to-5 schedules, and our support shouldn't either. This funding would create customer service systems that work around school pickup times and bedtime routines, plus educational resources that help parents succeed on the platform without adding stress to their lives.
+**Support That Actually Supports Parents ($1,000)**
+Parents don't work 9-to-5 schedules, and our support shouldn't either. This funding would create customer service systems that work around school pickup times and bedtime routines, plus educational resources and community guidelines that help parents succeed on the platform without adding stress to their already full lives.
 
 This grant isn't just funding a business - it's investing in a movement that says parents' work has value, parents deserve community support, and parents can build financial security without sacrificing their families. Every dollar would go toward proving that when we lift up parents, especially mothers, we lift up entire communities.
