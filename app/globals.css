@@ -2,6 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force bold design styles */
+.bold-bg {
+  background: linear-gradient(to bottom right, rgb(88 28 135), rgb(30 58 138), rgb(49 46 129)) !important;
+  min-height: 100vh;
+  color: white;
+}
+
+.bold-gradient-pink {
+  background: linear-gradient(to right, rgb(236 72 153), rgb(139 92 246)) !important;
+}
+
+.bold-gradient-green {
+  background: linear-gradient(to right, rgb(34 197 94), rgb(59 130 246)) !important;
+}
+
+.bold-blob-pink {
+  background: linear-gradient(to bottom right, rgb(236 72 153), rgb(244 63 94)) !important;
+}
+
+.bold-blob-yellow {
+  background: linear-gradient(to bottom right, rgb(250 204 21), rgb(251 146 60)) !important;
+}
+
+.bold-blob-green {
+  background: linear-gradient(to bottom right, rgb(74 222 128), rgb(59 130 246)) !important;
+}
+
 /* Clean Professional Base - No Colors or Branding */
 @layer base {
   :root {

@@ -140,12 +140,28 @@ export default function WelcomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white overflow-x-hidden">
+    <div 
+      style={{
+        background: 'linear-gradient(to bottom right, rgb(88, 28, 135), rgb(30, 58, 138), rgb(49, 46, 129))',
+        minHeight: '100vh',
+        color: 'white'
+      }}
+      className="overflow-x-hidden"
+    >
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-1/2 w-80 h-80 bg-gradient-to-br from-green-400 to-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div 
+          className="absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"
+          style={{ background: 'linear-gradient(to bottom right, rgb(236, 72, 153), rgb(244, 63, 94))' }}
+        ></div>
+        <div 
+          className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"
+          style={{ background: 'linear-gradient(to bottom right, rgb(250, 204, 21), rgb(251, 146, 60))' }}
+        ></div>
+        <div 
+          className="absolute top-40 left-1/2 w-80 h-80 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"
+          style={{ background: 'linear-gradient(to bottom right, rgb(74, 222, 128), rgb(59, 130, 246))' }}
+        ></div>
       </div>
 
       {/* Header */}
@@ -153,7 +169,10 @@ export default function WelcomePage() {
         <div className="container-clean py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
+              <div 
+                className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300"
+                style={{ background: 'linear-gradient(to right, rgb(236, 72, 153), rgb(139, 92, 246))' }}
+              >
                 <span className="text-white font-bold text-xl">B</span>
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">BittieTasks</span>
@@ -168,7 +187,8 @@ export default function WelcomePage() {
               </Button>
               <Button 
                 onClick={handleSignUp}
-                className="bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 text-white font-semibold px-6 py-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
+                style={{ background: 'linear-gradient(to right, rgb(236, 72, 153), rgb(139, 92, 246))' }}
+                className="hover:opacity-90 text-white font-semibold px-6 py-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
               >
                 Sign Up
               </Button>
