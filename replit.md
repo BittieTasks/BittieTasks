@@ -65,6 +65,7 @@ Successfully resolved all ReferenceError location issues during Next.js static g
 
 ## User Preferences
 Preferred communication style: Senior programming engineer level technical communication.
+Development workflow: Uses Replit as development workspace, GitHub for version control, and Vercel for production deployment.
 
 ## System Architecture
 
