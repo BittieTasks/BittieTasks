@@ -12,10 +12,10 @@ function EarningsCalculator() {
   const yearlyEarnings = monthlyEarnings * 12
   
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
+    <div className="flex flex-col gap-8">
+      <div className="bittie-grid-2 gap-8">
         <div>
-          <label style={{ display: 'block', color: 'white', fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
+          <label className="block text-white bittie-body-lg font-medium mb-3">
             Tasks per week:
           </label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

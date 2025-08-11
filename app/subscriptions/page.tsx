@@ -122,22 +122,21 @@ export default function SubscriptionsPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="min-h-screen bittie-gradient-bg">
       {/* Header */}
-      <div className="px-6 pt-8 pb-6">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8">
-            <div className="inline-flex items-center space-x-2 bg-purple-500/20 text-purple-300 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Crown className="w-4 h-4" />
-              <span>Choose Your Earning Potential</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Subscription Plans
-            </h1>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Unlock higher earnings with lower platform fees and premium features
-            </p>
+      <div className="bittie-container bittie-section">
+        <div className="text-center bittie-card p-8 bittie-fade-in">
+          <div className="inline-flex items-center space-x-2 bittie-badge-purple mb-6">
+            <Crown className="w-4 h-4" />
+            <span>Choose Your Earning Potential</span>
+          </div>
+          
+          <h1 className="bittie-heading-xl bittie-gradient-text mb-4">
+            Subscription Plans
+          </h1>
+          <p className="bittie-body-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Unlock higher earnings with lower platform fees and premium features
+          </p>
 
             {/* Billing Toggle */}
             <div className="flex items-center justify-center gap-4 mb-8">

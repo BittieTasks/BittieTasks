@@ -121,38 +121,37 @@ export default function SponsorsPage() {
   }
 
   const getEthicsColor = (score: number) => {
-    if (score >= 90) return 'text-green-400'
-    if (score >= 80) return 'text-yellow-400'
-    if (score >= 70) return 'text-orange-400'
-    return 'text-red-400'
+    if (score >= 90) return 'text-green-600'
+    if (score >= 80) return 'text-yellow-600'
+    if (score >= 70) return 'text-orange-600'
+    return 'text-red-600'
   }
 
   const getEthicsBadgeColor = (score: number) => {
-    if (score >= 90) return 'bg-green-500/20 text-green-400 border-green-500/20'
-    if (score >= 80) return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/20'
-    if (score >= 70) return 'bg-orange-500/20 text-orange-400 border-orange-500/20'
-    return 'bg-red-500/20 text-red-400 border-red-500/20'
+    if (score >= 90) return 'bittie-badge-green'
+    if (score >= 80) return 'bittie-badge-yellow'
+    if (score >= 70) return 'bg-orange-100 text-orange-700 border border-orange-200 px-3 py-1 rounded-full text-sm font-medium'
+    return 'bg-red-100 text-red-700 border border-red-200 px-3 py-1 rounded-full text-sm font-medium'
   }
 
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="min-h-screen bittie-gradient-bg">
       {/* Header */}
-      <div className="px-6 pt-8 pb-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6">
-            <div className="inline-flex items-center space-x-2 bg-purple-500/20 text-purple-300 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Building className="w-4 h-4" />
-              <span>Ethical Corporate Partners</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Corporate Sponsorship Portal
-            </h1>
-            <p className="text-xl text-gray-300 mb-8 max-w-3xl">
-              Partner with ethically-evaluated companies that align with community values and family well-being. Every sponsor is vetted for ethics, diversity, and community impact.
-            </p>
+      <div className="bittie-container bittie-section">
+        <div className="bittie-card p-6 bittie-fade-in">
+          <div className="inline-flex items-center space-x-2 bittie-badge-purple mb-6">
+            <Building className="w-4 h-4" />
+            <span>Ethical Corporate Partners</span>
+          </div>
+          
+          <h1 className="bittie-heading-xl bittie-gradient-text mb-4">
+            Corporate Sponsorship Portal
+          </h1>
+          <p className="bittie-body-xl text-gray-600 mb-8 max-w-3xl">
+            Partner with ethically-evaluated companies that align with community values and family well-being. Every sponsor is vetted for ethics, diversity, and community impact.
+          </p>
 
             {/* Key Metrics */}
             <div className="grid md:grid-cols-4 gap-6">
