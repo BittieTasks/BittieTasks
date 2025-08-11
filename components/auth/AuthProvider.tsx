@@ -92,15 +92,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   const signIn = async (email: string, password: string) => {
+    console.log('AuthProvider signIn called with:', email)
+    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
     
-    if (error) throw error
+    console.log('Sign in result:', { data, error })
+    
+    if (error) {
+      console.error('Sign in error details:', error)
+      throw error
+    }
   }
 
   const signUp = async (email: string, password: string, userData?: any) => {
+    console.log('AuthProvider signUp called with:', email, userData)
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -110,7 +119,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       },
     })
     
-    if (error) throw error
+    console.log('Sign up result:', { data, error })
+    
+    if (error) {
+      console.error('Sign up error details:', error)
+      throw error
+    }
   }
 
   const signOut = async () => {
