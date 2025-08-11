@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/components/auth/AuthProvider'
 import BoldWelcomePage from '@/components/BoldWelcomePage'
+import CleanWelcomePage from '@/components/CleanWelcomePage'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -20,16 +21,16 @@ export default function HomePage() {
     }
   }, [isAuthenticated, loading, router, mounted])
 
-  // Skip loading states and render the BoldWelcomePage directly
+  // Skip loading states and render the CleanWelcomePage directly
   if (!mounted) {
-    return <BoldWelcomePage />
+    return <CleanWelcomePage />
   }
 
   // Handle authentication redirect
   if (mounted && !loading && isAuthenticated) {
     router.push('/platform')
-    return <BoldWelcomePage />
+    return <CleanWelcomePage />
   }
 
-  return <BoldWelcomePage />
+  return <CleanWelcomePage />
 }

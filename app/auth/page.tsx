@@ -93,22 +93,22 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="page-layout">
-      <div className="container-clean section-clean flex items-center justify-center min-h-screen">
+    <div className="min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-primary-foreground font-bold text-2xl">B</span>
+            <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <span className="text-white font-bold text-2xl">B</span>
             </div>
-            <h1 className="text-heading mb-2">Welcome to BittieTasks</h1>
-            <p className="text-body text-muted-foreground">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to BittieTasks</h1>
+            <p className="text-lg text-gray-600">
               Join thousands earning from community tasks
             </p>
           </div>
 
           {/* Auth Form */}
-          <Card className="card-clean">
+          <Card className="bg-white shadow-lg border border-gray-200">
             <CardContent className="p-6">
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-2 mb-6">

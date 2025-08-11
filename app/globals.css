@@ -29,29 +29,29 @@
   background: linear-gradient(to bottom right, rgb(74 222 128), rgb(59 130 246)) !important;
 }
 
-/* Clean Professional Base - No Colors or Branding */
+/* Clean Facebook-Inspired Design */
 @layer base {
   :root {
-    /* BittieTasks Green/Blue Branding */
+    /* Clean Blue Theme (Facebook-inspired) */
     --background: 0 0% 100%;
-    --foreground: 224 15% 12%;
+    --foreground: 222 15% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 224 15% 12%;
+    --card-foreground: 222 15% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 224 15% 12%;
-    --primary: 158 64% 52%; /* emerald-500 */
+    --popover-foreground: 222 15% 12%;
+    --primary: 221 83% 53%; /* Facebook blue */
     --primary-foreground: 0 0% 98%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 224 15% 12%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 224 12% 45%;
-    --accent: 168 76% 42%; /* teal-600 */
+    --secondary: 210 40% 98%;
+    --secondary-foreground: 222 15% 12%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 13% 45%;
+    --accent: 221 83% 53%; /* Facebook blue */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 158 64% 52%; /* emerald-500 */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%; /* Facebook blue */
     --radius: 8px;
   }
 
