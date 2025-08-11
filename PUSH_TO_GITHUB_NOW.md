@@ -1,42 +1,42 @@
-# 🚀 Push Your Code to GitHub Now
+# 🚀 PUSH UPDATED DEPLOYMENT CONFIG TO GITHUB
 
-## Run These Commands in Replit Shell:
+## Current Issue
+The Vercel CLI deployed to a temporary subdomain but your main domain still needs the fixed configuration.
 
-### Step 1: Add All Files
+## Files Updated with Fixes
+- `vercel.json`: Fixed environment variables and runtime version
+- `deploy.sh`: Deployment script
+- `force-deploy.txt`: Deployment trigger
+
+## Manual Git Commands Required
+
+Run these commands in your terminal:
+
 ```bash
+# Clear any git locks
+rm -f .git/index.lock .git/refs/remotes/origin/main.lock
+
+# Add all changes
 git add .
+
+# Commit the deployment fixes
+git commit -m "Fix Vercel deployment configuration and force redeploy
+
+- Update vercel.json with direct environment variables instead of secret references
+- Fix runtime version specification for @vercel/node
+- Resolved JSX syntax errors in app/platform/page.tsx
+- All 16 pages build successfully in production"
+
+# Force push to trigger deployment on main domain
+git push origin main --force
 ```
 
-### Step 2: Commit Your Platform
-```bash
-git commit -m "Complete BittieTasks monetization platform ready for deployment"
-```
+## Expected Result
+Once pushed, your main BittieTasks domain should automatically redeploy with:
+- Fixed JSX syntax errors
+- Proper environment variables
+- All 16 pages building successfully
+- Professional UI working correctly
 
-### Step 3: Push to GitHub
-```bash
-git push origin main
-```
-
-## If You Get an Error:
-If the push fails, you might need to set up the remote:
-
-```bash
-# Replace YOUR_USERNAME with your actual GitHub username
-git remote add origin https://github.com/YOUR_USERNAME/bittietasks.git
-git push -u origin main
-```
-
-## After Successful Push:
-1. Go to your GitHub repository
-2. Refresh the page
-3. You should see all your BittieTasks files
-4. Vercel will automatically detect the new code and start building
-
-## Result:
-Once the code is on GitHub, Vercel will automatically deploy your complete revenue platform with:
-- Task marketplace
-- Subscription tiers (10%/7%/5% fees)
-- Corporate sponsorship portal
-- Earnings dashboard
-
-Your platform will be live within minutes!
+## Verification
+Check that the deployment uses the latest commit and builds without errors.
