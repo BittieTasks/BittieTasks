@@ -1,0 +1,65 @@
+[23:25:32.919] Running build in Washington, D.C., USA (East) – iad1
+[23:25:32.919] Build machine configuration: 4 cores, 8 GB
+[23:25:32.942] Retrieving list of deployment files...
+[23:25:32.946] Skipping build cache, deployment was triggered without cache.
+[23:25:33.890] Downloading 550 deployment files...
+[23:25:38.898] Running "vercel build"
+[23:25:39.390] Vercel CLI 44.7.3
+[23:25:39.771] Running "install" command: `npm install`...
+[23:25:53.123] 
+[23:25:53.124] added 244 packages, and audited 245 packages in 13s
+[23:25:53.124] 
+[23:25:53.124] 47 packages are looking for funding
+[23:25:53.124]   run `npm fund` for details
+[23:25:53.126] 
+[23:25:53.126] 1 low severity vulnerability
+[23:25:53.126] 
+[23:25:53.126] To address all issues, run:
+[23:25:53.126]   npm audit fix
+[23:25:53.126] 
+[23:25:53.126] Run `npm audit` for details.
+[23:25:53.193] Detected Next.js version: 15.4.6
+[23:25:53.194] Running "npm run build"
+[23:25:53.375] 
+[23:25:53.375] > bittietasks@1.0.0 build
+[23:25:53.375] > next build
+[23:25:53.375] 
+[23:25:55.105] Attention: Next.js now collects completely anonymous telemetry regarding usage.
+[23:25:55.105] This information is used to shape Next.js' roadmap and prioritize features.
+[23:25:55.106] You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+[23:25:55.106] https://nextjs.org/telemetry
+[23:25:55.106] 
+[23:25:55.236]    ▲ Next.js 15.4.6
+[23:25:55.237]    - Environments: .env
+[23:25:55.237]    - Experiments (use with caution):
+[23:25:55.237]      · serverActions
+[23:25:55.237] 
+[23:25:55.488]    Creating an optimized production build ...
+[23:26:03.031]  ⚠ Compiled with warnings in 6.0s
+[23:26:03.031] 
+[23:26:03.032] ./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
+[23:26:03.032] Critical dependency: the request of a dependency is an expression
+[23:26:03.032] 
+[23:26:03.032] Import trace for requested module:
+[23:26:03.032] ./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
+[23:26:03.032] ./node_modules/@supabase/realtime-js/dist/module/index.js
+[23:26:03.032] ./node_modules/@supabase/supabase-js/dist/module/index.js
+[23:26:03.032] ./lib/db.ts
+[23:26:03.032] ./app/api/auth/profile/route.ts
+[23:26:03.032] 
+[23:26:09.842]  ✓ Compiled successfully in 10.0s
+[23:26:09.848]    Linting and checking validity of types ...
+[23:26:18.081] Failed to compile.
+[23:26:18.082] 
+[23:26:18.082] ./components/ui/achievement-badge.tsx:57:25
+[23:26:18.082] Type error: Property 'rarity' does not exist on type 'AchievementDefinition'.
+[23:26:18.082] 
+[23:26:18.082] [0m [90m 55 |[39m
+[23:26:18.082]  [90m 56 |[39m   [36mconst[39m getRarityBorder [33m=[39m () [33m=>[39m {
+[23:26:18.082] [31m[1m>[22m[39m[90m 57 |[39m     [36mswitch[39m (achievement[33m.[39mrarity) {
+[23:26:18.082]  [90m    |[39m                         [31m[1m^[22m[39m
+[23:26:18.082]  [90m 58 |[39m       [36mcase[39m [32m"legendary"[39m[33m:[39m
+[23:26:18.083]  [90m 59 |[39m         [36mreturn[39m [32m"border-4 border-yellow-400 shadow-lg shadow-yellow-200"[39m[33m;[39m
+[23:26:18.083]  [90m 60 |[39m       [36mcase[39m [32m"epic"[39m[33m:[39m[0m
+[23:26:18.112] Next.js build worker exited with code: 1 and signal: null
+[23:26:18.135] Error: Command "npm run build" exited with 1

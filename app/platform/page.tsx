@@ -1,281 +1,171 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { DollarSign, TrendingUp, Clock, Award, Plus, ArrowRight } from 'lucide-react'
+import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import BoldNavigation from '@/components/BoldNavigation'
+import BoldLayout from '@/components/BoldLayout'
 import { Badge } from '@/components/ui/badge'
-import PlatformNavigation from '@/components/platform/PlatformNavigation'
-import Link from 'next/link'
-import { useAuth } from '@/components/auth/AuthProvider'
+import { useRouter } from 'next/navigation'
+import { Loader2, User, Mail, CheckCircle, AlertCircle, Crown, DollarSign, Calendar, Target, TrendingUp, Users, BarChart3 } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 export default function PlatformPage() {
+  const { user, session, loading, isAuthenticated, isVerified, signOut } = useAuth()
+  const router = useRouter()
   const [mounted, setMounted] = useState(false)
-  const { user } = useAuth()
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
   if (!mounted) {
+    return null
+  }
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full" />
-      </div>
+      <BoldLayout>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            padding: '48px',
+            textAlign: 'center',
+            maxWidth: '400px',
+            margin: '0 auto'
+          }}>
+            <Loader2 style={{ margin: '0 auto 16px auto', animation: 'spin 1s linear infinite' }} size={48} color="white" />
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: 0 }}>Loading your BittieTasks platform...</p>
+          </div>
+        </div>
+      </BoldLayout>
     )
   }
 
-  const earnings = {
-    today: 45,
-    thisWeek: 180,
-    thisMonth: 725,
-    allTime: 2340
+  if (!isAuthenticated) {
+    router.push('/auth')
+    return null
   }
 
-  const recentTasks = [
-    {
-      id: 1,
-      title: 'Playground Meetup at Central Park',
-      payout: 35,
-      status: 'completed',
-      completedAt: '2 hours ago'
-    },
-    {
-      id: 2,
-      title: 'Grocery Shopping Assistant',
-      payout: 25,
-      status: 'in-progress',
-      startedAt: '30 mins ago'
-    },
-    {
-      id: 3,
-      title: 'School Pickup Carpool',
-      payout: 30,
-      status: 'pending',
-      scheduledFor: 'Tomorrow 3:00 PM'
-    }
-  ]
-
-  const achievements = [
-    { id: 1, title: 'First Task Completed', icon: '🎉', earned: true },
-    { id: 2, title: 'Community Helper', icon: '🤝', earned: true },
-    { id: 3, title: 'Weekly Goal Achieved', icon: '⭐', earned: true },
-    { id: 4, title: 'Top Earner', icon: '👑', earned: false },
-  ]
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
-      <PlatformNavigation />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8">
-        {/* Welcome Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.user_metadata?.first_name || 'Demo User'}! 👋
+    <BoldLayout>
+      <BoldNavigation />
+      
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
+        {/* Header */}
+        <div style={{ marginBottom: '32px' }}>
+          <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>
+            Welcome back, {user?.user_metadata?.firstName || 'User'}!
           </h1>
-          <p className="text-xl text-gray-600">
-            Ready to earn more today? Here's your dashboard overview.
+          <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.8)' }}>
+            Here's your BittieTasks dashboard
           </p>
-        </motion.div>
+        </div>
 
-        {/* Earnings Overview */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-        >
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader className="pb-2">
-              <CardDescription>Today</CardDescription>
-              <CardTitle className="text-2xl font-bold text-emerald-600">
-                ${earnings.today}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center text-sm text-green-600">
-                <TrendingUp className="w-4 h-4 mr-1" />
-                +12% from yesterday
+        {/* Verification Status */}
+        {!isVerified && (
+          <div style={{
+            background: 'rgba(251, 191, 36, 0.2)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(251, 191, 36, 0.3)',
+            borderRadius: '16px',
+            padding: '24px',
+            marginBottom: '32px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <AlertCircle size={24} color="rgb(251, 191, 36)" />
+              <div>
+                <h3 style={{ fontWeight: '600', color: 'rgb(251, 191, 36)', marginBottom: '4px' }}>Email Verification Required</h3>
+                <p style={{ color: 'rgba(255, 255, 255, 0.9)', margin: 0 }}>Please check your email and verify your account to access all earning features.</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+        )}
 
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader className="pb-2">
-              <CardDescription>This Week</CardDescription>
-              <CardTitle className="text-2xl font-bold text-blue-600">
-                ${earnings.thisWeek}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center text-sm text-green-600">
-                <TrendingUp className="w-4 h-4 mr-1" />
-                +8% from last week
+        {/* Stats Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            padding: '24px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(to right, rgb(34, 197, 94), rgb(22, 163, 74))',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <DollarSign size={24} color="white" />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader className="pb-2">
-              <CardDescription>This Month</CardDescription>
-              <CardTitle className="text-2xl font-bold text-purple-600">
-                ${earnings.thisMonth}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center text-sm text-green-600">
-                <TrendingUp className="w-4 h-4 mr-1" />
-                +15% from last month
+              <div>
+                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '4px' }}>Total Earnings</p>
+                <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', margin: 0 }}>$0.00</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader className="pb-2">
-              <CardDescription>All Time</CardDescription>
-              <CardTitle className="text-2xl font-bold text-gray-900">
-                ${earnings.allTime}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center text-sm text-gray-600">
-                <Award className="w-4 h-4 mr-1" />
-                Level 3 Earner
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            padding: '24px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(to right, rgb(59, 130, 246), rgb(37, 99, 235))',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Target size={24} color="white" />
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+              <div>
+                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '4px' }}>Active Tasks</p>
+                <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', margin: 0 }}>0</p>
+              </div>
+            </div>
+          </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Recent Tasks */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-2"
-          >
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Recent Tasks</CardTitle>
-                  <CardDescription>Your latest task activity</CardDescription>
-                </div>
-                <Link href="/marketplace">
-                  <Button className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Browse Tasks
-                  </Button>
-                </Link>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {recentTasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{task.title}</h4>
-                      <p className="text-sm text-gray-600">
-                        {task.status === 'completed' && `Completed ${task.completedAt}`}
-                        {task.status === 'in-progress' && `Started ${task.startedAt}`}
-                        {task.status === 'pending' && `Scheduled for ${task.scheduledFor}`}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Badge className={`${
-                        task.status === 'completed' ? 'bg-green-100 text-green-800' :
-                        task.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
-                        'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {task.status.replace('-', ' ')}
-                      </Badge>
-                      <div className="text-lg font-bold text-emerald-600">
-                        ${task.payout}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                
-                <Link href="/marketplace">
-                  <Button variant="outline" className="w-full mt-4">
-                    View All Tasks
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Quick Actions & Achievements */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="space-y-6"
-          >
-            {/* Quick Actions */}
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Common tasks to get you started</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Link href="/marketplace">
-                  <Button className="w-full justify-start bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white">
-                    <DollarSign className="w-4 h-4 mr-2" />
-                    Browse Marketplace
-                  </Button>
-                </Link>
-                <Link href="/create-task">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create New Task
-                  </Button>
-                </Link>
-                <Link href="/earnings">
-                  <Button variant="outline" className="w-full justify-start">
-                    <TrendingUp className="w-4 h-4 mr-2" />
-                    View Earnings
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            {/* Achievements */}
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>Achievements</CardTitle>
-                <CardDescription>Your recent accomplishments</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {achievements.map((achievement) => (
-                  <div key={achievement.id} className={`flex items-center p-3 rounded-lg ${
-                    achievement.earned ? 'bg-emerald-50 border border-emerald-200' : 'bg-gray-50'
-                  }`}>
-                    <div className="text-2xl mr-3">
-                      {achievement.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className={`font-medium ${
-                        achievement.earned ? 'text-emerald-900' : 'text-gray-600'
-                      }`}>
-                        {achievement.title}
-                      </h4>
-                    </div>
-                    {achievement.earned && (
-                      <Badge className="bg-emerald-100 text-emerald-800">
-                        Earned
-                      </Badge>
-                    )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </motion.div>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            padding: '24px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(to right, rgb(139, 92, 246), rgb(124, 58, 237))',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Calendar size={24} color="white" />
+              </div>
+              <div>
+                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '4px' }}>This Month</p>
+                <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', margin: 0 }}>0 Tasks</p>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
-    </div>
+    </BoldLayout>
   )
 }

@@ -1,0 +1,101 @@
+[17:00:28.204] Running build in Washington, D.C., USA (East) – iad1
+[17:00:28.205] Build machine configuration: 4 cores, 8 GB
+[17:00:28.230] Cloning github.com/BittieTasks/BittieTasks (Branch: main, Commit: d7d3077)
+[17:00:41.612] Cloning completed: 13.381s
+[17:00:41.781] Restored build cache from previous deployment (BMUJxgmtAhNUPcbjnm7EsGvGM3Xm)
+[17:00:48.591] Running "vercel build"
+[17:00:49.166] Vercel CLI 44.7.3
+[17:00:49.556] Running "install" command: `npm install`...
+[17:00:51.634] 
+[17:00:51.635] up to date, audited 327 packages in 2s
+[17:00:51.635] 
+[17:00:51.635] 52 packages are looking for funding
+[17:00:51.635]   run `npm fund` for details
+[17:00:51.653] 
+[17:00:51.653] 5 vulnerabilities (1 low, 4 moderate)
+[17:00:51.653] 
+[17:00:51.654] To address issues that do not require attention, run:
+[17:00:51.654]   npm audit fix
+[17:00:51.654] 
+[17:00:51.654] To address all issues (including breaking changes), run:
+[17:00:51.654]   npm audit fix --force
+[17:00:51.654] 
+[17:00:51.654] Run `npm audit` for details.
+[17:00:51.693] Detected Next.js version: 15.4.6
+[17:00:51.694] Running "npm run build"
+[17:00:51.846] 
+[17:00:51.846] > bittietasks@1.0.0 build
+[17:00:51.846] > next build
+[17:00:51.846] 
+[17:00:52.871]    ▲ Next.js 15.4.6
+[17:00:52.871]    - Environments: .env.local
+[17:00:52.871]    - Experiments (use with caution):
+[17:00:52.871]      · serverActions
+[17:00:52.871] 
+[17:00:52.972]    Creating an optimized production build ...
+[17:01:02.522]  ⚠ Compiled with warnings in 8.0s
+[17:01:02.523] 
+[17:01:02.523] ./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
+[17:01:02.523] Critical dependency: the request of a dependency is an expression
+[17:01:02.523] 
+[17:01:02.523] Import trace for requested module:
+[17:01:02.523] ./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
+[17:01:02.523] ./node_modules/@supabase/realtime-js/dist/module/index.js
+[17:01:02.523] ./node_modules/@supabase/supabase-js/dist/module/index.js
+[17:01:02.523] ./lib/db.ts
+[17:01:02.524] ./app/api/auth/profile/route.ts
+[17:01:02.524] 
+[17:01:10.912]  ✓ Compiled successfully in 13.0s
+[17:01:10.919]    Linting and checking validity of types ...
+[17:01:25.328]    Collecting page data ...
+[17:01:27.852]    Generating static pages (0/15) ...
+[17:01:28.902] ReferenceError: location is not defined
+[17:01:28.902]     at B (.next/server/app/create-task/page.js:1:8476)
+[17:01:28.903] ReferenceError: location is not defined
+[17:01:28.903]     at x (.next/server/app/marketplace/page.js:1:3598)
+[17:01:28.903] ReferenceError: location is not defined
+[17:01:28.903]     at y (.next/server/app/sponsors/page.js:1:16197)
+[17:01:28.903] ReferenceError: location is not defined
+[17:01:28.903]     at s (.next/server/app/subscriptions/page.js:2:9124)
+[17:01:28.903] ReferenceError: location is not defined
+[17:01:28.903]     at y (.next/server/app/earnings/page.js:1:1818)
+[17:01:28.904]    Generating static pages (3/15) 
+[17:01:28.904]    Generating static pages (7/15) 
+[17:01:28.983]    Generating static pages (11/15) 
+[17:01:28.984]  ✓ Generating static pages (15/15)
+[17:01:29.654]    Finalizing page optimization ...
+[17:01:29.656]    Collecting build traces ...
+[17:01:38.615] 
+[17:01:38.630] Route (app)                                 Size  First Load JS
+[17:01:38.630] ┌ ○ /                                    1.99 kB         146 kB
+[17:01:38.630] ├ ○ /_not-found                            989 B         101 kB
+[17:01:38.630] ├ ƒ /api/auth/profile                      127 B        99.7 kB
+[17:01:38.631] ├ ƒ /api/test                              127 B        99.7 kB
+[17:01:38.631] ├ ○ /auth                                 8.1 kB         158 kB
+[17:01:38.631] ├ ○ /auth/callback                       1.91 kB         141 kB
+[17:01:38.631] ├ ○ /create-task                         5.66 kB         183 kB
+[17:01:38.631] ├ ○ /earnings                            4.37 kB         181 kB
+[17:01:38.631] ├ ○ /marketplace                         4.19 kB         181 kB
+[17:01:38.631] ├ ○ /platform                            3.09 kB         154 kB
+[17:01:38.631] ├ ○ /sponsors                            4.79 kB         155 kB
+[17:01:38.631] ├ ○ /subscriptions                       3.69 kB         154 kB
+[17:01:38.631] └ ○ /welcome                               159 B         106 kB
+[17:01:38.632] + First Load JS shared by all            99.6 kB
+[17:01:38.632]   ├ chunks/4bd1b696-cf72ae8a39fa05aa.js  54.1 kB
+[17:01:38.632]   ├ chunks/964-7a34cadcb7695cec.js       43.5 kB
+[17:01:38.632]   └ other shared chunks (total)          1.93 kB
+[17:01:38.632] 
+[17:01:38.632] 
+[17:01:38.632] ○  (Static)   prerendered as static content
+[17:01:38.632] ƒ  (Dynamic)  server-rendered on demand
+[17:01:38.632] 
+[17:01:38.842] Traced Next.js server files in: 106.02ms
+[17:01:39.016] Created all serverless functions in: 166.445ms
+[17:01:39.035] Collected static files (public/, static/, .next/static): 16.329ms
+[17:01:39.129] Build Completed in /vercel/output [50s]
+[17:01:39.301] Deploying outputs...
+[17:01:47.355] Deployment completed
+[17:01:48.476] Creating build cache...
+[17:02:04.093] Created build cache: 15.616s
+[17:02:04.093] Uploading build cache [270.46 MB]
+[17:02:07.146] Build cache uploaded: 3.053s

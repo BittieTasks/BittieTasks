@@ -1,0 +1,116 @@
+[19:22:59.162] Running build in Washington, D.C., USA (East) – iad1
+[19:22:59.162] Build machine configuration: 4 cores, 8 GB
+[19:22:59.180] Cloning github.com/BittieTasks/BittieTasks (Branch: main, Commit: 0011cea)
+[19:23:23.811] Cloning completed: 24.630s
+[19:23:23.971] Restored build cache from previous deployment (3As2m4g11eN1XsXWwZjtzeF7WVR3)
+[19:23:29.634] Running "vercel build"
+[19:23:30.118] Vercel CLI 44.7.3
+[19:23:30.440] Running "install" command: `npm install`...
+[19:23:32.244] 
+[19:23:32.245] up to date, audited 464 packages in 2s
+[19:23:32.245] 
+[19:23:32.245] 75 packages are looking for funding
+[19:23:32.245]   run `npm fund` for details
+[19:23:32.264] 
+[19:23:32.264] 5 vulnerabilities (1 low, 4 moderate)
+[19:23:32.264] 
+[19:23:32.264] To address issues that do not require attention, run:
+[19:23:32.264]   npm audit fix
+[19:23:32.264] 
+[19:23:32.264] To address all issues (including breaking changes), run:
+[19:23:32.265]   npm audit fix --force
+[19:23:32.265] 
+[19:23:32.265] Run `npm audit` for details.
+[19:23:32.297] Detected Next.js version: 15.4.6
+[19:23:32.297] Running "npm run build"
+[19:23:32.421] 
+[19:23:32.421] > bittietasks@1.0.0 build
+[19:23:32.421] > next build
+[19:23:32.422] 
+[19:23:33.202]    ▲ Next.js 15.4.6
+[19:23:33.203]    - Environments: .env.local
+[19:23:33.203]    - Experiments (use with caution):
+[19:23:33.203]      · serverActions
+[19:23:33.203] 
+[19:23:33.418]    Creating an optimized production build ...
+[19:23:40.906] Failed to compile.
+[19:23:40.906] 
+[19:23:40.907] ./app/earnings/page.tsx
+[19:23:40.907] Error:   [31mx[0m Expected '>', got 'div'
+[19:23:40.907]      ,-[[36;1;4m/vercel/path0/app/earnings/page.tsx[0m:438:1]
+[19:23:40.907]  [2m435[0m |           </Card>
+[19:23:40.907]  [2m436[0m |         </div>
+[19:23:40.907]  [2m437[0m |       </div>
+[19:23:40.907]  [2m438[0m |     </div>
+[19:23:40.907]      : [35;1m      ^^^[0m
+[19:23:40.907]  [2m439[0m |     </>
+[19:23:40.908]  [2m440[0m |   )
+[19:23:40.908]  [2m441[0m | }
+[19:23:40.908]      `----
+[19:23:40.908] 
+[19:23:40.908] Caused by:
+[19:23:40.908]     Syntax Error
+[19:23:40.908] 
+[19:23:40.908] Import trace for requested module:
+[19:23:40.908] ./app/earnings/page.tsx
+[19:23:40.908] 
+[19:23:40.908] ./app/platform/page.tsx
+[19:23:40.908] Error:   [31mx[0m Expected '>', got 'div'
+[19:23:40.908]      ,-[[36;1;4m/vercel/path0/app/platform/page.tsx[0m:266:1]
+[19:23:40.908]  [2m263[0m |           </Card>
+[19:23:40.908]  [2m264[0m |         </div>
+[19:23:40.908]  [2m265[0m |       </div>
+[19:23:40.909]  [2m266[0m |     </div>
+[19:23:40.909]      : [35;1m      ^^^[0m
+[19:23:40.909]  [2m267[0m |     </>
+[19:23:40.909]  [2m268[0m |   )
+[19:23:40.909]  [2m269[0m | }
+[19:23:40.909]      `----
+[19:23:40.909] 
+[19:23:40.909] Caused by:
+[19:23:40.909]     Syntax Error
+[19:23:40.909] 
+[19:23:40.909] Import trace for requested module:
+[19:23:40.909] ./app/platform/page.tsx
+[19:23:40.910] 
+[19:23:40.910] ./app/sponsors/page.tsx
+[19:23:40.910] Error:   [31mx[0m Expected '>', got 'div'
+[19:23:40.910]      ,-[[36;1;4m/vercel/path0/app/sponsors/page.tsx[0m:454:1]
+[19:23:40.910]  [2m451[0m |           )}
+[19:23:40.910]  [2m452[0m |         </div>
+[19:23:40.910]  [2m453[0m |       </div>
+[19:23:40.910]  [2m454[0m |     </div>
+[19:23:40.910]      : [35;1m      ^^^[0m
+[19:23:40.910]  [2m455[0m |     </>
+[19:23:40.910]  [2m456[0m |   )
+[19:23:40.910]  [2m457[0m | }
+[19:23:40.910]      `----
+[19:23:40.910] 
+[19:23:40.910] Caused by:
+[19:23:40.910]     Syntax Error
+[19:23:40.911] 
+[19:23:40.911] Import trace for requested module:
+[19:23:40.911] ./app/sponsors/page.tsx
+[19:23:40.911] 
+[19:23:40.911] ./app/subscriptions/page.tsx
+[19:23:40.911] Error:   [31mx[0m Expected '>', got 'div'
+[19:23:40.911]      ,-[[36;1;4m/vercel/path0/app/subscriptions/page.tsx[0m:350:1]
+[19:23:40.911]  [2m347[0m |           </div>
+[19:23:40.911]  [2m348[0m |         </div>
+[19:23:40.911]  [2m349[0m |       </div>
+[19:23:40.911]  [2m350[0m |     </div>
+[19:23:40.911]      : [35;1m      ^^^[0m
+[19:23:40.911]  [2m351[0m |     </>
+[19:23:40.911]  [2m352[0m |   )
+[19:23:40.911]  [2m353[0m | }
+[19:23:40.911]      `----
+[19:23:40.912] 
+[19:23:40.912] Caused by:
+[19:23:40.912]     Syntax Error
+[19:23:40.912] 
+[19:23:40.912] Import trace for requested module:
+[19:23:40.912] ./app/subscriptions/page.tsx
+[19:23:40.912] 
+[19:23:40.915] 
+[19:23:40.915] > Build failed because of webpack errors
+[19:23:40.941] Error: Command "npm run build" exited with 1
