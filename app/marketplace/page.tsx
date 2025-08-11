@@ -13,94 +13,12 @@ import { useRouter } from 'next/navigation'
 import { Search, MapPin, Clock, Users, DollarSign, Filter, Star, Briefcase, Award, Target } from 'lucide-react'
 
 // Sample task data
-const sampleTasks = [
-  {
-    id: '1',
-    title: 'School Pickup Share',
-    description: 'Looking for parents to share daily school pickup duties for elementary school',
-    category: 'Transportation',
-    type: 'shared',
-    payout: 45,
-    max_participants: 4,
-    current_participants: 2,
-    deadline: '2025-01-15',
-    location: 'Downtown Elementary',
-    time_commitment: '30 min daily',
-    requirements: ['Valid driver license', 'Car insurance', 'Background check']
-  },
-  {
-    id: '2',
-    title: 'Meal Prep Sunday',
-    description: 'Weekly meal preparation session for busy parents',
-    category: 'Meal Planning',
-    type: 'shared',
-    payout: 35,
-    max_participants: 6,
-    current_participants: 3,
-    deadline: '2025-01-12',
-    location: 'Community Kitchen',
-    time_commitment: '3 hours weekly',
-    requirements: ['Basic cooking skills', 'Food handler permit']
-  },
-  {
-    id: '3',
-    title: 'Home Organization Challenge',
-    description: 'Transform your living space with this 30-day organization challenge',
-    category: 'Home Organization',
-    type: 'solo',
-    payout: 85,
-    max_participants: 1,
-    current_participants: 0,
-    deadline: '2025-02-01',
-    location: 'Your Home',
-    time_commitment: '1 hour daily',
-    requirements: ['Commitment to daily tasks', 'Photo documentation']
-  },
-  {
-    id: '4',
-    title: 'Morning Meditation Group',
-    description: 'Join a supportive meditation practice for stressed parents',
-    category: 'Mental Wellness',
-    type: 'self_care',
-    payout: 25,
-    max_participants: 8,
-    current_participants: 5,
-    deadline: '2025-01-20',
-    location: 'Virtual/Online',
-    time_commitment: '20 min daily',
-    requirements: ['Quiet space', 'Meditation app']
-  },
-  {
-    id: '5',
-    title: 'Weekend Farmers Market Run',
-    description: 'Coordinate weekly farmers market shopping for multiple families',
-    category: 'Community Support',
-    type: 'shared',
-    payout: 55,
-    max_participants: 5,
-    current_participants: 2,
-    deadline: '2025-01-18',
-    location: 'City Farmers Market',
-    time_commitment: '2 hours weekly',
-    requirements: ['Transportation', 'Market familiarity']
-  },
-  {
-    id: '6',
-    title: 'Kids Activity Planning',
-    description: 'Plan and organize weekly activities for neighborhood children',
-    category: 'Child Development',
-    type: 'shared',
-    payout: 65,
-    max_participants: 3,
-    current_participants: 1,
-    deadline: '2025-01-25',
-    location: 'Community Center',
-    time_commitment: '4 hours weekly',
-    requirements: ['Experience with children', 'Creative planning skills']
-  }
-]
+import { comprehensiveTasks } from '../../data/comprehensiveTasks'
 
-const categories = ['All', 'Transportation', 'Meal Planning', 'Home Organization', 'Mental Wellness', 'Community Support', 'Child Development']
+// Use the comprehensive 110+ task database
+const sampleTasks = comprehensiveTasks
+
+const categories = ['All', 'Transportation', 'Meal Planning', 'Home Organization', 'Mental Wellness', 'Community Support', 'Child Development', 'Education', 'Health & Fitness', 'Financial Education']
 
 export default function MarketplacePage() {
   const { user, isAuthenticated, isVerified } = useAuth()
