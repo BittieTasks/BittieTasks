@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
 import { Check, Crown, Star, Zap, Shield, TrendingUp, Users, DollarSign } from 'lucide-react'
-import Navigation from '@/components/Navigation'
+import BoldNavigation from '@/components/BoldNavigation'
+import BoldLayout from '@/components/BoldLayout'
 
 const plans = [
   {
@@ -99,14 +100,14 @@ export default function SubscriptionsPage() {
   }
 
   return (
-    <div className="page-layout">
-      <Navigation />
+    <BoldLayout>
+      <BoldNavigation />
       
-      <main className="page-content">
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-display mb-4">Choose Your Plan</h1>
-          <p className="text-body text-muted-foreground max-w-2xl mx-auto">
+        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <h1 style={{ fontSize: '42px', fontWeight: 'bold', marginBottom: '16px', color: 'white' }}>Choose Your Plan</h1>
+          <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.8)', maxWidth: '600px', margin: '0 auto' }}>
             Unlock more earning potential with reduced platform fees and premium features
           </p>
         </div>
@@ -325,6 +326,6 @@ export default function SubscriptionsPage() {
           </CardContent>
         </Card>
       </main>
-    </div>
+    </BoldLayout>
   )
 }

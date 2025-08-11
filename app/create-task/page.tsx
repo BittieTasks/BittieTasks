@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import Navigation from '@/components/Navigation'
+import BoldNavigation from '@/components/BoldNavigation'
+import BoldLayout from '@/components/BoldLayout'
 import { useRouter } from 'next/navigation'
 import { 
   PlusCircle, 
@@ -86,14 +87,14 @@ export default function CreateTaskPage() {
   }
 
   return (
-    <div className="page-layout">
-      <Navigation />
+    <BoldLayout>
+      <BoldNavigation />
       
-      <main className="page-content">
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-heading mb-2">Create New Task</h1>
-          <p className="text-body text-muted-foreground">
+        <div style={{ marginBottom: '32px' }}>
+          <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>Create New Task</h1>
+          <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.8)' }}>
             Share a task with your community and start earning together
           </p>
         </div>
@@ -386,6 +387,6 @@ export default function CreateTaskPage() {
           </div>
         </div>
       </main>
-    </div>
+    </BoldLayout>
   )
 }

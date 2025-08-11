@@ -3,7 +3,8 @@
 import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import Navigation from '@/components/Navigation'
+import BoldNavigation from '@/components/BoldNavigation'
+import BoldLayout from '@/components/BoldLayout'
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
 import { Loader2, User, Mail, CheckCircle, AlertCircle, Crown, DollarSign, Calendar, Target, TrendingUp, Users, BarChart3 } from 'lucide-react'
@@ -24,14 +25,23 @@ export default function PlatformPage() {
 
   if (loading) {
     return (
-      <div className="page-layout">
-        <div className="container-clean section-clean flex items-center justify-center min-h-screen">
-          <div className="card-clean p-12 text-center max-w-md mx-auto">
-            <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-body text-muted-foreground">Loading your BittieTasks platform...</p>
+      <BoldLayout>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            padding: '48px',
+            textAlign: 'center',
+            maxWidth: '400px',
+            margin: '0 auto'
+          }}>
+            <Loader2 style={{ margin: '0 auto 16px auto', animation: 'spin 1s linear infinite' }} size={48} color="white" />
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: 0 }}>Loading your BittieTasks platform...</p>
           </div>
         </div>
-      </div>
+      </BoldLayout>
     )
   }
 
@@ -41,44 +51,264 @@ export default function PlatformPage() {
   }
 
   return (
-    <div className="page-layout">
-      <Navigation />
+    <BoldLayout>
+      <BoldNavigation />
       
-      <main className="page-content">
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-heading mb-2">Welcome back, {user?.user_metadata?.firstName || 'User'}!</h1>
-          <p className="text-body text-muted-foreground">
+        <div style={{ marginBottom: '32px' }}>
+          <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>
+            Welcome back, {user?.user_metadata?.firstName || 'User'}!
+          </h1>
+          <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.8)' }}>
             Here's your BittieTasks dashboard
           </p>
         </div>
 
         {/* Verification Status */}
         {!isVerified && (
-          <Card className="mb-8 border-yellow-200 bg-yellow-50">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="h-6 w-6 text-yellow-600" />
-                <div>
-                  <h3 className="font-semibold text-yellow-800">Email Verification Required</h3>
-                  <p className="text-yellow-700">Please check your email and verify your account to access all earning features.</p>
-                </div>
+          <div style={{
+            background: 'rgba(251, 191, 36, 0.2)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(251, 191, 36, 0.3)',
+            borderRadius: '16px',
+            padding: '24px',
+            marginBottom: '32px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <AlertCircle size={24} color="rgb(251, 191, 36)" />
+              <div>
+                <h3 style={{ fontWeight: '600', color: 'rgb(251, 191, 36)', marginBottom: '4px' }}>Email Verification Required</h3>
+                <p style={{ color: 'rgba(255, 255, 255, 0.9)', margin: 0 }}>Please check your email and verify your account to access all earning features.</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="card-clean">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-small text-muted-foreground">Total Earnings</p>
-                  <p className="text-2xl font-bold">$0.00</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            padding: '24px'
+          }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(to right, rgb(34, 197, 94), rgb(22, 163, 74))',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <DollarSign size={24} color="white" />
+              </div>
+              <div>
+                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '4px' }}>Total Earnings</p>
+                <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', margin: 0 }}>$0.00</p>
+              </div>
+            </div>
+          </div>
+
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            padding: '24px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(to right, rgb(59, 130, 246), rgb(37, 99, 235))',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Target size={24} color="white" />
+              </div>
+              <div>
+                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '4px' }}>Active Tasks</p>
+                <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', margin: 0 }}>0</p>
+              </div>
+            </div>
+          </div>
+
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            padding: '24px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(to right, rgb(139, 92, 246), rgb(124, 58, 237))',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Calendar size={24} color="white" />
+              </div>
+              <div>
+                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '4px' }}>This Month</p>
+                <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', margin: 0 }}>0 Tasks</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+          <button
+            onClick={() => router.push('/marketplace')}
+            style={{
+              height: '96px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              background: 'linear-gradient(to right, rgb(236, 72, 153), rgb(139, 92, 246))',
+              color: 'white',
+              borderRadius: '12px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: '500',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <BarChart3 size={24} />
+            <span>Browse Tasks</span>
+          </button>
+
+          <button
+            onClick={() => router.push('/create-task')}
+            style={{
+              height: '96px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              fontWeight: '500',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+          >
+            <Target size={24} />
+            <span>Create Task</span>
+          </button>
+
+          <button
+            onClick={() => router.push('/earnings')}
+            style={{
+              height: '96px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              fontWeight: '500',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+          >
+            <DollarSign size={24} />
+            <span>View Earnings</span>
+          </button>
+
+          <button
+            onClick={() => router.push('/subscriptions')}
+            style={{
+              height: '96px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              fontWeight: '500',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+          >
+            <Crown size={24} />
+            <span>Upgrade Plan</span>
+          </button>
+        </div>
+
+        {/* Getting Started */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            padding: '24px'
+          }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'white', marginBottom: '16px' }}>Getting Started</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <CheckCircle size={20} color="rgb(34, 197, 94)" />
+                <span style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Set up your profile</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <AlertCircle size={20} color="rgb(251, 191, 36)" />
+                <span style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Complete email verification</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <AlertCircle size={20} color="rgba(255, 255, 255, 0.4)" />
+                <span style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Browse available tasks</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            padding: '24px'
+          }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'white', marginBottom: '16px' }}>Latest Activity</h3>
+            <p style={{ color: 'rgba(255, 255, 255, 0.7)', textAlign: 'center', padding: '40px 0' }}>
+              No recent activity yet. Start by browsing available tasks!
+            </p>
+          </div>
+        </div>
+      </main>
+    </BoldLayout>
                 </div>
               </div>
             </CardContent>

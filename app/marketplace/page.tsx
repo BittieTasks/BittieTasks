@@ -5,7 +5,8 @@ import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import Navigation from '@/components/Navigation'
+import BoldNavigation from '@/components/BoldNavigation'
+import BoldLayout from '@/components/BoldLayout'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
@@ -162,14 +163,14 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="page-layout">
-      <Navigation />
+    <BoldLayout>
+      <BoldNavigation />
       
-      <main className="page-content">
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-heading mb-2">Task Marketplace</h1>
-          <p className="text-body text-muted-foreground">
+        <div style={{ marginBottom: '32px' }}>
+          <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>Task Marketplace</h1>
+          <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.8)' }}>
             Discover earning opportunities in your community. Join tasks or create your own!
           </p>
         </div>
@@ -386,6 +387,6 @@ export default function MarketplacePage() {
           </Card>
         )}
       </main>
-    </div>
+    </BoldLayout>
   )
 }
