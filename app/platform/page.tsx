@@ -58,116 +58,109 @@ export default function Platform() {
   useEffect(() => {
     loadTasks()
     loadCategories()
-  }, [])
+  }, [selectedCategory, taskType, searchTerm])
 
   const loadTasks = async () => {
     try {
-      // Mock data for now - will connect to API
-      const mockTasks: Task[] = [
-        {
-          id: '1',
-          title: 'School Pickup Carpool',
-          description: 'Looking for 2 parents to join a weekly carpool for Lincoln Elementary pickup. Tuesdays and Thursdays, 3:30 PM.',
-          payout: 25.00,
-          location: 'Lincoln Elementary, Downtown',
-          time_commitment: '2 hours/week',
-          max_participants: 2,
-          current_participants: 0,
-          deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          task_type: 'shared',
-          is_sponsored: false,
-          category: {
-            name: 'Transportation',
-            color: '#3b82f6',
-            icon: 'car'
-          },
-          creator: {
-            first_name: 'Sarah',
-            last_name: 'M.'
-          }
+      const params = new URLSearchParams()
+      if (selectedCategory !== 'all') params.append('category', selectedCategory)
+      if (taskType !== 'all') params.append('taskType', taskType)  
+      if (searchTerm) params.append('search', searchTerm)
+
+      const response = await fetch(`/api/tasks?${params}`)
+      if (!response.ok) throw new Error('Failed to fetch tasks')
+      
+      const { tasks: fetchedTasks } = await response.json()
+      
+      // Transform data to match our interface
+      const transformedTasks: Task[] = fetchedTasks.map((task: any) => ({
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        payout: parseFloat(task.payout),
+        location: task.location,
+        time_commitment: task.time_commitment || 'Not specified',
+        max_participants: task.max_participants,
+        current_participants: task.current_participants,
+        deadline: task.deadline,
+        task_type: task.task_type,
+        is_sponsored: task.is_sponsored,
+        sponsor_name: task.sponsor_name,
+        category: {
+          name: task.categories?.name || 'General',
+          color: task.categories?.color || '#6b7280',
+          icon: task.categories?.icon || 'circle'
         },
-        {
-          id: '2', 
-          title: 'Grocery Shopping for Elderly Neighbor',
-          description: 'Weekly grocery shopping for my elderly neighbor Mrs. Johnson. She provides the list and payment, just need someone reliable.',
-          payout: 35.00,
-          location: 'Safeway, Maple Street',
-          time_commitment: '1.5 hours/week',
-          max_participants: 1,
-          current_participants: 0,
-          deadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-          task_type: 'solo',
-          is_sponsored: true,
-          sponsor_name: 'CommunityFirst Bank',
-          category: {
-            name: 'Errands & Shopping',
-            color: '#10b981',
-            icon: 'shopping-cart'
-          },
-          creator: {
-            first_name: 'Michael',
-            last_name: 'K.'
-          }
-        },
-        {
-          id: '3',
-          title: 'After-School Activity Coordination',
-          description: 'Help organize and supervise after-school activities for a group of 6 kids. Fun activities like arts & crafts, outdoor games.',
-          payout: 45.00,
-          location: 'Community Center',
-          time_commitment: '3 hours, twice weekly',
-          max_participants: 2,
-          current_participants: 1,
-          deadline: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
-          task_type: 'shared',
-          is_sponsored: false,
-          category: {
-            name: 'Activity Coordination',
-            color: '#8b5cf6',
-            icon: 'calendar'
-          },
-          creator: {
-            first_name: 'Jennifer',
-            last_name: 'L.'
-          }
+        creator: {
+          first_name: task.profiles?.first_name || 'Anonymous',
+          last_name: task.profiles?.last_name || 'User'
         }
-      ]
-      setTasks(mockTasks)
+      }))
+      
+      setTasks(transformedTasks)
     } catch (error) {
       toast({
         title: 'Error Loading Tasks',
         description: 'Could not load available tasks. Please try again.',
         variant: 'destructive'
       })
+      console.error('Error loading tasks:', error)
     } finally {
       setLoading(false)
     }
   }
 
   const loadCategories = async () => {
-    const mockCategories: Category[] = [
-      { id: '1', name: 'Errands & Shopping', description: 'Grocery runs, pharmacy pickups', icon: 'shopping-cart', color: '#10b981' },
-      { id: '2', name: 'Transportation', description: 'School pickups, carpooling', icon: 'car', color: '#3b82f6' },
-      { id: '3', name: 'Meal Planning & Prep', description: 'Meal planning, batch cooking', icon: 'chef-hat', color: '#f59e0b' },
-      { id: '4', name: 'Activity Coordination', description: 'Organizing playdates, events', icon: 'calendar', color: '#8b5cf6' },
-      { id: '5', name: 'Self-Care & Wellness', description: 'Walking groups, meditation', icon: 'heart', color: '#ec4899' },
-      { id: '6', name: 'Skill Sharing', description: 'Tutoring, lessons, teaching', icon: 'book-open', color: '#06b6d4' },
-      { id: '7', name: 'Household Tasks', description: 'Cleaning, organization', icon: 'home', color: '#84cc16' },
-      { id: '8', name: 'Pet Care', description: 'Dog walking, pet sitting', icon: 'heart', color: '#f97316' }
-    ]
-    setCategories(mockCategories)
+    try {
+      const response = await fetch('/api/categories')
+      if (!response.ok) throw new Error('Failed to fetch categories')
+      
+      const { categories } = await response.json()
+      setCategories(categories)
+    } catch (error) {
+      console.error('Error loading categories:', error)
+      // Fallback to empty array - categories not critical for functionality
+      setCategories([])
+    }
   }
 
   const handleApplyToTask = async (taskId: string) => {
+    if (!user) {
+      toast({
+        title: 'Authentication Required',
+        description: 'Please sign in to apply to tasks.',
+        variant: 'destructive'
+      })
+      return
+    }
+
     try {
+      const response = await fetch(`/api/tasks/${taskId}/apply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.access_token}`
+        },
+        body: JSON.stringify({ message: 'I would like to join this task!' })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Application failed')
+      }
+
       toast({
         title: 'Application Submitted!',
         description: 'The task creator will review your application and contact you soon.',
       })
-    } catch (error) {
+
+      // Reload tasks to update participant count
+      loadTasks()
+    } catch (error: any) {
       toast({
         title: 'Application Failed',
-        description: 'Could not submit your application. Please try again.',
+        description: error.message || 'Could not submit your application. Please try again.',
         variant: 'destructive'
       })
     }

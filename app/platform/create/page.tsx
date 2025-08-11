@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../components/auth/AuthProvider'
 import CleanLayout from '../../../components/CleanLayout'
@@ -31,6 +31,7 @@ export default function CreateTask() {
   const { user } = useAuth()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
+  const [categories, setCategories] = useState<Array<{id: string, name: string}>>([])
   const [formData, setFormData] = useState<CreateTaskForm>({
     title: '',
     description: '',
@@ -44,16 +45,21 @@ export default function CreateTask() {
     requirements: ''
   })
 
-  const categories = [
-    { id: '1', name: 'Errands & Shopping' },
-    { id: '2', name: 'Transportation' },
-    { id: '3', name: 'Meal Planning & Prep' },
-    { id: '4', name: 'Activity Coordination' },
-    { id: '5', name: 'Self-Care & Wellness' },
-    { id: '6', name: 'Skill Sharing' },
-    { id: '7', name: 'Household Tasks' },
-    { id: '8', name: 'Pet Care' }
-  ]
+  useEffect(() => {
+    loadCategories()
+  }, [])
+
+  const loadCategories = async () => {
+    try {
+      const response = await fetch('/api/categories')
+      if (response.ok) {
+        const { categories } = await response.json()
+        setCategories(categories)
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error)
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -85,7 +91,26 @@ export default function CreateTask() {
         throw new Error('Please enter a valid number of participants')
       }
 
-      // For now, just show success message - will connect to API later
+      if (!user) {
+        throw new Error('Authentication required')
+      }
+
+      // Submit to API
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.access_token}`
+        },
+        body: JSON.stringify(formData)
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create task')
+      }
+
       toast({
         title: 'Task Created Successfully!',
         description: 'Your task has been posted to the marketplace.',
