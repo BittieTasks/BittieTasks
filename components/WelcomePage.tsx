@@ -143,13 +143,19 @@ export default function WelcomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="section-clean">
-        <div className="container-clean">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-display mb-6">
+      <section className="section-clean relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-teal-200/20 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="container-clean relative">
+          <div className="text-center max-w-4xl mx-auto fade-in">
+            <h1 className="text-display mb-6 text-gradient">
               Turn Daily Tasks Into Income
             </h1>
-            <p className="text-subheading text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-subheading text-muted-foreground mb-8 max-w-2xl mx-auto slide-up">
               Join thousands of parents earning money by sharing everyday tasks with neighbors. 
               Create community connections while building financial independence.
             </p>

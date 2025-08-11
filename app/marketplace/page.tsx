@@ -253,9 +253,9 @@ export default function MarketplacePage() {
 
         {/* Task Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="card-clean">
+          <Card className="card-clean hover-lift">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-primary">{filteredTasks.length}</div>
+              <div className="text-2xl font-bold text-gradient">{filteredTasks.length}</div>
               <div className="text-small text-muted-foreground">Available Tasks</div>
             </CardContent>
           </Card>
@@ -296,12 +296,20 @@ export default function MarketplacePage() {
             const netEarnings = task.payout - platformFee
 
             return (
-              <Card key={task.id} className="card-clean hover:shadow-md transition-shadow">
+              <Card key={task.id} className={`hover-lift cursor-pointer ${task.sponsored ? 'card-featured' : 'card-clean'}`}
+                onClick={() => router.push(`/task/${task.id}`)}>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between mb-2">
-                    <Badge className={getTypeColor(task.type)}>
-                      {task.type.replace('_', ' ')}
-                    </Badge>
+                    <div className="flex gap-2">
+                      <Badge className={getTypeColor(task.type)}>
+                        {task.type.replace('_', ' ')}
+                      </Badge>
+                      {task.sponsored && (
+                        <Badge className="badge-premium">
+                          ⭐ Sponsored
+                        </Badge>
+                      )}
+                    </div>
                     <Badge className={getSpotsBadgeColor(availableSpots)}>
                       {availableSpots} spot{availableSpots !== 1 ? 's' : ''} left
                     </Badge>
@@ -347,12 +355,16 @@ export default function MarketplacePage() {
 
                   {/* Action Button */}
                   <Button
-                    className="w-full button-clean"
-                    onClick={() => router.push(`/task/${task.id}`)}
+                    className={`w-full ${task.sponsored ? 'button-premium' : 'button-clean'}`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      router.push(`/task/${task.id}`)
+                    }}
                     disabled={!isVerified || availableSpots === 0}
                   >
                     {!isVerified ? 'Verify Email to Join' : 
-                     availableSpots === 0 ? 'Task Full' : 'View Details'}
+                     availableSpots === 0 ? 'Task Full' : 
+                     task.sponsored ? 'View Premium Task' : 'View Details'}
                   </Button>
                 </CardContent>
               </Card>

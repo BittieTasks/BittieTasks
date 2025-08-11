@@ -102,9 +102,9 @@ export default function EarningsPage() {
       
       <main className="page-content">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-heading mb-2">Earnings Dashboard</h1>
-          <p className="text-body text-muted-foreground">
+        <div className="mb-8 fade-in">
+          <h1 className="text-heading mb-2 text-gradient">Earnings Dashboard</h1>
+          <p className="text-body text-muted-foreground slide-up">
             Track your income and financial goals
           </p>
         </div>
@@ -125,7 +125,7 @@ export default function EarningsPage() {
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="card-clean">
+          <Card className="card-clean hover-lift scale-in">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -133,7 +133,7 @@ export default function EarningsPage() {
                 </div>
                 <div>
                   <p className="text-small text-muted-foreground">Total Earnings</p>
-                  <p className="text-2xl font-bold">${mockEarnings.totalEarnings.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-gradient">${mockEarnings.totalEarnings.toFixed(2)}</p>
                 </div>
               </div>
             </CardContent>
