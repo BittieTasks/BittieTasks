@@ -123,14 +123,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     if (error) {
       console.error('Sign up error details:', error)
-      // Provide user-friendly error message
+      // Provide user-friendly error messages
       if (error.message.includes('Email not confirmed')) {
         throw new Error('Please check your email and click the confirmation link before signing in.')
       }
       if (error.message.includes('User already registered')) {
         throw new Error('An account with this email already exists. Try signing in instead.')
       }
+      if (error.message.includes('Password is known to be weak')) {
+        throw new Error('Please use a stronger password with uppercase, lowercase, numbers and special characters.')
+      }
+      if (error.message.includes('Error sending confirmation email')) {
+        throw new Error('Account created but email verification is temporarily unavailable. Please try signing in.')
+      }
       throw error
+    }
+    
+    // Even if signup succeeded, show helpful message about email verification
+    if (data.user && !data.session) {
+      throw new Error('Account created! Please check your email for a verification link before signing in.')
     }
   }
 
