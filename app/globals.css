@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ensure Tailwind loads properly */
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
 /* Force bold design styles */
 .bold-bg {
   background: linear-gradient(to bottom right, rgb(88 28 135), rgb(30 58 138), rgb(49 46 129)) !important;
