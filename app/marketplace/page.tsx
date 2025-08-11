@@ -140,19 +140,19 @@ export default function MarketplacePage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="min-h-screen platform-gradient">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6">
+          <div className="bg-white/90 backdrop-blur-sm border border-green-200 rounded-2xl p-6 shadow-lg">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Task Marketplace</h1>
-                <p className="text-gray-400">Find earning opportunities in your community</p>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">Task Marketplace</h1>
+                <p className="text-gray-600">Find earning opportunities in your community</p>
               </div>
               <Button 
                 onClick={() => router.push('/create-task')}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0"
+                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 border-0 shadow-lg"
                 disabled={!isVerified}
               >
                 Create Task
@@ -167,17 +167,17 @@ export default function MarketplacePage() {
                   placeholder="Search tasks..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                  className="pl-10 bg-white border-green-200 text-gray-800 placeholder-gray-500"
                 />
               </div>
               
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                <SelectTrigger className="bg-white border-green-200 text-gray-800">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-700 border-gray-600">
+                <SelectContent className="bg-white border-green-200">
                   {categories.map(category => (
-                    <SelectItem key={category} value={category} className="text-white hover:bg-gray-600">
+                    <SelectItem key={category} value={category} className="text-gray-800 hover:bg-green-50">
                       {category}
                     </SelectItem>
                   ))}
@@ -185,13 +185,13 @@ export default function MarketplacePage() {
               </Select>
 
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                <SelectTrigger className="bg-white border-green-200 text-gray-800">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-700 border-gray-600">
-                  <SelectItem value="earning" className="text-white hover:bg-gray-600">Highest Earning</SelectItem>
-                  <SelectItem value="date" className="text-white hover:bg-gray-600">Soonest Date</SelectItem>
-                  <SelectItem value="participants" className="text-white hover:bg-gray-600">Spots Available</SelectItem>
+                <SelectContent className="bg-white border-green-200">
+                  <SelectItem value="earning" className="text-gray-800 hover:bg-green-50">Highest Earning</SelectItem>
+                  <SelectItem value="date" className="text-gray-800 hover:bg-green-50">Soonest Date</SelectItem>
+                  <SelectItem value="participants" className="text-gray-800 hover:bg-green-50">Spots Available</SelectItem>
                 </SelectContent>
               </Select>
             </div>

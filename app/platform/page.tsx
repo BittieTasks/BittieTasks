@@ -52,24 +52,24 @@ export default function PlatformPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="min-h-screen platform-gradient">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 flex justify-between items-center">
+          <div className="bg-white/90 backdrop-blur-sm border border-green-200 rounded-2xl p-6 flex justify-between items-center shadow-lg">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-lg">B</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">BittieTasks</h1>
-                <p className="text-gray-400">Welcome back, {user?.user_metadata?.firstName || 'User'}!</p>
+                <h1 className="text-2xl font-bold text-gray-800">BittieTasks</h1>
+                <p className="text-gray-600">Welcome back, {user?.user_metadata?.firstName || 'User'}!</p>
               </div>
             </div>
             <Button 
               onClick={handleSignOut}
               variant="outline" 
-              className="border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
+              className="border-green-300 text-green-700 hover:bg-green-50"
             >
               Sign Out
             </Button>
@@ -82,13 +82,13 @@ export default function PlatformPage() {
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Verification Status */}
           {!isVerified && (
-            <Card className="bg-yellow-500/10 border-yellow-500/20 backdrop-blur-sm">
+            <Card className="bg-yellow-50 border-yellow-200 backdrop-blur-sm shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
-                  <AlertCircle className="h-6 w-6 text-yellow-500" />
+                  <AlertCircle className="h-6 w-6 text-yellow-600" />
                   <div>
-                    <h3 className="text-yellow-500 font-semibold">Email Verification Required</h3>
-                    <p className="text-gray-300">Please check your email and verify your account to access all earning features.</p>
+                    <h3 className="text-yellow-700 font-semibold">Email Verification Required</h3>
+                    <p className="text-gray-700">Please check your email and verify your account to access all earning features.</p>
                   </div>
                 </div>
               </CardContent>
@@ -97,43 +97,43 @@ export default function PlatformPage() {
 
           {/* Stats Grid */}
           <div className="grid md:grid-cols-3 gap-6">
-            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
+            <Card className="bg-white/90 backdrop-blur-sm border-green-200 shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
-                    <DollarSign className="h-6 w-6 text-green-400" />
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <DollarSign className="h-6 w-6 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-gray-400 text-sm">Total Earnings</p>
-                    <p className="text-2xl font-bold text-white">$0.00</p>
+                    <p className="text-gray-600 text-sm">Total Earnings</p>
+                    <p className="text-2xl font-bold text-gray-800">$0.00</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
+            <Card className="bg-white/90 backdrop-blur-sm border-blue-200 shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                    <Target className="h-6 w-6 text-blue-400" />
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <Target className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-gray-400 text-sm">Active Tasks</p>
-                    <p className="text-2xl font-bold text-white">0</p>
+                    <p className="text-gray-600 text-sm">Active Tasks</p>
+                    <p className="text-2xl font-bold text-gray-800">0</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
+            <Card className="bg-white/90 backdrop-blur-sm border-green-200 shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-purple-400" />
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <Calendar className="h-6 w-6 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-gray-400 text-sm">This Month</p>
-                    <p className="text-2xl font-bold text-white">0 Tasks</p>
+                    <p className="text-gray-600 text-sm">This Month</p>
+                    <p className="text-2xl font-bold text-gray-800">0 Tasks</p>
                   </div>
                 </div>
               </CardContent>

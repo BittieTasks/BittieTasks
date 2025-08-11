@@ -54,15 +54,15 @@ export default function Navigation() {
   return (
     <>
       {/* Desktop Navigation */}
-      <nav className="hidden lg:flex fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-md border-b border-gray-700">
+      <nav className="hidden lg:flex fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-green-200 shadow-lg">
         <div className="max-w-7xl mx-auto w-full px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-lg">B</span>
               </div>
-              <span className="text-white text-xl font-bold">BittieTasks</span>
+              <span className="text-gray-800 text-xl font-bold">BittieTasks</span>
             </div>
 
             {/* Navigation Links */}
@@ -78,10 +78,10 @@ export default function Navigation() {
                     variant="ghost"
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
                       isActive 
-                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/20' 
+                        ? 'bg-green-100 text-green-700 border border-green-300 shadow-sm' 
                         : isDisabled
-                        ? 'text-gray-600 cursor-not-allowed'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                        ? 'text-gray-400 cursor-not-allowed'
+                        : 'text-gray-600 hover:text-green-700 hover:bg-green-50'
                     }`}
                     onClick={() => !isDisabled && router.push(item.path)}
                     disabled={isDisabled}
@@ -96,16 +96,16 @@ export default function Navigation() {
             {/* User Menu */}
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-white text-sm font-medium">
+                <p className="text-gray-800 text-sm font-medium">
                   {user?.user_metadata?.firstName || 'User'}
                 </p>
-                <p className="text-gray-400 text-xs">{user?.email}</p>
+                <p className="text-gray-600 text-xs">{user?.email}</p>
               </div>
               <Button
                 variant="outline"
+                className="border-green-300 text-green-700 hover:bg-green-50"
                 size="sm"
                 onClick={handleSignOut}
-                className="border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
               >
                 <User className="w-4 h-4 mr-2" />
                 Sign Out
@@ -118,15 +118,15 @@ export default function Navigation() {
       {/* Mobile Navigation */}
       <div className="lg:hidden">
         {/* Mobile Header */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-md border-b border-gray-700">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-green-200 shadow-lg">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               {/* Logo */}
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold">B</span>
                 </div>
-                <span className="text-white text-lg font-bold">BittieTasks</span>
+                <span className="text-gray-800 text-lg font-bold">BittieTasks</span>
               </div>
 
               {/* Mobile Menu Button */}
@@ -134,7 +134,7 @@ export default function Navigation() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-600 hover:text-green-700"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>
