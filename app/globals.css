@@ -112,6 +112,14 @@
     background-clip: text;
   }
   
+  .bittie-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2;
+  }
+  
+  .bittie-body-lg {
+    @apply text-lg;
+  }
+  
   .bittie-card {
     @apply bg-white/80 backdrop-blur-sm border border-green-200 rounded-xl shadow-sm;
   }

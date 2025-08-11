@@ -1,50 +1,114 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // Interactive Earnings Calculator Component
 function EarningsCalculator() {
   const [tasksPerWeek, setTasksPerWeek] = useState(3)
   const [avgTaskValue, setAvgTaskValue] = useState(35)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   
   const weeklyEarnings = tasksPerWeek * avgTaskValue
   const monthlyEarnings = weeklyEarnings * 4.33 // Average weeks per month
   const yearlyEarnings = monthlyEarnings * 12
+
+  if (!mounted) {
+    return (
+      <div className="flex flex-col gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label className="block text-white bittie-body-lg font-medium mb-3">
+              Tasks per week:
+            </label>
+            <div className="flex items-center gap-4">
+              <input 
+                type="range" 
+                min="1" 
+                max="10" 
+                value={3}
+                className="flex-1 h-3 bg-white/20 rounded-lg appearance-none cursor-pointer"
+                disabled
+              />
+              <span className="text-white text-xl font-bold min-w-8">3</span>
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-white bittie-body-lg font-medium mb-3">
+              Average task value:
+            </label>
+            <div className="flex items-center gap-4">
+              <input 
+                type="range" 
+                min="15" 
+                max="75" 
+                step="5"
+                value={35}
+                className="flex-1 h-3 bg-white/20 rounded-lg appearance-none cursor-pointer"
+                disabled
+              />
+              <span className="text-white text-xl font-bold min-w-12">$35</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-white/20">
+          <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm">
+            <div className="text-3xl font-bold text-white mb-2 bittie-gradient-text">
+              $105
+            </div>
+            <p className="text-white/80 text-lg">Per Week</p>
+          </div>
+          
+          <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm">
+            <div className="text-3xl font-bold text-white mb-2 bittie-gradient-text">
+              $455
+            </div>
+            <p className="text-white/80 text-lg">Per Month</p>
+          </div>
+          
+          <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm">
+            <div className="text-3xl font-bold text-white mb-2 bittie-gradient-text">
+              $5,460
+            </div>
+            <p className="text-white/80 text-lg">Per Year</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
   
   return (
     <div className="flex flex-col gap-8">
-      <div className="bittie-grid-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <label className="block text-white bittie-body-lg font-medium mb-3">
+          <label className="block text-white text-lg font-semibold mb-3">
             Tasks per week:
           </label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="flex items-center gap-4">
             <input 
               type="range" 
               min="1" 
               max="10" 
               value={tasksPerWeek}
               onChange={(e) => setTasksPerWeek(Number(e.target.value))}
-              style={{
-                flex: 1,
-                height: '12px',
-                background: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '8px',
-                appearance: 'none',
-                cursor: 'pointer'
-              }}
+              className="flex-1 h-3 bg-white/20 rounded-lg appearance-none cursor-pointer"
             />
-            <span style={{ color: 'white', fontSize: '20px', fontWeight: 'bold', minWidth: '32px' }}>
+            <span className="text-white text-xl font-bold min-w-8">
               {tasksPerWeek}
             </span>
           </div>
         </div>
         
         <div>
-          <label style={{ display: 'block', color: 'white', fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
+          <label className="block text-white text-lg font-semibold mb-3">
             Average task value:
           </label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="flex items-center gap-4">
             <input 
               type="range" 
               min="15" 
@@ -52,96 +116,35 @@ function EarningsCalculator() {
               step="5"
               value={avgTaskValue}
               onChange={(e) => setAvgTaskValue(Number(e.target.value))}
-              style={{
-                flex: 1,
-                height: '12px',
-                background: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '8px',
-                appearance: 'none',
-                cursor: 'pointer'
-              }}
+              className="flex-1 h-3 bg-white/20 rounded-lg appearance-none cursor-pointer"
             />
-            <span style={{ color: 'white', fontSize: '20px', fontWeight: 'bold', minWidth: '48px' }}>
+            <span className="text-white text-xl font-bold min-w-12">
               ${avgTaskValue}
             </span>
           </div>
         </div>
       </div>
       
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: '24px', 
-        paddingTop: '32px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.2)'
-      }}>
-        <div style={{
-          textAlign: 'center',
-          padding: '24px',
-          background: 'rgba(255, 255, 255, 0.1)',
-          borderRadius: '16px',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          backdropFilter: 'blur(12px)'
-        }}>
-          <div style={{
-            fontSize: '28px',
-            fontWeight: 'bold',
-            color: 'white',
-            marginBottom: '8px',
-            background: 'linear-gradient(135deg, #10b981, #3b82f6, #059669)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-white/20">
+        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm">
+          <div className="text-3xl font-bold text-white mb-2 bittie-gradient-text">
             ${weeklyEarnings}
           </div>
-          <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '18px' }}>Per Week</p>
+          <p className="text-white/80 text-lg">Per Week</p>
         </div>
         
-        <div style={{
-          textAlign: 'center',
-          padding: '24px',
-          background: 'rgba(255, 255, 255, 0.1)',
-          borderRadius: '16px',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          backdropFilter: 'blur(12px)'
-        }}>
-          <div style={{
-            fontSize: '28px',
-            fontWeight: 'bold',
-            color: 'white',
-            marginBottom: '8px',
-            background: 'linear-gradient(135deg, #10b981, #3b82f6, #059669)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}>
+        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm">
+          <div className="text-3xl font-bold text-white mb-2 bittie-gradient-text">
             ${monthlyEarnings.toFixed(0)}
           </div>
-          <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '18px' }}>Per Month</p>
+          <p className="text-white/80 text-lg">Per Month</p>
         </div>
         
-        <div style={{
-          textAlign: 'center',
-          padding: '24px',
-          background: 'rgba(255, 255, 255, 0.1)',
-          borderRadius: '16px',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          backdropFilter: 'blur(12px)'
-        }}>
-          <div style={{
-            fontSize: '28px',
-            fontWeight: 'bold',
-            color: 'white',
-            marginBottom: '8px',
-            background: 'linear-gradient(135deg, #10b981, #3b82f6, #059669)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}>
+        <div className="text-center p-6 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm">
+          <div className="text-3xl font-bold text-white mb-2 bittie-gradient-text">
             ${yearlyEarnings.toFixed(0)}
           </div>
-          <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '18px' }}>Per Year</p>
+          <p className="text-white/80 text-lg">Per Year</p>
         </div>
       </div>
     </div>
@@ -150,87 +153,28 @@ function EarningsCalculator() {
 
 export default function WelcomePage() {
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 50%, #059669 100%)',
-      position: 'relative',
-      overflow: 'hidden',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif'
-    }}>
+    <div className="min-h-screen bg-gradient-to-br from-green-500 via-blue-500 to-green-600 relative overflow-hidden font-sans">
       {/* Background decorative elements */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
-        <div style={{
-          position: 'absolute',
-          top: '-160px',
-          right: '-160px',
-          width: '320px',
-          height: '320px',
-          borderRadius: '50%',
-          background: 'rgba(147, 51, 234, 0.3)',
-          filter: 'blur(80px)'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          bottom: '-160px',
-          left: '-160px',
-          width: '320px',
-          height: '320px',
-          borderRadius: '50%',
-          background: 'rgba(59, 130, 246, 0.3)',
-          filter: 'blur(80px)'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '400px',
-          height: '400px',
-          borderRadius: '50%',
-          background: 'rgba(34, 197, 94, 0.2)',
-          filter: 'blur(80px)'
-        }}></div>
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-purple-500/30 blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-blue-500/30 blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-green-500/20 blur-3xl"></div>
       </div>
 
       {/* Navigation */}
-      <nav style={{ position: 'relative', zIndex: 10, padding: '24px' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'linear-gradient(135deg, #10b981, #3b82f6, #8b5cf6)',
-              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
-            }}>
-              <span style={{ color: 'white', fontWeight: 'bold', fontSize: '20px' }}>B</span>
+      <nav className="relative z-10 p-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-green-500 via-blue-500 to-purple-600 shadow-2xl">
+              <span className="text-white font-bold text-xl">B</span>
             </div>
-            <span style={{ color: 'white', fontSize: '28px', fontWeight: 'bold', letterSpacing: '-0.025em' }}>
+            <span className="text-white text-3xl font-bold tracking-tight">
               BittieTasks
             </span>
           </div>
           <a 
             href="/auth"
-            style={{
-              color: '#1f2937',
-              padding: '12px 32px',
-              borderRadius: '9999px',
-              fontWeight: '600',
-              textDecoration: 'none',
-              background: 'rgba(255, 255, 255, 0.9)',
-              backdropFilter: 'blur(12px)',
-              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0) scale(1)'
-            }}
+            className="text-gray-800 px-8 py-3 rounded-full font-semibold bg-white/90 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 hover:scale-105"
           >
             Sign In
           </a>
