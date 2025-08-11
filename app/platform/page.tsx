@@ -47,12 +47,30 @@ interface Category {
 }
 
 export default function Platform() {
-  const { user } = useAuth()
+  const { user, loading: authLoading, isAuthenticated } = useAuth()
   const { toast } = useToast()
   const [tasks, setTasks] = useState<Task[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  
+  // Redirect to auth if not authenticated
+  if (!authLoading && !isAuthenticated) {
+    window.location.href = '/auth'
+    return null
+  }
+  
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [taskType, setTaskType] = useState('all')
 
