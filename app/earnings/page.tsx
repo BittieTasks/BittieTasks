@@ -139,8 +139,8 @@ export default function EarningsPage() {
     <>
       <Navigation />
       <div className="min-h-screen bittie-gradient-bg">
-      {/* Header */}
-      <div className="bittie-container bittie-section">
+        {/* Header */}
+        <div className="bittie-container bittie-section">
         <div className="bittie-card p-6 bittie-fade-in">
           <div className="flex justify-between items-center mb-6">
             <div>
@@ -434,8 +434,8 @@ export default function EarningsPage() {
             </CardContent>
           </Card>
         </div>
+        </div>
       </div>
-    </div>
     </>
   )
 }

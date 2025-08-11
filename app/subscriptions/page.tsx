@@ -123,8 +123,8 @@ export default function SubscriptionsPage() {
     <>
       <Navigation />
       <div className="min-h-screen bittie-gradient-bg">
-      {/* Header */}
-      <div className="bittie-container bittie-section">
+        {/* Header */}
+        <div className="bittie-container bittie-section">
         <div className="text-center bittie-card p-8 bittie-fade-in">
           <div className="inline-flex items-center space-x-2 bittie-badge-purple mb-6">
             <Crown className="w-4 h-4" />
@@ -346,8 +346,8 @@ export default function SubscriptionsPage() {
             </Card>
           </div>
         </div>
+        </div>
       </div>
-    </div>
     </>
   )
 }

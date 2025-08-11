@@ -138,8 +138,8 @@ export default function SponsorsPage() {
     <>
       <Navigation />
       <div className="min-h-screen bittie-gradient-bg">
-      {/* Header */}
-      <div className="bittie-container bittie-section">
+        {/* Header */}
+        <div className="bittie-container bittie-section">
         <div className="bittie-card p-6 bittie-fade-in">
           <div className="inline-flex items-center space-x-2 bittie-badge-purple mb-6">
             <Building className="w-4 h-4" />
@@ -450,8 +450,8 @@ export default function SponsorsPage() {
             </Card>
           )}
         </div>
+        </div>
       </div>
-    </div>
     </>
   )
 }
