@@ -1,0 +1,26 @@
+# Ignore Vite-related files during build
+vite.config.*
+index.html
+public/vite.svg
+
+# Development files
+.replit
+replit.nix
+*.md
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
