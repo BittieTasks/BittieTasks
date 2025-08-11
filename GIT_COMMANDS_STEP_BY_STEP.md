@@ -1,55 +1,35 @@
-# 🚀 Git Commands - Step by Step
+# Git Push Commands - Step by Step
 
-## Run These Commands in Replit Shell (Open Shell Tab):
+## Current Status
+- ✅ Local app running perfectly on port 5000
+- ✅ Temporary Vercel deployment successful
+- ❌ Main domain needs the fixes
 
-### Step 1: Prepare Your Code
+## Files That Need to Be Pushed
+- `vercel.json` - Fixed environment variables and runtime
+- `deploy.sh` - Deployment helper script
+- `force-deploy.txt` - Deployment trigger
+- Other deployment configuration files
+
+## Copy and paste these commands one by one:
+
+```bash
+rm -f .git/index.lock .git/refs/remotes/origin/main.lock
+```
+
 ```bash
 git add .
 ```
 
-### Step 2: Commit Your Platform
 ```bash
-git commit -m "Complete BittieTasks monetization platform ready for deployment"
+git commit -m "Deploy fixes: Update Vercel config and resolve JSX errors"
 ```
 
-### Step 3: Set Main Branch
 ```bash
-git branch -M main
+git push origin main --force
 ```
 
-### Step 4: Create GitHub Repository
-1. Go to https://github.com/new
-2. Repository name: `bittietasks`
-3. **IMPORTANT**: Leave "Add a README file" UNCHECKED
-4. Click "Create repository"
-5. Copy the HTTPS URL (looks like: `https://github.com/YOUR_USERNAME/bittietasks.git`)
-
-### Step 5: Connect to GitHub
-```bash
-# Replace YOUR_USERNAME with your actual GitHub username
-git remote add origin https://github.com/YOUR_USERNAME/bittietasks.git
-```
-
-### Step 6: Push to GitHub
-```bash
-git push -u origin main
-```
-
-### Step 7: Deploy to Vercel
-1. Go to https://vercel.com
-2. Sign up/login with GitHub
-3. Click "New Project"
-4. Import your `bittietasks` repository
-5. Click "Deploy"
-
-### Step 8: Add Environment Variables in Vercel
-Project → Settings → Environment Variables:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `STRIPE_SECRET_KEY`
-- `SENDGRID_API_KEY`
-
-## Result: Live Revenue Platform!
-Your platform will be at: `https://bittietasks.vercel.app`
-
-Start with Step 1 in the Shell tab!
+## After pushing, verify:
+1. GitHub repository shows the latest commit
+2. Main BittieTasks domain automatically redeploys
+3. Build succeeds with all 16 pages generated
