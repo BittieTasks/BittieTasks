@@ -39,7 +39,7 @@ function AuthCallbackContent() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -52,7 +52,7 @@ function AuthCallbackContent() {
         textAlign: 'center',
         boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
       }}>
-        <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600 mb-4" />
+        <Loader2 className="mx-auto h-12 w-12 animate-spin text-emerald-600 mb-4" />
         <h2 className="text-xl font-semibold mb-2">Verifying your account...</h2>
         <p className="text-gray-600">Please wait while we complete your email verification.</p>
       </div>
@@ -65,7 +65,7 @@ export default function AuthCallbackPage() {
     <Suspense fallback={
       <div style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -78,7 +78,7 @@ export default function AuthCallbackPage() {
           textAlign: 'center',
           boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
         }}>
-          <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600 mb-4" />
+          <Loader2 className="mx-auto h-12 w-12 animate-spin text-emerald-600 mb-4" />
           <h2 className="text-xl font-semibold mb-2">Loading...</h2>
         </div>
       </div>
