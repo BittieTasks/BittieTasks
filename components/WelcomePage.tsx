@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { ClientOnly } from './ClientOnly'
 
 // Interactive Earnings Calculator Component
 function EarningsCalculator() {

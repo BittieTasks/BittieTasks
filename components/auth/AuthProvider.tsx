@@ -106,7 +106,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       password,
       options: {
         data: userData,
-        emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : 'http://localhost:3000/auth/callback',
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     })
     
@@ -120,7 +120,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const resetPassword = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/reset-password` : 'http://localhost:3000/auth/reset-password',
+      redirectTo: `${window.location.origin}/auth/reset-password`,
     })
     
     if (error) throw error
