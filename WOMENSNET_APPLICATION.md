@@ -20,16 +20,16 @@ I'm building this because I believe every parent deserves to feel valued, suppor
 
 This grant would be life-changing - not just for me, but for every parent who feels unseen and undervalued. Here's exactly how I would invest this money to build something that matters:
 
-**Reaching Other Parents Who Need This ($4,500)**
-I want to find the other moms sitting at their kitchen tables at midnight, wondering how they're going to make it work. This money would go toward grassroots community outreach - partnering with parent groups, community centers, and local organizations to share this opportunity with women who need flexible income but can't abandon their families to get it. It's about meeting parents where they are, not where traditional businesses think they should be. This includes developing referral programs that reward parents for bringing their trusted friends into the community.
+**Creating Immediate Income Opportunities for Parents ($6,000)**
+The most important thing is putting money directly into parents' pockets as quickly as possible. I would use this funding to jumpstart our community by sponsoring initial tasks and creating guaranteed earning opportunities for our first users. This includes funding promotional campaigns where early adopters earn bonuses for completing tasks, creating sponsored self-care activities like walking groups and wellness workshops, and establishing a seed fund that ensures parents see immediate financial returns from day one. Every parent who joins needs to experience real income right away - not promises, but actual money in their accounts.
 
-**Building Trust and Verification ($2,500)**
-Trust is everything when you're connecting neighbors around tasks and activities. I would invest in comprehensive user verification systems and community safety features because parents need to feel completely confident in the people they're working with. This includes identity verification, rating systems, and community moderation tools that ensure every interaction feels safe and supportive.
+**Community Outreach to Find Parents Who Need This ($2,500)**
+I want to find the other moms sitting at their kitchen tables at midnight, wondering how they're going to make it work. This money would go toward grassroots community outreach - partnering with parent groups, community centers, and local organizations to share this opportunity with women who need flexible income but can't abandon their families to get it. It's about meeting parents where they are and showing them real earnings from real people in their community.
 
-**Legal Foundation and Platform Protection ($2,000)**
-I need to ensure every legal detail protects the parents using this platform. This means creating bulletproof terms of service, privacy policies that protect family information, understanding state requirements for peer-to-peer marketplaces, and establishing the legal framework that lets parents focus on earning and connecting rather than worrying about liability.
+**Trust and Safety Systems ($1,000)**
+Trust is everything when you're connecting neighbors around tasks and activities. I would invest in user verification systems and community safety features because parents need to feel completely confident in the people they're working with. This includes identity verification and rating systems that ensure every interaction feels safe and supportive.
 
-**Support That Actually Supports Parents ($1,000)**
-Parents don't work 9-to-5 schedules, and our support shouldn't either. This funding would create customer service systems that work around school pickup times and bedtime routines, plus educational resources and community guidelines that help parents succeed on the platform without adding stress to their already full lives.
+**Legal Foundation ($500)**
+I need to ensure the legal framework protects parents using this platform with proper terms of service and privacy policies that let parents focus on earning rather than worrying about liability.
 
-This grant isn't just funding a business - it's investing in a movement that says parents' work has value, parents deserve community support, and parents can build financial security without sacrificing their families. Every dollar would go toward proving that when we lift up parents, especially mothers, we lift up entire communities.
+This grant isn't just funding a business - it's investing in a movement that proves parents' work has value by putting real money in their hands. Every dollar would go toward showing that when we lift up parents, especially mothers, we create immediate financial impact that changes lives.
