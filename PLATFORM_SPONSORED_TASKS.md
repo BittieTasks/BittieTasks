@@ -1,25 +1,33 @@
-# BittieTasks Sponsored Tasks
+# BittieTasks Sponsored Tasks Collection
 
-## Platform-Paid Opportunities
-BittieTasks creates sponsored tasks that pay users directly, helping bootstrap the marketplace while providing immediate earning opportunities.
+## Platform-Paid Opportunities (120 Total Tasks)
+BittieTasks creates comprehensive sponsored tasks that pay users directly, providing immediate earning opportunities across all categories and task types.
 
-## Task Categories & Payouts
+## Complete Task Breakdown
 
-### Content Creation Tasks ($15-45)
-- **Share Parenting Tips** - $15 (10 min)
-- **Recipe Reviews** - $20 (1 hour) 
-- **Educational App Testing** - $40 (3 hours)
-- **Weekly Meal Prep Guide** - $45 (4 hours)
+### Solo Tasks (48 total) - $25-50
+Individual tasks focusing on content creation, system development, and personal documentation.
 
-### Research Tasks ($18-35)
-- **Grocery Price Comparisons** - $25 (2 hours)
-- **Carpool Experience Reviews** - $18 (20 min)
-- **Budget Party Planning** - $35 (2 hours)
+### Community Tasks (57 total) - $28-50  
+Group coordination tasks that build networks and shared resources among families.
 
-### Family Organization Tasks ($22-30)
-- **Home Organization Hacks** - $22 (30 min)
-- **Kids Activity Guides** - $30 (90 min)  
-- **Family Fitness Documentation** - $28 (45 min)
+### Self-Care Tasks (15 total) - $28-50
+Personal wellness and mindfulness challenges that improve parenting and family life.
+
+## Payout Distribution
+- **Quick Tasks (30-60 min)**: $25-35
+- **Standard Tasks (1-3 hours)**: $30-42
+- **Premium Tasks (3+ hours or ongoing)**: $40-50
+
+## Category Coverage (15 tasks each)
+- **School & Education**: Homeschool tips, app reviews, tutoring networks
+- **Meal Planning**: Recipe guides, cooking groups, nutrition challenges  
+- **Shopping & Errands**: Price comparisons, bulk buying, coupon strategies
+- **Transportation**: Carpool networks, safety guides, family transit
+- **Childcare Support**: Babysitting co-ops, activity guides, emergency networks
+- **Home & Garden**: Organization systems, tool sharing, community gardens
+- **Health & Wellness**: Family fitness, nutrition education, mental health support
+- **Social Events**: Party planning, community festivals, cultural exchanges
 
 ## Why Sponsored Tasks?
 
