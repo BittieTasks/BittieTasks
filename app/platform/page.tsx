@@ -262,7 +262,6 @@ export default function PlatformPage() {
             </CardContent>
           </Card>
         </div>
-        </div>
       </div>
     </>
   )

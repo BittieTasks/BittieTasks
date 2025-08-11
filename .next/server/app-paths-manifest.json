@@ -1,1 +1,18 @@
-{}
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/profile/route": "app/api/auth/profile/route.js",
+  "/api/test/route": "app/api/test/route.js",
+  "/auth/callback/page": "app/auth/callback/page.js",
+  "/auth/page": "app/auth/page.js",
+  "/create-task/page": "app/create-task/page.js",
+  "/earnings/page": "app/earnings/page.js",
+  "/marketplace/page": "app/marketplace/page.js",
+  "/page": "app/page.js",
+  "/platform/page": "app/platform/page.js",
+  "/sponsors/page": "app/sponsors/page.js",
+  "/subscriptions/page": "app/subscriptions/page.js",
+  "/task/[id]/page": "app/task/[id]/page.js",
+  "/welcome/page": "app/welcome/page.js",
+  "/icon/route": "app/icon/route.js",
+  "/apple-icon/route": "app/apple-icon/route.js"
+}

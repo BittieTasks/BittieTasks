@@ -434,7 +434,6 @@ export default function EarningsPage() {
             </CardContent>
           </Card>
         </div>
-        </div>
       </div>
     </>
   )

@@ -450,7 +450,6 @@ export default function SponsorsPage() {
             </Card>
           )}
         </div>
-        </div>
       </div>
     </>
   )
