@@ -54,8 +54,8 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            Turn Daily Tasks Into
-            <span className="text-teal-600 block">Community Earnings</span>
+            Little Tasks,
+            <span className="text-teal-600 block">Real Income</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Join parents in your neighborhood to share tasks, earn money, and build stronger communities. 
