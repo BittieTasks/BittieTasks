@@ -123,250 +123,307 @@ function EarningsCalculator() {
 
 export default function WelcomePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white overflow-x-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-1/2 w-80 h-80 bg-gradient-to-br from-green-400 to-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+      </div>
+
       {/* Header */}
-      <header className="border-b">
+      <header className="relative z-10 border-b border-white/10 backdrop-blur-sm bg-white/5">
         <div className="container-clean py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">B</span>
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                <span className="text-white font-bold text-xl">B</span>
               </div>
-              <span className="text-xl font-semibold">BittieTasks</span>
+              <span className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">BittieTasks</span>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="outline" className="button-outline">Log In</Button>
-              <Button className="button-clean">Sign Up</Button>
+              <Button variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm font-semibold">Log In</Button>
+              <Button className="bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 text-white font-semibold px-6 py-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">Sign Up</Button>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="section-clean relative overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0">
-          <div 
-            className="absolute top-20 left-10 w-72 h-72 rounded-full blur-3xl"
-            style={{
-              background: 'rgba(16, 185, 129, 0.15)',
-              filter: 'blur(60px)'
-            }}
-          ></div>
-          <div 
-            className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl"
-            style={{
-              background: 'rgba(13, 148, 136, 0.15)',
-              filter: 'blur(80px)'
-            }}
-          ></div>
-        </div>
-        
-        <div className="container-clean relative">
-          <div className="text-center max-w-4xl mx-auto fade-in">
-            <h1 className="text-display mb-6 text-gradient">
-              Turn Daily Tasks Into Income
+      <section className="relative z-10 py-20 px-4">
+        <div className="container-clean">
+          <div className="text-center max-w-6xl mx-auto">
+            <div className="mb-8">
+              <span className="inline-block bg-gradient-to-r from-pink-500 to-violet-600 text-white px-6 py-2 rounded-full text-sm font-semibold mb-6 shadow-lg animate-pulse">
+                🚀 Join 10,000+ Parents Already Earning
+              </span>
+            </div>
+            
+            <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight">
+              <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">
+                Turn Your
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
+                Daily Tasks
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-green-400 via-teal-400 to-blue-400 bg-clip-text text-transparent">
+                Into Cash
+              </span>
             </h1>
-            <p className="text-subheading text-muted-foreground mb-8 max-w-2xl mx-auto slide-up">
-              Join thousands of parents earning money by sharing everyday tasks with neighbors. 
-              Create community connections while building financial independence.
+            
+            <p className="text-xl md:text-2xl text-white/80 mb-12 max-w-3xl mx-auto font-medium leading-relaxed">
+              Join the earning revolution! Share everyday parent tasks with neighbors and 
+              <span className="text-yellow-400 font-bold"> earn $500-2000+ monthly </span>
+              while building amazing community connections.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="button-clean">
-                Start Earning Today
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+              <Button size="lg" className="bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 text-white font-bold px-10 py-4 rounded-2xl shadow-2xl transform hover:scale-110 transition-all duration-300 text-lg">
+                💰 Start Earning Now
               </Button>
-              <Button size="lg" variant="outline" className="button-outline">
-                How It Works
+              <Button size="lg" variant="outline" className="border-2 border-white/40 text-white hover:bg-white/10 backdrop-blur-sm font-semibold px-10 py-4 rounded-2xl">
+                🎯 See How It Works
               </Button>
+            </div>
+
+            {/* Floating Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <div className="bg-gradient-to-br from-pink-500/20 to-violet-600/20 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+                <div className="text-3xl md:text-4xl font-black text-yellow-400 mb-2">$847</div>
+                <div className="text-white/80 font-medium">Average Monthly Earnings</div>
+              </div>
+              <div className="bg-gradient-to-br from-green-500/20 to-blue-600/20 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+                <div className="text-3xl md:text-4xl font-black text-green-400 mb-2">2.5hrs</div>
+                <div className="text-white/80 font-medium">Average Daily Time</div>
+              </div>
+              <div className="bg-gradient-to-br from-orange-500/20 to-red-600/20 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+                <div className="text-3xl md:text-4xl font-black text-orange-400 mb-2">98%</div>
+                <div className="text-white/80 font-medium">Parent Satisfaction</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Earnings Calculator */}
-      <section className="section-clean bg-muted/50">
+      <section className="relative z-10 py-20">
         <div className="container-clean">
-          <div className="text-center mb-12">
-            <h2 className="text-heading mb-4">See Your Earning Potential</h2>
-            <p className="text-body text-muted-foreground">
-              Calculate how much you could earn by sharing tasks in your community
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-6xl font-black mb-6">
+              <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                💸 Your Earning Potential
+              </span>
+            </h2>
+            <p className="text-xl text-white/80 max-w-2xl mx-auto">
+              See exactly how much you could be earning right now by sharing tasks in your community
             </p>
           </div>
           <div className="max-w-4xl mx-auto">
-            <EarningsCalculator />
+            <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+              <EarningsCalculator />
+            </div>
           </div>
         </div>
       </section>
 
       {/* Features Grid */}
-      <section className="section-clean">
+      <section className="relative z-10 py-20">
         <div className="container-clean">
-          <div className="text-center mb-12">
-            <h2 className="text-heading mb-4">Why Choose BittieTasks</h2>
-            <p className="text-body text-muted-foreground">
-              The trusted platform for community-based earning opportunities
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-6xl font-black mb-6">
+              <span className="bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+                🌟 Why BittieTasks Rocks
+              </span>
+            </h2>
+            <p className="text-xl text-white/80 max-w-2xl mx-auto">
+              The most trusted platform for turning parent life into profit
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="card-clean">
-              <CardHeader>
-                <CardTitle className="text-subheading">Flexible Earning</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-body text-muted-foreground">
-                  Work on your schedule. Choose tasks that fit your lifestyle and earn money 
-                  from activities you're already doing.
+            <div className="group">
+              <div className="bg-gradient-to-br from-pink-500/20 to-rose-600/20 backdrop-blur-sm border border-pink-300/30 rounded-3xl p-8 shadow-xl transform group-hover:scale-105 transition-all duration-300">
+                <div className="text-6xl mb-6">⚡</div>
+                <h3 className="text-2xl font-bold text-pink-400 mb-4">Lightning Fast Cash</h3>
+                <p className="text-white/80 text-lg leading-relaxed">
+                  Work your schedule, your way. Pick tasks that match your lifestyle and 
+                  <span className="text-yellow-400 font-bold"> get paid instantly</span> for things you're already doing!
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="card-clean">
-              <CardHeader>
-                <CardTitle className="text-subheading">Safe Community</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-body text-muted-foreground">
-                  All members are verified. Build trusted relationships with neighbors 
-                  while creating income opportunities.
+            <div className="group">
+              <div className="bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-sm border border-green-300/30 rounded-3xl p-8 shadow-xl transform group-hover:scale-105 transition-all duration-300">
+                <div className="text-6xl mb-6">🛡️</div>
+                <h3 className="text-2xl font-bold text-green-400 mb-4">Super Safe Community</h3>
+                <p className="text-white/80 text-lg leading-relaxed">
+                  Every member is verified and trusted. Build amazing friendships with neighbors while 
+                  <span className="text-yellow-400 font-bold"> creating multiple income streams</span>!
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="card-clean">
-              <CardHeader>
-                <CardTitle className="text-subheading">Instant Payments</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-body text-muted-foreground">
-                  Get paid immediately when tasks are completed. Secure payment processing 
-                  with low platform fees.
+            <div className="group">
+              <div className="bg-gradient-to-br from-blue-500/20 to-indigo-600/20 backdrop-blur-sm border border-blue-300/30 rounded-3xl p-8 shadow-xl transform group-hover:scale-105 transition-all duration-300">
+                <div className="text-6xl mb-6">💳</div>
+                <h3 className="text-2xl font-bold text-blue-400 mb-4">Instant Payments</h3>
+                <p className="text-white/80 text-lg leading-relaxed">
+                  Money hits your account the moment tasks complete. Ultra-secure payment processing with 
+                  <span className="text-yellow-400 font-bold"> industry-low fees</span>!
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Task Examples */}
-      <section className="section-clean bg-muted/50">
+      <section className="relative z-10 py-20">
         <div className="container-clean">
-          <div className="text-center mb-12">
-            <h2 className="text-heading mb-4">Popular Task Categories</h2>
-            <p className="text-body text-muted-foreground">
-              Real earning opportunities in your community
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-6xl font-black mb-6">
+              <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+                🔥 Hot Money-Making Tasks
+              </span>
+            </h2>
+            <p className="text-xl text-white/80 max-w-2xl mx-auto">
+              Real earning opportunities happening in communities RIGHT NOW
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="card-clean">
-              <CardContent className="p-6 text-center">
-                <div className="text-2xl mb-3">🛒</div>
-                <h3 className="font-semibold mb-2">Group Shopping</h3>
-                <p className="text-sm text-muted-foreground">$25-45 per trip</p>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="group">
+              <div className="bg-gradient-to-br from-emerald-500/20 to-teal-600/20 backdrop-blur-sm border border-emerald-300/30 rounded-3xl p-8 text-center shadow-xl transform group-hover:scale-110 group-hover:rotate-1 transition-all duration-300">
+                <div className="text-6xl mb-4">🛒</div>
+                <h3 className="text-xl font-bold text-emerald-400 mb-3">Group Shopping</h3>
+                <div className="text-2xl font-black text-yellow-400 mb-2">$25-45</div>
+                <p className="text-white/70">per trip</p>
+              </div>
+            </div>
 
-            <Card className="card-clean">
-              <CardContent className="p-6 text-center">
-                <div className="text-2xl mb-3">🚗</div>
-                <h3 className="font-semibold mb-2">School Pickup</h3>
-                <p className="text-sm text-muted-foreground">$15-30 per day</p>
-              </CardContent>
-            </Card>
+            <div className="group">
+              <div className="bg-gradient-to-br from-blue-500/20 to-indigo-600/20 backdrop-blur-sm border border-blue-300/30 rounded-3xl p-8 text-center shadow-xl transform group-hover:scale-110 group-hover:-rotate-1 transition-all duration-300">
+                <div className="text-6xl mb-4">🚗</div>
+                <h3 className="text-xl font-bold text-blue-400 mb-3">School Pickup</h3>
+                <div className="text-2xl font-black text-yellow-400 mb-2">$15-30</div>
+                <p className="text-white/70">per day</p>
+              </div>
+            </div>
 
-            <Card className="card-clean">
-              <CardContent className="p-6 text-center">
-                <div className="text-2xl mb-3">🎂</div>
-                <h3 className="font-semibold mb-2">Event Planning</h3>
-                <p className="text-sm text-muted-foreground">$40-85 per event</p>
-              </CardContent>
-            </Card>
+            <div className="group">
+              <div className="bg-gradient-to-br from-pink-500/20 to-rose-600/20 backdrop-blur-sm border border-pink-300/30 rounded-3xl p-8 text-center shadow-xl transform group-hover:scale-110 group-hover:rotate-1 transition-all duration-300">
+                <div className="text-6xl mb-4">🎂</div>
+                <h3 className="text-xl font-bold text-pink-400 mb-3">Event Planning</h3>
+                <div className="text-2xl font-black text-yellow-400 mb-2">$40-85</div>
+                <p className="text-white/70">per event</p>
+              </div>
+            </div>
 
-            <Card className="card-clean">
-              <CardContent className="p-6 text-center">
-                <div className="text-2xl mb-3">👥</div>
-                <h3 className="font-semibold mb-2">Group Activities</h3>
-                <p className="text-sm text-muted-foreground">$20-50 per session</p>
-              </CardContent>
-            </Card>
+            <div className="group">
+              <div className="bg-gradient-to-br from-purple-500/20 to-violet-600/20 backdrop-blur-sm border border-purple-300/30 rounded-3xl p-8 text-center shadow-xl transform group-hover:scale-110 group-hover:-rotate-1 transition-all duration-300">
+                <div className="text-6xl mb-4">👥</div>
+                <h3 className="text-xl font-bold text-purple-400 mb-3">Group Activities</h3>
+                <div className="text-2xl font-black text-yellow-400 mb-2">$20-50</div>
+                <p className="text-white/70">per session</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="section-clean">
+      <section className="relative z-10 py-20">
         <div className="container-clean">
-          <Card className="card-clean">
-            <CardContent className="p-12 text-center">
-              <h2 className="text-heading mb-4">Ready to Start Earning?</h2>
-              <p className="text-body text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join thousands of parents who've transformed their daily routines into income streams. 
-                Sign up today and start your first task this week.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="button-clean">
-                  Create Account
-                </Button>
-                <Button size="lg" variant="outline" className="button-outline">
-                  Browse Tasks
-                </Button>
+          <div className="bg-gradient-to-br from-pink-500/20 to-violet-600/20 backdrop-blur-xl border border-white/20 rounded-3xl p-16 text-center shadow-2xl">
+            <h2 className="text-5xl md:text-6xl font-black mb-8">
+              <span className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                🚀 Ready to Get Rich?
+              </span>
+            </h2>
+            <p className="text-xl md:text-2xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Join <span className="text-yellow-400 font-bold">10,000+ parents</span> who've transformed their daily routines into 
+              <span className="text-green-400 font-bold"> serious money-making machines</span>. 
+              Start your first task THIS WEEK and see the cash roll in!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-12 py-6 rounded-2xl shadow-2xl transform hover:scale-110 transition-all duration-300 text-xl">
+                💰 Start Making Money NOW
+              </Button>
+              <Button size="lg" variant="outline" className="border-2 border-white/40 text-white hover:bg-white/10 backdrop-blur-sm font-semibold px-12 py-6 rounded-2xl text-xl">
+                🔍 Browse Hot Tasks
+              </Button>
+            </div>
+            
+            <div className="mt-12 flex justify-center items-center space-x-8 text-sm">
+              <div className="flex items-center space-x-2">
+                <span className="text-green-400">✓</span>
+                <span className="text-white/80">Free to Join</span>
               </div>
-            </CardContent>
-          </Card>
+              <div className="flex items-center space-x-2">
+                <span className="text-green-400">✓</span>
+                <span className="text-white/80">Instant Payments</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-green-400">✓</span>
+                <span className="text-white/80">No Experience Needed</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-muted/50">
-        <div className="container-clean py-12">
+      <footer className="relative z-10 border-t border-white/10 bg-black/20 backdrop-blur-sm">
+        <div className="container-clean py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">B</span>
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-lg">B</span>
                 </div>
-                <span className="font-semibold">BittieTasks</span>
+                <span className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">BittieTasks</span>
               </div>
-              <p className="text-small text-muted-foreground">
-                Transforming daily tasks into income opportunities for parents everywhere.
+              <p className="text-white/70 leading-relaxed">
+                Transforming parent life into profit. The #1 platform for community-based earning opportunities.
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-3">Platform</h4>
-              <ul className="space-y-2 text-small text-muted-foreground">
-                <li>How It Works</li>
-                <li>Task Categories</li>
-                <li>Pricing</li>
-                <li>Safety</li>
+              <h4 className="text-lg font-bold text-white mb-4">Platform</h4>
+              <ul className="space-y-3 text-white/70">
+                <li className="hover:text-pink-400 cursor-pointer transition-colors">How It Works</li>
+                <li className="hover:text-pink-400 cursor-pointer transition-colors">Task Categories</li>
+                <li className="hover:text-pink-400 cursor-pointer transition-colors">Pricing</li>
+                <li className="hover:text-pink-400 cursor-pointer transition-colors">Safety</li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-3">Support</h4>
-              <ul className="space-y-2 text-small text-muted-foreground">
-                <li>Help Center</li>
-                <li>Contact Us</li>
-                <li>Community</li>
-                <li>FAQ</li>
+              <h4 className="text-lg font-bold text-white mb-4">Support</h4>
+              <ul className="space-y-3 text-white/70">
+                <li className="hover:text-green-400 cursor-pointer transition-colors">Help Center</li>
+                <li className="hover:text-green-400 cursor-pointer transition-colors">Contact Us</li>
+                <li className="hover:text-green-400 cursor-pointer transition-colors">Community</li>
+                <li className="hover:text-green-400 cursor-pointer transition-colors">FAQ</li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-3">Legal</h4>
-              <ul className="space-y-2 text-small text-muted-foreground">
-                <li>Privacy Policy</li>
-                <li>Terms of Service</li>
-                <li>Cookie Policy</li>
-                <li>Guidelines</li>
+              <h4 className="text-lg font-bold text-white mb-4">Legal</h4>
+              <ul className="space-y-3 text-white/70">
+                <li className="hover:text-blue-400 cursor-pointer transition-colors">Privacy Policy</li>
+                <li className="hover:text-blue-400 cursor-pointer transition-colors">Terms of Service</li>
+                <li className="hover:text-blue-400 cursor-pointer transition-colors">Cookie Policy</li>
+                <li className="hover:text-blue-400 cursor-pointer transition-colors">Guidelines</li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t mt-8 pt-8 text-center">
-            <p className="text-small text-muted-foreground">
-              © 2025 BittieTasks. All rights reserved.
+          <div className="border-t border-white/10 mt-12 pt-8 text-center">
+            <p className="text-white/60">
+              © 2025 BittieTasks. All rights reserved. Making parents rich since 2025. 💰
             </p>
           </div>
         </div>
