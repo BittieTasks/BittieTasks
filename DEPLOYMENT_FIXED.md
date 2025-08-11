@@ -72,3 +72,5 @@ docker run -p 5000:5000 bittietasks
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID`
 
 ## 🚀 The project is now **deployment-ready** with all build issues resolved!
+
+**UPDATE**: GitHub has the correct fixed commit `c5a70a9` but Vercel deployment needs to be triggered to use this version instead of the cached old commit `f06eaf8`.
