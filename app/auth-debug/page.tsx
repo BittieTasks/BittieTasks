@@ -22,10 +22,7 @@ export default function AuthDebugPage() {
     // Check if supabase client is properly initialized
     if (supabase) {
       addResult('✅ Supabase client exists')
-      addResult('Config check:', {
-        url: supabase.supabaseUrl,
-        key: supabase.supabaseKey?.substring(0, 20) + '...'
-      })
+      addResult('Config check: Supabase client initialized')
     } else {
       addResult('❌ Supabase client not initialized')
     }

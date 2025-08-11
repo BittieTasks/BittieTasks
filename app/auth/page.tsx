@@ -38,6 +38,8 @@ export default function AuthPage() {
     e.preventDefault()
     setLoading(true)
 
+    console.log('handleSignIn called with:', formData.email)
+
     try {
       await signIn(formData.email, formData.password)
       toast({
@@ -46,6 +48,7 @@ export default function AuthPage() {
       })
       window.location.href = '/platform'
     } catch (error: any) {
+      console.error('handleSignIn error:', error)
       toast({
         title: 'Sign In Failed',
         description: error.message || 'An error occurred during sign in.',
