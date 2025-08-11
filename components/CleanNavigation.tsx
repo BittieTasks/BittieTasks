@@ -27,7 +27,7 @@ export default function CleanNavigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/platform" className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">B</span>
             </div>
             <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
@@ -50,8 +50,8 @@ export default function CleanNavigation() {
           <div className="flex items-center space-x-4">
             {user && (
               <div className="hidden md:flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-medium text-sm">
+                <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                  <span className="text-teal-600 font-medium text-sm">
                     {user.email?.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -97,8 +97,8 @@ export default function CleanNavigation() {
               {user && (
                 <div className="border-t border-gray-200 pt-3 mt-3">
                   <div className="flex items-center space-x-3 py-2">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-medium text-sm">
+                    <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                      <span className="text-teal-600 font-medium text-sm">
                         {user.email?.charAt(0).toUpperCase()}
                       </span>
                     </div>

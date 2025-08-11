@@ -98,7 +98,7 @@ export default function AuthPage() {
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-teal-600 rounded-xl flex items-center justify-center mx-auto mb-4">
               <span className="text-white font-bold text-2xl">B</span>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to BittieTasks</h1>

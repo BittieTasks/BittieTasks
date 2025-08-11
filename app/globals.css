@@ -32,26 +32,26 @@
 /* Clean Facebook-Inspired Design */
 @layer base {
   :root {
-    /* Clean Blue Theme (Facebook-inspired) */
+    /* Clean Teal Theme with Complementary Colors */
     --background: 0 0% 100%;
     --foreground: 222 15% 12%;
     --card: 0 0% 100%;
     --card-foreground: 222 15% 12%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 15% 12%;
-    --primary: 221 83% 53%; /* Facebook blue */
+    --primary: 181 100% 29%; /* teal-700 */
     --primary-foreground: 0 0% 98%;
-    --secondary: 210 40% 98%;
+    --secondary: 180 100% 97%;
     --secondary-foreground: 222 15% 12%;
-    --muted: 210 40% 96%;
+    --muted: 180 100% 96%;
     --muted-foreground: 215 13% 45%;
-    --accent: 221 83% 53%; /* Facebook blue */
+    --accent: 168 76% 42%; /* teal-600 */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%; /* Facebook blue */
+    --border: 180 24% 91%;
+    --input: 180 24% 91%;
+    --ring: 181 100% 29%; /* teal-700 */
     --radius: 8px;
   }
 
