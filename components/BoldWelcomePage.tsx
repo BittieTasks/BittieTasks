@@ -2,11 +2,11 @@
 
 export default function BoldWelcomePage() {
   const handleSignUp = () => {
-    window.location.href = '/signup'
+    window.location.href = '/auth'
   }
 
   const handleLogin = () => {
-    window.location.href = '/login' 
+    window.location.href = '/auth' 
   }
 
   const handleViewTasks = () => {

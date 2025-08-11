@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import Navigation from '@/components/Navigation'
+import BoldNavigation from '@/components/BoldNavigation'
+import BoldLayout from '@/components/BoldLayout'
 import { 
   Clock, Users, MapPin, DollarSign, Star, Upload, 
   CheckCircle, ArrowLeft, AlertCircle, Camera, MessageSquare 
@@ -90,10 +91,10 @@ export default function TaskDetailPage() {
   }
 
   return (
-    <div className="page-layout">
-      <Navigation />
+    <BoldLayout>
+      <BoldNavigation />
       
-      <main className="page-content">
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px, 6vw, 48px) clamp(16px, 4vw, 24px)' }}>
         {/* Back Button */}
         <Button 
           variant="ghost" 
@@ -377,6 +378,6 @@ export default function TaskDetailPage() {
           </div>
         </div>
       </main>
-    </div>
+    </BoldLayout>
   )
 }
