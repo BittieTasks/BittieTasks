@@ -51,3 +51,12 @@ export interface AuthSession {
   token_type: string
   user: AuthUser
 }
+
+export interface Profile {
+  id: string
+  email: string
+  verification_status: 'pending' | 'verified' | 'failed'
+  subscription_tier: 'free' | 'pro' | 'premium'
+  created_at?: string
+  updated_at?: string
+}

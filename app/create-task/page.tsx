@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -46,6 +46,7 @@ export default function CreateTaskPage() {
   const { user, isAuthenticated, isVerified } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
+  const [mounted, setMounted] = useState(false)
   
   const [formData, setFormData] = useState({
     title: '',
@@ -63,6 +64,14 @@ export default function CreateTaskPage() {
   
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   if (!isAuthenticated) {
     router.push('/auth')

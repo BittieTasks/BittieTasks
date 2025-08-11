@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -104,7 +104,16 @@ const ethicsMetrics = [
 export default function SponsorsPage() {
   const { user, isAuthenticated, isVerified } = useAuth()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
   const [selectedSponsor, setSelectedSponsor] = useState<string | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   if (!isAuthenticated) {
     router.push('/auth')

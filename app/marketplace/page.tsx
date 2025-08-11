@@ -85,9 +85,18 @@ const categories = ['All', 'Childcare', 'Shopping', 'Transportation', 'Wellness'
 export default function MarketplacePage() {
   const { user, isAuthenticated, isVerified } = useAuth()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [sortBy, setSortBy] = useState('earning')
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   if (!isAuthenticated) {
     router.push('/auth')

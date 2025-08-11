@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -106,7 +106,16 @@ const mockAchievements = [
 export default function EarningsPage() {
   const { user, isAuthenticated, isVerified } = useAuth()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
   const [timeFilter, setTimeFilter] = useState('this-month')
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   if (!isAuthenticated) {
     router.push('/auth')

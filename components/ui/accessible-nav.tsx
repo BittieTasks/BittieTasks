@@ -105,8 +105,8 @@ export const AccessibleNav: React.FC<AccessibleNavProps> = ({
         aria-orientation={orientation}
       >
         {items.map((item, index) => {
-          const isActive = location === item.path || 
-            (item.path !== '/' && location.startsWith(item.path));
+          const isActive = (typeof window !== 'undefined' && window.location.pathname === item.path) || 
+            (typeof window !== 'undefined' && item.path !== '/' && window.location.pathname.startsWith(item.path));
           
           return (
             <li key={item.path} role="none">

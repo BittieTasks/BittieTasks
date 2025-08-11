@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from './auth/AuthProvider'
 import { Button } from '@/components/ui/button'
@@ -28,9 +28,19 @@ const navigationItems = [
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const { user, signOut, isVerified } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Don't render anything during SSR to prevent location errors
+  if (!mounted) {
+    return null
+  }
 
   const handleSignOut = async () => {
     try {
