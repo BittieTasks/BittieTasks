@@ -146,8 +146,20 @@ export default function WelcomePage() {
       <section className="section-clean relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-200/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-teal-200/20 rounded-full blur-3xl"></div>
+          <div 
+            className="absolute top-20 left-10 w-72 h-72 rounded-full blur-3xl"
+            style={{
+              background: 'rgba(16, 185, 129, 0.15)',
+              filter: 'blur(60px)'
+            }}
+          ></div>
+          <div 
+            className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl"
+            style={{
+              background: 'rgba(13, 148, 136, 0.15)',
+              filter: 'blur(80px)'
+            }}
+          ></div>
         </div>
         
         <div className="container-clean relative">

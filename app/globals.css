@@ -91,11 +91,37 @@
   }
   
   .button-clean {
-    @apply bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium px-6 py-2.5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 hover:-translate-y-0.5;
+    background: linear-gradient(to right, #10b981, #0891b2) !important;
+    color: white !important;
+    font-weight: 500 !important;
+    padding: 10px 24px !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    transform: scale(1) !important;
+    border: none !important;
+  }
+  
+  .button-clean:hover {
+    background: linear-gradient(to right, #059669, #0e7490) !important;
+    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    transform: scale(1.05) translateY(-2px) !important;
   }
   
   .button-outline {
-    @apply border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 font-medium px-6 py-2.5 rounded-lg transition-all duration-300 hover:shadow-md transform hover:scale-105;
+    border: 2px solid #10b981 !important;
+    color: #059669 !important;
+    background: transparent !important;
+    font-weight: 500 !important;
+    padding: 8px 24px !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    transform: scale(1) !important;
+  }
+  
+  .button-outline:hover {
+    background: rgba(16, 185, 129, 0.1) !important;
+    transform: scale(1.05) !important;
   }
   
   .button-premium {
@@ -200,10 +226,18 @@
   
   /* Gradient Text Effects */
   .text-gradient {
-    @apply bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent;
+    background: linear-gradient(to right, #059669, #0d9488) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
   }
   
   .text-gradient-purple {
-    @apply bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent;
+    background: linear-gradient(to right, #7c3aed, #4f46e5) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
   }
 }
