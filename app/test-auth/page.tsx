@@ -20,7 +20,8 @@ export default function TestAuthPage() {
         .limit(1)
         
       if (testError) {
-        setResult(`Connection failed: ${testError.message}`)
+        setResult(`Connection failed: ${JSON.stringify(testError, null, 2)}`)
+        console.error('Connection error details:', testError)
         return
       }
       
@@ -32,14 +33,15 @@ export default function TestAuthPage() {
       })
       
       if (signUpError) {
-        setResult(`Signup failed: ${signUpError.message}`)
+        setResult(`Signup failed: ${JSON.stringify(signUpError, null, 2)}`)
+        console.error('Signup error details:', signUpError)
         return
       }
       
       setResult(`Success! User created: ${JSON.stringify(signUpData, null, 2)}`)
       
     } catch (err: any) {
-      setResult(`Exception: ${err.message}`)
+      setResult(`Exception: ${JSON.stringify(err, null, 2)}`)
       console.error('Test error:', err)
     }
   }
