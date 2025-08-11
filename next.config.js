@@ -48,6 +48,21 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+  // Suppress Supabase websocket dependency warnings
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        ws: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      }
+    }
+    // Ignore Supabase realtime websocket warnings
+    config.module.exprContextCritical = false
+    return config
+  },
 }
 
 export default nextConfig
