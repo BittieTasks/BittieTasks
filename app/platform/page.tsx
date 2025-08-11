@@ -74,29 +74,45 @@ export default function Platform() {
       const { tasks: fetchedTasks } = await response.json()
       
       // Transform data to match our interface
-      const transformedTasks: Task[] = fetchedTasks.map((task: any) => ({
-        id: task.id,
-        title: task.title,
-        description: task.description,
-        payout: parseFloat(task.payout),
-        location: task.location,
-        time_commitment: task.time_commitment || 'Not specified',
-        max_participants: task.max_participants,
-        current_participants: task.current_participants,
-        deadline: task.deadline,
-        task_type: task.task_type,
-        is_sponsored: task.is_sponsored,
-        sponsor_name: task.sponsor_name,
-        category: {
-          name: task.categories?.name || 'General',
-          color: task.categories?.color || '#6b7280',
-          icon: task.categories?.icon || 'circle'
-        },
-        creator: {
-          first_name: task.profiles?.first_name || 'Anonymous',
-          last_name: task.profiles?.last_name || 'User'
+      const transformedTasks: Task[] = fetchedTasks.map((task: any) => {
+        // Map category ID to category details
+        const categoryMap: { [key: number]: any } = {
+          1: { name: 'School & Education', color: 'bg-blue-100 text-blue-700', icon: 'GraduationCap' },
+          2: { name: 'Meal Planning', color: 'bg-green-100 text-green-700', icon: 'ChefHat' },
+          3: { name: 'Shopping & Errands', color: 'bg-purple-100 text-purple-700', icon: 'ShoppingBag' },
+          4: { name: 'Transportation', color: 'bg-orange-100 text-orange-700', icon: 'Car' },
+          5: { name: 'Childcare Support', color: 'bg-pink-100 text-pink-700', icon: 'Heart' },
+          6: { name: 'Home & Garden', color: 'bg-emerald-100 text-emerald-700', icon: 'Home' },
+          7: { name: 'Health & Wellness', color: 'bg-teal-100 text-teal-700', icon: 'Activity' },
+          8: { name: 'Social Events', color: 'bg-indigo-100 text-indigo-700', icon: 'Users' }
         }
-      }))
+        
+        const categoryInfo = categoryMap[task.category_id] || categoryMap[1]
+        
+        return {
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          payout: parseFloat(task.payout),
+          location: task.location,
+          time_commitment: task.time_commitment || 'Not specified',
+          max_participants: task.max_participants,
+          current_participants: task.current_participants,
+          deadline: task.deadline,
+          task_type: task.task_type,
+          is_sponsored: task.is_sponsored,
+          sponsor_name: task.sponsor_name,
+          category: {
+            name: categoryInfo.name,
+            color: categoryInfo.color,
+            icon: categoryInfo.icon
+          },
+          creator: {
+            first_name: 'Sarah',
+            last_name: 'M.'
+          }
+        }
+      })
       
       setTasks(transformedTasks)
     } catch (error) {
