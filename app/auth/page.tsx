@@ -44,7 +44,7 @@ export default function AuthPage() {
         title: 'Success!',
         description: 'You have been signed in successfully.',
       })
-      router.push('/platform')
+      window.location.href = '/platform'
     } catch (error: any) {
       toast({
         title: 'Sign In Failed',
