@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
 
 type ToastVariant = 'default' | 'destructive'
 
@@ -44,10 +44,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     toasts,
   }
 
-  return (
-    <ToastContext.Provider value={value}>
-      {children}
-    </ToastContext.Provider>
+  return React.createElement(
+    ToastContext.Provider,
+    { value },
+    children
   )
 }
 

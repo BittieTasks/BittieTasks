@@ -296,7 +296,7 @@ export default function MarketplacePage() {
             const netEarnings = task.payout - platformFee
 
             return (
-              <Card key={task.id} className={`hover-lift cursor-pointer ${task.sponsored ? 'card-featured' : 'card-clean'}`}
+              <Card key={task.id} className="hover-lift cursor-pointer card-clean"
                 onClick={() => router.push(`/task/${task.id}`)}>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between mb-2">
@@ -304,11 +304,7 @@ export default function MarketplacePage() {
                       <Badge className={getTypeColor(task.type)}>
                         {task.type.replace('_', ' ')}
                       </Badge>
-                      {task.sponsored && (
-                        <Badge className="badge-premium">
-                          ⭐ Sponsored
-                        </Badge>
-                      )}
+
                     </div>
                     <Badge className={getSpotsBadgeColor(availableSpots)}>
                       {availableSpots} spot{availableSpots !== 1 ? 's' : ''} left
@@ -355,7 +351,7 @@ export default function MarketplacePage() {
 
                   {/* Action Button */}
                   <Button
-                    className={`w-full ${task.sponsored ? 'button-premium' : 'button-clean'}`}
+                    className="w-full button-clean"
                     onClick={(e) => {
                       e.stopPropagation()
                       router.push(`/task/${task.id}`)
@@ -363,8 +359,7 @@ export default function MarketplacePage() {
                     disabled={!isVerified || availableSpots === 0}
                   >
                     {!isVerified ? 'Verify Email to Join' : 
-                     availableSpots === 0 ? 'Task Full' : 
-                     task.sponsored ? 'View Premium Task' : 'View Details'}
+                     availableSpots === 0 ? 'Task Full' : 'View Details'}
                   </Button>
                 </CardContent>
               </Card>
