@@ -62,19 +62,19 @@ export default function BoldNavigation() {
         top: '0',
         zIndex: '50'
       }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px, 4vw, 24px)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 'clamp(56px, 10vw, 64px)' }}>
             {/* Logo */}
             <div 
-              style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px, 2vw, 12px)', cursor: 'pointer' }}
               onClick={() => router.push('/')}
             >
               <div 
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: 'clamp(32px, 8vw, 40px)',
+                  height: 'clamp(32px, 8vw, 40px)',
                   background: 'linear-gradient(to right, rgb(236, 72, 153), rgb(139, 92, 246))',
-                  borderRadius: '12px',
+                  borderRadius: 'clamp(8px, 2vw, 12px)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -84,13 +84,29 @@ export default function BoldNavigation() {
                 onMouseEnter={(e) => e.currentTarget.style.transform = 'rotate(0deg) scale(1.05)'}
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'rotate(3deg)'}
               >
-                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>B</span>
+                <span style={{ color: 'white', fontWeight: 'bold', fontSize: 'clamp(14px, 3vw, 18px)' }}>B</span>
               </div>
-              <span style={{ fontSize: '20px', fontWeight: 'bold', color: 'white' }}>BittieTasks</span>
+              <span style={{ fontSize: 'clamp(16px, 4vw, 20px)', fontWeight: 'bold', color: 'white' }}>BittieTasks</span>
             </div>
 
+            {/* Mobile Menu Button */}
+            <button
+              style={{
+                display: 'md:none',
+                padding: '8px',
+                background: 'transparent',
+                border: 'none',
+                color: 'white',
+                cursor: 'pointer'
+              }}
+              className="md:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+
             {/* Desktop Navigation Links */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} className="hidden md:flex">
+            <div style={{ display: 'none', alignItems: 'center', gap: '8px' }} className="hidden md:flex">
               {navigationItems.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.path
@@ -133,8 +149,8 @@ export default function BoldNavigation() {
               })}
             </div>
 
-            {/* User Menu */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* User Menu - Desktop */}
+            <div style={{ display: 'none', alignItems: 'center', gap: '12px' }} className="hidden md:flex">
               {!isVerified && (
                 <span style={{ 
                   background: 'rgba(251, 191, 36, 0.2)', 
@@ -167,21 +183,6 @@ export default function BoldNavigation() {
               >
                 Sign Out
               </button>
-
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                style={{
-                  color: 'white',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '8px'
-                }}
-                className="md:hidden"
-              >
-                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
             </div>
           </div>
         </div>
@@ -192,13 +193,15 @@ export default function BoldNavigation() {
         <div 
           style={{
             position: 'fixed',
-            top: '64px',
+            top: 'clamp(56px, 10vw, 64px)',
             left: '0',
             right: '0',
-            background: 'rgba(0, 0, 0, 0.9)',
+            background: 'rgba(0, 0, 0, 0.95)',
             backdropFilter: 'blur(10px)',
             zIndex: '40',
-            padding: '16px'
+            padding: '16px',
+            maxHeight: 'calc(100vh - 64px)',
+            overflowY: 'auto'
           }}
           className="md:hidden"
         >
@@ -218,18 +221,19 @@ export default function BoldNavigation() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
+                    padding: '16px',
+                    borderRadius: '12px',
                     background: isActive 
                       ? 'linear-gradient(to right, rgb(236, 72, 153), rgb(139, 92, 246))' 
-                      : 'transparent',
+                      : 'rgba(255, 255, 255, 0.1)',
                     color: 'white',
                     border: 'none',
                     cursor: 'pointer',
                     fontSize: '16px',
                     fontWeight: '500',
                     textAlign: 'left',
-                    width: '100%'
+                    width: '100%',
+                    transition: 'all 0.2s ease'
                   }}
                 >
                   <Icon size={20} />
@@ -237,6 +241,50 @@ export default function BoldNavigation() {
                 </button>
               )
             })}
+            
+            {/* Mobile User Actions */}
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '16px', marginTop: '16px' }}>
+              {!isVerified && (
+                <div style={{ 
+                  background: 'rgba(251, 191, 36, 0.2)', 
+                  color: 'rgb(251, 191, 36)', 
+                  padding: '12px 16px', 
+                  borderRadius: '12px', 
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  border: '1px solid rgba(251, 191, 36, 0.3)',
+                  marginBottom: '12px',
+                  textAlign: 'center'
+                }}>
+                  Please verify your email
+                </div>
+              )}
+              
+              <button
+                onClick={() => {
+                  handleSignOut()
+                  setMobileMenuOpen(false)
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  width: '100%',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  color: 'white',
+                  background: 'transparent',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  fontWeight: '500',
+                  fontSize: '16px',
+                  cursor: 'pointer'
+                }}
+              >
+                <User size={16} />
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       )}

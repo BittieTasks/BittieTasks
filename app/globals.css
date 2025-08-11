@@ -69,6 +69,41 @@
     scroll-behavior: smooth;
   }
   
+  /* Mobile-First Responsive Design */
+  @media (max-width: 768px) {
+    body {
+      font-size: 14px;
+    }
+    
+    /* Ensure cards are mobile-friendly */
+    .card-clean {
+      margin-bottom: 16px;
+    }
+    
+    /* Make buttons touch-friendly */
+    button {
+      min-height: 44px;
+      padding: 12px 16px;
+    }
+    
+    /* Improve text readability on mobile */
+    h1, h2, h3 {
+      line-height: 1.2;
+    }
+    
+    /* Mobile-friendly spacing */
+    .grid {
+      gap: 16px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    /* Extra small mobile adjustments */
+    .grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+  
   *:focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2;
   }

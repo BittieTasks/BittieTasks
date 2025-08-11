@@ -82,15 +82,15 @@ export default function BoldWelcomePage() {
 
       {/* Header */}
       <header style={{ position: 'relative', zIndex: '10', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', background: 'rgba(255, 255, 255, 0.05)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ padding: '16px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
+          <div style={{ padding: '12px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 'fit-content' }}>
               <div 
                 style={{
-                  width: '48px',
-                  height: '48px',
+                  width: '40px',
+                  height: '40px',
                   background: 'linear-gradient(to right, rgb(236, 72, 153), rgb(139, 92, 246))',
-                  borderRadius: '12px',
+                  borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -101,23 +101,25 @@ export default function BoldWelcomePage() {
                 onMouseEnter={(e) => e.currentTarget.style.transform = 'rotate(0deg)'}
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'rotate(3deg)'}
               >
-                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '20px' }}>B</span>
+                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>B</span>
               </div>
-              <span style={{ fontSize: '24px', fontWeight: 'bold', background: 'linear-gradient(to right, rgb(244, 114, 182), rgb(196, 181, 253))', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>BittieTasks</span>
+              <span style={{ fontSize: '20px', fontWeight: 'bold', background: 'linear-gradient(to right, rgb(244, 114, 182), rgb(196, 181, 253))', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>BittieTasks</span>
             </div>
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
               <button
                 onClick={handleLogin}
                 style={{
                   border: '2px solid rgba(255, 255, 255, 0.3)',
                   color: 'white',
                   background: 'transparent',
-                  padding: '8px 16px',
+                  padding: '6px 12px',
                   borderRadius: '8px',
                   fontWeight: '600',
+                  fontSize: '14px',
                   transition: 'all 0.3s ease',
                   cursor: 'pointer',
-                  backdropFilter: 'blur(10px)'
+                  backdropFilter: 'blur(10px)',
+                  whiteSpace: 'nowrap'
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
@@ -156,32 +158,48 @@ export default function BoldWelcomePage() {
 
       {/* Hero Section */}
       <main style={{ position: 'relative', zIndex: '10' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ paddingTop: '80px', paddingBottom: '80px', textAlign: 'center' }}>
-            <h1 style={{ fontSize: '56px', fontWeight: 'bold', marginBottom: '24px', lineHeight: '1.1' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
+          <div style={{ paddingTop: '40px', paddingBottom: '60px', textAlign: 'center' }}>
+            <h1 style={{ 
+              fontSize: 'clamp(28px, 8vw, 56px)', 
+              fontWeight: 'bold', 
+              marginBottom: '20px', 
+              lineHeight: '1.1',
+              padding: '0 8px'
+            }}>
               Turn Daily Tasks Into 
               <span style={{ background: 'linear-gradient(to right, rgb(244, 114, 182), rgb(196, 181, 253))', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', display: 'block' }}>
                 Earning Opportunities
               </span>
             </h1>
-            <p style={{ fontSize: '20px', marginBottom: '40px', color: 'rgba(255, 255, 255, 0.8)', maxWidth: '600px', margin: '0 auto 40px auto' }}>
+            <p style={{ 
+              fontSize: 'clamp(16px, 4vw, 20px)', 
+              marginBottom: '32px', 
+              color: 'rgba(255, 255, 255, 0.8)', 
+              maxWidth: '600px', 
+              margin: '0 auto 32px auto',
+              padding: '0 16px',
+              lineHeight: '1.5'
+            }}>
               Join the community marketplace where parents share tasks, split costs, and earn money together. Transform routine activities into income streams.
             </p>
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', padding: '0 16px' }}>
               <button
                 onClick={handleSignUp}
                 style={{
                   background: 'linear-gradient(to right, rgb(236, 72, 153), rgb(139, 92, 246))',
                   color: 'white',
                   fontWeight: '600',
-                  fontSize: '18px',
-                  padding: '16px 32px',
+                  fontSize: 'clamp(14px, 3vw, 18px)',
+                  padding: 'clamp(12px, 3vw, 16px) clamp(24px, 6vw, 32px)',
                   borderRadius: '12px',
                   boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
                   transform: 'scale(1)',
                   transition: 'all 0.3s ease',
                   border: 'none',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  minWidth: 'fit-content',
+                  whiteSpace: 'nowrap'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.opacity = '0.9'
@@ -200,13 +218,15 @@ export default function BoldWelcomePage() {
                   border: '2px solid rgba(255, 255, 255, 0.3)',
                   color: 'white',
                   background: 'rgba(255, 255, 255, 0.1)',
-                  padding: '16px 32px',
+                  padding: 'clamp(12px, 3vw, 16px) clamp(24px, 6vw, 32px)',
                   borderRadius: '12px',
                   fontWeight: '600',
-                  fontSize: '18px',
+                  fontSize: 'clamp(14px, 3vw, 18px)',
                   transition: 'all 0.3s ease',
                   cursor: 'pointer',
-                  backdropFilter: 'blur(10px)'
+                  backdropFilter: 'blur(10px)',
+                  minWidth: 'fit-content',
+                  whiteSpace: 'nowrap'
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
@@ -217,7 +237,7 @@ export default function BoldWelcomePage() {
           </div>
 
           {/* Features Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginBottom: '80px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '60px', padding: '0 8px' }}>
             {[
               {
                 title: 'Community Tasks',
@@ -242,7 +262,7 @@ export default function BoldWelcomePage() {
                   backdropFilter: 'blur(10px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   borderRadius: '16px',
-                  padding: '32px',
+                  padding: 'clamp(20px, 5vw, 32px)',
                   textAlign: 'center',
                   transform: 'translateY(0)',
                   transition: 'all 0.3s ease'
@@ -250,9 +270,9 @@ export default function BoldWelcomePage() {
                 onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-8px)'}
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>{feature.icon}</div>
-                <h3 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px', color: 'white' }}>{feature.title}</h3>
-                <p style={{ color: 'rgba(255, 255, 255, 0.8)', lineHeight: '1.6' }}>{feature.description}</p>
+                <div style={{ fontSize: 'clamp(32px, 8vw, 48px)', marginBottom: '12px' }}>{feature.icon}</div>
+                <h3 style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 'bold', marginBottom: '12px', color: 'white' }}>{feature.title}</h3>
+                <p style={{ color: 'rgba(255, 255, 255, 0.8)', lineHeight: '1.6', fontSize: 'clamp(14px, 3vw, 16px)' }}>{feature.description}</p>
               </div>
             ))}
           </div>

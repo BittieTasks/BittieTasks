@@ -84,11 +84,11 @@ export default function MarketplacePage() {
     <BoldLayout>
       <BoldNavigation />
       
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px, 6vw, 48px) clamp(16px, 4vw, 24px)' }}>
         {/* Header */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>Task Marketplace</h1>
-          <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.8)' }}>
+        <div style={{ marginBottom: 'clamp(20px, 5vw, 32px)' }}>
+          <h1 style={{ fontSize: 'clamp(24px, 6vw, 36px)', fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>Task Marketplace</h1>
+          <p style={{ fontSize: 'clamp(14px, 3vw, 18px)', color: 'rgba(255, 255, 255, 0.8)' }}>
             Discover earning opportunities in your community. Join tasks or create your own!
           </p>
         </div>
