@@ -1,13 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Fix swapped environment variables - use correct values based on what we detected
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.startsWith('https://') 
-  ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY 
-  : process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://ttgbotlcbzmmyqawnjpj.supabase.co'
-
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_URL?.startsWith('eyJ') 
-  ? process.env.NEXT_PUBLIC_SUPABASE_URL 
-  : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0Z2JvdGxjYnptbXlxYXduanBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MDA4NzksImV4cCI6MjA3MDE3Njg3OX0.jc_PZay5gUyleINrGC5d5Sd2mCkHjonP56KCLJJNM1k'
+// Use environment variables directly - they are now correctly set in .env.local
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Supabase URL:', supabaseUrl)
