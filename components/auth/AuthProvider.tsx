@@ -159,9 +159,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     resetPassword,
   }
 
+  // Show loading state properly
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 bg-teal-600 rounded-lg mx-auto mb-4 animate-pulse"></div>
+          <p className="text-gray-600">Loading BittieTasks...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <AuthContext.Provider value={value}>
-      {mounted ? children : null}
+      {children}
     </AuthContext.Provider>
   )
 }
