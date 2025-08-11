@@ -66,19 +66,19 @@ export default function MarketplacePage() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'solo': return 'bg-blue-500/20 text-blue-400 border-blue-500/20'
-      case 'shared': return 'bg-green-500/20 text-green-400 border-green-500/20'
-      case 'self_care': return 'bg-purple-500/20 text-purple-400 border-purple-500/20'
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/20'
+      case 'solo': return 'bittie-badge-blue'
+      case 'shared': return 'bittie-badge-green'
+      case 'self_care': return 'bittie-badge-purple'
+      default: return 'bittie-badge-blue'
     }
   }
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-green-500/20 text-green-400'
-      case 'medium': return 'bg-yellow-500/20 text-yellow-400'
-      case 'hard': return 'bg-red-500/20 text-red-400'
-      default: return 'bg-gray-500/20 text-gray-400'
+      case 'easy': return 'bittie-badge-green'
+      case 'medium': return 'bittie-badge-yellow'
+      case 'hard': return 'bg-red-100 text-red-700 border border-red-200 px-3 py-1 rounded-full text-sm font-medium'
+      default: return 'bittie-badge-blue'
     }
   }
 
@@ -86,74 +86,74 @@ export default function MarketplacePage() {
   const userSubscriptionTier = 'free' // This would come from actual user data
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
+    <div className="min-h-screen bittie-gradient-bg">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="bittie-container bittie-section">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
+        <div className="text-center mb-8 bittie-fade-in">
+          <h1 className="bittie-heading-lg bittie-gradient-text mb-4">
             Task Marketplace
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="bittie-body-lg text-gray-600 max-w-2xl mx-auto">
             Discover over 110 real earning opportunities. Transform daily tasks into income while building community connections.
           </p>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-white/70 backdrop-blur-sm border-green-200">
-            <CardContent className="p-4 text-center">
-              <Target className="w-8 h-8 text-green-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-green-600">{allTasks.length}</div>
-              <div className="text-sm text-gray-600">Total Opportunities</div>
+        <div className="bittie-grid-4 mb-8 bittie-slide-up">
+          <Card className="bittie-card-hover">
+            <CardContent className="p-6 text-center">
+              <Target className="w-8 h-8 text-green-600 mx-auto mb-3" />
+              <div className="bittie-heading-sm text-green-600">{allTasks.length}</div>
+              <div className="bittie-body-sm text-gray-600">Total Opportunities</div>
             </CardContent>
           </Card>
-          <Card className="bg-white/70 backdrop-blur-sm border-blue-200">
-            <CardContent className="p-4 text-center">
-              <DollarSign className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-blue-600">
+          <Card className="bittie-card-hover">
+            <CardContent className="p-6 text-center">
+              <DollarSign className="w-8 h-8 text-blue-600 mx-auto mb-3" />
+              <div className="bittie-heading-sm text-blue-600">
                 ${Math.round(allTasks.reduce((sum, task) => sum + task.payout, 0))}
               </div>
-              <div className="text-sm text-gray-600">Total Earning Potential</div>
+              <div className="bittie-body-sm text-gray-600">Total Earning Potential</div>
             </CardContent>
           </Card>
-          <Card className="bg-white/70 backdrop-blur-sm border-green-200">
-            <CardContent className="p-4 text-center">
-              <Users className="w-8 h-8 text-green-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-green-600">
+          <Card className="bittie-card-hover">
+            <CardContent className="p-6 text-center">
+              <Users className="w-8 h-8 text-green-600 mx-auto mb-3" />
+              <div className="bittie-heading-sm text-green-600">
                 {allTasks.filter(task => task.current_participants < task.max_participants).length}
               </div>
-              <div className="text-sm text-gray-600">Available Now</div>
+              <div className="bittie-body-sm text-gray-600">Available Now</div>
             </CardContent>
           </Card>
-          <Card className="bg-white/70 backdrop-blur-sm border-blue-200">
-            <CardContent className="p-4 text-center">
-              <Award className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-blue-600">
+          <Card className="bittie-card-hover">
+            <CardContent className="p-6 text-center">
+              <Award className="w-8 h-8 text-blue-600 mx-auto mb-3" />
+              <div className="bittie-heading-sm text-blue-600">
                 {allTasks.filter(task => task.is_sponsored).length}
               </div>
-              <div className="text-sm text-gray-600">Sponsored Tasks</div>
+              <div className="bittie-body-sm text-gray-600">Sponsored Tasks</div>
             </CardContent>
           </Card>
         </div>
 
         {/* Filters */}
-        <Card className="bg-white/70 backdrop-blur-sm border-green-200 mb-8">
+        <Card className="bittie-card mb-8 bittie-fade-in">
           <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bittie-grid-4 gap-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <Input
                   placeholder="Search tasks..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-green-200 focus:border-green-400"
+                  className="pl-11 bittie-input bittie-body-md"
                 />
               </div>
               
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="border-green-200 focus:border-green-400">
+                <SelectTrigger className="bittie-input">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -166,7 +166,7 @@ export default function MarketplacePage() {
               </Select>
 
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="border-green-200 focus:border-green-400">
+                <SelectTrigger className="bittie-input">
                   <SelectValue placeholder="Task Type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -178,7 +178,7 @@ export default function MarketplacePage() {
               </Select>
 
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="border-green-200 focus:border-green-400">
+                <SelectTrigger className="bittie-input">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
@@ -192,7 +192,7 @@ export default function MarketplacePage() {
         </Card>
 
         {/* Task Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="bittie-grid-3 bittie-scale-in">
           {filteredTasks.map((task) => {
             const platformFee = calculatePlatformFee(task.payout, userSubscriptionTier)
             const netEarnings = getNetEarnings(task.payout, userSubscriptionTier)

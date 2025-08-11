@@ -14,14 +14,16 @@ import {
   Crown,
   Briefcase,
   Menu,
-  X
+  X,
+  Star,
+  BarChart3
 } from 'lucide-react'
 
 const navigationItems = [
   { path: '/platform', label: 'Dashboard', icon: Home },
   { path: '/marketplace', label: 'Marketplace', icon: Search },
-  { path: '/create-task', label: 'Create Task', icon: PlusCircle },
   { path: '/earnings', label: 'Earnings', icon: DollarSign },
+  { path: '/achievements', label: 'Achievements', icon: Star },
   { path: '/subscriptions', label: 'Plans', icon: Crown },
   { path: '/sponsors', label: 'Sponsors', icon: Briefcase },
 ]
@@ -54,159 +56,171 @@ export default function Navigation() {
   return (
     <>
       {/* Desktop Navigation */}
-      <nav className="hidden lg:flex fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-green-200 shadow-lg">
-        <div className="max-w-7xl mx-auto w-full px-6 py-4">
-          <div className="flex items-center justify-between">
+      <nav className="bittie-card border-b sticky top-0 z-50">
+        <div className="bittie-container">
+          <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="flex items-center space-x-3 group cursor-pointer" onClick={() => router.push('/')}>
+              <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-sm">
                 <span className="text-white font-bold text-lg">B</span>
               </div>
-              <span className="text-gray-800 text-xl font-bold">BittieTasks</span>
+              <span className="bittie-heading-sm bittie-gradient-text">
+                BittieTasks
+              </span>
             </div>
 
-            {/* Navigation Links */}
-            <div className="flex items-center gap-1">
+            {/* Desktop Navigation Links */}
+            <div className="hidden md:flex items-center space-x-2">
               {navigationItems.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.path
                 const isDisabled = !isVerified && item.path !== '/platform'
                 
                 return (
-                  <Button
+                  <button
                     key={item.path}
-                    variant="ghost"
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                      isActive 
-                        ? 'bg-green-100 text-green-700 border border-green-300 shadow-sm' 
-                        : isDisabled
-                        ? 'text-gray-400 cursor-not-allowed'
-                        : 'text-gray-600 hover:text-green-700 hover:bg-green-50'
-                    }`}
                     onClick={() => !isDisabled && router.push(item.path)}
                     disabled={isDisabled}
+                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-green-100 to-blue-100 text-green-700 shadow-sm'
+                        : isDisabled 
+                        ? 'text-gray-400 cursor-not-allowed opacity-50'
+                        : 'text-gray-600 hover:text-green-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50'
+                    }`}
                   >
                     <Icon className="w-4 h-4" />
-                    <span className="text-sm">{item.label}</span>
-                  </Button>
+                    <span>{item.label}</span>
+                  </button>
                 )
               })}
             </div>
 
             {/* User Menu */}
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <p className="text-gray-800 text-sm font-medium">
-                  {user?.user_metadata?.firstName || 'User'}
-                </p>
-                <p className="text-gray-600 text-xs">{user?.email}</p>
+            <div className="hidden md:flex items-center space-x-4">
+              <div className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border border-green-200">
+                <User className="w-4 h-4 text-green-600" />
+                <span className="text-sm font-medium text-green-700">
+                  {user?.email?.split('@')[0] || 'User'}
+                </span>
+                {!isVerified && (
+                  <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">
+                    Verify Email
+                  </span>
+                )}
               </div>
               <Button
                 variant="outline"
-                className="border-green-300 text-green-700 hover:bg-green-50"
                 size="sm"
                 onClick={handleSignOut}
+                className="bittie-button-secondary text-sm"
               >
-                <User className="w-4 h-4 mr-2" />
                 Sign Out
               </Button>
             </div>
-          </div>
-        </div>
-      </nav>
 
-      {/* Mobile Navigation */}
-      <div className="lg:hidden">
-        {/* Mobile Header */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-green-200 shadow-lg">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              {/* Logo */}
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold">B</span>
-                </div>
-                <span className="text-gray-800 text-lg font-bold">BittieTasks</span>
-              </div>
-
-              {/* Mobile Menu Button */}
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-600 hover:text-green-700"
+                className="text-gray-600 hover:text-green-700 hover:bg-green-50"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>
             </div>
           </div>
-        </nav>
+        </div>
 
-        {/* Mobile Menu Overlay */}
+        {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="fixed inset-0 z-40 lg:hidden">
-            <div className="fixed inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
-            <div className="fixed top-16 left-0 right-0 bg-gray-900/98 backdrop-blur-md border-b border-gray-700 p-6">
-              <div className="space-y-4">
-                {navigationItems.map((item) => {
-                  const Icon = item.icon
-                  const isActive = pathname === item.path
-                  const isDisabled = !isVerified && item.path !== '/platform'
-                  
-                  return (
-                    <Button
-                      key={item.path}
-                      variant="ghost"
-                      className={`w-full justify-start gap-3 py-3 px-4 rounded-xl ${
-                        isActive 
-                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/20' 
-                          : isDisabled
-                          ? 'text-gray-600 cursor-not-allowed'
-                          : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                      }`}
-                      onClick={() => {
-                        if (!isDisabled) {
-                          router.push(item.path)
-                          setMobileMenuOpen(false)
-                        }
-                      }}
-                      disabled={isDisabled}
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span>{item.label}</span>
-                    </Button>
-                  )
-                })}
+          <div className="md:hidden bg-white/95 backdrop-blur-sm border-t border-green-200 bittie-fade-in">
+            <div className="px-4 py-6 space-y-3">
+              {navigationItems.map((item) => {
+                const Icon = item.icon
+                const isActive = pathname === item.path
+                const isDisabled = !isVerified && item.path !== '/platform'
                 
-                <div className="pt-4 border-t border-gray-700">
-                  <div className="flex items-center gap-3 mb-4 px-4">
-                    <div>
-                      <p className="text-white text-sm font-medium">
-                        {user?.user_metadata?.firstName || 'User'}
-                      </p>
-                      <p className="text-gray-400 text-xs">{user?.email}</p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    className="w-full border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
+                return (
+                  <button
+                    key={item.path}
                     onClick={() => {
-                      handleSignOut()
-                      setMobileMenuOpen(false)
+                      if (!isDisabled) {
+                        router.push(item.path)
+                        setMobileMenuOpen(false)
+                      }
                     }}
+                    disabled={isDisabled}
+                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-green-100 to-blue-100 text-green-700 shadow-sm'
+                        : isDisabled 
+                        ? 'text-gray-400 cursor-not-allowed opacity-50'
+                        : 'text-gray-600 hover:text-green-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50'
+                    }`}
                   >
-                    <User className="w-4 h-4 mr-2" />
-                    Sign Out
-                  </Button>
+                    <Icon className="w-5 h-5" />
+                    <span>{item.label}</span>
+                  </button>
+                )
+              })}
+              
+              <div className="border-t border-green-200 pt-6 mt-6">
+                <div className="flex items-center space-x-3 px-4 py-3 mb-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl">
+                  <User className="w-5 h-5 text-green-600" />
+                  <div className="flex-1">
+                    <span className="text-sm font-medium text-green-700 block">
+                      {user?.email?.split('@')[0] || 'User'}
+                    </span>
+                    {!isVerified && (
+                      <span className="text-xs text-yellow-600">
+                        Please verify your email
+                      </span>
+                    )}
+                  </div>
                 </div>
+                <Button
+                  variant="outline"
+                  onClick={handleSignOut}
+                  className="w-full bittie-button-secondary"
+                >
+                  Sign Out
+                </Button>
               </div>
             </div>
           </div>
         )}
-      </div>
+      </nav>
 
-      {/* Spacer for fixed navigation */}
-      <div className="h-20" />
+      {/* Bottom Navigation for Mobile */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-green-200 z-50 safe-area-pb">
+        <div className="grid grid-cols-5 h-16">
+          {navigationItems.slice(0, 5).map((item) => {
+            const Icon = item.icon
+            const isActive = pathname === item.path
+            const isDisabled = !isVerified && item.path !== '/platform'
+            
+            return (
+              <button
+                key={item.path}
+                onClick={() => !isDisabled && router.push(item.path)}
+                disabled={isDisabled}
+                className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
+                  isActive
+                    ? 'text-green-600 bg-gradient-to-b from-green-50 to-transparent scale-105'
+                    : isDisabled
+                    ? 'text-gray-300 cursor-not-allowed'
+                    : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-xs font-medium">{item.label}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
     </>
   )
 }

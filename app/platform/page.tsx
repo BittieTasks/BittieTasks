@@ -52,27 +52,26 @@ export default function PlatformPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen platform-gradient">
+      <div className="min-h-screen bittie-gradient-bg">
       {/* Header */}
-      <div className="px-6 pt-8 pb-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white/90 backdrop-blur-sm border border-green-200 rounded-2xl p-6 flex justify-between items-center shadow-lg">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">B</span>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">BittieTasks</h1>
-                <p className="text-gray-600">Welcome back, {user?.user_metadata?.firstName || 'User'}!</p>
-              </div>
+      <div className="bittie-container bittie-section">
+        <div className="bittie-card p-6 flex justify-between items-center bittie-fade-in">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-blue-600 rounded-xl flex items-center justify-center shadow-sm">
+              <span className="text-white font-bold text-lg">B</span>
             </div>
-            <Button 
-              onClick={handleSignOut}
-              variant="outline" 
-              className="border-green-300 text-green-700 hover:bg-green-50"
-            >
-              Sign Out
-            </Button>
+            <div>
+              <h1 className="bittie-heading-md text-gray-800">BittieTasks</h1>
+              <p className="bittie-body-md text-gray-600">Welcome back, {user?.user_metadata?.firstName || 'User'}!</p>
+            </div>
+          </div>
+          <Button 
+            onClick={handleSignOut}
+            variant="outline" 
+            className="bittie-button-secondary text-sm"
+          >
+            Sign Out
+          </Button>
           </div>
         </div>
       </div>

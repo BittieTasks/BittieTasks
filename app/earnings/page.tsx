@@ -124,10 +124,10 @@ export default function EarningsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-500/20 text-green-400 border-green-500/20'
-      case 'pending': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/20'
-      case 'processing': return 'bg-blue-500/20 text-blue-400 border-blue-500/20'
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/20'
+      case 'completed': return 'bittie-badge-green'
+      case 'pending': return 'bittie-badge-yellow'
+      case 'processing': return 'bittie-badge-blue'
+      default: return 'bittie-badge-blue'
     }
   }
 
@@ -138,31 +138,30 @@ export default function EarningsPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="min-h-screen bittie-gradient-bg">
       {/* Header */}
-      <div className="px-6 pt-8 pb-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Earnings Dashboard</h1>
-                <p className="text-gray-400">Track your income and progress</p>
-              </div>
+      <div className="bittie-container bittie-section">
+        <div className="bittie-card p-6 bittie-fade-in">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h1 className="bittie-heading-lg bittie-gradient-text mb-3">Earnings Dashboard</h1>
+              <p className="bittie-body-lg text-gray-600">Track your income and progress</p>
+            </div>
               <Select value={timeFilter} onValueChange={setTimeFilter}>
-                <SelectTrigger className="w-48 bg-gray-700 border-gray-600 text-white">
+                <SelectTrigger className="w-48 bittie-input">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-700 border-gray-600">
-                  <SelectItem value="this-month" className="text-white hover:bg-gray-600">This Month</SelectItem>
-                  <SelectItem value="last-month" className="text-white hover:bg-gray-600">Last Month</SelectItem>
-                  <SelectItem value="this-year" className="text-white hover:bg-gray-600">This Year</SelectItem>
-                  <SelectItem value="all-time" className="text-white hover:bg-gray-600">All Time</SelectItem>
+                <SelectContent>
+                  <SelectItem value="this-month">This Month</SelectItem>
+                  <SelectItem value="last-month">Last Month</SelectItem>
+                  <SelectItem value="this-year">This Year</SelectItem>
+                  <SelectItem value="all-time">All Time</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Key Metrics */}
-            <div className="grid md:grid-cols-4 gap-6">
+            <div className="bittie-grid-4 bittie-slide-up">
               <div className="bg-gray-700/30 rounded-lg p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">

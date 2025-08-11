@@ -68,10 +68,10 @@ export default function TaskDetailPage() {
 
   if (!isVerified) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
+      <div className="min-h-screen bittie-gradient-bg">
         <Navigation />
         <div className="flex items-center justify-center min-h-[80vh]">
-          <Card className="bg-white/80 backdrop-blur-sm border-yellow-200 max-w-md mx-4">
+          <Card className="bittie-card max-w-md mx-4 border-yellow-200">
             <CardContent className="p-8 text-center">
               <AlertCircle className="w-16 h-16 text-yellow-600 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-gray-800 mb-2">Email Verification Required</h2>
