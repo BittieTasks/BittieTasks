@@ -1,3 +1,15 @@
 {
-  "/page": "app/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/profile/route": "app/api/auth/profile/route.js",
+  "/api/test/route": "app/api/test/route.js",
+  "/auth/callback/page": "app/auth/callback/page.js",
+  "/auth/page": "app/auth/page.js",
+  "/create-task/page": "app/create-task/page.js",
+  "/marketplace/page": "app/marketplace/page.js",
+  "/earnings/page": "app/earnings/page.js",
+  "/platform/page": "app/platform/page.js",
+  "/page": "app/page.js",
+  "/sponsors/page": "app/sponsors/page.js",
+  "/subscriptions/page": "app/subscriptions/page.js",
+  "/welcome/page": "app/welcome/page.js"
 }
