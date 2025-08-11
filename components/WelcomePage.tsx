@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useRouter } from 'next/navigation'
 
 // Interactive Earnings Calculator Component
 function EarningsCalculator() {
@@ -20,108 +21,124 @@ function EarningsCalculator() {
 
   if (!mounted) {
     return (
-      <Card className="card-clean">
-        <CardHeader>
-          <CardTitle className="text-heading">Calculate Your Earnings</CardTitle>
-          <CardDescription>Estimate your potential income from community tasks</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Tasks per week: 3
-                </label>
-                <div className="w-full h-2 bg-muted rounded"></div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Average task value: $35
-                </label>
-                <div className="w-full h-2 bg-muted rounded"></div>
-              </div>
+      <div className="space-y-8">
+        <div className="text-center">
+          <h3 className="text-3xl font-bold text-white mb-4">Calculate Your Earnings</h3>
+          <p className="text-white/80">Estimate your potential income from community tasks</p>
+        </div>
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-white font-medium mb-3">
+                Tasks per week: 3
+              </label>
+              <div className="w-full h-3 bg-white/20 rounded-full"></div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t">
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <div className="text-2xl font-bold mb-1">$105</div>
-                <p className="text-muted-foreground text-sm">Per Week</p>
-              </div>
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <div className="text-2xl font-bold mb-1">$455</div>
-                <p className="text-muted-foreground text-sm">Per Month</p>
-              </div>
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <div className="text-2xl font-bold mb-1">$5,460</div>
-                <p className="text-muted-foreground text-sm">Per Year</p>
-              </div>
+            <div>
+              <label className="block text-white font-medium mb-3">
+                Average task value: $35
+              </label>
+              <div className="w-full h-3 bg-white/20 rounded-full"></div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
+            <div className="text-center p-6 bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-sm border border-green-300/30 rounded-2xl">
+              <div className="text-3xl font-black text-yellow-400 mb-2">$105</div>
+              <p className="text-white/70">Per Week</p>
+            </div>
+            <div className="text-center p-6 bg-gradient-to-br from-blue-500/20 to-indigo-600/20 backdrop-blur-sm border border-blue-300/30 rounded-2xl">
+              <div className="text-3xl font-black text-yellow-400 mb-2">$455</div>
+              <p className="text-white/70">Per Month</p>
+            </div>
+            <div className="text-center p-6 bg-gradient-to-br from-purple-500/20 to-pink-600/20 backdrop-blur-sm border border-purple-300/30 rounded-2xl">
+              <div className="text-3xl font-black text-yellow-400 mb-2">$5,460</div>
+              <p className="text-white/70">Per Year</p>
+            </div>
+          </div>
+        </div>
+      </div>
     )
   }
 
   return (
-    <Card className="card-clean">
-      <CardHeader>
-        <CardTitle className="text-heading">Calculate Your Earnings</CardTitle>
-        <CardDescription>Estimate your potential income from community tasks</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Tasks per week: {tasksPerWeek}
-              </label>
-              <input 
-                type="range" 
-                min="1" 
-                max="10" 
-                value={tasksPerWeek}
-                onChange={(e) => setTasksPerWeek(parseInt(e.target.value))}
-                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Average task value: ${avgTaskValue}
-              </label>
-              <input 
-                type="range" 
-                min="15" 
-                max="75" 
-                step="5"
-                value={avgTaskValue}
-                onChange={(e) => setAvgTaskValue(parseInt(e.target.value))}
-                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
+    <div className="space-y-8">
+      <div className="text-center">
+        <h3 className="text-3xl font-bold text-white mb-4">Calculate Your Earnings</h3>
+        <p className="text-white/80">Estimate your potential income from community tasks</p>
+      </div>
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-white font-medium mb-3">
+              Tasks per week: {tasksPerWeek}
+            </label>
+            <input 
+              type="range" 
+              min="1" 
+              max="10" 
+              value={tasksPerWeek}
+              onChange={(e) => setTasksPerWeek(parseInt(e.target.value))}
+              className="w-full h-3 bg-white/20 rounded-full appearance-none cursor-pointer slider"
+              style={{
+                background: `linear-gradient(to right, #ec4899 0%, #ec4899 ${(tasksPerWeek / 10) * 100}%, rgba(255,255,255,0.2) ${(tasksPerWeek / 10) * 100}%, rgba(255,255,255,0.2) 100%)`
+              }}
+            />
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t">
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <div className="text-2xl font-bold mb-1">${Math.round(weeklyEarnings)}</div>
-              <p className="text-muted-foreground text-sm">Per Week</p>
-            </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <div className="text-2xl font-bold mb-1">${Math.round(monthlyEarnings)}</div>
-              <p className="text-muted-foreground text-sm">Per Month</p>
-            </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <div className="text-2xl font-bold mb-1">${Math.round(yearlyEarnings).toLocaleString()}</div>
-              <p className="text-muted-foreground text-sm">Per Year</p>
-            </div>
+          <div>
+            <label className="block text-white font-medium mb-3">
+              Average task value: ${avgTaskValue}
+            </label>
+            <input 
+              type="range" 
+              min="15" 
+              max="75" 
+              step="5"
+              value={avgTaskValue}
+              onChange={(e) => setAvgTaskValue(parseInt(e.target.value))}
+              className="w-full h-3 bg-white/20 rounded-full appearance-none cursor-pointer slider"
+              style={{
+                background: `linear-gradient(to right, #10b981 0%, #10b981 ${((avgTaskValue - 15) / 60) * 100}%, rgba(255,255,255,0.2) ${((avgTaskValue - 15) / 60) * 100}%, rgba(255,255,255,0.2) 100%)`
+              }}
+            />
           </div>
         </div>
-      </CardContent>
-    </Card>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
+          <div className="text-center p-6 bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-sm border border-green-300/30 rounded-2xl transform hover:scale-105 transition-all duration-300">
+            <div className="text-3xl font-black text-yellow-400 mb-2">${Math.round(weeklyEarnings)}</div>
+            <p className="text-white/70">Per Week</p>
+          </div>
+          <div className="text-center p-6 bg-gradient-to-br from-blue-500/20 to-indigo-600/20 backdrop-blur-sm border border-blue-300/30 rounded-2xl transform hover:scale-105 transition-all duration-300">
+            <div className="text-3xl font-black text-yellow-400 mb-2">${Math.round(monthlyEarnings)}</div>
+            <p className="text-white/70">Per Month</p>
+          </div>
+          <div className="text-center p-6 bg-gradient-to-br from-purple-500/20 to-pink-600/20 backdrop-blur-sm border border-purple-300/30 rounded-2xl transform hover:scale-105 transition-all duration-300">
+            <div className="text-3xl font-black text-yellow-400 mb-2">${Math.round(yearlyEarnings).toLocaleString()}</div>
+            <p className="text-white/70">Per Year</p>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
 export default function WelcomePage() {
+  const router = useRouter()
+
+  const handleSignUp = () => {
+    router.push('/auth/signup')
+  }
+
+  const handleLogin = () => {
+    router.push('/auth/login')
+  }
+
+  const handleViewTasks = () => {
+    router.push('/platform')
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white overflow-x-hidden">
       {/* Animated Background Elements */}
@@ -142,8 +159,19 @@ export default function WelcomePage() {
               <span className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">BittieTasks</span>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm font-semibold">Log In</Button>
-              <Button className="bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 text-white font-semibold px-6 py-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">Sign Up</Button>
+              <Button 
+                variant="outline" 
+                onClick={handleLogin}
+                className="border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm font-semibold"
+              >
+                Log In
+              </Button>
+              <Button 
+                onClick={handleSignUp}
+                className="bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 text-white font-semibold px-6 py-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
+              >
+                Sign Up
+              </Button>
             </div>
           </div>
         </div>
@@ -180,10 +208,19 @@ export default function WelcomePage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-              <Button size="lg" className="bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 text-white font-bold px-10 py-4 rounded-2xl shadow-2xl transform hover:scale-110 transition-all duration-300 text-lg">
+              <Button 
+                size="lg" 
+                onClick={handleSignUp}
+                className="bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 text-white font-bold px-10 py-4 rounded-2xl shadow-2xl transform hover:scale-110 transition-all duration-300 text-lg"
+              >
                 💰 Start Earning Now
               </Button>
-              <Button size="lg" variant="outline" className="border-2 border-white/40 text-white hover:bg-white/10 backdrop-blur-sm font-semibold px-10 py-4 rounded-2xl">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                onClick={handleViewTasks}
+                className="border-2 border-white/40 text-white hover:bg-white/10 backdrop-blur-sm font-semibold px-10 py-4 rounded-2xl"
+              >
                 🎯 See How It Works
               </Button>
             </div>
@@ -348,10 +385,19 @@ export default function WelcomePage() {
               Start your first task THIS WEEK and see the cash roll in!
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-12 py-6 rounded-2xl shadow-2xl transform hover:scale-110 transition-all duration-300 text-xl">
+              <Button 
+                size="lg" 
+                onClick={handleSignUp}
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-12 py-6 rounded-2xl shadow-2xl transform hover:scale-110 transition-all duration-300 text-xl"
+              >
                 💰 Start Making Money NOW
               </Button>
-              <Button size="lg" variant="outline" className="border-2 border-white/40 text-white hover:bg-white/10 backdrop-blur-sm font-semibold px-12 py-6 rounded-2xl text-xl">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                onClick={handleViewTasks}
+                className="border-2 border-white/40 text-white hover:bg-white/10 backdrop-blur-sm font-semibold px-12 py-6 rounded-2xl text-xl"
+              >
                 🔍 Browse Hot Tasks
               </Button>
             </div>

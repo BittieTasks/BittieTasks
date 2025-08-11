@@ -268,4 +268,35 @@
       transform: translate(0px, 0px) scale(1);
     }
   }
+
+  /* Slider styling for earnings calculator */
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 12px;
+    border-radius: 10px;
+    outline: none;
+  }
+
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ec4899, #8b5cf6);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+
+  .slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ec4899, #8b5cf6);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
 }
