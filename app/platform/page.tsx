@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../components/auth/AuthProvider'
+import { supabase } from '../../lib/supabase'
 import CleanLayout from '../../components/CleanLayout'
 import { Button } from '../../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
@@ -135,11 +136,17 @@ export default function Platform() {
     }
 
     try {
+      // Get session for API authentication
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('Please sign in again to apply to tasks')
+      }
+
       const response = await fetch(`/api/tasks/${taskId}/apply`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.access_token}`
+          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({ message: 'I would like to join this task!' })
       })
@@ -166,13 +173,8 @@ export default function Platform() {
     }
   }
 
-  const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'all' || task.category.name === selectedCategory
-    const matchesType = taskType === 'all' || task.task_type === taskType
-    return matchesSearch && matchesCategory && matchesType
-  })
+  // Remove client-side filtering since we're now filtering on the server
+  const filteredTasks = tasks
 
   if (loading) {
     return (

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../components/auth/AuthProvider'
+import { supabase } from '../../../lib/supabase'
 import CleanLayout from '../../../components/CleanLayout'
 import { Button } from '../../../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card'
@@ -95,12 +96,18 @@ export default function CreateTask() {
         throw new Error('Authentication required')
       }
 
+      // Get session for API authentication
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('Please sign in again to create tasks')
+      }
+
       // Submit to API
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.access_token}`
+          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify(formData)
       })
