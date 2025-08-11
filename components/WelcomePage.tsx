@@ -88,7 +88,7 @@ function EarningsCalculator() {
             fontWeight: 'bold',
             color: 'white',
             marginBottom: '8px',
-            background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+            background: 'linear-gradient(135deg, #10b981, #3b82f6, #059669)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
@@ -111,7 +111,7 @@ function EarningsCalculator() {
             fontWeight: 'bold',
             color: 'white',
             marginBottom: '8px',
-            background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+            background: 'linear-gradient(135deg, #10b981, #3b82f6, #059669)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
@@ -134,7 +134,7 @@ function EarningsCalculator() {
             fontWeight: 'bold',
             color: 'white',
             marginBottom: '8px',
-            background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+            background: 'linear-gradient(135deg, #10b981, #3b82f6, #059669)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
@@ -152,7 +152,7 @@ export default function WelcomePage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #1e40af 0%, #7c3aed 50%, #059669 100%)',
+      background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 50%, #059669 100%)',
       position: 'relative',
       overflow: 'hidden',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif'
@@ -272,7 +272,7 @@ export default function WelcomePage() {
               marginTop: '8px',
               fontSize: 'inherit',
               fontWeight: 'inherit',
-              background: 'linear-gradient(135deg, #60a5fa, #c084fc, #34d399)',
+              background: 'linear-gradient(135deg, #10b981, #3b82f6, #059669)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'

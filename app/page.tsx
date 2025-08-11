@@ -28,12 +28,12 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-500 via-blue-500 to-green-600 flex items-center justify-center">
+        <div className="bg-white/90 backdrop-blur-sm border border-green-200 rounded-2xl p-8 text-center shadow-lg">
+          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <span className="text-white font-bold text-2xl">B</span>
           </div>
-          <p className="text-gray-300">Loading BittieTasks...</p>
+          <p className="text-gray-700">Loading BittieTasks...</p>
         </div>
       </div>
     )
