@@ -1,12 +1,12 @@
 'use client'
 
-import { useAuth } from '../components/auth/AuthProvider'
+import { useAuth } from '@/components/auth/AuthProvider'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 // Dynamically import WelcomePage with no SSR to prevent hydration issues
-const WelcomePage = dynamic(() => import('../components/WelcomePage'), {
+const WelcomePage = dynamic(() => import('@/components/WelcomePage'), {
   ssr: false,
   loading: () => (
     <div className="min-h-screen bg-gradient-to-br from-green-500 via-blue-500 to-green-600 flex items-center justify-center">
