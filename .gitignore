@@ -1,13 +1,40 @@
 # Dependencies
 node_modules/
-.pnp
-.pnp.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Production
-/build
-/dist
-/.next/
-/out/
+# Production builds
+.next/
+out/
+dist/
+build/
+
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
 
 # Runtime data
 pids
@@ -15,33 +42,32 @@ pids
 *.seed
 *.pid.lock
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Optional npm cache directory
+.npm
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
+# Optional REPL history
+.node_repl_history
 
-# Runtime data
-.DS_Store
-*.tsbuildinfo
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output
 
-# IDE
-.vscode/
-.idea/
+# Cache directories
+.cache/
+.parcel-cache/
 
-# Replit
+# Replit specific
 .replit
-.config/
-.upm/
+.env
+.breakpoints
+.replit-secrets-config
+.replitignore
 
 # Database
 *.db
 *.sqlite
-.vercel
+*.sqlite3
+
+# Uploads
+uploads/
+temp/
