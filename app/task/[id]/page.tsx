@@ -19,7 +19,7 @@ import {
 const sampleTask = {
   id: '1',
   title: 'School Pickup Share',
-  description: 'Looking for parents to share daily school pickup duties for elementary school. We need reliable parents who can take turns picking up kids from Downtown Elementary School. Perfect for working parents who want to reduce daily commute stress.',
+  description: 'Looking for adults to share daily school pickup duties for elementary school. We need reliable adults who can take turns picking up kids from Downtown Elementary School. Perfect for working adults who want to reduce daily commute stress.',
   category: 'Transportation',
   type: 'shared',
   payout: 45,
@@ -54,12 +54,17 @@ export default function TaskDetailPage() {
     setMounted(true)
   }, [])
 
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      router.push('/auth')
+    }
+  }, [mounted, isAuthenticated, router])
+
   if (!mounted) {
     return null
   }
 
   if (!isAuthenticated) {
-    router.push('/auth')
     return null
   }
 
