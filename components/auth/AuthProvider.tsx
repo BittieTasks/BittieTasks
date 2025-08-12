@@ -52,15 +52,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (event === 'SIGNED_IN' && session?.user) {
         // Create or update user profile in our database
-        await createUserProfile(session.user)
+        try {
+          await createUserProfile(session.user)
+        } catch (error) {
+          console.error('Error creating user profile:', error)
+        }
         
         // Auto-redirect to marketplace after successful sign in
         if (window.location.pathname === '/auth') {
           console.log('Auto-redirecting to marketplace after sign in')
-          // Reduced delay for better UX
-          setTimeout(() => {
-            window.location.href = '/marketplace'
-          }, 500)
+          // Immediate redirect for better UX
+          window.location.href = '/marketplace'
         }
       }
     })
@@ -74,7 +76,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const { data: { session: currentSession } } = await supabase.auth.getSession()
       
       if (!currentSession?.access_token) {
-        console.error('No valid session token for profile creation')
+        console.log('No valid session token for profile creation, skipping...')
         return
       }
 
@@ -94,10 +96,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       })
 
       if (!response.ok) {
-        console.error('Failed to create user profile')
+        console.log('Profile API not available, continuing without profile creation')
       }
     } catch (error) {
-      console.error('Error creating user profile:', error)
+      console.log('Profile creation skipped:', error.message)
     }
   }
 

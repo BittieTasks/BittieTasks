@@ -30,6 +30,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/marketplace/page.js"
+    ],
+    "/api/auth/test-connection/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/auth/test-connection/route.js"
     ]
   }
 }

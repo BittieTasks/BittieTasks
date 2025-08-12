@@ -47,10 +47,8 @@ export default function AuthPage() {
         title: 'Success!',
         description: 'You have been signed in successfully.',
       })
-      // Use setTimeout to ensure the toast shows before redirect
-      setTimeout(() => {
-        window.location.href = '/dashboard'
-      }, 500)
+      // Let AuthProvider handle the redirect to marketplace
+      // No manual redirect needed here
     } catch (error: any) {
       console.error('handleSignIn error:', error)
       toast({
