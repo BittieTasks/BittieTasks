@@ -21,13 +21,13 @@ import {
 const exampleTasks = [
   {
     id: 1,
-    title: "School Pickup Coordination",
-    description: "Help coordinate pickup schedules for Lincoln Elementary. Share driving duties with 3 other adults.",
+    title: "Community Fitness Walk Group",
+    description: "Join a weekly walking group for adults. Share motivation and track fitness goals together with neighbors.",
     payout: 35,
-    location: "Lincoln Elementary School",
-    time_commitment: "30 minutes",
-    max_participants: 4,
-    current_participants: 2,
+    location: "Riverside Park Trail",
+    time_commitment: "45 minutes",
+    max_participants: 6,
+    current_participants: 3,
     task_category: "Community",
     payment_source: "BittieTasks",
     category: { name: "Community", color: "bg-blue-100 text-blue-700", icon: Users },
@@ -49,10 +49,10 @@ const exampleTasks = [
   },
   {
     id: 3,
-    title: "Photography Skills for Art Lessons",
-    description: "Trade photography lessons for kids' art tutoring. Equal time exchange between skilled adults.",
+    title: "Photography Skills for Web Design Help",
+    description: "Trade photography lessons for website design assistance. Equal time exchange between skilled adults.",
     payout: 0,
-    location: "Home Studios",
+    location: "Local Coffee Shop",
     time_commitment: "2 hours",
     max_participants: 2,
     current_participants: 1,
@@ -105,6 +105,33 @@ const exampleTasks = [
 export default function ExamplesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <a href="/" className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">B</span>
+              </div>
+              <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
+            </a>
+            
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-6">
+              <a href="/examples" className="text-teal-600 font-medium">
+                Examples
+              </a>
+              <a href="/sponsors" className="text-gray-700 hover:text-teal-600 font-medium">
+                Sponsors
+              </a>
+              <a href="/auth" className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
+                Sign In
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
