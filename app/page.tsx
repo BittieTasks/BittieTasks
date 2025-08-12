@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -17,6 +18,8 @@ import {
 } from 'lucide-react'
 
 export default function HomePage() {
+  const router = useRouter()
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
@@ -34,19 +37,19 @@ export default function HomePage() {
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
               <button 
-                onClick={() => window.location.href = '/examples'} 
+                onClick={() => router.push('/examples')} 
                 className="text-gray-700 hover:text-teal-600 font-medium"
               >
                 Examples
               </button>
               <button 
-                onClick={() => window.location.href = '/sponsors'} 
+                onClick={() => router.push('/sponsors')} 
                 className="text-gray-700 hover:text-teal-600 font-medium"
               >
                 Sponsors
               </button>
               <button 
-                onClick={() => window.location.href = '/auth'} 
+                onClick={() => router.push('/auth')} 
                 className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium"
               >
                 Sign In
@@ -69,14 +72,14 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => window.location.href = '/auth'}
+              onClick={() => router.push('/auth')}
               className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
             >
               Let's Get Started
               <ArrowRight size={20} className="ml-2" />
             </button>
             <button
-              onClick={() => window.location.href = '/examples'}
+              onClick={() => router.push('/examples')}
               className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
             >
               Explore Opportunities

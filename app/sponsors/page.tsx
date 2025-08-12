@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -87,6 +88,8 @@ const sampleSponsors = [
 ]
 
 export default function SponsorsPage() {
+  const router = useRouter()
+  
   const getEthicsScoreColor = (score: number) => {
     if (score >= 90) return 'text-green-600'
     if (score >= 80) return 'text-blue-600'
@@ -101,7 +104,7 @@ export default function SponsorsPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <button onClick={() => window.location.href = '/'} className="flex items-center space-x-3">
+            <button onClick={() => router.push('/')} className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">B</span>
               </div>
@@ -110,13 +113,13 @@ export default function SponsorsPage() {
             
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
-              <button onClick={() => window.location.href = '/examples'} className="text-gray-700 hover:text-teal-600 font-medium">
+              <button onClick={() => router.push('/examples')} className="text-gray-700 hover:text-teal-600 font-medium">
                 Examples
               </button>
-              <button onClick={() => window.location.href = '/sponsors'} className="text-teal-600 font-medium">
+              <button onClick={() => router.push('/sponsors')} className="text-teal-600 font-medium">
                 Sponsors
               </button>
-              <button onClick={() => window.location.href = '/auth'} className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
+              <button onClick={() => router.push('/auth')} className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
                 Sign In
               </button>
             </div>
@@ -136,7 +139,7 @@ export default function SponsorsPage() {
             Join our community to access higher-paying opportunities from trusted sponsors.
           </p>
           <button
-            onClick={() => window.location.href = '/auth'}
+            onClick={() => router.push('/auth')}
             className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
           >
             Join to Access Sponsored Tasks
@@ -339,7 +342,7 @@ export default function SponsorsPage() {
                 {/* Action Button */}
                 <div className="block">
                   <Button 
-                    onClick={() => window.location.href = '/auth'}
+                    onClick={() => router.push('/auth')}
                     className="w-full bg-teal-600 hover:bg-teal-700 text-white"
                   >
                     Join to Access Sponsored Tasks

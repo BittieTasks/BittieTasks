@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -103,6 +104,8 @@ const exampleTasks = [
 ]
 
 export default function ExamplesPage() {
+  const router = useRouter()
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
@@ -110,7 +113,7 @@ export default function ExamplesPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <button onClick={() => window.location.href = '/'} className="flex items-center space-x-3">
+            <button onClick={() => router.push('/')} className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">B</span>
               </div>
@@ -119,13 +122,13 @@ export default function ExamplesPage() {
             
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
-              <button onClick={() => window.location.href = '/examples'} className="text-teal-600 font-medium">
+              <button onClick={() => router.push('/examples')} className="text-teal-600 font-medium">
                 Examples
               </button>
-              <button onClick={() => window.location.href = '/sponsors'} className="text-gray-700 hover:text-teal-600 font-medium">
+              <button onClick={() => router.push('/sponsors')} className="text-gray-700 hover:text-teal-600 font-medium">
                 Sponsors
               </button>
-              <button onClick={() => window.location.href = '/auth'} className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
+              <button onClick={() => router.push('/auth')} className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
                 Sign In
               </button>
             </div>
@@ -137,7 +140,7 @@ export default function ExamplesPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <button onClick={() => window.location.href = '/'} className="flex items-center space-x-2 text-gray-600 hover:text-teal-600">
+              <button onClick={() => router.push('/')} className="flex items-center space-x-2 text-gray-600 hover:text-teal-600">
                 <ArrowLeft size={20} />
                 <span>Back</span>
               </button>
@@ -149,7 +152,7 @@ export default function ExamplesPage() {
               <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
             </div>
             <button
-              onClick={() => window.location.href = '/auth'}
+              onClick={() => router.push('/auth')}
               className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg"
             >
               Join Now
@@ -285,7 +288,7 @@ export default function ExamplesPage() {
             Sign up today and start earning from community activities.
           </p>
           <button
-            onClick={() => window.location.href = '/auth'}
+            onClick={() => router.push('/auth')}
             className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
           >
             Join BittieTasks Now
