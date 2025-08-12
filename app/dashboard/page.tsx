@@ -370,22 +370,12 @@ export default function Dashboard() {
                         Current plan: {subscriptionBadge.label}
                       </p>
                     </div>
-                    <Button variant="outline">
-                      Upgrade Plan
+                    <Button asChild variant="outline">
+                      <Link to="/subscriptions">Upgrade Plan</Link>
                     </Button>
                   </div>
                   
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <h4 className="font-medium text-gray-900">Monthly Goal</h4>
-                      <p className="text-sm text-gray-500">
-                        Current goal: ${stats.monthly_goal.toFixed(2)}
-                      </p>
-                    </div>
-                    <Button variant="outline">
-                      Edit Goal
-                    </Button>
-                  </div>
+
                 </CardContent>
               </Card>
             </TabsContent>
