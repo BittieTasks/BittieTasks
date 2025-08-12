@@ -101,24 +101,24 @@ export default function SponsorsPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <a href="/" className="flex items-center space-x-3">
+            <button onClick={() => window.location.href = '/'} className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">B</span>
               </div>
               <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
-            </a>
+            </button>
             
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
-              <a href="/examples" className="text-gray-700 hover:text-teal-600 font-medium">
+              <button onClick={() => window.location.href = '/examples'} className="text-gray-700 hover:text-teal-600 font-medium">
                 Examples
-              </a>
-              <a href="/sponsors" className="text-teal-600 font-medium">
+              </button>
+              <button onClick={() => window.location.href = '/sponsors'} className="text-teal-600 font-medium">
                 Sponsors
-              </a>
-              <a href="/auth" className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
+              </button>
+              <button onClick={() => window.location.href = '/auth'} className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
                 Sign In
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -135,13 +135,13 @@ export default function SponsorsPage() {
             Discover ethical partner companies offering sponsored tasks with premium payouts. 
             Join our community to access higher-paying opportunities from trusted sponsors.
           </p>
-          <a
-            href="/auth"
+          <button
+            onClick={() => window.location.href = '/auth'}
             className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
           >
             Join to Access Sponsored Tasks
             <ArrowRight size={20} className="ml-2" />
-          </a>
+          </button>
         </div>
 
         {/* Key Stats */}
@@ -337,11 +337,14 @@ export default function SponsorsPage() {
                 </div>
 
                 {/* Action Button */}
-                <a href="/auth" className="block">
-                  <Button className="w-full bg-teal-600 hover:bg-teal-700 text-white">
+                <div className="block">
+                  <Button 
+                    onClick={() => window.location.href = '/auth'}
+                    className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+                  >
                     Join to Access Sponsored Tasks
                   </Button>
-                </a>
+                </div>
               </CardContent>
             </Card>
           ))}

@@ -33,15 +33,24 @@ export default function HomePage() {
             
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
-              <a href="/examples" className="text-gray-700 hover:text-teal-600 font-medium">
+              <button 
+                onClick={() => window.location.href = '/examples'} 
+                className="text-gray-700 hover:text-teal-600 font-medium"
+              >
                 Examples
-              </a>
-              <a href="/sponsors" className="text-gray-700 hover:text-teal-600 font-medium">
+              </button>
+              <button 
+                onClick={() => window.location.href = '/sponsors'} 
+                className="text-gray-700 hover:text-teal-600 font-medium"
+              >
                 Sponsors
-              </a>
-              <a href="/auth" className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
+              </button>
+              <button 
+                onClick={() => window.location.href = '/auth'} 
+                className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium"
+              >
                 Sign In
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -59,19 +68,19 @@ export default function HomePage() {
             Transform everyday activities into profitable opportunities.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/auth"
+            <button
+              onClick={() => window.location.href = '/auth'}
               className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
             >
               Let's Get Started
               <ArrowRight size={20} className="ml-2" />
-            </a>
-            <a
-              href="/examples"
+            </button>
+            <button
+              onClick={() => window.location.href = '/examples'}
               className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
             >
               Explore Opportunities
-            </a>
+            </button>
           </div>
         </div>
 

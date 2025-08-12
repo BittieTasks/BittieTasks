@@ -110,24 +110,24 @@ export default function ExamplesPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <a href="/" className="flex items-center space-x-3">
+            <button onClick={() => window.location.href = '/'} className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">B</span>
               </div>
               <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
-            </a>
+            </button>
             
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
-              <a href="/examples" className="text-teal-600 font-medium">
+              <button onClick={() => window.location.href = '/examples'} className="text-teal-600 font-medium">
                 Examples
-              </a>
-              <a href="/sponsors" className="text-gray-700 hover:text-teal-600 font-medium">
+              </button>
+              <button onClick={() => window.location.href = '/sponsors'} className="text-gray-700 hover:text-teal-600 font-medium">
                 Sponsors
-              </a>
-              <a href="/auth" className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
+              </button>
+              <button onClick={() => window.location.href = '/auth'} className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
                 Sign In
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -137,10 +137,10 @@ export default function ExamplesPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <a href="/" className="flex items-center space-x-2 text-gray-600 hover:text-teal-600">
+              <button onClick={() => window.location.href = '/'} className="flex items-center space-x-2 text-gray-600 hover:text-teal-600">
                 <ArrowLeft size={20} />
                 <span>Back</span>
-              </a>
+              </button>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
@@ -148,12 +148,12 @@ export default function ExamplesPage() {
               </div>
               <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
             </div>
-            <a
-              href="/auth"
+            <button
+              onClick={() => window.location.href = '/auth'}
               className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg"
             >
               Join Now
-            </a>
+            </button>
           </div>
         </div>
       </header>
@@ -284,12 +284,12 @@ export default function ExamplesPage() {
             Join thousands of adults who are transforming daily tasks into income opportunities. 
             Sign up today and start earning from community activities.
           </p>
-          <a
-            href="/auth"
+          <button
+            onClick={() => window.location.href = '/auth'}
             className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
           >
             Join BittieTasks Now
-          </a>
+          </button>
         </div>
       </main>
     </div>

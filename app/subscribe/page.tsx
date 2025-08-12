@@ -192,7 +192,7 @@ export default function Subscribe() {
   }
 
   if (!user) {
-    router.push('/signin');
+    router.push('/auth');
     return null;
   }
 
