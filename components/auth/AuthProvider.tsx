@@ -98,8 +98,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!response.ok) {
         console.log('Profile API not available, continuing without profile creation')
       }
-    } catch (error) {
-      console.log('Profile creation skipped:', error.message)
+    } catch (error: any) {
+      console.log('Profile creation skipped:', error?.message || 'Unknown error')
     }
   }
 
