@@ -2,7 +2,6 @@
 const nextConfig = {
   // Production optimizations
   productionBrowserSourceMaps: false,
-  optimizeFonts: true,
   compress: true,
   
   images: {

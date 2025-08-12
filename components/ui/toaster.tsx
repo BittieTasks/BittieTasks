@@ -1,6 +1,6 @@
 'use client'
 
-import { useToast } from '../../hooks/use-toast'
+import { useToast, Toast } from '../../hooks/use-toast'
 import { X, CheckCircle, AlertCircle } from 'lucide-react'
 
 export function Toaster() {
@@ -8,7 +8,7 @@ export function Toaster() {
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-4">
-      {toasts.map((toast) => (
+      {toasts.map((toast: Toast) => (
         <div
           key={toast.id}
           className={`
