@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Stripe with proper error handling
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-if (!stripeSecretKey) {
-  throw new Error('STRIPE_SECRET_KEY environment variable is required');
+// Initialize Stripe safely for build time
+function getStripe() {
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeSecretKey) {
+    throw new Error('STRIPE_SECRET_KEY environment variable is required');
+  }
+  return new Stripe(stripeSecretKey);
 }
-
-const stripe = new Stripe(stripeSecretKey);
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -27,6 +28,7 @@ export async function POST(request: NextRequest) {
     if (!endpointSecret) {
       throw new Error('Stripe webhook secret not configured');
     }
+    const stripe = getStripe();
     event = stripe.webhooks.constructEvent(body, sig!, endpointSecret);
   } catch (err: any) {
     console.error('Webhook signature verification failed:', err.message);

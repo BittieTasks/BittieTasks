@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Stripe with proper error handling
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-if (!stripeSecretKey) {
-  throw new Error('STRIPE_SECRET_KEY environment variable is required');
+// Initialize Stripe safely for build time
+function getStripe() {
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeSecretKey) {
+    throw new Error('STRIPE_SECRET_KEY environment variable is required');
+  }
+  return new Stripe(stripeSecretKey);
 }
-
-const stripe = new Stripe(stripeSecretKey);
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -80,6 +81,7 @@ export async function POST(request: NextRequest) {
 
     // Create Stripe customer if doesn't exist
     if (!customerId) {
+      const stripe = getStripe();
       const customer = await stripe.customers.create({
         email: user.email!,
         name: `${userProfile.firstName} ${userProfile.lastName}`,
@@ -101,6 +103,7 @@ export async function POST(request: NextRequest) {
     const plan = SUBSCRIPTION_PLANS[planType as keyof typeof SUBSCRIPTION_PLANS];
 
     // Create subscription
+    const stripe = getStripe();
     const subscription = await stripe.subscriptions.create({
       customer: customerId,
       items: [{
