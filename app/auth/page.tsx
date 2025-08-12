@@ -41,8 +41,19 @@ export default function AuthPage() {
 
     console.log('handleSignIn called with:', formData.email)
 
+    // Add timeout safety mechanism
+    const timeoutId = setTimeout(() => {
+      setLoading(false)
+      toast({
+        title: 'Sign In Timeout',
+        description: 'Sign in is taking too long. Please try again.',
+        variant: 'destructive',
+      })
+    }, 30000) // 30 second timeout
+
     try {
       await signIn(formData.email, formData.password)
+      clearTimeout(timeoutId)
       toast({
         title: 'Success!',
         description: 'You have been signed in successfully.',
@@ -50,6 +61,7 @@ export default function AuthPage() {
       // Let AuthProvider handle the redirect to marketplace
       // No manual redirect needed here
     } catch (error: any) {
+      clearTimeout(timeoutId)
       console.error('handleSignIn error:', error)
       toast({
         title: 'Sign In Failed',
