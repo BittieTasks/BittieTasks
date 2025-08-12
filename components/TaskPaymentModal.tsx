@@ -13,9 +13,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '../hooks/use-toast';
 import { Coins, CreditCard, Shield } from 'lucide-react';
-import { calculatePlatformFee, formatCurrency, type SubscriptionTier } from '@/lib/stripeHelpers';
+import { calculatePlatformFee, formatCurrency, type SubscriptionTier } from '../lib/stripeHelpers';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_VITE_STRIPE_PUBLIC_KEY || process.env.VITE_STRIPE_PUBLIC_KEY!);
 
@@ -34,7 +34,7 @@ function PaymentForm({
   taskTitle, 
   amount, 
   userTier, 
-  onSuccess,
+  onPaymentSuccess,
   onClose 
 }: Omit<TaskPaymentModalProps, 'isOpen'>) {
   const stripe = useStripe();
@@ -101,7 +101,7 @@ function PaymentForm({
         description: `Payment of ${formatCurrency(amount)} completed successfully!`,
       });
 
-      onSuccess?.();
+      onPaymentSuccess?.();
       onClose();
 
     } catch (error: any) {
