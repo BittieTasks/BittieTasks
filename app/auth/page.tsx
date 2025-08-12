@@ -14,6 +14,7 @@ import { Loader2, Mail, Lock, User, Eye, EyeOff } from 'lucide-react'
 export default function AuthPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -246,6 +247,9 @@ export default function AuthPage() {
                           {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
                       </div>
+                      <p className="text-xs text-gray-500">
+                        Must be at least 8 characters with uppercase, lowercase, number, and special character
+                      </p>
                     </div>
 
                     <div className="space-y-2">
@@ -255,13 +259,20 @@ export default function AuthPage() {
                         <Input
                           id="confirmPassword"
                           name="confirmPassword"
-                          type="password"
+                          type={showConfirmPassword ? 'text' : 'password'}
                           placeholder="Confirm password"
                           value={formData.confirmPassword}
                           onChange={handleInputChange}
-                          className="pl-10 input-clean"
+                          className="pl-10 pr-10 input-clean"
                           required
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                        >
+                          {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
                       </div>
                     </div>
 
