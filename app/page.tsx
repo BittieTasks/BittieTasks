@@ -31,12 +31,15 @@ export default function HomePage() {
               <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
             </div>
             
-            {/* Auth Buttons */}
-            <div className="flex items-center space-x-3">
-              <a
-                href="/auth"
-                className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium"
-              >
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-6">
+              <a href="/examples" className="text-gray-700 hover:text-teal-600 font-medium">
+                Examples
+              </a>
+              <a href="/sponsors" className="text-gray-700 hover:text-teal-600 font-medium">
+                Sponsors
+              </a>
+              <a href="/auth" className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
                 Sign In
               </a>
             </div>

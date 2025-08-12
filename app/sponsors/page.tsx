@@ -1,27 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '../../components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { useRouter } from 'next/navigation'
 import { 
   Briefcase, 
   Star, 
   Users, 
   Coins, 
-  Zap, 
   Shield, 
   Heart,
-  Globe,
-  Award,
   TrendingUp,
   CheckCircle,
-  Building
+  Building,
+  ArrowRight
 } from 'lucide-react'
-import CleanNavigation from '@/components/CleanNavigation'
-import CleanLayout from '@/components/CleanLayout'
 
 // Sample sponsor data
 const sampleSponsors = [
@@ -73,49 +66,27 @@ const sampleSponsors = [
   },
   {
     id: '3',
-    name: 'SafeKids Initiative',
-    logo: '👶',
-    description: 'Child safety and development organization',
+    name: 'TechSkills Academy',
+    logo: '💻',
+    description: 'Digital literacy and skill development for adults',
     ethicsScore: 95,
     tasksSponsored: 28,
     budget: 12000,
-    category: 'Child Safety',
+    category: 'Education',
     verified: true,
-    values: ['Child Protection', 'Safety Education', 'Community Support'],
+    values: ['Digital Literacy', 'Skills Development', 'Community Education'],
     currentTasks: [
       {
-        title: 'Neighborhood Safety Patrol',
+        title: 'Digital Skills Workshop',
         budget: 600,
         participants: 20,
-        description: 'Organize community safety monitoring'
+        description: 'Teach basic computer skills to community members'
       }
     ]
   }
 ]
 
 export default function SponsorsPage() {
-  const { user, isAuthenticated, isVerified } = useAuth()
-  const router = useRouter()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (mounted && !isAuthenticated) {
-      router.push('/auth')
-    }
-  }, [mounted, isAuthenticated, router])
-
-  if (!mounted) {
-    return null
-  }
-
-  if (!isAuthenticated) {
-    return null
-  }
-
   const getEthicsScoreColor = (score: number) => {
     if (score >= 90) return 'text-green-600'
     if (score >= 80) return 'text-blue-600'
@@ -124,56 +95,79 @@ export default function SponsorsPage() {
   }
 
   return (
-    <CleanLayout>
-      <CleanNavigation />
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <a href="/" className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">B</span>
+              </div>
+              <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
+            </a>
+            
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-6">
+              <a href="/examples" className="text-gray-700 hover:text-teal-600 font-medium">
+                Examples
+              </a>
+              <a href="/sponsors" className="text-teal-600 font-medium">
+                Sponsors
+              </a>
+              <a href="/auth" className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
+                Sign In
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
       
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
         {/* Header */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>Corporate Sponsors</h1>
-          <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.8)' }}>
-            Discover ethical partner companies offering sponsored tasks with premium payouts
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            Corporate
+            <span className="text-teal-600 block">Partners</span>
+          </h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Discover ethical partner companies offering sponsored tasks with premium payouts. 
+            Join our community to access higher-paying opportunities from trusted sponsors.
           </p>
+          <a
+            href="/auth"
+            className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
+          >
+            Join to Access Sponsored Tasks
+            <ArrowRight size={20} className="ml-2" />
+          </a>
         </div>
 
-        {/* Verification Notice */}
-        {!isVerified && (
-          <Card className="mb-6 border-yellow-200 bg-yellow-50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <Award className="h-5 w-5 text-yellow-600" />
-                <p className="text-yellow-800">
-                  <strong>Premium access requires email verification</strong> to participate in sponsored tasks.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Key Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="card-clean">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+          <Card className="border-gray-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                   <Building className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-small text-muted-foreground">Active Sponsors</p>
+                  <p className="text-sm text-gray-600">Active Sponsors</p>
                   <p className="text-2xl font-bold">{sampleSponsors.length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="card-clean">
+          <Card className="border-gray-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                   <Coins className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-small text-muted-foreground">Total Budget</p>
+                  <p className="text-sm text-gray-600">Total Budget</p>
                   <p className="text-2xl font-bold">
                     ${sampleSponsors.reduce((sum, sponsor) => sum + sponsor.budget, 0).toLocaleString()}
                   </p>
@@ -182,14 +176,14 @@ export default function SponsorsPage() {
             </CardContent>
           </Card>
 
-          <Card className="card-clean">
+          <Card className="border-gray-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                   <Star className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-small text-muted-foreground">Avg Ethics Score</p>
+                  <p className="text-sm text-gray-600">Avg Ethics Score</p>
                   <p className="text-2xl font-bold">
                     {Math.round(sampleSponsors.reduce((sum, sponsor) => sum + sponsor.ethicsScore, 0) / sampleSponsors.length)}%
                   </p>
@@ -198,14 +192,14 @@ export default function SponsorsPage() {
             </CardContent>
           </Card>
 
-          <Card className="card-clean">
+          <Card className="border-gray-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
                   <TrendingUp className="h-6 w-6 text-yellow-600" />
                 </div>
                 <div>
-                  <p className="text-small text-muted-foreground">Tasks Sponsored</p>
+                  <p className="text-sm text-gray-600">Tasks Sponsored</p>
                   <p className="text-2xl font-bold">
                     {sampleSponsors.reduce((sum, sponsor) => sum + sponsor.tasksSponsored, 0)}
                   </p>
@@ -216,19 +210,19 @@ export default function SponsorsPage() {
         </div>
 
         {/* Benefits Section */}
-        <Card className="card-clean mb-8">
+        <Card className="border-gray-200 mb-16">
           <CardHeader>
-            <CardTitle className="text-subheading">Why Choose Sponsored Tasks?</CardTitle>
+            <CardTitle className="text-2xl">Why Choose Sponsored Tasks?</CardTitle>
             <CardDescription>Premium opportunities with ethical partners</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Coins className="h-8 w-8 text-green-600" />
                 </div>
-                <h3 className="font-semibold mb-2">Higher Payouts</h3>
-                <p className="text-small text-muted-foreground">
+                <h3 className="text-xl font-semibold mb-3">Higher Payouts</h3>
+                <p className="text-gray-600">
                   Sponsored tasks offer 25-50% higher compensation than standard community tasks
                 </p>
               </div>
@@ -237,8 +231,8 @@ export default function SponsorsPage() {
                 <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Shield className="h-8 w-8 text-blue-600" />
                 </div>
-                <h3 className="font-semibold mb-2">Ethical Partners</h3>
-                <p className="text-small text-muted-foreground">
+                <h3 className="text-xl font-semibold mb-3">Ethical Partners</h3>
+                <p className="text-gray-600">
                   All sponsors undergo ethics evaluation with minimum 85% score requirement
                 </p>
               </div>
@@ -247,8 +241,8 @@ export default function SponsorsPage() {
                 <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Heart className="h-8 w-8 text-purple-600" />
                 </div>
-                <h3 className="font-semibold mb-2">Community Impact</h3>
-                <p className="text-small text-muted-foreground">
+                <h3 className="text-xl font-semibold mb-3">Community Impact</h3>
+                <p className="text-gray-600">
                   Support causes you care about while earning meaningful income
                 </p>
               </div>
@@ -257,9 +251,9 @@ export default function SponsorsPage() {
         </Card>
 
         {/* Sponsor Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
           {sampleSponsors.map((sponsor) => (
-            <Card key={sponsor.id} className="card-clean">
+            <Card key={sponsor.id} className="border-gray-200 hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -272,7 +266,7 @@ export default function SponsorsPage() {
                       <CardDescription>{sponsor.description}</CardDescription>
                     </div>
                   </div>
-                  <Badge className="badge-success">
+                  <Badge className="bg-teal-100 text-teal-800">
                     {sponsor.category}
                   </Badge>
                 </div>
@@ -280,7 +274,7 @@ export default function SponsorsPage() {
 
               <CardContent className="space-y-6">
                 {/* Ethics Score */}
-                <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-2">
                     <Star className="h-5 w-5 text-yellow-500" />
                     <span className="font-medium">Ethics Score</span>
@@ -292,24 +286,24 @@ export default function SponsorsPage() {
 
                 {/* Key Metrics */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-muted rounded-lg">
-                    <div className="text-xl font-bold text-primary">{sponsor.tasksSponsored}</div>
-                    <div className="text-small text-muted-foreground">Tasks Sponsored</div>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <div className="text-xl font-bold text-teal-600">{sponsor.tasksSponsored}</div>
+                    <div className="text-sm text-gray-600">Tasks Sponsored</div>
                   </div>
-                  <div className="text-center p-3 bg-muted rounded-lg">
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <div className="text-xl font-bold text-green-600">
                       ${sponsor.budget.toLocaleString()}
                     </div>
-                    <div className="text-small text-muted-foreground">Total Budget</div>
+                    <div className="text-sm text-gray-600">Total Budget</div>
                   </div>
                 </div>
 
                 {/* Values */}
                 <div>
-                  <h4 className="font-medium mb-2">Core Values</h4>
+                  <h4 className="font-medium mb-3">Core Values</h4>
                   <div className="flex flex-wrap gap-2">
                     {sponsor.values.map((value, index) => (
-                      <Badge key={index} className="badge-neutral">
+                      <Badge key={index} variant="secondary">
                         {value}
                       </Badge>
                     ))}
@@ -321,19 +315,19 @@ export default function SponsorsPage() {
                   <h4 className="font-medium mb-3">Current Sponsored Tasks</h4>
                   <div className="space-y-3">
                     {sponsor.currentTasks.map((task, index) => (
-                      <div key={index} className="p-3 border border-border rounded-lg">
+                      <div key={index} className="p-3 border border-gray-200 rounded-lg">
                         <div className="flex justify-between items-start mb-2">
                           <h5 className="font-medium">{task.title}</h5>
                           <Badge className="bg-green-100 text-green-800">
                             ${task.budget}
                           </Badge>
                         </div>
-                        <p className="text-small text-muted-foreground mb-2">
+                        <p className="text-sm text-gray-600 mb-2">
                           {task.description}
                         </p>
                         <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-small text-muted-foreground">
+                          <Users className="h-4 w-4 text-gray-500" />
+                          <span className="text-sm text-gray-600">
                             {task.participants} participants
                           </span>
                         </div>
@@ -343,39 +337,37 @@ export default function SponsorsPage() {
                 </div>
 
                 {/* Action Button */}
-                <Button
-                  className="w-full button-clean"
-                  onClick={() => router.push('/marketplace')}
-                  disabled={!isVerified}
-                >
-                  {isVerified ? 'View Sponsored Tasks' : 'Verify Email to Access'}
-                </Button>
+                <a href="/auth" className="block">
+                  <Button className="w-full bg-teal-600 hover:bg-teal-700 text-white">
+                    Join to Access Sponsored Tasks
+                  </Button>
+                </a>
               </CardContent>
             </Card>
           ))}
         </div>
 
         {/* Become a Sponsor CTA */}
-        <Card className="card-clean mt-8">
-          <CardContent className="p-8 text-center">
-            <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Briefcase className="h-8 w-8 text-primary-foreground" />
+        <Card className="border-gray-200 text-center">
+          <CardContent className="p-8">
+            <div className="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Briefcase className="h-8 w-8 text-teal-600" />
             </div>
-            <h3 className="text-subheading mb-2">Interested in Becoming a Sponsor?</h3>
-            <p className="text-body text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Partner with BittieTasks to reach engaged parent communities while supporting meaningful tasks
+            <h3 className="text-2xl font-bold mb-3">Interested in Becoming a Sponsor?</h3>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              Partner with BittieTasks to reach engaged adult communities while supporting meaningful tasks
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="button-clean">
+              <Button className="bg-teal-600 hover:bg-teal-700 text-white">
                 Learn About Sponsorship
               </Button>
-              <Button variant="outline" className="button-outline">
+              <Button variant="outline" className="border-teal-600 text-teal-600 hover:bg-teal-50">
                 Contact Partnership Team
               </Button>
             </div>
           </CardContent>
         </Card>
       </main>
-    </CleanLayout>
+    </div>
   )
 }
