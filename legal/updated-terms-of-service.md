@@ -113,12 +113,29 @@ The following may be pursued in court:
 
 ### Platform Rights
 BittieTasks retains all rights to:
-- Platform technology and software
-- BittieTasks trademarks and branding
-- Platform-generated data and analytics
+- Platform technology, software, and source code
+- BittieTasks trademarks, service marks, and branding
+- Platform-generated data, analytics, and algorithms
+- User interface designs and platform architecture
+- Proprietary business processes and methodologies
 
-### User Rights
-Users retain rights to their own content but grant BittieTasks license to use content for platform operations.
+### Prohibited IP Activities
+Users are strictly prohibited from:
+- **Reverse engineering** platform software or algorithms
+- **Scraping or extracting** data through automated means
+- **Copying or imitating** platform design or functionality
+- **Using BittieTasks branding** without written permission
+- **Creating derivative works** based on platform technology
+- **Circumventing technical protection** measures
+
+### User Content Rights
+Users retain rights to their own original content but grant BittieTasks a non-exclusive, worldwide, royalty-free license to use, display, and distribute user content for platform operations, marketing, and improvement purposes.
+
+### DMCA Compliance
+BittieTasks complies with the Digital Millennium Copyright Act (DMCA). To report copyright infringement, contact: dmca@bittietasks.com
+
+### Trade Secret Protection
+Platform algorithms, business processes, and technical implementations are trade secrets of BittieTasks. Unauthorized disclosure or use is strictly prohibited and may result in legal action.
 
 ## 11. PRIVACY AND DATA PROTECTION
 
