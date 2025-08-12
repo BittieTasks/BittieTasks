@@ -160,9 +160,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       throw error
     }
     
-    // Even if signup succeeded, show helpful message about email verification
-    if (data.user && !data.session) {
-      throw new Error('Account created! Please check your email for a verification link before signing in.')
+    // Check if user was created successfully
+    if (data.user) {
+      if (data.session) {
+        // User is immediately signed in (email confirmation disabled)
+        return
+      } else {
+        // User created but needs email verification
+        throw new Error('Account created but email verification is temporarily unavailable. Please try signing in.')
+      }
+    } else {
+      throw new Error('Account creation failed. Please try again.')
     }
   }
 
