@@ -16,10 +16,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/loading.js"
     ],
-    "/create-task/page": [
+    "/marketplace/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/create-task/page.js"
+      "static/chunks/app/marketplace/page.js"
     ],
     "/auth/page": [
       "static/chunks/webpack.js",

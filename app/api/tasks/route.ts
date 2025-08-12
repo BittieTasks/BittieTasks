@@ -18,15 +18,14 @@ export async function GET(request: NextRequest) {
         id,
         title,
         description,
-        payout,
+        earning_potential,
         location,
-        time_commitment,
+        duration,
         max_participants,
         current_participants,
-        deadline,
-        task_type,
-        is_sponsored,
-        sponsor_name,
+        scheduled_date,
+        type,
+        approval_status,
         created_at,
         category_id
       `)
@@ -91,9 +90,9 @@ export async function POST(request: NextRequest) {
     const taskData = await request.json()
 
     // Validate required fields
-    const { title, description, category_id, payout, location, max_participants = 1 } = taskData
+    const { title, description, category_id, earningPotential, location, max_participants = 1 } = taskData
 
-    if (!title || !description || !category_id || !payout || !location) {
+    if (!title || !description || !category_id || !earningPotential || !location) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -104,18 +103,18 @@ export async function POST(request: NextRequest) {
     const { data: task, error } = await supabase
       .from('tasks')
       .insert({
-        creator_id: user.id,
+        host_id: user.id,
         category_id,
         title: title.trim(),
         description: description.trim(),
-        task_type: taskData.task_type || 'shared',
-        payout: parseFloat(payout),
+        type: taskData.type || 'shared',
+        earning_potential: parseFloat(earningPotential),
         max_participants: parseInt(max_participants),
         current_participants: 0,
         location: location.trim(),
-        time_commitment: taskData.time_commitment || null,
-        deadline: taskData.deadline || null,
-        requirements: taskData.requirements ? [taskData.requirements.trim()] : [],
+        duration: taskData.duration || null,
+        scheduled_date: taskData.scheduledDate || null,
+        requirements: taskData.requirements || null,
         status: 'open',
         // Approval system fields - default to pending
         approval_status: 'pending',

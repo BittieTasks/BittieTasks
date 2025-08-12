@@ -1,5 +1,5 @@
 {
-  "/create-task/page": "app/create-task/page.js",
+  "/marketplace/page": "app/marketplace/page.js",
   "/auth/page": "app/auth/page.js",
   "/page": "app/page.js"
 }
