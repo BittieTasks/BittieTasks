@@ -162,6 +162,30 @@ export default function HomePage() {
           </a>
         </div>
       </main>
+      
+      {/* Footer */}
+      <footer className="bg-gray-50 border-t border-gray-200 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-6 text-sm text-gray-500 mb-4">
+              <a href="/policies" className="hover:text-teal-600 transition-colors">
+                Community Guidelines & Safety
+              </a>
+              <span className="text-gray-300">|</span>
+              <a href="/policies" className="hover:text-teal-600 transition-colors">
+                Terms of Service
+              </a>
+              <span className="text-gray-300">|</span>
+              <a href="/policies" className="hover:text-teal-600 transition-colors">
+                Privacy Policy
+              </a>
+            </div>
+            <p className="text-xs text-gray-400">
+              © 2025 BittieTasks. Building stronger communities through shared tasks and mutual support.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
