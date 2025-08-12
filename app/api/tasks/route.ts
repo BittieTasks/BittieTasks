@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient, createServiceClient } from '../../../lib/supabase'
+import { TaskApprovalService } from '../../../lib/taskApproval'
 
 export async function GET(request: NextRequest) {
   try {
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create task
+    // Create task with approval fields
     const { data: task, error } = await supabase
       .from('tasks')
       .insert({
@@ -115,7 +116,11 @@ export async function POST(request: NextRequest) {
         time_commitment: taskData.time_commitment || null,
         deadline: taskData.deadline || null,
         requirements: taskData.requirements ? [taskData.requirements.trim()] : [],
-        status: 'open'
+        status: 'open',
+        // Approval system fields - default to pending
+        approval_status: 'pending',
+        review_tier: 'standard_review',
+        risk_score: 0
       })
       .select()
       .single()
@@ -124,7 +129,48 @@ export async function POST(request: NextRequest) {
       throw error
     }
 
-    return NextResponse.json({ task })
+    // Process task approval using our approval system
+    let approvalResult
+    try {
+      approvalResult = await TaskApprovalService.processTaskApproval(task.id)
+      
+      // Update task status based on approval result
+      if (approvalResult.approved) {
+        await supabase
+          .from('tasks')
+          .update({ 
+            approval_status: 'auto_approved',
+            approved_at: new Date().toISOString(),
+            approved_by: 'system'
+          })
+          .eq('id', task.id)
+      }
+    } catch (approvalError) {
+      console.error('Approval process failed:', approvalError)
+      // Task creation succeeded but approval failed - mark for manual review
+      await supabase
+        .from('tasks')
+        .update({ 
+          approval_status: 'manual_review',
+          review_tier: 'enhanced_review'
+        })
+        .eq('id', task.id)
+      
+      approvalResult = {
+        approved: false,
+        reviewTier: 'enhanced_review',
+        riskScore: 50,
+        reasons: ['Approval system error - requires manual review']
+      }
+    }
+
+    return NextResponse.json({ 
+      task,
+      approvalStatus: approvalResult.approved ? 'auto_approved' : 'manual_review',
+      reviewTier: approvalResult.reviewTier,
+      riskScore: approvalResult.riskScore,
+      reasons: approvalResult.reasons
+    })
   } catch (error: any) {
     console.error('Error creating task:', error)
     return NextResponse.json(

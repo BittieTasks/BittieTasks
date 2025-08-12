@@ -17,6 +17,8 @@ import { z } from 'zod';
 // Enums
 export const taskStatusEnum = pgEnum('task_status', ['open', 'active', 'completed', 'cancelled']);
 export const taskTypeEnum = pgEnum('task_type', ['shared', 'solo', 'sponsored', 'barter']);
+export const approvalStatusEnum = pgEnum('approval_status', ['pending', 'auto_approved', 'manual_review', 'approved', 'rejected', 'flagged']);
+export const reviewTierEnum = pgEnum('review_tier', ['auto_approve', 'standard_review', 'enhanced_review', 'corporate_review']);
 export const transactionTypeEnum = pgEnum('transaction_type', ['task_completion', 'referral_bonus', 'corporate_sponsorship', 'platform_fee']);
 export const transactionStatusEnum = pgEnum('transaction_status', ['pending', 'processing', 'completed', 'failed']);
 
@@ -81,6 +83,15 @@ export const tasks = pgTable("tasks", {
   hostId: varchar("host_id").references(() => users.id).notNull(),
   type: taskTypeEnum("type").default('shared'),
   status: taskStatusEnum("status").default('open'),
+  // Approval system fields
+  approvalStatus: approvalStatusEnum("approval_status").default('pending'),
+  reviewTier: reviewTierEnum("review_tier").default('standard_review'),
+  approvedAt: timestamp("approved_at"),
+  approvedBy: varchar("approved_by"), // admin user id or 'system' for auto-approval
+  rejectionReason: text("rejection_reason"),
+  flaggedReason: text("flagged_reason"),
+  riskScore: integer("risk_score").default(0), // 0-100 risk assessment score
+  // Task details
   earningPotential: decimal("earning_potential", { precision: 8, scale: 2 }).notNull(),
   maxParticipants: integer("max_participants").default(1),
   currentParticipants: integer("current_participants").default(0),
@@ -173,6 +184,29 @@ export const sponsors = pgTable("sponsors", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Task approval logs
+export const taskApprovalLogs = pgTable("task_approval_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  taskId: varchar("task_id").references(() => tasks.id).notNull(),
+  previousStatus: approvalStatusEnum("previous_status"),
+  newStatus: approvalStatusEnum("new_status").notNull(),
+  reviewedBy: varchar("reviewed_by"), // admin user id or 'system'
+  reviewNotes: text("review_notes"),
+  riskFactors: text("risk_factors"), // JSON string of detected risk factors
+  automatedChecks: jsonb("automated_checks"), // Results of automated screening
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Prohibited keywords/phrases for content filtering
+export const prohibitedContent = pgTable("prohibited_content", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  keyword: varchar("keyword").notNull().unique(),
+  category: varchar("category").notNull(), // 'childcare', 'medical', 'legal', 'financial', 'dangerous'
+  severity: integer("severity").default(5), // 1-10 severity score
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type UpsertUser = typeof users.$inferInsert;
@@ -184,6 +218,8 @@ export type Message = typeof messages.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type Sponsor = typeof sponsors.$inferSelect;
 export type TaskParticipant = typeof taskParticipants.$inferSelect;
+export type TaskApprovalLog = typeof taskApprovalLogs.$inferSelect;
+export type ProhibitedContent = typeof prohibitedContent.$inferSelect;
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({

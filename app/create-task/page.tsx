@@ -79,12 +79,49 @@ export default function CreateTaskPage() {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // In a real app, this would submit to your API
-    console.log('Creating task:', formData)
-    // Redirect to marketplace after creation
-    router.push('/marketplace')
+    
+    try {
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          type: formData.type,
+          earningPotential: parseFloat(formData.payout),
+          maxParticipants: parseInt(formData.maxParticipants) || 1,
+          location: formData.location,
+          duration: formData.timeCommitment,
+          requirements: formData.requirements
+        })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        
+        // Show approval status to user
+        if (result.approvalStatus === 'auto_approved') {
+          alert('Task created and automatically approved! It\'s now live in the marketplace.')
+        } else if (result.approvalStatus === 'manual_review') {
+          alert('Task created successfully! It\'s under review and will be published once approved.')
+        } else {
+          alert('Task created! Approval status: ' + result.approvalStatus)
+        }
+        
+        router.push('/marketplace')
+      } else {
+        const error = await response.json()
+        alert('Failed to create task: ' + (error.message || 'Unknown error'))
+      }
+    } catch (error) {
+      console.error('Error creating task:', error)
+      alert('Failed to create task. Please try again.')
+    }
   }
 
   const calculatePlatformFee = (payout: number) => {
