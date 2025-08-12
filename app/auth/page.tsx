@@ -21,7 +21,7 @@ export default function AuthPage() {
     firstName: '',
     lastName: '',
   })
-  const [activeTab, setActiveTab] = useState('signup')
+  const [activeTab, setActiveTab] = useState('signin')
   
   const { signIn, signUp } = useAuth()
   const { toast } = useToast()
