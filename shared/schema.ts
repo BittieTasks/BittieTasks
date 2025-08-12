@@ -19,8 +19,8 @@ export const taskStatusEnum = pgEnum('task_status', ['open', 'active', 'complete
 export const taskTypeEnum = pgEnum('task_type', ['shared', 'solo', 'sponsored', 'barter']);
 export const approvalStatusEnum = pgEnum('approval_status', ['pending', 'auto_approved', 'manual_review', 'approved', 'rejected', 'flagged']);
 export const reviewTierEnum = pgEnum('review_tier', ['auto_approve', 'standard_review', 'enhanced_review', 'corporate_review']);
-export const transactionTypeEnum = pgEnum('transaction_type', ['task_completion', 'referral_bonus', 'corporate_sponsorship', 'platform_fee']);
-export const transactionStatusEnum = pgEnum('transaction_status', ['pending', 'processing', 'completed', 'failed']);
+export const transactionTypeEnum = pgEnum('transaction_type', ['task_completion', 'referral_bonus', 'corporate_sponsorship', 'platform_fee', 'subscription_payment']);
+export const transactionStatusEnum = pgEnum('transaction_status', ['pending', 'processing', 'completed', 'failed', 'refunded']);
 
 // Session storage table (required for authentication)
 export const sessions = pgTable(

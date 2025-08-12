@@ -1,106 +1,52 @@
-'use client'
+import { useEffect, useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-import { useEffect, useState } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
-import { useRouter } from 'next/navigation'
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-interface AuthState {
-  user: User | null
-  session: Session | null
-  loading: boolean
-  isAuthenticated: boolean
-  isVerified: boolean
+export interface AuthUser {
+  id: string;
+  email: string;
+  access_token: string;
 }
 
-export function useAuth(): AuthState {
-  const [user, setUser] = useState<User | null>(null)
-  const [session, setSession] = useState<Session | null>(null)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
+export function useAuth() {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email!,
+          access_token: session.access_token
+        });
+      }
+      setIsLoading(false);
+    });
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-
-      // Handle auth events
-      if (event === 'SIGNED_IN') {
-        console.log('User signed in')
-        router.refresh()
-      } else if (event === 'SIGNED_OUT') {
-        console.log('User signed out')
-        router.push('/')
-      } else if (event === 'TOKEN_REFRESHED') {
-        console.log('Token refreshed')
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email!,
+          access_token: session.access_token
+        });
+      } else {
+        setUser(null);
       }
-    })
+      setIsLoading(false);
+    });
 
-    return () => subscription.unsubscribe()
-  }, [router])
+    return () => subscription.unsubscribe();
+  }, []);
 
-  return {
-    user,
-    session,
-    loading,
-    isAuthenticated: !!user,
-    isVerified: user?.email_confirmed_at != null,
-  }
-}
-
-// Auth actions
-export const signIn = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-  
-  if (error) throw error
-  return data
-}
-
-export const signUp = async (email: string, password: string, userData?: { firstName?: string, lastName?: string }) => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: userData,
-      emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : 'http://localhost:3000/auth/callback',
-    },
-  })
-  
-  if (error) throw error
-  return data
-}
-
-export const signOut = async () => {
-  const { error } = await supabase.auth.signOut()
-  if (error) throw error
-}
-
-export const resetPassword = async (email: string) => {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/reset-password` : 'http://localhost:3000/auth/reset-password',
-  })
-  
-  if (error) throw error
-}
-
-export const updatePassword = async (password: string) => {
-  const { error } = await supabase.auth.updateUser({
-    password,
-  })
-  
-  if (error) throw error
+  return { user, isLoading };
 }
