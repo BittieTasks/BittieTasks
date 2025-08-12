@@ -94,6 +94,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signIn = async (email: string, password: string) => {
     console.log('AuthProvider signIn called with:', email)
     
+    // First attempt normal sign in
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -103,6 +104,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     if (error) {
       console.error('Sign in error details:', error)
+      
+      // If it's an unconfirmed email error, try to resend confirmation
+      if (error.message.includes('Email not confirmed') || 
+          error.message.includes('Invalid login credentials')) {
+        
+        try {
+          // Try to resend confirmation email
+          await supabase.auth.resend({
+            type: 'signup',
+            email,
+          })
+          
+          // Provide helpful message
+          throw new Error('Account exists but needs email verification. Please check your email (including spam folder) for a verification link, then try signing in again.')
+        } catch (resendError) {
+          // If resend fails, still provide helpful message
+          throw new Error('Account exists but email verification is required. Please check your email for a verification link, or contact support if needed.')
+        }
+      }
+      
       throw error
     }
   }
