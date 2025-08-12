@@ -86,12 +86,17 @@ export default function EarningsPage() {
     setMounted(true)
   }, [])
 
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      router.push('/auth')
+    }
+  }, [mounted, isAuthenticated, router])
+
   if (!mounted) {
     return null
   }
 
   if (!isAuthenticated) {
-    router.push('/auth')
     return null
   }
 

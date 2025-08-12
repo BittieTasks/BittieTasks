@@ -54,11 +54,17 @@ export default function Platform() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   
-  // Redirect to auth if not authenticated
-  if (!authLoading && !isAuthenticated) {
-    window.location.href = '/auth'
-    return null
-  }
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted && !authLoading && !isAuthenticated) {
+      window.location.href = '/auth'
+    }
+  }, [mounted, authLoading, isAuthenticated])
   
   // Show loading state while checking authentication
   if (authLoading) {

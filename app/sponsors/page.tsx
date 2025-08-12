@@ -29,25 +29,25 @@ const sampleSponsors = [
     id: '1',
     name: 'HealthTech Solutions',
     logo: '🏥',
-    description: 'Leading healthcare technology company focused on family wellness',
+    description: 'Leading healthcare technology company focused on community wellness',
     ethicsScore: 92,
     tasksSponsored: 45,
     budget: 15000,
     category: 'Healthcare',
     verified: true,
-    values: ['Family Health', 'Community Wellness', 'Technology Innovation'],
+    values: ['Community Health', 'Adult Wellness', 'Technology Innovation'],
     currentTasks: [
       {
-        title: 'Family Fitness Challenge',
+        title: 'Community Fitness Challenge',
         budget: 500,
         participants: 25,
-        description: 'Encourage families to exercise together'
+        description: 'Encourage adults to exercise together in their community'
       },
       {
         title: 'Healthy Meal Prep Workshop',
         budget: 750,
         participants: 18,
-        description: 'Learn nutritious meal planning for busy families'
+        description: 'Learn nutritious meal planning for busy adults'
       }
     ]
   },
@@ -102,12 +102,17 @@ export default function SponsorsPage() {
     setMounted(true)
   }, [])
 
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      router.push('/auth')
+    }
+  }, [mounted, isAuthenticated, router])
+
   if (!mounted) {
     return null
   }
 
   if (!isAuthenticated) {
-    router.push('/auth')
     return null
   }
 
