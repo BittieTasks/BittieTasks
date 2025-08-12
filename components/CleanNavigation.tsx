@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 
 const navigationItems = [
-  { path: '/platform', label: 'Dashboard', icon: Home },
+  { path: '/dashboard', label: 'Dashboard', icon: Home },
   { path: '/marketplace', label: 'Marketplace', icon: Search },
   { path: '/earnings', label: 'Earnings', icon: Coins },
   { path: '/subscriptions', label: 'Plans', icon: Crown },
