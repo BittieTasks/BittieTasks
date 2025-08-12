@@ -51,17 +51,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(false)
 
       if (event === 'SIGNED_IN' && session?.user) {
-        // Create or update user profile in our database
-        try {
-          await createUserProfile(session.user)
-        } catch (error) {
-          console.error('Error creating user profile:', error)
+        // Only create profile for verified users to avoid conflicts with email verification
+        if (session.user.email_confirmed_at) {
+          try {
+            await createUserProfile(session.user)
+          } catch (error) {
+            console.error('Error creating user profile:', error)
+          }
+        } else {
+          console.log('User not verified yet, skipping profile creation')
         }
         
-        // Auto-redirect to marketplace after successful sign in
-        if (window.location.pathname === '/auth') {
+        // Auto-redirect to marketplace after successful sign in (only if verified)
+        if (window.location.pathname === '/auth' && session.user.email_confirmed_at) {
           console.log('Auto-redirecting to marketplace after sign in')
-          // Immediate redirect for better UX
           window.location.href = '/marketplace'
         }
       }
