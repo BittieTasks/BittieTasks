@@ -1,3 +1,4 @@
 {
-  "/page": "app/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/test-sendgrid-email/route": "app/api/auth/test-sendgrid-email/route.js"
 }
