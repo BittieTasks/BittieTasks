@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Initialize Stripe with proper error handling
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+if (!stripeSecretKey) {
+  throw new Error('STRIPE_SECRET_KEY environment variable is required');
+}
+
+const stripe = new Stripe(stripeSecretKey);
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
