@@ -167,7 +167,7 @@ export default function Dashboard() {
                 </p>
               </div>
               <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
-                <Link to="/platform">Browse Tasks</Link>
+                <Link to="/marketplace">Browse Tasks</Link>
               </Button>
             </div>
           </div>
