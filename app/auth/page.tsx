@@ -21,7 +21,7 @@ export default function AuthPage() {
     firstName: '',
     lastName: '',
   })
-  const [activeTab, setActiveTab] = useState('signin')
+  const [activeTab, setActiveTab] = useState('signup')
   
   const { signIn, signUp } = useAuth()
   const { toast } = useToast()
@@ -106,7 +106,7 @@ export default function AuthPage() {
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to BittieTasks</h1>
             <p className="text-lg text-gray-600">
-              Join thousands earning from community tasks
+              Start earning from community tasks today
             </p>
           </div>
 
