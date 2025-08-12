@@ -1,24 +1,25 @@
 {
   "pages": {
-    "/api/auth/status/route": [
+    "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/status/route.js"
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
     ],
-    "/api/auth/test-connection/route": [
+    "/error": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/test-connection/route.js"
+      "static/chunks/app/error.js"
     ],
-    "/api/auth/debug-signup/route": [
+    "/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/debug-signup/route.js"
+      "static/chunks/app/loading.js"
     ],
-    "/api/auth/check-config/route": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/check-config/route.js"
+      "static/chunks/app/page.js"
     ]
   }
 }
