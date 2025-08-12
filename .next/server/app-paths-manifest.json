@@ -1,4 +1,3 @@
 {
-  "/api/auth/test-sendgrid/route": "app/api/auth/test-sendgrid/route.js",
-  "/api/auth/test-complete-flow/route": "app/api/auth/test-complete-flow/route.js"
+  "/api/auth/test-sendgrid/route": "app/api/auth/test-sendgrid/route.js"
 }
