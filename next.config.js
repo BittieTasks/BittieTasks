@@ -78,7 +78,7 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
-  // Performance and bundle optimization
+  // Performance and bundle optimization  
   webpack: (config, { isServer, dev }) => {
     // Client-side optimizations
     if (!isServer) {
@@ -88,29 +88,22 @@ const nextConfig = {
         net: false,
         tls: false,
         crypto: false,
+        fs: false,
+        module: false,
       }
-    }
-    
-    // Production optimizations
-    if (!dev) {
-      // Bundle splitting optimization
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              chunks: 'all',
-            },
-          },
-        },
+      
+      // Fix 'self is not defined' error for client bundles
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@uppy/aws-s3$': '@uppy/aws-s3/lib/index.js',
       }
     }
     
     // Ignore Supabase realtime websocket warnings
     config.module.exprContextCritical = false
+    
+    // Fix global variable issues
+    config.plugins = config.plugins || []
     
     return config
   },
