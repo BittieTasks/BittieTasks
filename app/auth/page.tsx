@@ -47,7 +47,7 @@ export default function AuthPage() {
         title: 'Success!',
         description: 'You have been signed in successfully.',
       })
-      window.location.href = '/platform'
+      window.location.href = '/dashboard'
     } catch (error: any) {
       console.error('handleSignIn error:', error)
       toast({
