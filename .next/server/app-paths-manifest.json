@@ -1,3 +1,5 @@
 {
-  "/admin/approvals/page": "app/admin/approvals/page.js"
+  "/create-task/page": "app/create-task/page.js",
+  "/auth/page": "app/auth/page.js",
+  "/page": "app/page.js"
 }

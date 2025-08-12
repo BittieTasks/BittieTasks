@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+// Note: Using custom tabs implementation since @/components/ui/tabs may not be available
+// Will implement basic tab functionality with state
 import TaskApprovalStatus from '@/components/TaskApprovalStatus'
 import CleanNavigation from '@/components/CleanNavigation'
 import CleanLayout from '@/components/CleanLayout'
@@ -182,14 +183,42 @@ export default function AdminApprovalsPage() {
         </div>
 
         {/* Task Lists */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="pending">Pending Review</TabsTrigger>
-            <TabsTrigger value="flagged">Flagged Tasks</TabsTrigger>
-            <TabsTrigger value="approved">Recently Approved</TabsTrigger>
-          </TabsList>
+        <div>
+          <div className="flex space-x-1 rounded-lg bg-gray-100 p-1 mb-6">
+            <button
+              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'pending' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+              onClick={() => setActiveTab('pending')}
+            >
+              Pending Review
+            </button>
+            <button
+              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'flagged' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+              onClick={() => setActiveTab('flagged')}
+            >
+              Flagged Tasks
+            </button>
+            <button
+              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'approved' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+              onClick={() => setActiveTab('approved')}
+            >
+              Recently Approved
+            </button>
+          </div>
           
-          <TabsContent value="pending" className="space-y-4">
+          {activeTab === 'pending' && (
+            <div className="space-y-4">
             {getTasksByStatus('pending').map((task) => (
               <Card key={task.id}>
                 <CardHeader>
@@ -235,9 +264,11 @@ export default function AdminApprovalsPage() {
                 </CardContent>
               </Card>
             ))}
-          </TabsContent>
+            </div>
+          )}
           
-          <TabsContent value="flagged" className="space-y-4">
+          {activeTab === 'flagged' && (
+            <div className="space-y-4">
             {getTasksByStatus('flagged').map((task) => (
               <Card key={task.id} className="border-red-200">
                 <CardHeader>
@@ -278,9 +309,11 @@ export default function AdminApprovalsPage() {
                 </CardContent>
               </Card>
             ))}
-          </TabsContent>
+            </div>
+          )}
           
-          <TabsContent value="approved" className="space-y-4">
+          {activeTab === 'approved' && (
+            <div className="space-y-4">
             {getTasksByStatus('approved').map((task) => (
               <Card key={task.id} className="border-green-200">
                 <CardHeader>
@@ -302,14 +335,15 @@ export default function AdminApprovalsPage() {
                     reviewTier={task.reviewTier as any}
                     riskScore={task.riskScore}
                     reasons={task.reasons}
-                    approvedAt={task.approvedAt}
-                    approvedBy={task.approvedBy}
+                    approvedAt={(task as any).approvedAt}
+                    approvedBy={(task as any).approvedBy}
                   />
                 </CardContent>
               </Card>
             ))}
-          </TabsContent>
-        </Tabs>
+            </div>
+          )}
+        </div>
       </main>
     </CleanLayout>
   )
