@@ -37,7 +37,7 @@ export default function HomePage() {
                 href="/auth"
                 className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium"
               >
-                Sign In
+                Sign Up
               </a>
             </div>
           </div>
