@@ -179,6 +179,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
+    
+    // Redirect to home page after successful sign out
+    if (typeof window !== 'undefined') {
+      window.location.href = '/'
+    }
   }
 
   const resetPassword = async (email: string) => {

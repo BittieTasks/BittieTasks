@@ -46,7 +46,7 @@ export default function Navigation() {
   const handleSignOut = async () => {
     try {
       await signOut()
-      router.push('/')
+      // AuthProvider now handles redirect to home page
     } catch (error) {
       console.error('Error signing out:', error)
     }
