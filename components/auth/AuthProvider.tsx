@@ -54,11 +54,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Create or update user profile in our database
         await createUserProfile(session.user)
         
-        // Auto-redirect to dashboard after successful sign in
+        // Auto-redirect to marketplace after successful sign in
         if (window.location.pathname === '/auth') {
-          console.log('Auto-redirecting to dashboard after sign in')
+          console.log('Auto-redirecting to marketplace after sign in')
           setTimeout(() => {
-            window.location.href = '/dashboard'
+            window.location.href = '/marketplace'
           }, 1000)
         }
       }
