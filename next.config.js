@@ -78,8 +78,9 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
-  // Suppress Supabase websocket dependency warnings
-  webpack: (config, { isServer }) => {
+  // Performance and bundle optimization
+  webpack: (config, { isServer, dev }) => {
+    // Client-side optimizations
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -89,10 +90,39 @@ const nextConfig = {
         crypto: false,
       }
     }
+    
+    // Production optimizations
+    if (!dev) {
+      // Bundle splitting optimization
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+            },
+          },
+        },
+      }
+    }
+    
     // Ignore Supabase realtime websocket warnings
     config.module.exprContextCritical = false
+    
     return config
   },
+  
+  // SWC minification is enabled by default in Next.js 15
+  
+  // Optimize bundle analyzer in development
+  ...(process.env.ANALYZE === 'true' && {
+    bundleAnalyzerConfig: {
+      openAnalyzer: true,
+    }
+  }),
 }
 
 export default nextConfig
