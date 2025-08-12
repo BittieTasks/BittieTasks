@@ -57,9 +57,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Auto-redirect to marketplace after successful sign in
         if (window.location.pathname === '/auth') {
           console.log('Auto-redirecting to marketplace after sign in')
+          // Reduced delay for better UX
           setTimeout(() => {
             window.location.href = '/marketplace'
-          }, 1000)
+          }, 500)
         }
       }
     })
