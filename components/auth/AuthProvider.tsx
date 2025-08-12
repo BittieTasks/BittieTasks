@@ -166,10 +166,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (data.user) {
       if (data.session) {
         // User is immediately signed in (email confirmation disabled)
+        console.log('User signed up and automatically signed in')
         return
       } else {
         // User created but needs email verification
-        throw new Error('Account created but email verification is temporarily unavailable. Please try signing in.')
+        console.log('User created, email verification required')
+        throw new Error('Account created successfully! Please check your email and click the verification link to complete registration.')
       }
     } else {
       throw new Error('Account creation failed. Please try again.')
