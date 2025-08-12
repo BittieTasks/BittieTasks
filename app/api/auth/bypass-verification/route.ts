@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      error: signInError.message
+      error: signInError?.message || 'Sign in failed'
     }, { status: 401 })
 
   } catch (error) {
