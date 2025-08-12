@@ -1,12 +1,12 @@
 // Comprehensive BittieTasks Database - 110+ Real Earning Opportunities
-// Organized by category for authentic parent community earning experiences
+// Organized by category for authentic neighborhood community earning experiences
 
 export const comprehensiveTasks = [
   // TRANSPORTATION TASKS (15 tasks)
   {
     id: 'transport-001',
     title: 'Daily School Pickup Rotation',
-    description: 'Share daily pickup duties for elementary school children. Perfect for working parents who want reliable backup.',
+    description: 'Share daily pickup duties for elementary school children. Perfect for working adults who want reliable backup.',
     category: 'Transportation',
     type: 'shared',
     payout: 45,
@@ -30,7 +30,7 @@ export const comprehensiveTasks = [
     deadline: '2025-01-20',
     location: 'Regional Sports Complex',
     time_commitment: '2 hours weekly',
-    requirements: ['Reliable vehicle', 'Soccer parent experience'],
+    requirements: ['Reliable vehicle', 'Experience with children'],
     sponsored: false
   },
   {

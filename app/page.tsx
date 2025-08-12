@@ -52,8 +52,8 @@ export default function HomePage() {
             <span className="text-teal-600 block">Real Income</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Join parents in your neighborhood to share tasks, earn money, and build stronger communities. 
-            Transform routine activities into profitable opportunities.
+            Connect with neighbors to share tasks, earn money, and build stronger communities. 
+            Transform everyday activities into profitable opportunities.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
@@ -79,12 +79,12 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Coins size={32} className="text-teal-600" />
               </div>
-              <CardTitle className="text-xl text-gray-900">Earn While You Parent</CardTitle>
+              <CardTitle className="text-xl text-gray-900">Earn From Daily Life</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 text-center">
-                Transform daily parenting tasks into income opportunities. Share school pickups, 
-                meal planning, and more with neighbors.
+                Transform daily tasks into income opportunities. Share errands, household help, 
+                pet care, and more with trusted neighbors.
               </p>
             </CardContent>
           </Card>
@@ -99,7 +99,7 @@ export default function HomePage() {
             <CardContent>
               <p className="text-gray-600 text-center">
                 Connect with trusted neighbors, create lasting friendships, and build a 
-                supportive community around shared parenting experiences.
+                supportive community through shared everyday experiences.
               </p>
             </CardContent>
           </Card>
@@ -124,7 +124,7 @@ export default function HomePage() {
         <div className="bg-white rounded-2xl p-8 mb-16 border border-gray-200">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Turn Everyday Tasks Into Income</h2>
-            <p className="text-lg text-gray-600">A new way for parents to earn money while helping neighbors</p>
+            <p className="text-lg text-gray-600">A new way for adults to earn money while helping neighbors</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -151,7 +151,7 @@ export default function HomePage() {
         <div className="bg-teal-600 rounded-2xl p-12 text-center text-white">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-xl mb-8 text-teal-100">
-            Be among the first to earn money from your daily parenting tasks
+            Be among the first to earn money from your daily tasks
           </p>
           <a
             href="/auth"
