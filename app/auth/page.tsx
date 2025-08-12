@@ -47,7 +47,10 @@ export default function AuthPage() {
         title: 'Success!',
         description: 'You have been signed in successfully.',
       })
-      window.location.href = '/dashboard'
+      // Use setTimeout to ensure the toast shows before redirect
+      setTimeout(() => {
+        window.location.href = '/dashboard'
+      }, 500)
     } catch (error: any) {
       console.error('handleSignIn error:', error)
       toast({

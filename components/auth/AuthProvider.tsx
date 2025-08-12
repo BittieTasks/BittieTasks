@@ -45,6 +45,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state change:', event, session?.user?.email)
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
@@ -52,6 +53,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (event === 'SIGNED_IN' && session?.user) {
         // Create or update user profile in our database
         await createUserProfile(session.user)
+        
+        // Auto-redirect to dashboard after successful sign in
+        if (window.location.pathname === '/auth') {
+          console.log('Auto-redirecting to dashboard after sign in')
+          setTimeout(() => {
+            window.location.href = '/dashboard'
+          }, 1000)
+        }
       }
     })
 
