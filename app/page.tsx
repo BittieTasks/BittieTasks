@@ -120,29 +120,29 @@ export default function HomePage() {
           </Card>
         </div>
 
-        {/* Stats Section */}
+        {/* Value Proposition Section */}
         <div className="bg-white rounded-2xl p-8 mb-16 border border-gray-200">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Join Our Growing Community</h2>
-            <p className="text-lg text-gray-600">Parents helping parents, building stronger neighborhoods</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Turn Everyday Tasks Into Income</h2>
+            <p className="text-lg text-gray-600">A new way for parents to earn money while helping neighbors</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-3xl font-bold text-teal-600 mb-2">2,500+</div>
-              <div className="text-gray-600">Active Parents</div>
+              <div className="text-3xl font-bold text-teal-600 mb-2">$25-50</div>
+              <div className="text-gray-600">Per Task Average</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">15,000+</div>
-              <div className="text-gray-600">Tasks Completed</div>
+              <div className="text-3xl font-bold text-green-600 mb-2">120+</div>
+              <div className="text-gray-600">Available Tasks</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600 mb-2">$250K+</div>
-              <div className="text-gray-600">Community Earnings</div>
+              <div className="text-3xl font-bold text-purple-600 mb-2">4</div>
+              <div className="text-gray-600">Task Categories</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">95%</div>
-              <div className="text-gray-600">Satisfaction Rate</div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">24/7</div>
+              <div className="text-gray-600">Platform Access</div>
             </div>
           </div>
         </div>
@@ -151,13 +151,13 @@ export default function HomePage() {
         <div className="bg-teal-600 rounded-2xl p-12 text-center text-white">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-xl mb-8 text-teal-100">
-            Join thousands of parents earning money while building community
+            Be among the first to earn money from your daily parenting tasks
           </p>
           <a
             href="/auth"
             className="inline-flex items-center justify-center px-8 py-4 bg-white text-teal-600 hover:bg-gray-100 text-lg font-semibold rounded-lg transition-colors"
           >
-            Welcome Back
+            Join the Community
             <ArrowRight size={20} className="ml-2" />
           </a>
         </div>
