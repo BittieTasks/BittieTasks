@@ -1,7 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Production optimizations
+  productionBrowserSourceMaps: false,
+  optimizeFonts: true,
+  compress: true,
+  
   images: {
-    unoptimized: true,
+    unoptimized: process.env.NODE_ENV === 'development',
+    formats: ['image/avif', 'image/webp'],
+    domains: ['ttgbotlcbzmmyqawnjpj.supabase.co'],
   },
   experimental: {
     serverActions: {
@@ -18,7 +25,7 @@ const nextConfig = {
     NEXT_PUBLIC_STRIPE_PUBLIC_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || process.env.VITE_STRIPE_PUBLIC_KEY,
     NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || process.env.VITE_GA_MEASUREMENT_ID,
   },
-  // Fix cross-origin issues for Replit preview
+  // Optimized headers for production performance
   async headers() {
     return [
       {
@@ -29,16 +36,40 @@ const nextConfig = {
             value: 'SAMEORIGIN',
           },
           {
-            key: 'Access-Control-Allow-Origin',
-            value: '*',
-          },
-          {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
+          // Production caching - aggressive for static assets
+          ...(process.env.NODE_ENV === 'production' ? [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=31536000, immutable',
+            }
+          ] : [
+            {
+              key: 'Cache-Control',
+              value: 'no-cache, no-store, must-revalidate',
+            }
+          ]),
+        ],
+      },
+      // API routes - shorter cache for dynamic content
+      {
+        source: '/api/(.*)',
+        headers: [
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
+            value: 'public, max-age=60, s-maxage=300',
+          },
+        ],
+      },
+      // Static assets - long-term caching
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
