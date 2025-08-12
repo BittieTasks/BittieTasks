@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     // Test sending an email
     const success = await sendEmail({
       to: email,
-      from: 'noreply@bittietasks.com', // You'll need to verify this domain
+      from: 'noreply@bittietasks.com', // Verified sender
       subject: 'BittieTasks - SendGrid Test',
       text: 'This is a test email from BittieTasks to verify SendGrid integration.',
       html: `

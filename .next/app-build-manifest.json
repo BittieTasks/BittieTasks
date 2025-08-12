@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/api/auth/verify-sendgrid-setup/route": [
+    "/api/auth/test-complete-flow/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/verify-sendgrid-setup/route.js"
+      "static/chunks/app/api/auth/test-complete-flow/route.js"
     ]
   }
 }
