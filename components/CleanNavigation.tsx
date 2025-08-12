@@ -28,6 +28,10 @@ const navigationItems = [
   { path: '/create-task', label: 'Create', icon: PlusCircle },
 ]
 
+const footerItems = [
+  { path: '/policies', label: 'Policies & Guidelines', icon: Settings },
+]
+
 export default function CleanNavigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -163,6 +167,18 @@ export default function CleanNavigation() {
                 })}
                 
                 <div className="border-t pt-4 mt-4">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start px-4 py-3 h-auto text-gray-700 hover:bg-gray-50 mb-2"
+                    onClick={() => {
+                      router.push('/policies')
+                      setMobileMenuOpen(false)
+                    }}
+                  >
+                    <Settings size={18} className="mr-3" />
+                    Policies & Guidelines
+                  </Button>
+                  
                   <div className="flex items-center space-x-3 px-4 py-2 mb-2">
                     <User size={20} className="text-gray-600" />
                     <span className="font-medium text-gray-700">
