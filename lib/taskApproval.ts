@@ -1,6 +1,32 @@
-import { db } from './db'
-import { tasks, taskApprovalLogs, prohibitedContent, users } from '../shared/schema'
-import { eq, and, sql, desc } from 'drizzle-orm'
+// Conditional imports for database operations
+let db: any = null
+let tasks: any = null
+let taskApprovalLogs: any = null
+let prohibitedContent: any = null
+let users: any = null
+let eq: any = null
+let and: any = null
+let sql: any = null
+let desc: any = null
+
+// Dynamic import function to load database dependencies
+async function loadDatabaseDependencies() {
+  if (!db && typeof window === 'undefined' && process.env.DATABASE_URL) {
+    const { db: dbClient } = await import('./db')
+    const schema = await import('../shared/schema')
+    const drizzleOrm = await import('drizzle-orm')
+    
+    db = dbClient
+    tasks = schema.tasks
+    taskApprovalLogs = schema.taskApprovalLogs
+    prohibitedContent = schema.prohibitedContent
+    users = schema.users
+    eq = drizzleOrm.eq
+    and = drizzleOrm.and
+    sql = drizzleOrm.sql
+    desc = drizzleOrm.desc
+  }
+}
 
 // Risk factors that affect approval
 interface RiskFactors {
@@ -27,6 +53,19 @@ export class TaskApprovalService {
     riskScore: number
     reasons: string[]
   }> {
+    // Load database dependencies dynamically
+    await loadDatabaseDependencies()
+    
+    if (!db) {
+      // Return safe default when database unavailable (build time)
+      return {
+        approved: false,
+        reviewTier: 'manual_review',
+        riskScore: 50,
+        reasons: ['Database unavailable - requires manual review']
+      }
+    }
+    
     const task = await db.select().from(tasks).where(eq(tasks.id, taskId)).limit(1)
     if (!task.length) {
       throw new Error('Task not found')

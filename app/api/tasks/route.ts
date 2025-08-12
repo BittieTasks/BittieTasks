@@ -131,7 +131,18 @@ export async function POST(request: NextRequest) {
     // Process task approval using our approval system
     let approvalResult
     try {
-      approvalResult = await TaskApprovalService.processTaskApproval(task.id)
+      // Only run approval if not in build mode
+      if (process.env.NODE_ENV !== 'production' || process.env.DATABASE_URL) {
+        approvalResult = await TaskApprovalService.processTaskApproval(task.id)
+      } else {
+        // Default to manual review in production without database
+        approvalResult = {
+          approved: false,
+          reviewTier: 'manual_review',
+          riskScore: 50,
+          reasons: ['Pending manual review']
+        }
+      }
       
       // Update task status based on approval result
       if (approvalResult.approved) {
