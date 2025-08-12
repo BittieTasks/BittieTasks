@@ -1,11 +1,11 @@
-# TaskParent Privacy Policy
+# BittieTasks Privacy Policy
 
-**Effective Date: August 2025**  
-**Last Updated: August 2025**
+**Effective Date: January 2025**  
+**Last Updated: January 2025**
 
 ## 1. INTRODUCTION
 
-TaskParent ("we," "us," or "our") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you use our Platform.
+BittieTasks ("we," "us," or "our") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you use our Platform.
 
 ## 2. INFORMATION WE COLLECT
 
@@ -30,12 +30,12 @@ TaskParent ("we," "us," or "our") respects your privacy and is committed to prot
 ## 3. ADULT-ONLY PLATFORM
 
 ### Age Requirements
-- **Platform Restriction**: TaskParent is designed for users 18 years and older only
+- **Platform Restriction**: BittieTasks is designed for users 18 years and older only
 - **No Child Data**: We do not knowingly collect personal information from children under 18
-- **Adult Services Only**: Platform exclusively facilitates household task services between adults
+- **Adult Services Only**: Platform exclusively facilitates community task services between adults
 
 ### Service Focus
-TaskParent does not provide or facilitate childcare services of any kind. Our platform is exclusively for household task marketplace services (cleaning, cooking, errands, organization) performed by and for adults.
+BittieTasks does not provide or facilitate childcare services of any kind. Our platform is exclusively for community task marketplace services (errands, organization, fitness activities, skill sharing) performed by and for adults.
 
 ## 4. HOW WE USE YOUR INFORMATION
 

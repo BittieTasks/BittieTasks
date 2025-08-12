@@ -1,11 +1,11 @@
-# TaskParent Terms of Service
+# BittieTasks Terms of Service
 
-**Effective Date: August 2025**  
-**Last Updated: August 2025**
+**Effective Date: January 2025**  
+**Last Updated: January 2025**
 
 ## 1. ACCEPTANCE OF TERMS
 
-By accessing or using TaskParent ("Platform"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Platform.
+By accessing or using BittieTasks ("Platform"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Platform.
 
 ## 2. ELIGIBILITY AND AGE REQUIREMENTS
 
@@ -27,7 +27,7 @@ Services are currently available only in the United States. International use is
 ## 3. PROHIBITED ACTIVITIES
 
 ### Strictly Prohibited Services
-TaskParent is a household task marketplace and explicitly prohibits all childcare services:
+BittieTasks is a community task marketplace and explicitly prohibits all childcare services:
 - **ALL childcare services including babysitting, child supervision, or child-related activities**
 - **Transportation of minors under any circumstances**
 - **Child pickup/dropoff from school or activities**
@@ -47,13 +47,13 @@ TaskParent is a household task marketplace and explicitly prohibits all childcar
 ## 4. PLATFORM RESPONSIBILITIES AND DISCLAIMERS
 
 ### Platform Role
-TaskParent serves as a marketplace platform connecting users. We:
+BittieTasks serves as a marketplace platform connecting users. We:
 - Facilitate introductions between Task Providers and Requesters
 - Process payments and provide basic dispute resolution
 - Maintain basic safety standards and background check requirements
 
 ### Platform Disclaimers
-TaskParent operates as a marketplace platform only and DOES NOT:
+BittieTasks operates as a marketplace platform only and DOES NOT:
 - Employ Task Providers (they are independent contractors operating their own businesses)
 - Control, supervise, or dictate HOW tasks are performed (providers set their own methods)
 - Set work schedules, hours, or provide equipment or tools
@@ -298,12 +298,12 @@ If any provision of these Terms is found unenforceable, the remaining provisions
 ## 17. CONTACT INFORMATION
 
 For questions about these Terms:
-- Email: legal@taskparent.com
-- Phone: 1-800-TASK-LAW
-- Address: TaskParent Legal Department, 123 Legal St, Wilmington, DE 19801
+- Email: legal@bittietasks.com
+- Phone: 1-800-BITTIE-1
+- Address: BittieTasks Legal Department, 123 Legal St, Wilmington, DE 19801
 
 ---
 
-**IMPORTANT NOTICE**: These Terms contain important limitations on TaskParent's liability and require arbitration of most disputes. Please read carefully before using the Platform.
+**IMPORTANT NOTICE**: These Terms contain important limitations on BittieTasks' liability and require arbitration of most disputes. Please read carefully before using the Platform.
 
 By clicking "I Agree" or using the Platform, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
