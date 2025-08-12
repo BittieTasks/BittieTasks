@@ -22,7 +22,7 @@ const exampleTasks = [
   {
     id: 1,
     title: "School Pickup Coordination",
-    description: "Help coordinate pickup schedules for Lincoln Elementary. Share driving duties with 3 other parents.",
+    description: "Help coordinate pickup schedules for Lincoln Elementary. Share driving duties with 3 other adults.",
     payout: 35,
     location: "Lincoln Elementary School",
     time_commitment: "30 minutes",
@@ -36,7 +36,7 @@ const exampleTasks = [
   {
     id: 2,
     title: "Weekly Self-Care Walks",
-    description: "Join a group of parents for weekly wellness walks. Track steps and earn rewards for maintaining healthy habits.",
+    description: "Join a group of adults for weekly wellness walks. Track steps and earn rewards for maintaining healthy habits.",
     payout: 30,
     location: "Local Park Trail",
     time_commitment: "45 minutes",
@@ -50,7 +50,7 @@ const exampleTasks = [
   {
     id: 3,
     title: "Photography Skills for Art Lessons",
-    description: "Trade photography lessons for kids' art tutoring. Equal time exchange between skilled parents.",
+    description: "Trade photography lessons for kids' art tutoring. Equal time exchange between skilled adults.",
     payout: 0,
     location: "Home Studios",
     time_commitment: "2 hours",
@@ -63,8 +63,8 @@ const exampleTasks = [
   },
   {
     id: 4,
-    title: "Complete Online Parent Survey",
-    description: "Share insights about family shopping habits for market research. Complete at your own pace.",
+    title: "Complete Online Consumer Survey",
+    description: "Share insights about household shopping habits for market research. Complete at your own pace.",
     payout: 45,
     location: "Online",
     time_commitment: "30 minutes", 
@@ -77,7 +77,7 @@ const exampleTasks = [
   {
     id: 5,
     title: "Neighborhood Watch Coordination",
-    description: "Organize monthly neighborhood safety meetings. Coordinate with local families and police liaison.",
+    description: "Organize monthly neighborhood safety meetings. Coordinate with local residents and police liaison.",
     payout: 35,
     location: "Community Center",
     time_commitment: "90 minutes",
@@ -139,8 +139,8 @@ export default function ExamplesPage() {
             Real Earning Opportunities
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            See the types of tasks parents are sharing in communities like yours. 
-            Each task is paid by BittieTasks to help families earn while building connections.
+            See the types of tasks adults are sharing in communities like yours. 
+            Each task is paid by BittieTasks to help neighbors earn while building connections.
           </p>
           <div className="inline-flex items-center space-x-2 bg-teal-50 text-teal-700 px-4 py-2 rounded-lg">
             <Briefcase size={20} />
@@ -254,7 +254,7 @@ export default function ExamplesPage() {
             Ready to Start Earning?
           </h3>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of parents who are transforming daily tasks into income opportunities. 
+            Join thousands of adults who are transforming daily tasks into income opportunities. 
             Sign up today and start earning from community activities.
           </p>
           <a
