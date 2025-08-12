@@ -1,1 +1,6 @@
-{}
+{
+  "/api/auth/status/route": "app/api/auth/status/route.js",
+  "/api/auth/test-connection/route": "app/api/auth/test-connection/route.js",
+  "/api/auth/debug-signup/route": "app/api/auth/debug-signup/route.js",
+  "/api/auth/check-config/route": "app/api/auth/check-config/route.js"
+}
