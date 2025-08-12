@@ -28,70 +28,77 @@ const exampleTasks = [
     time_commitment: "30 minutes",
     max_participants: 4,
     current_participants: 2,
-    category: { name: "Transportation", color: "bg-orange-100 text-orange-700", icon: Car },
-    sponsor: "BittieTasks",
+    task_category: "Community",
+    payment_source: "BittieTasks",
+    category: { name: "Community", color: "bg-blue-100 text-blue-700", icon: Users },
     featured: true
   },
   {
     id: 2,
-    title: "Neighborhood Meal Planning Group",
-    description: "Join a weekly meal planning session. Share recipes, coordinate bulk buying, and reduce food costs.",
-    payout: 42,
-    location: "Community Center",
-    time_commitment: "1 hour",
-    max_participants: 6,
-    current_participants: 4,
-    category: { name: "Meal Planning", color: "bg-green-100 text-green-700", icon: Heart },
-    sponsor: "BittieTasks"
-  },
-  {
-    id: 3,
-    title: "After-School Activity Shuttle",
-    description: "Coordinate transportation for kids' soccer practice. Share driving responsibilities with other families.",
-    payout: 28,
-    location: "Riverside Soccer Fields",
+    title: "Weekly Self-Care Walks",
+    description: "Join a group of parents for weekly wellness walks. Track steps and earn rewards for maintaining healthy habits.",
+    payout: 30,
+    location: "Local Park Trail",
     time_commitment: "45 minutes",
-    max_participants: 3,
+    max_participants: 1,
     current_participants: 1,
-    category: { name: "Transportation", color: "bg-orange-100 text-orange-700", icon: Car },
-    sponsor: "BittieTasks"
-  },
-  {
-    id: 4,
-    title: "Homework Support Circle",
-    description: "Create a supportive environment where kids help each other with homework while parents supervise.",
-    payout: 38,
-    location: "Local Library",
-    time_commitment: "90 minutes", 
-    max_participants: 5,
-    current_participants: 3,
-    category: { name: "Education", color: "bg-blue-100 text-blue-700", icon: GraduationCap },
-    sponsor: "BittieTasks",
+    task_category: "Self Care",
+    payment_source: "Corporate Partnership",
+    category: { name: "Self Care", color: "bg-green-100 text-green-700", icon: Heart },
     featured: true
   },
   {
-    id: 5,
-    title: "Grocery Shopping Coordination",
-    description: "Organize bulk shopping trips to save money. Coordinate lists and split wholesale purchases.",
-    payout: 25,
-    location: "Costco Westfield",
+    id: 3,
+    title: "Photography Skills for Art Lessons",
+    description: "Trade photography lessons for kids' art tutoring. Equal time exchange between skilled parents.",
+    payout: 0,
+    location: "Home Studios",
     time_commitment: "2 hours",
-    max_participants: 4,
-    current_participants: 2,
-    category: { name: "Shopping", color: "bg-purple-100 text-purple-700", icon: ShoppingBag },
-    sponsor: "BittieTasks"
+    max_participants: 2,
+    current_participants: 1,
+    task_category: "Barter",
+    payment_source: "Peer-to-peer",
+    category: { name: "Barter", color: "bg-purple-100 text-purple-700", icon: ShoppingBag },
+    barter_note: "Skills exchange - no money involved"
+  },
+  {
+    id: 4,
+    title: "Complete Online Parent Survey",
+    description: "Share insights about family shopping habits for market research. Complete at your own pace.",
+    payout: 45,
+    location: "Online",
+    time_commitment: "30 minutes", 
+    max_participants: 1,
+    current_participants: 1,
+    task_category: "Solo",
+    payment_source: "Corporate Partnership",
+    category: { name: "Solo", color: "bg-yellow-100 text-yellow-700", icon: Star }
+  },
+  {
+    id: 5,
+    title: "Neighborhood Watch Coordination",
+    description: "Organize monthly neighborhood safety meetings. Coordinate with local families and police liaison.",
+    payout: 35,
+    location: "Community Center",
+    time_commitment: "90 minutes",
+    max_participants: 8,
+    current_participants: 3,
+    task_category: "Community",
+    payment_source: "Peer-to-peer",
+    category: { name: "Community", color: "bg-blue-100 text-blue-700", icon: Users }
   },
   {
     id: 6,
-    title: "Backyard Playgroup Setup",
-    description: "Host rotating backyard playdates. Share setup duties and create safe play environments.",
-    payout: 32,
-    location: "Rotating Backyards",
-    time_commitment: "2 hours",
-    max_participants: 6,
-    current_participants: 4,
-    category: { name: "Childcare", color: "bg-pink-100 text-pink-700", icon: Heart },
-    sponsor: "BittieTasks"
+    title: "Daily Meditation Check-in",
+    description: "Maintain a daily 10-minute meditation practice. Track progress and earn wellness rewards.",
+    payout: 25,
+    location: "At Home",
+    time_commitment: "10 minutes daily",
+    max_participants: 1,
+    current_participants: 1,
+    task_category: "Self Care",
+    payment_source: "BittieTasks",
+    category: { name: "Self Care", color: "bg-green-100 text-green-700", icon: Heart }
   }
 ]
 
@@ -165,7 +172,7 @@ export default function ExamplesPage() {
                         <CardTitle className="text-lg text-gray-900 mb-2">{task.title}</CardTitle>
                         <div className="flex items-center text-teal-600 font-semibold text-lg">
                           <Coins size={18} className="mr-1" />
-                          ${task.payout}
+                          {task.barter_note ? task.barter_note : `$${task.payout}`}
                         </div>
                       </div>
                     </div>
@@ -184,6 +191,10 @@ export default function ExamplesPage() {
                       <div className="flex items-center">
                         <Users size={16} className="mr-2" />
                         {task.current_participants} of {task.max_participants} participants
+                      </div>
+                      <div className="flex items-center">
+                        <Briefcase size={16} className="mr-2" />
+                        Paid by: {task.payment_source}
                       </div>
                     </div>
                   </CardContent>
@@ -211,7 +222,7 @@ export default function ExamplesPage() {
                     <CardTitle className="text-lg text-gray-900 mb-2">{task.title}</CardTitle>
                     <div className="flex items-center text-teal-600 font-semibold">
                       <Coins size={16} className="mr-1" />
-                      ${task.payout}
+                      {task.barter_note ? task.barter_note : `$${task.payout}`}
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -224,6 +235,10 @@ export default function ExamplesPage() {
                       <div className="flex items-center">
                         <Clock size={14} className="mr-2" />
                         {task.time_commitment}
+                      </div>
+                      <div className="flex items-center">
+                        <Briefcase size={14} className="mr-2" />
+                        {task.payment_source}
                       </div>
                     </div>
                   </CardContent>
