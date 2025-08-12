@@ -14,13 +14,13 @@ SMTP Host: smtp.sendgrid.net
 SMTP Port: 587
 SMTP User: apikey
 SMTP Pass: [Your SendGrid API Key]
-SMTP Admin Email: bittiebitesbakery@gmail.com
+SMTP Admin Email: noreply@bittietasks.com
 ```
 
 ### Important Notes:
 - Use **apikey** as the username (not your actual SendGrid username)
 - Use your **SendGrid API Key** as the password
-- Use **bittiebitesbakery@gmail.com** since that's your verified sender
+- Use **noreply@bittietasks.com** since that's your verified sender
 
 ### After Saving:
 1. **Turn ON:** "Enable email confirmations" 
