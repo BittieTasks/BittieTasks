@@ -64,7 +64,7 @@ export default function HomePage() {
               <ArrowRight size={20} className="ml-2" />
             </a>
             <a
-              href="/marketplace"
+              href="/examples"
               className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
             >
               Explore Opportunities
