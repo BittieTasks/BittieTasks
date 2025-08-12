@@ -1,7 +1,3 @@
 {
-  "/api/auth/manual-verify/route": "app/api/auth/manual-verify/route.js",
-  "/api/auth/signin/route": "app/api/auth/signin/route.js",
-  "/api/auth/debug-user/route": "app/api/auth/debug-user/route.js",
-  "/_not-found/page": "app/_not-found/page.js",
   "/auth/page": "app/auth/page.js"
 }
