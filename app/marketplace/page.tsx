@@ -33,12 +33,17 @@ export default function MarketplacePage() {
     setMounted(true)
   }, [])
 
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      router.push('/auth')
+    }
+  }, [mounted, isAuthenticated, router])
+
   if (!mounted) {
     return null
   }
 
   if (!isAuthenticated) {
-    router.push('/auth')
     return null
   }
 
