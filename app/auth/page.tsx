@@ -73,9 +73,42 @@ export default function AuthPage() {
     }
   }
 
+  const validatePassword = (password: string) => {
+    const requirements = {
+      length: password.length >= 8,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password),
+    }
+    
+    const isValid = Object.values(requirements).every(req => req)
+    return { isValid, requirements }
+  }
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+
+    // Validate password requirements
+    const { isValid, requirements } = validatePassword(formData.password)
+    
+    if (!isValid) {
+      const missing = []
+      if (!requirements.length) missing.push('at least 8 characters')
+      if (!requirements.lowercase) missing.push('lowercase letters (a-z)')
+      if (!requirements.uppercase) missing.push('uppercase letters (A-Z)')
+      if (!requirements.number) missing.push('numbers (0-9)')
+      if (!requirements.special) missing.push('special characters (!@#$%^&*)')
+      
+      toast({
+        title: 'Password Requirements Not Met',
+        description: `Password must contain: ${missing.join(', ')}`,
+        variant: 'destructive',
+      })
+      setLoading(false)
+      return
+    }
 
     if (formData.password !== formData.confirmPassword) {
       toast({
