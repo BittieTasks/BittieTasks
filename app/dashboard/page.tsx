@@ -156,7 +156,7 @@ export default function Dashboard() {
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                    Welcome back, {user?.user_metadata?.firstName || 'User'}!
+                    Welcome back, {user?.user_metadata?.firstName || user?.email?.split('@')[0] || 'User'}!
                   </h1>
                   <Badge className={subscriptionBadge.color}>
                     {subscriptionBadge.label}
@@ -334,7 +334,7 @@ export default function Dashboard() {
                       Start earning by applying to tasks in the marketplace
                     </p>
                     <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
-                      <Link to="/platform">Browse Tasks</Link>
+                      <Link to="/marketplace">Browse Tasks</Link>
                     </Button>
                   </div>
                 )}
@@ -371,7 +371,7 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <Button asChild variant="outline">
-                      <Link to="/subscriptions">Upgrade Plan</Link>
+                      <Link to="/subscribe">Upgrade Plan</Link>
                     </Button>
                   </div>
                   
