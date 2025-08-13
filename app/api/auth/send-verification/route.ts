@@ -26,9 +26,12 @@ function getSupabaseAdmin() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { phoneNumber } = body
+    const { phoneNumber, phone_number } = body
+    
+    // Accept both camelCase and snake_case for compatibility
+    const phone = phoneNumber || phone_number
 
-    if (!phoneNumber) {
+    if (!phone) {
       return NextResponse.json(
         { error: 'Phone number is required' },
         { status: 400 }
@@ -36,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate phone number format
-    if (!isValidPhoneNumber(phoneNumber)) {
+    if (!isValidPhoneNumber(phone)) {
       return NextResponse.json(
         { error: 'Invalid phone number format. Please enter a valid US phone number.' },
         { status: 400 }
@@ -44,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Format phone number with country code
-    const formattedPhone = formatPhoneNumber(phoneNumber)
+    const formattedPhone = formatPhoneNumber(phone)
 
     // Generate 6-digit verification code
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()

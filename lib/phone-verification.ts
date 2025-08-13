@@ -34,6 +34,16 @@ export async function sendPhoneVerification(phoneNumber: string, code: string): 
   try {
     console.log(`Sending SMS verification to: ${phoneNumber}`)
     
+    // Development mode: skip actual SMS for test numbers
+    if (process.env.NODE_ENV === 'development' && phoneNumber.includes('555')) {
+      console.log('🧪 Development mode: Skipping SMS for test number')
+      console.log('🔢 Verification code for', phoneNumber, 'is:', code)
+      return {
+        success: true,
+        sid: 'dev_test_' + Date.now()
+      }
+    }
+    
     const client = getTwilioClient()
     const message = await client.messages.create({
       body: `Your BittieTasks verification code is: ${code}\n\nWelcome to the neighborhood! This code expires in 10 minutes.`,
