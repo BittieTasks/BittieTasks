@@ -208,7 +208,7 @@ async function performAutomatedVerification(submission: any, requirements: any) 
       requiredMethodsCheck: {
         required: requiredMethods,
         provided: submission.verificationMethods,
-        complete: requiredMethods.every(method => submission.verificationMethods.includes(method))
+        complete: requiredMethods.every((method: string) => submission.verificationMethods.includes(method))
       }
     }
   }
