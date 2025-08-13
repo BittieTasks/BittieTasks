@@ -1,7 +1,7 @@
 -- Complete SQL to create categories and platform tasks for BittieTasks marketplace
 -- Run this directly in Supabase Dashboard → SQL Editor
 
--- First, create the task categories (if they don't exist)
+-- First, create the task categories
 INSERT INTO task_categories (id, name, description, icon, color) VALUES
 (gen_random_uuid(), 'Activity Coordination', 'Organizing playdates, group activities, events', 'calendar', '#8b5cf6'),
 (gen_random_uuid(), 'Errands & Shopping', 'Grocery runs, pharmacy pickups, general errands', 'shopping-cart', '#10b981'),
@@ -10,8 +10,7 @@ INSERT INTO task_categories (id, name, description, icon, color) VALUES
 (gen_random_uuid(), 'Pet Care', 'Dog walking, pet sitting, vet visits', 'heart', '#f97316'),
 (gen_random_uuid(), 'Self-Care & Wellness', 'Walking groups, meditation, wellness activities', 'heart', '#ec4899'),
 (gen_random_uuid(), 'Skill Sharing', 'Tutoring, lessons, teaching new skills', 'book-open', '#06b6d4'),
-(gen_random_uuid(), 'Transportation', 'School pickups, carpooling, activity transportation', 'car', '#3b82f6')
-ON CONFLICT (name) DO NOTHING;
+(gen_random_uuid(), 'Transportation', 'School pickups, carpooling, activity transportation', 'car', '#3b82f6');
 
 -- Get category IDs for task creation
 DO $$
