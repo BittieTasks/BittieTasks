@@ -9,7 +9,7 @@ import { Badge } from '../../components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs'
 import { useToast } from '../../hooks/use-toast'
 import { Coins, TrendingUp, Users, Clock, Calendar, MapPin, Star, Award } from 'lucide-react'
-import { Link } from 'wouter'
+import { useRouter } from 'next/navigation'
 
 interface UserStats {
   total_earnings: number
@@ -34,6 +34,7 @@ interface TaskActivity {
 export default function Dashboard() {
   const { user } = useAuth()
   const { toast } = useToast()
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<UserStats>({
     total_earnings: 0,
@@ -166,8 +167,12 @@ export default function Dashboard() {
                   Track your earnings, manage tasks, and grow your community impact
                 </p>
               </div>
-              <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
-                <Link to="/marketplace">Browse Tasks</Link>
+              <Button 
+                onClick={() => router.push('/marketplace')}
+                className="bg-teal-600 hover:bg-teal-700 text-white"
+                data-testid="button-browse-tasks"
+              >
+                Browse Tasks
               </Button>
             </div>
           </div>
@@ -333,8 +338,12 @@ export default function Dashboard() {
                     <p className="text-gray-500 mb-4">
                       Start earning by applying to tasks in the marketplace
                     </p>
-                    <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
-                      <Link to="/marketplace">Browse Tasks</Link>
+                    <Button 
+                      onClick={() => router.push('/marketplace')}
+                      className="bg-teal-600 hover:bg-teal-700 text-white"
+                      data-testid="button-browse-tasks-empty"
+                    >
+                      Browse Tasks
                     </Button>
                   </div>
                 )}
@@ -370,8 +379,12 @@ export default function Dashboard() {
                         Current plan: {subscriptionBadge.label}
                       </p>
                     </div>
-                    <Button asChild variant="outline">
-                      <Link to="/subscribe">Upgrade Plan</Link>
+                    <Button 
+                      onClick={() => router.push('/subscription')}
+                      variant="outline"
+                      data-testid="button-subscription-upgrade"
+                    >
+                      Upgrade Plan
                     </Button>
                   </div>
                   
