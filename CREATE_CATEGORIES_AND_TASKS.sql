@@ -2,15 +2,15 @@
 -- Run this directly in Supabase Dashboard → SQL Editor
 
 -- First, create the task categories (if they don't exist)
-INSERT INTO task_categories (id, name, description, icon, color, created_at) VALUES
-(gen_random_uuid(), 'Activity Coordination', 'Organizing playdates, group activities, events', 'calendar', '#8b5cf6', NOW()),
-(gen_random_uuid(), 'Errands & Shopping', 'Grocery runs, pharmacy pickups, general errands', 'shopping-cart', '#10b981', NOW()),
-(gen_random_uuid(), 'Household Tasks', 'Cleaning, organization, home maintenance', 'home', '#84cc16', NOW()),
-(gen_random_uuid(), 'Meal Planning & Prep', 'Meal planning, batch cooking, family dinners', 'chef-hat', '#f59e0b', NOW()),
-(gen_random_uuid(), 'Pet Care', 'Dog walking, pet sitting, vet visits', 'heart', '#f97316', NOW()),
-(gen_random_uuid(), 'Self-Care & Wellness', 'Walking groups, meditation, wellness activities', 'heart', '#ec4899', NOW()),
-(gen_random_uuid(), 'Skill Sharing', 'Tutoring, lessons, teaching new skills', 'book-open', '#06b6d4', NOW()),
-(gen_random_uuid(), 'Transportation', 'School pickups, carpooling, activity transportation', 'car', '#3b82f6', NOW())
+INSERT INTO task_categories (id, name, description, icon, color) VALUES
+(gen_random_uuid(), 'Activity Coordination', 'Organizing playdates, group activities, events', 'calendar', '#8b5cf6'),
+(gen_random_uuid(), 'Errands & Shopping', 'Grocery runs, pharmacy pickups, general errands', 'shopping-cart', '#10b981'),
+(gen_random_uuid(), 'Household Tasks', 'Cleaning, organization, home maintenance', 'home', '#84cc16'),
+(gen_random_uuid(), 'Meal Planning & Prep', 'Meal planning, batch cooking, family dinners', 'chef-hat', '#f59e0b'),
+(gen_random_uuid(), 'Pet Care', 'Dog walking, pet sitting, vet visits', 'heart', '#f97316'),
+(gen_random_uuid(), 'Self-Care & Wellness', 'Walking groups, meditation, wellness activities', 'heart', '#ec4899'),
+(gen_random_uuid(), 'Skill Sharing', 'Tutoring, lessons, teaching new skills', 'book-open', '#06b6d4'),
+(gen_random_uuid(), 'Transportation', 'School pickups, carpooling, activity transportation', 'car', '#3b82f6')
 ON CONFLICT (name) DO NOTHING;
 
 -- Get category IDs for task creation
