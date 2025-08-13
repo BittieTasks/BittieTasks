@@ -6,6 +6,7 @@ BittieTasks is a mobile-first React web application that serves as a dual-income
 ## User Preferences
 Preferred communication style: Senior programming engineer level technical communication.
 Development workflow: Uses Replit as development workspace, GitHub for version control, and Vercel for production deployment.
+Business goals: Seeking guidance on business formation, legal structure, and monetization strategy for BittieTasks platform.
 
 ## System Architecture
 
