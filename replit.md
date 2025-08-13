@@ -8,7 +8,7 @@ Preferred communication style: Senior programming engineer level technical commu
 Development workflow: Uses Replit as development workspace, GitHub for version control, and Vercel for production deployment.
 Business goals: Seeking guidance on business formation, legal structure, and monetization strategy for BittieTasks platform.
 Current focus: Revenue sustainability, payment processing costs, and taxation rather than user acquisition.
-Business model consideration: Platform-funded tasks where BittieTasks creates and pays for tasks directly from subscription/advertising revenue.
+Business model strategy: Hybrid three-stream revenue model combining peer-to-peer marketplace, corporate partnerships, and platform-funded tasks for maximum revenue diversification and growth potential.
 
 ## System Architecture
 
