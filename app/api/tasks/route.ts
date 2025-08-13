@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
         created_at,
         category_id
       `)
-      .eq('status', 'open')
+      .eq('status', 'active')
       .order('created_at', { ascending: false })
 
     if (category && category !== 'all') {
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (taskType && taskType !== 'all') {
-      query = query.eq('task_type', taskType)
+      query = query.eq('type', taskType)
     }
 
     if (search) {

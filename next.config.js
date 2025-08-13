@@ -11,7 +11,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      allowedOrigins: ["*"],
+      bodySizeLimit: '2mb',
     },
   },
   // Fix Replit development preview issues
