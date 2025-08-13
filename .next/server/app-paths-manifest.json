@@ -1,1 +1,7 @@
-{}
+{
+  "/api/auth/verify-smtp-final/route": "app/api/auth/verify-smtp-final/route.js",
+  "/api/auth/test-smtp-connection/route": "app/api/auth/test-smtp-connection/route.js",
+  "/api/auth/test-clean-signup/route": "app/api/auth/test-clean-signup/route.js",
+  "/api/auth/test-sendgrid/route": "app/api/auth/test-sendgrid/route.js",
+  "/api/auth/diagnose-sendgrid-limits/route": "app/api/auth/diagnose-sendgrid-limits/route.js"
+}
