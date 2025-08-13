@@ -15,7 +15,7 @@ function initializeSendGrid() {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 }
 
-export async function sendEmail(params: EmailParams): Promise<boolean> {
+export async function sendEmail(params: EmailParams): Promise<{ success: boolean; error?: string }> {
   try {
     // Initialize SendGrid only when actually sending email
     initializeSendGrid()
@@ -27,9 +27,42 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
       text: params.text,
       html: params.html,
     })
-    return true
-  } catch (error) {
-    console.error('SendGrid email error:', error)
-    return false
+    return { success: true }
+  } catch (error: any) {
+    console.error('SendGrid email error details:', error)
+    
+    // Handle specific SendGrid errors
+    if (error.code === 429) {
+      return { 
+        success: false, 
+        error: 'Email sending limit reached. Please wait a few minutes before trying again.' 
+      }
+    }
+    
+    if (error.code === 403) {
+      return { 
+        success: false, 
+        error: 'SendGrid account has restrictions. Please check your SendGrid account status.' 
+      }
+    }
+    
+    if (error.message?.includes('rate limit')) {
+      return { 
+        success: false, 
+        error: 'Too many emails sent recently. Please wait before requesting another verification email.' 
+      }
+    }
+    
+    if (error.message?.includes('forbidden')) {
+      return { 
+        success: false, 
+        error: 'Email sending is currently restricted. Please contact support.' 
+      }
+    }
+    
+    return { 
+      success: false, 
+      error: error.message || 'Failed to send email. Please try again later.' 
+    }
   }
 }

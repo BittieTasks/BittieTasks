@@ -24,8 +24,8 @@ export class EmailVerificationService {
     return randomBytes(32).toString('hex')
   }
 
-  // Send verification email using SendGrid
-  async sendVerificationEmail(userId: string, email: string): Promise<boolean> {
+  // Send verification email using SendGrid  
+  async sendVerificationEmail(userId: string, email: string): Promise<{ success: boolean; error?: string }> {
     try {
       // Ensure table exists first
       await ensureVerificationTable()
@@ -45,14 +45,14 @@ export class EmailVerificationService {
 
       if (dbError) {
         console.error('Database error storing verification token:', dbError)
-        return false
+        return { success: false, error: 'Failed to store verification token' }
       }
 
       // Create verification URL
       const verificationUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:5000'}/verify-email?token=${token}`
       
       // Send email via SendGrid
-      const emailSent = await sendEmail({
+      const emailResult = await sendEmail({
         to: email,
         from: 'noreply@bittietasks.com',
         subject: 'Verify Your BittieTasks Account',
@@ -110,10 +110,15 @@ Need help? Contact us at support@bittietasks.com
         `
       })
 
-      return emailSent
-    } catch (error) {
+      if (!emailResult.success) {
+        console.error('Email sending failed:', emailResult.error)
+        return { success: false, error: emailResult.error || 'Failed to send verification email' }
+      }
+
+      return { success: true }
+    } catch (error: any) {
       console.error('Error sending verification email:', error)
-      return false
+      return { success: false, error: error.message || 'Failed to send verification email' }
     }
   }
 
@@ -185,31 +190,31 @@ Need help? Contact us at support@bittietasks.com
   }
 
   // Resend verification email
-  async resendVerificationEmail(email: string): Promise<boolean> {
+  async resendVerificationEmail(email: string): Promise<{ success: boolean; error?: string }> {
     try {
       // Find user by email
       const { data: userData, error: userError } = await supabase.auth.admin.listUsers()
       
       if (userError) {
         console.error('Error finding user:', userError)
-        return false
+        return { success: false, error: 'Failed to find user account' }
       }
 
       const user = userData.users.find(u => u.email === email)
       if (!user) {
         console.error('User not found:', email)
-        return false
+        return { success: false, error: 'No account found with this email address' }
       }
 
       // Don't resend if already verified
       if (user.email_confirmed_at || user.user_metadata?.email_verified) {
-        return true // Already verified
+        return { success: true } // Already verified
       }
 
       return await this.sendVerificationEmail(user.id, email)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error resending verification email:', error)
-      return false
+      return { success: false, error: error.message || 'Failed to resend verification email' }
     }
   }
 }

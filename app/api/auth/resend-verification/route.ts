@@ -12,16 +12,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const success = await emailVerification.resendVerificationEmail(email)
+    const result = await emailVerification.resendVerificationEmail(email)
 
-    if (success) {
+    if (result.success) {
       return NextResponse.json({
         success: true,
         message: 'Verification email sent successfully'
       })
     } else {
       return NextResponse.json(
-        { error: 'Failed to send verification email. Please try again.' },
+        { error: result.error || 'Failed to send verification email. Please try again.' },
         { status: 500 }
       )
     }
