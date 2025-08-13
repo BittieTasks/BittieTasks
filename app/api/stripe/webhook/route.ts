@@ -76,31 +76,64 @@ export async function POST(request: NextRequest) {
 }
 
 async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
-  const { taskId, userId } = paymentIntent.metadata;
+  const { taskId, userId, submissionId, paymentType } = paymentIntent.metadata;
 
   if (taskId && userId) {
-    // Update task completion and earnings
-    const { error } = await supabase
-      .from('task_completions')
+    const amount = paymentIntent.amount / 100; // Convert from cents
+    
+    // Update transaction status
+    await supabase
+      .from('transactions')
       .update({
-        paymentStatus: 'completed',
-        stripePaymentIntentId: paymentIntent.id,
-        updatedAt: new Date().toISOString()
+        status: 'completed',
+        processedAt: new Date().toISOString(),
+        metadata: {
+          ...paymentIntent.metadata,
+          stripePaymentIntentId: paymentIntent.id,
+          paymentStatus: 'succeeded'
+        }
       })
-      .eq('taskId', taskId)
-      .eq('userId', userId);
+      .eq('metadata->stripePaymentIntentId', paymentIntent.id);
 
-    if (error) {
-      console.error('Error updating task completion:', error);
-      return;
+    // If this is a task completion payment, update submission
+    if (submissionId && paymentType === 'task_completion') {
+      await supabase
+        .from('task_completion_submissions')
+        .update({
+          paymentReleased: true,
+          paymentReleasedAt: new Date().toISOString()
+        })
+        .eq('id', submissionId);
+        
+      // Update task participant
+      await supabase
+        .from('task_participants')
+        .update({
+          earnedAmount: amount,
+          status: 'completed',
+          completedAt: new Date().toISOString()
+        })
+        .eq('taskId', taskId)
+        .eq('userId', userId);
     }
 
     // Update user total earnings
-    const amount = paymentIntent.amount / 100; // Convert from cents
-    await supabase.rpc('increment_user_earnings', {
-      user_id: userId,
-      amount: amount
-    });
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('totalEarnings')
+      .eq('id', userId)
+      .single();
+      
+    const currentEarnings = parseFloat(currentUser?.totalEarnings || '0');
+    const newTotal = currentEarnings + amount;
+    
+    await supabase
+      .from('users')
+      .update({ 
+        totalEarnings: newTotal.toFixed(2),
+        updatedAt: new Date().toISOString()
+      })
+      .eq('id', userId);
 
     console.log(`Payment succeeded for task ${taskId}, user ${userId}: $${amount}`);
   }

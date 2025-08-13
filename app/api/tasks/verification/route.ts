@@ -360,7 +360,7 @@ export async function POST(request: NextRequest) {
       .from('user_verification_history')
       .insert(historyData)
     
-    // If auto-verified, update task participant status and process payment
+    // If auto-verified, update task participant status and trigger payment
     if (verificationStatus === 'auto_verified') {
       await supabase
         .from('task_participants')
@@ -371,8 +371,32 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', validatedData.participantId)
       
-      // TODO: Process payment through Stripe
-      // await processTaskPayment(user.id, taskData.earningPotential, taskData.id)
+      // For platform-funded tasks, process payment immediately
+      if (taskData.type === 'platform_funded') {
+        try {
+          const paymentResponse = await fetch(`${request.url.replace('/verification', '/payments')}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': request.headers.get('Authorization') || ''
+            },
+            body: JSON.stringify({
+              submissionId: submission.id,
+              taskId: taskData.id,
+              amount: parseFloat(taskData.earningPotential),
+              paymentType: 'task_completion'
+            })
+          })
+          
+          if (paymentResponse.ok) {
+            const paymentResult = await paymentResponse.json()
+            console.log('Platform payment processed:', paymentResult)
+          }
+        } catch (paymentError) {
+          console.error('Payment processing error:', paymentError)
+          // Don't fail verification if payment fails - can be retried
+        }
+      }
     }
     
     return NextResponse.json({
