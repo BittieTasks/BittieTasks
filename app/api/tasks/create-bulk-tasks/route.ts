@@ -43,7 +43,7 @@ const generateBulkTasks = () => {
   ]
   
   // Generate variations to reach 50 tasks
-  const tasks = []
+  const tasks: any[] = []
   let taskId = 1
   
   // Create multiple variations of each template

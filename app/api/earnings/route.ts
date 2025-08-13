@@ -132,10 +132,14 @@ export async function GET(request: NextRequest) {
     }
 
     transactions?.forEach(t => {
-      if (t.status === 'completed' && t.type === 'task_earning' && t.tasks && !Array.isArray(t.tasks)) {
-        const taskType = t.tasks.type as keyof typeof earningsByType
-        if (taskType in earningsByType) {
-          earningsByType[taskType] += parseFloat(t.amount)
+      if (t.status === 'completed' && t.type === 'task_earning' && t.tasks) {
+        // Handle both single task object and array
+        const task = Array.isArray(t.tasks) ? t.tasks[0] : t.tasks
+        if (task && task.type) {
+          const taskType = task.type as keyof typeof earningsByType
+          if (taskType in earningsByType) {
+            earningsByType[taskType] += parseFloat(t.amount)
+          }
         }
       }
     })
@@ -146,13 +150,16 @@ export async function GET(request: NextRequest) {
         s.verificationStatus === 'auto_verified' && 
         !s.paymentReleased
       )
-      .map(s => ({
-        submissionId: s.id,
-        taskTitle: Array.isArray(s.tasks) ? s.tasks[0]?.title : s.tasks?.title,
-        amount: Array.isArray(s.tasks) ? s.tasks[0]?.earningPotential : s.tasks?.earningPotential,
-        taskType: Array.isArray(s.tasks) ? s.tasks[0]?.type : s.tasks?.type,
-        createdAt: s.createdAt
-      })) || []
+      .map(s => {
+        const task = Array.isArray(s.tasks) ? s.tasks[0] : s.tasks
+        return {
+          submissionId: s.id,
+          taskTitle: task?.title || 'Unknown Task',
+          amount: task?.earningPotential || '0',
+          taskType: task?.type || 'unknown',
+          createdAt: s.createdAt
+        }
+      }) || []
 
     return NextResponse.json({
       summary: {

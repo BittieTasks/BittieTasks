@@ -16,10 +16,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/loading.js"
     ],
-    "/test-payments/page": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/test-payments/page.js"
+      "static/chunks/app/page.js"
     ]
   }
 }
