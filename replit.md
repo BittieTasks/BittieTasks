@@ -1,24 +1,25 @@
 # BittieTasks Mobile Application
 
 ## Overview
-BittieTasks is a mobile-first React web application that serves as a dual-income marketplace for adults. Its primary purpose is to enable adults to earn money by sharing daily tasks with neighbors and to monetize routine activities. The platform facilitates community-based earnings, where neighbors pay to join activities, and also includes features for self-care tasks with optional accountability partners. Key capabilities include real-time task management, earnings tracking, a comprehensive messaging system, and gamified wellness achievements. The business model incorporates an advertising-based revenue model with affiliate marketing integration, an ethical partnership matching algorithm for corporate partners, a comprehensive bartering system for skill/service exchange, and an advertising management system with ethical evaluation.
+BittieTasks is a mobile-first React web application designed as a dual-income marketplace for adults. Its core purpose is to facilitate community-based earnings by enabling users to monetize daily tasks and routine activities by sharing them with neighbors. The platform also supports self-care tasks with optional accountability partners. Key capabilities include real-time task management, earnings tracking, a comprehensive messaging system, and gamified wellness achievements. The business model integrates advertising, affiliate marketing, an ethical partnership matching algorithm for corporate sponsors, a comprehensive bartering system, and an advertising management system with ethical evaluation. The project aims for revenue sustainability, managing payment processing costs, and addressing taxation, with a vision for platform-funded tasks where BittieTasks directly pays for tasks from subscription and advertising revenue.
 
 ## User Preferences
 Preferred communication style: Senior programming engineer level technical communication.
 Development workflow: Uses Replit as development workspace, GitHub for version control, and Vercel for production deployment.
 Business goals: Seeking guidance on business formation, legal structure, and monetization strategy for BittieTasks platform.
 Current focus: Revenue sustainability, payment processing costs, and taxation rather than user acquisition.
+Business model consideration: Platform-funded tasks where BittieTasks creates and pays for tasks directly from subscription/advertising revenue.
 
 ## System Architecture
 
 ### UI/UX Decisions
-- **Design Principles**: Mobile-first responsive layout with clean, professional teal-based color scheme. Clean, Facebook-inspired design with minimal styling and trustworthy interface.
-- **Color Scheme**: Primary teal (#0d9488) with complementary emerald and slate accents. Uses Coins icons instead of DollarSign icons for visual elements while maintaining $ currency symbols for actual amounts.
-- **Button Language**: Friendly, welcoming language - "Join the Community", "Welcome Back", "Let's Get Started", "Explore Opportunities".
+- **Design Principles**: Mobile-first responsive layout with a clean, professional teal-based color scheme. Features a Facebook-inspired design for a trustworthy interface.
+- **Color Scheme**: Primary teal (#0d9488) with complementary emerald and slate accents. Uses 'Coins' icons visually while maintaining '$' for currency values.
+- **Button Language**: Friendly and welcoming (e.g., "Join the Community", "Let's Get Started").
 - **Typography**: Responsive typography using `clamp()` functions.
 - **Navigation**: Mobile hamburger navigation with full-screen overlay and bottom navigation on authenticated pages.
 - **Component Library**: Radix UI primitives with shadcn/ui for accessible and professional components.
-- **Styling**: Tailwind CSS with custom color variables and teal theme.
+- **Styling**: Tailwind CSS with custom color variables.
 
 ### Technical Implementations
 - **Framework**: Next.js 15.4.6 with App Router.
@@ -26,22 +27,19 @@ Current focus: Revenue sustainability, payment processing costs, and taxation ra
 - **Routing**: Wouter.
 - **State Management**: TanStack Query.
 - **Backend**: Node.js with Express.js.
-- **File Uploads**: Multer middleware for file handling.
+- **File Uploads**: Multer middleware.
 - **Database**: PostgreSQL with Drizzle ORM, hosted on Neon Database.
-- **Authentication**: Supabase authentication with JWT tokens, email verification via SendGrid, PKCE authentication flow. Includes user verification and access control for monetization features.
+- **Authentication**: Supabase authentication with JWT tokens, PKCE flow, and email verification via SendGrid. Includes user verification and access control for monetization features.
 - **Payment Processing**: Stripe for subscription billing, platform fees, and split payments. Escrow.com for high-value transactions.
-- **Business Model**:
-    - Tiered subscription plans: Free (10% fee), Pro ($9.99/month, 7% fee), Premium ($19.99/month, 5% fee).
-    - Corporate sponsored tasks (25-50% higher payouts) with an automated ethical evaluation system.
-    - Achievement system with monetary rewards.
-- **Task System**: Supports solo, community, barter, and self-care tasks with application questions, photo upload, progress tracking, and payment processing. Barter transactions include tax compliance tracking.
-- **Core Features**: Task marketplace, subscription tiers, corporate sponsorship portal, earnings dashboard, and comprehensive mobile-first UI.
+- **Business Model**: Tiered subscription plans (Free, Pro, Premium), corporate sponsored tasks with ethical evaluation, and an achievement system with monetary rewards.
+- **Task System**: Supports solo, community, barter, and self-care tasks with application questions, photo upload, progress tracking, and payment/tax compliance for barter.
+- **Core Features**: Task marketplace, subscription tiers, corporate sponsorship portal, earnings dashboard, and mobile-first UI.
 
 ### System Design Choices
-- Server-side rendering (SSR) via Next.js for reliable styling and performance.
+- Server-side rendering (SSR) via Next.js for performance.
 - Relational schema for users, tasks, categories, completions, messages, and achievements.
-- Robust security features: Password hashing, account lockout, bearer token authentication, RLS database policies, and fraud detection.
-- Comprehensive deployment configuration for multiple platforms (Vercel, Netlify, Railway, Docker).
+- Robust security features including password hashing, account lockout, bearer token authentication, RLS database policies, and fraud detection.
+- Comprehensive deployment configuration for multiple platforms.
 
 ## External Dependencies
 
@@ -57,12 +55,6 @@ Current focus: Revenue sustainability, payment processing costs, and taxation ra
 - `wouter`: Lightweight router.
 - `tailwindcss`: Utility-first CSS framework.
 
-### Development and Build Tools
-- `vite`: Fast build tool (used during development transition).
-- `typescript`: Static type checking.
-- `esbuild`: Fast bundler for production.
-- `drizzle-kit`: Database migration and schema management.
-
 ### Third-Party Integrations
 - **Stripe**: Payment processing for subscription billing and platform fees.
 - **Escrow.com**: Transaction protection for high-value transactions.
@@ -72,97 +64,3 @@ Current focus: Revenue sustainability, payment processing costs, and taxation ra
 - **Supabase**: Authentication system.
 - **Claude 4.0 Sonnet**: AI for content moderation and intelligent task generation.
 - **PayPal**: Alternative payment processing.
-
-## Recent Updates
-- **January 13, 2025**: Email Verification & Performance Optimization Complete - Production Ready
-  - **AUTHENTICATION FIXES**: Resolved infinite loading states after sign-in with timeout protection and improved state management
-  - **SENDGRID RATE LIMITS**: Enhanced error handling for email sending limits with detailed user messaging and bypass options
-  - **BUILD OPTIMIZATION**: Fixed production build errors by moving SendGrid initialization to runtime instead of build-time
-  - **BETTER UX**: Added comprehensive error messages and fallback mechanisms for email verification edge cases
-  - **DEVELOPMENT TOOLS**: Created rate limit diagnostic endpoints and solution documentation for troubleshooting
-  - **SYSTEM RELIABILITY**: Email verification now handles all edge cases including rate limits, network failures, and API errors
-- **January 13, 2025**: Custom Email Verification System Complete - Production Ready
-  - **EMAIL DELIVERY SOLUTION**: Implemented custom verification system using SendGrid direct API, completely bypassing problematic Supabase SMTP configuration
-  - **PROFESSIONAL BRANDING**: Custom BittieTasks-branded email templates with clear verification links and professional styling
-  - **RELIABLE DELIVERY**: Direct SendGrid API integration ensures consistent email delivery without SMTP bridge failures
-  - **USER EXPERIENCE**: Enhanced signup flow with verification page, success/error states, and resend functionality built into auth page
-  - **SYSTEM INDEPENDENCE**: Email verification operates independently of Supabase SMTP, eliminating rate limit and configuration issues
-  - **DATABASE INTEGRATION**: Custom verification_tokens table with secure token storage and proper indexing
-  - **PRODUCTION TESTED**: Full verification flow tested and confirmed operational - users can now reliably verify emails
-  - Platform email verification now more reliable than standard Supabase SMTP with professional branding and user experience
-- **January 12, 2025**: Critical Performance Optimization Complete - Production Ready
-  - **BUNDLE SIZE**: Reduced from 324MB to 2MB (99.4% improvement) - eliminated cache bloat and dependency issues
-  - **LOAD PERFORMANCE**: Optimized webpack configuration with bundle splitting and compression
-  - **MEMORY USAGE**: Reduced from 600MB+ to 306MB (50% improvement) for better resource efficiency
-  - **BUILD OPTIMIZATION**: Next.js configuration enhanced with SWC minification and vendor chunk separation
-  - **HEALTH MONITORING**: Added comprehensive health check API endpoint for production monitoring
-  - **CACHE MANAGEMENT**: Cleared 306MB development cache bloat, streamlined build process
-  - Platform now optimized for professional deployment with sub-second API response times
-- **January 12, 2025**: Email Verification System Fixed - Authentication Conflicts Resolved
-  - **AUTHENTICATION SYSTEM**: Fixed dual authentication system conflicts between public.users and auth.users+profiles
-  - **PROFILE CREATION**: Updated AuthProvider to only create profiles for verified users, preventing email verification conflicts
-  - **SMTP DIAGNOSIS**: Identified SMTP configuration issue in Supabase dashboard as root cause of verification failures
-  - **SYSTEM FLOW**: Email verification now properly requires confirmation instead of auto-confirming users
-  - **SENDGRID INTEGRATION**: Confirmed SendGrid setup is perfect with verified sender noreply@bittietasks.com
-  - **TESTING INFRASTRUCTURE**: Built comprehensive email verification test endpoints for debugging
-  - **RATE LIMITING**: System now properly attempts email verification (shown by rate limit errors instead of silent failures)
-  - Next step: Update Supabase SMTP settings to connect with verified SendGrid configuration
-- **January 12, 2025**: Complete Legal Framework & IP Protection Implementation
-  - **LEGAL COMPLIANCE**: Fixed critical branding inconsistency (TaskParent → BittieTasks)
-  - **LIABILITY PROTECTION**: Enhanced Terms of Service with $100 liability cap and mandatory arbitration
-  - **PRIVACY COMPLIANCE**: Updated Privacy Policy with CCPA/VCDPA state law compliance
-  - **IP PROTECTION**: Comprehensive copycat protection with anti-scraping and reverse engineering prohibitions
-  - **WORKER CLASSIFICATION**: Clear independent contractor framework to prevent employment law issues
-  - **TRADE SECRETS**: Documented proprietary algorithms and business processes as protected IP
-  - **BUILD FIXES**: Resolved Stripe initialization issues for production deployment compatibility
-  - **DEPLOYMENT READY**: Platform now legally protected with enterprise-grade compliance framework
-- **January 12, 2025**: Performance Optimization Complete - Production Ready
-  - **BUILD SUCCESS**: All compilation errors resolved, 48/48 pages built successfully
-  - **BUNDLE OPTIMIZATION**: 80% size reduction expected in production (306MB → 60-80MB)
-  - **LOAD TIME IMPROVEMENTS**: 3-5x faster page loads (3-5s → 0.8-1.2s)
-  - **ERROR HANDLING**: Added LoadingSpinner, ErrorBoundary, and performance monitoring
-  - **TOAST SYSTEM**: Fixed compilation errors, proper TypeScript context implementation
-  - **PRODUCTION CONFIG**: Next.js optimized with compression, image optimization, aggressive caching
-  - **SCALABILITY**: Ready for 10,000+ concurrent users with sub-second response times
-  - Platform now fully optimized for high-traffic deployment with Replit Autoscale
-
-## Previous Updates
-- **January 12, 2025**: Complete Stripe Payment Integration
-  - **PAYMENT PROCESSING**: Full Stripe integration with secure payment flows for task completions
-  - **SUBSCRIPTION SYSTEM**: 3-tier subscription plans (Free 10%, Pro 7%, Premium 5% platform fees)
-  - **API ENDPOINTS**: Complete payment API with webhook handling for real-time events
-  - **USER INTERFACE**: Subscription plans page, payment modals, and dashboard integration
-  - **BUSINESS MODEL**: Revenue system with platform fees and subscription billing active
-  - **SECURITY**: PCI-compliant payment processing with full authentication protection
-  - **TESTING**: Comprehensive test page created for validating all payment functionality
-  - **NAVIGATION**: Subscription access integrated into main platform navigation
-- **January 12, 2025**: Task Approval System Implementation
-  - **APPROVAL FRAMEWORK**: Implemented comprehensive task approval system with automated screening
-  - **RISK ASSESSMENT**: Multi-tier approval process (auto, standard, enhanced, corporate review)
-  - **CONTENT FILTERING**: Prohibited keyword detection for childcare, medical, legal, financial services
-  - **DATABASE SCHEMA**: Added approval status, review tiers, risk scoring, and audit logging
-  - **API INTEGRATION**: Task creation now includes automatic approval processing
-  - **ADMIN DASHBOARD**: Created approval management interface for reviewing flagged tasks
-  - **USER FEEDBACK**: Task creators receive approval status with detailed explanations
-  - **SAFETY PROTOCOLS**: Automated detection of high-risk content with manual review escalation
-- **January 12, 2025**: Complete Platform Stability & Navigation Fixes + Policies Page
-  - **CRITICAL FIXES**: Resolved all React setState during render errors across 10+ pages
-  - **NAVIGATION UPDATE**: Fixed Dashboard button redirects throughout platform
-  - **AUTH FLOW**: Sign-in now redirects to marketplace instead of dashboard
-  - **UX IMPROVEMENTS**: Removed unnecessary Goal button, fixed subscription navigation
-  - **PLATFORM REVIEW**: Completed systematic 11/11 page review with full functionality testing
-  - **LEGAL COMPLIANCE**: Added comprehensive Policies & Guidelines page with task approval standards
-  - All authentication patterns standardized with useEffect for proper state management
-  - Platform now runs without blank page errors or navigation issues
-  - Clear guidelines established for prohibited activities (no childcare) and safety standards
-- **January 12, 2025**: Platform Inclusivity Update - Authentication Fixed
-  - **MAJOR UPDATE**: Expanded target audience from parents to all adults
-  - Updated messaging throughout platform for broader market appeal
-  - Enhanced home page with inclusive language and examples
-  - Maintained family-focused tasks while adding universal appeal
-  - Platform ready for broader adult community engagement
-- **January 11, 2025**: Security Audit Complete - Production Ready
-  - All platform pages properly protected with authentication
-  - 120 platform-sponsored earning opportunities ready
-  - Complete task marketplace with authentic data integration
-  - Mobile-responsive teal design throughout application
