@@ -23,13 +23,13 @@ Supabase has flagged multiple RLS policies with performance warnings:
 -- Optimize RLS policies by wrapping auth functions in SELECT subqueries
 -- This prevents re-evaluation of auth functions for each row
 
--- Users table policies (optimized)
+-- Users table policies (optimized with proper type casting)
 DROP POLICY IF EXISTS "Users can view own profile" ON public.users;
 DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
 CREATE POLICY "Users can view own profile" ON public.users 
-FOR SELECT USING ((SELECT auth.uid())::text = id);
+FOR SELECT USING ((SELECT auth.uid()) = id::uuid);
 CREATE POLICY "Users can update own profile" ON public.users 
-FOR UPDATE USING ((SELECT auth.uid())::text = id);
+FOR UPDATE USING ((SELECT auth.uid()) = id::uuid);
 
 -- Tasks table policies (optimized and consolidated)
 DROP POLICY IF EXISTS "Users can create tasks as creator" ON public.tasks;
@@ -38,11 +38,11 @@ DROP POLICY IF EXISTS "Users can delete their own tasks" ON public.tasks;
 DROP POLICY IF EXISTS "Users can insert own tasks" ON public.tasks;
 
 CREATE POLICY "Users can create tasks as creator" ON public.tasks 
-FOR INSERT WITH CHECK ((SELECT auth.uid())::text = created_by);
+FOR INSERT WITH CHECK ((SELECT auth.uid()) = created_by::uuid);
 CREATE POLICY "Users can update their own tasks" ON public.tasks 
-FOR UPDATE USING ((SELECT auth.uid())::text = created_by);
+FOR UPDATE USING ((SELECT auth.uid()) = created_by::uuid);
 CREATE POLICY "Users can delete their own tasks" ON public.tasks 
-FOR DELETE USING ((SELECT auth.uid())::text = created_by);
+FOR DELETE USING ((SELECT auth.uid()) = created_by::uuid);
 
 -- Task participants table policies (optimized)
 DROP POLICY IF EXISTS "Task participants viewable by task creator and participant" ON public.task_participants;
@@ -52,20 +52,20 @@ DROP POLICY IF EXISTS "Task creators can remove participants" ON public.task_par
 
 CREATE POLICY "Task participants viewable by task creator and participant" ON public.task_participants 
 FOR SELECT USING (
-  (SELECT auth.uid())::text = user_id OR 
-  (SELECT auth.uid())::text IN (SELECT created_by FROM tasks WHERE id = task_id)
+  (SELECT auth.uid()) = user_id::uuid OR 
+  (SELECT auth.uid()) IN (SELECT created_by::uuid FROM tasks WHERE id = task_id)
 );
 CREATE POLICY "Users can apply to tasks" ON public.task_participants 
-FOR INSERT WITH CHECK ((SELECT auth.uid())::text = user_id);
+FOR INSERT WITH CHECK ((SELECT auth.uid()) = user_id::uuid);
 CREATE POLICY "Task creators can update participants" ON public.task_participants 
-FOR UPDATE USING ((SELECT auth.uid())::text IN (SELECT created_by FROM tasks WHERE id = task_id));
+FOR UPDATE USING ((SELECT auth.uid()) IN (SELECT created_by::uuid FROM tasks WHERE id = task_id));
 CREATE POLICY "Task creators can remove participants" ON public.task_participants 
-FOR DELETE USING ((SELECT auth.uid())::text IN (SELECT created_by FROM tasks WHERE id = task_id));
+FOR DELETE USING ((SELECT auth.uid()) IN (SELECT created_by::uuid FROM tasks WHERE id = task_id));
 
 -- Verification tokens table policy (optimized)
 DROP POLICY IF EXISTS "Users can only access their own verification tokens" ON public.verification_tokens;
 CREATE POLICY "Users can only access their own verification tokens" ON public.verification_tokens 
-FOR ALL USING ((SELECT auth.uid())::text = user_id);
+FOR ALL USING ((SELECT auth.uid()) = user_id::uuid);
 ```
 
 ## What This Optimization Does:
