@@ -1,3 +1,4 @@
 {
+  "/api/security/optimize-rls-performance/route": "app/api/security/optimize-rls-performance/route.js",
   "/platform/page": "app/platform/page.js"
 }

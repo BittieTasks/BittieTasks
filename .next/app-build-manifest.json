@@ -20,6 +20,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/platform/page.js"
+    ],
+    "/api/security/optimize-rls-performance/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/security/optimize-rls-performance/route.js"
     ]
   }
 }
