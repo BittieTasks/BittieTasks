@@ -235,24 +235,99 @@ ALTER TABLE tasks ADD COLUMN IF NOT EXISTS rejection_reason text;
 ALTER TABLE tasks ADD COLUMN IF NOT EXISTS flagged_reason text;
 ALTER TABLE tasks ADD COLUMN IF NOT EXISTS risk_score integer DEFAULT 0;
 
--- Add foreign key constraints (only if they don't exist)
+-- Add foreign key constraints after tables are created
+-- Messages table constraints
 DO $$ BEGIN
-    ALTER TABLE "messages" ADD CONSTRAINT "messages_sender_id_users_id_fk" 
-    FOREIGN KEY ("sender_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'messages') THEN
+        ALTER TABLE "messages" ADD CONSTRAINT "messages_sender_id_users_id_fk" 
+        FOREIGN KEY ("sender_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+    END IF;
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
 DO $$ BEGIN
-    ALTER TABLE "messages" ADD CONSTRAINT "messages_receiver_id_users_id_fk" 
-    FOREIGN KEY ("receiver_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'messages') THEN
+        ALTER TABLE "messages" ADD CONSTRAINT "messages_receiver_id_users_id_fk" 
+        FOREIGN KEY ("receiver_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+    END IF;
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
 DO $$ BEGIN
-    ALTER TABLE "task_approval_logs" ADD CONSTRAINT "task_approval_logs_task_id_tasks_id_fk" 
-    FOREIGN KEY ("task_id") REFERENCES "public"."tasks"("id") ON DELETE no action ON UPDATE no action;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'messages') THEN
+        ALTER TABLE "messages" ADD CONSTRAINT "messages_task_id_tasks_id_fk" 
+        FOREIGN KEY ("task_id") REFERENCES "public"."tasks"("id") ON DELETE no action ON UPDATE no action;
+    END IF;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+-- Task approval logs constraints
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'task_approval_logs') THEN
+        ALTER TABLE "task_approval_logs" ADD CONSTRAINT "task_approval_logs_task_id_tasks_id_fk" 
+        FOREIGN KEY ("task_id") REFERENCES "public"."tasks"("id") ON DELETE no action ON UPDATE no action;
+    END IF;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+-- Task verification requirements constraints  
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'task_verification_requirements') THEN
+        ALTER TABLE "task_verification_requirements" ADD CONSTRAINT "task_verification_requirements_task_id_tasks_id_fk" 
+        FOREIGN KEY ("task_id") REFERENCES "public"."tasks"("id") ON DELETE no action ON UPDATE no action;
+    END IF;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+-- Task completion submissions constraints
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'task_completion_submissions') THEN
+        ALTER TABLE "task_completion_submissions" ADD CONSTRAINT "task_completion_submissions_task_id_tasks_id_fk" 
+        FOREIGN KEY ("task_id") REFERENCES "public"."tasks"("id") ON DELETE no action ON UPDATE no action;
+    END IF;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'task_completion_submissions') THEN
+        ALTER TABLE "task_completion_submissions" ADD CONSTRAINT "task_completion_submissions_user_id_users_id_fk" 
+        FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+    END IF;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+-- User achievements constraints
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'user_achievements') THEN
+        ALTER TABLE "user_achievements" ADD CONSTRAINT "user_achievements_user_id_users_id_fk" 
+        FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+    END IF;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'user_achievements') THEN
+        ALTER TABLE "user_achievements" ADD CONSTRAINT "user_achievements_achievement_id_achievements_id_fk" 
+        FOREIGN KEY ("achievement_id") REFERENCES "public"."achievements"("id") ON DELETE no action ON UPDATE no action;
+    END IF;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+-- User verification history constraints
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'user_verification_history') THEN
+        ALTER TABLE "user_verification_history" ADD CONSTRAINT "user_verification_history_user_id_users_id_fk" 
+        FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+    END IF;
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
