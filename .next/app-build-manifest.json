@@ -31,10 +31,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/auth/check-sendgrid/route.js"
     ],
-    "/_not-found/page": [
+    "/api/auth/test-email-verification/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/api/auth/test-email-verification/route.js"
     ]
   }
 }
