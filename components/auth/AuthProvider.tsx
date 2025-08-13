@@ -34,10 +34,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [])
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout
+    
+    // Set a fallback timeout to prevent infinite loading
+    timeoutId = setTimeout(() => {
+      console.log('Auth timeout reached, setting loading to false')
+      setLoading(false)
+    }, 10000) // 10 second timeout
+    
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      clearTimeout(timeoutId)
+      
+      if (error) {
+        console.error('Error getting session:', error)
+      }
+      
+      console.log('Initial session loaded:', session?.user?.email || 'No user')
       setSession(session)
       setUser(session?.user ?? null)
+      setLoading(false)
+    }).catch((error) => {
+      clearTimeout(timeoutId)
+      console.error('Session fetch failed:', error)
       setLoading(false)
     })
 
@@ -45,7 +64,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event, session?.user?.email)
+      console.log('Auth state change:', event, session?.user?.email || 'No user')
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
@@ -58,19 +77,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
           } catch (error) {
             console.error('Error creating user profile:', error)
           }
+          
+          // Auto-redirect to marketplace after successful sign in (only if verified)
+          if (typeof window !== 'undefined' && window.location.pathname === '/auth') {
+            console.log('Auto-redirecting to marketplace after sign in')
+            setTimeout(() => {
+              window.location.href = '/marketplace'
+            }, 100) // Small delay to ensure state is updated
+          }
         } else {
-          console.log('User not verified yet, skipping profile creation')
+          console.log('User not verified yet, skipping profile creation and redirect')
         }
-        
-        // Auto-redirect to marketplace after successful sign in (only if verified)
-        if (window.location.pathname === '/auth' && session.user.email_confirmed_at) {
-          console.log('Auto-redirecting to marketplace after sign in')
-          window.location.href = '/marketplace'
-        }
+      }
+      
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out, clearing state')
+        setSession(null)
+        setUser(null)
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      clearTimeout(timeoutId)
+      subscription.unsubscribe()
+    }
   }, [])
 
   const createUserProfile = async (authUser: User) => {
@@ -203,7 +233,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     session,
     loading: loading || !mounted,
-    isAuthenticated: mounted && !!user,
+    isAuthenticated: mounted && !!user && !!session,
     isVerified: mounted && !!(user?.email_confirmed_at),
     signIn,
     signUp,
