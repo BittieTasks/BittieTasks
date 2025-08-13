@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const { data: verificationCheck, error: verificationError } = await supabaseAdmin
       .from('phone_verification_codes')
       .select('*')
-      .eq('phoneNumber', phoneNumber)
+      .eq('phone_number', phoneNumber)
       .eq('verified', true)
       .order('created_at', { ascending: false })
       .limit(1)

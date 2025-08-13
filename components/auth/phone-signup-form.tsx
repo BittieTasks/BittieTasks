@@ -55,13 +55,16 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
     setError('')
     
     try {
+      // Format phone number consistently with country code
+      const formattedPhone = `+1${phoneNumber.replace(/\D/g, '')}`
+      
       const response = await fetch('/api/auth/send-verification', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          phoneNumber: phoneNumber.replace(/\D/g, '') // Send digits only
+          phoneNumber: formattedPhone
         }),
       })
 
