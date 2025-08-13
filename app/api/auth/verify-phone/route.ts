@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     const { data: verificationRecord, error: fetchError } = await supabase
       .from('phone_verification_codes')
       .select('*')
-      .eq('phoneNumber', phoneNumber)
+      .eq('phone_number', phoneNumber)
       .eq('verified', false)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Check if code has expired
     const now = new Date()
-    const expiresAt = new Date(verificationRecord.expiresAt)
+    const expiresAt = new Date(verificationRecord.expires_at)
     if (now > expiresAt) {
       return NextResponse.json(
         { error: 'Verification code has expired. Please request a new code.' },

@@ -56,15 +56,15 @@ export async function POST(request: NextRequest) {
     await supabase
       .from('phone_verification_codes')
       .delete()
-      .eq('phoneNumber', formattedPhone)
+      .eq('phone_number', formattedPhone)
 
     // Insert new verification code
     const { error: dbError } = await supabase
       .from('phone_verification_codes')
       .insert({
-        phoneNumber: formattedPhone,
+        phone_number: formattedPhone,
         code: verificationCode,
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(), // 10 minutes
+        expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(), // 10 minutes
       })
 
     if (dbError) {
