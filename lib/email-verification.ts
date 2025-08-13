@@ -34,9 +34,13 @@ export class EmailVerificationService {
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
       
       // Store token in Supabase using service role client to bypass RLS
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        throw new Error('Supabase environment variables are required')
+      }
+      
       const supabaseAdmin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY,
         {
           auth: {
             autoRefreshToken: false,

@@ -9,16 +9,25 @@ const supabase = createClient(
 )
 
 // Admin client with service role key for bypassing restrictions
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
+function getSupabaseAdmin() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL is required')
   }
-)
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required')
+  }
+  
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,6 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user using admin client to bypass email confirmation
+    const supabaseAdmin = getSupabaseAdmin()
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,

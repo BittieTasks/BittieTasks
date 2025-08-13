@@ -2,19 +2,29 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 // Admin client with service role key
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
+function getSupabaseAdmin() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL is required')
   }
-)
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required')
+  }
+  
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
+}
 
 export async function GET() {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     // Get all users from Supabase auth
     const { data: users, error } = await supabaseAdmin.auth.admin.listUsers()
 
@@ -56,6 +66,7 @@ export async function GET() {
 
 export async function DELETE(request: Request) {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     const { userIds } = await request.json()
 
     if (!userIds || !Array.isArray(userIds)) {
