@@ -64,6 +64,16 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Email verification tokens table
+export const verificationTokens = pgTable('verification_tokens', {
+  id: varchar('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  user_id: varchar('user_id').notNull(),
+  email: text('email').notNull(),
+  token: text('token').notNull().unique(),
+  expires_at: timestamp('expires_at').notNull(),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+});
+
 // Task categories
 export const categories = pgTable("categories", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

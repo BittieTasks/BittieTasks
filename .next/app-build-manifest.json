@@ -1,14 +1,14 @@
 {
   "pages": {
-    "/api/auth/final-verification-test/route": [
+    "/api/auth/test-custom-verification/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/final-verification-test/route.js"
+      "static/chunks/app/api/auth/test-custom-verification/route.js"
     ],
-    "/api/auth/check-sendgrid/route": [
+    "/api/auth/create-verification-table/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/check-sendgrid/route.js"
+      "static/chunks/app/api/auth/create-verification-table/route.js"
     ]
   }
 }

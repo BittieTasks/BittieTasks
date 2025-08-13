@@ -1,4 +1,4 @@
 {
-  "/api/auth/final-verification-test/route": "app/api/auth/final-verification-test/route.js",
-  "/api/auth/check-sendgrid/route": "app/api/auth/check-sendgrid/route.js"
+  "/api/auth/test-custom-verification/route": "app/api/auth/test-custom-verification/route.js",
+  "/api/auth/create-verification-table/route": "app/api/auth/create-verification-table/route.js"
 }
