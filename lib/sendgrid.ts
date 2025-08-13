@@ -1,11 +1,5 @@
 const sgMail = require('@sendgrid/mail')
 
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error('SENDGRID_API_KEY environment variable must be set')
-}
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-
 interface EmailParams {
   to: string
   from: string
@@ -14,8 +8,18 @@ interface EmailParams {
   html?: string
 }
 
+function initializeSendGrid() {
+  if (!process.env.SENDGRID_API_KEY) {
+    throw new Error('SENDGRID_API_KEY environment variable must be set')
+  }
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+}
+
 export async function sendEmail(params: EmailParams): Promise<boolean> {
   try {
+    // Initialize SendGrid only when actually sending email
+    initializeSendGrid()
+    
     await sgMail.send({
       to: params.to,
       from: params.from,
