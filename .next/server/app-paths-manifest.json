@@ -1,3 +1,4 @@
 {
-  "/api/tasks/route": "app/api/tasks/route.js"
+  "/api/tasks/create-minimal-task/route": "app/api/tasks/create-minimal-task/route.js",
+  "/api/tasks/create-basic-task/route": "app/api/tasks/create-basic-task/route.js"
 }

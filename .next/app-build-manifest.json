@@ -1,9 +1,14 @@
 {
   "pages": {
-    "/api/tasks/route": [
+    "/api/tasks/create-minimal-task/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/tasks/route.js"
+      "static/chunks/app/api/tasks/create-minimal-task/route.js"
+    ],
+    "/api/tasks/create-basic-task/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/tasks/create-basic-task/route.js"
     ]
   }
 }
