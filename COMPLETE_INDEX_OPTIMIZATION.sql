@@ -34,6 +34,10 @@ CREATE INDEX IF NOT EXISTS idx_task_completions_user_id ON public.task_completio
 -- Tasks categorization
 CREATE INDEX IF NOT EXISTS idx_tasks_category_id ON public.tasks(category_id);
 
+-- User achievements and challenges
+CREATE INDEX IF NOT EXISTS idx_user_achievements_user_id ON public.user_achievements(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_challenges_user_id ON public.user_challenges(user_id);
+
 -- Additional composite indexes for common query patterns
 CREATE INDEX IF NOT EXISTS idx_task_participants_user_task ON public.task_participants(user_id, task_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON public.transactions(user_id, created_at);
@@ -41,4 +45,4 @@ CREATE INDEX IF NOT EXISTS idx_messages_conversation ON public.messages(from_use
 CREATE INDEX IF NOT EXISTS idx_task_completions_user_status ON public.task_completions(user_id, status);
 
 -- Performance optimization complete
--- All foreign keys now have covering indexes for optimal join performance
+-- ALL foreign keys now have covering indexes for optimal join performance
