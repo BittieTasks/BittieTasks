@@ -17,10 +17,25 @@ export async function GET(request: NextRequest) {
     // Check tasks table structure - try RPC first, fallback to direct query
     let tasksSchema, tasksError
     
-    const rpcResult = await supabase.rpc('get_table_columns', { table_name: 'tasks' })
-    
-    if (rpcResult.error) {
-      // RPC doesn't exist, try direct query
+    try {
+      const rpcResult = await supabase.rpc('get_table_columns', { table_name: 'tasks' })
+      
+      if (rpcResult.error) {
+        // RPC doesn't exist, try direct query
+        const fallbackResult = await supabase
+          .from('information_schema.columns')
+          .select('column_name, data_type')
+          .eq('table_name', 'tasks')
+          .eq('table_schema', 'public')
+        
+        tasksSchema = fallbackResult.data
+        tasksError = fallbackResult.error
+      } else {
+        tasksSchema = rpcResult.data
+        tasksError = rpcResult.error
+      }
+    } catch (error) {
+      // If RPC fails completely, try direct query
       const fallbackResult = await supabase
         .from('information_schema.columns')
         .select('column_name, data_type')
@@ -29,9 +44,6 @@ export async function GET(request: NextRequest) {
       
       tasksSchema = fallbackResult.data
       tasksError = fallbackResult.error
-    } else {
-      tasksSchema = rpcResult.data
-      tasksError = rpcResult.error
     }
 
     // Try to get existing tasks to understand current structure
