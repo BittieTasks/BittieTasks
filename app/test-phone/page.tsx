@@ -12,6 +12,8 @@ export default function TestPhonePage() {
   const testAPI = async (endpoint: string, data: any) => {
     try {
       setIsLoading(true)
+      console.log(`🧪 Testing ${endpoint} with:`, data)
+      
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -20,7 +22,18 @@ export default function TestPhonePage() {
         body: JSON.stringify(data),
       })
 
-      const result = await response.json()
+      console.log(`📊 ${endpoint} status:`, response.status)
+      console.log(`📋 ${endpoint} headers:`, Object.fromEntries(response.headers.entries()))
+
+      let result
+      try {
+        result = await response.json()
+        console.log(`📄 ${endpoint} data:`, result)
+      } catch (parseError) {
+        console.error(`❌ ${endpoint} JSON parse error:`, parseError)
+        setTestResults(prev => [...prev, `💥 ${endpoint}: JSON parse error - ${parseError}`])
+        return
+      }
       
       if (response.ok) {
         setTestResults(prev => [...prev, `✅ ${endpoint}: ${result.message || 'Success'}`])
@@ -28,7 +41,8 @@ export default function TestPhonePage() {
         setTestResults(prev => [...prev, `❌ ${endpoint}: ${result.error || 'Failed'}`])
       }
     } catch (error: any) {
-      setTestResults(prev => [...prev, `💥 ${endpoint}: ${error.message}`])
+      console.error(`💥 ${endpoint} fetch error:`, error)
+      setTestResults(prev => [...prev, `💥 ${endpoint}: ${error.message} (${error.name})`])
     } finally {
       setIsLoading(false)
     }

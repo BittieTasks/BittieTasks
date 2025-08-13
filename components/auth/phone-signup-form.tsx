@@ -57,34 +57,50 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
     try {
       // Format phone number consistently with country code
       const formattedPhone = `+1${phoneNumber.replace(/\D/g, '')}`
-      console.log('Sending verification request for phone:', formattedPhone)
+      console.log('🚀 Starting verification request for phone:', formattedPhone)
+      console.log('🎯 Current URL:', window.location.href)
+      console.log('📱 Original phone input:', phoneNumber)
+      
+      const requestBody = { phoneNumber: formattedPhone }
+      console.log('📦 Request body:', JSON.stringify(requestBody))
       
       const response = await fetch('/api/auth/send-verification', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          phoneNumber: formattedPhone
-        }),
+        body: JSON.stringify(requestBody),
       })
 
-      console.log('Response status:', response.status)
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()))
+      console.log('📊 Response status:', response.status)
+      console.log('📋 Response headers:', Object.fromEntries(response.headers.entries()))
+      console.log('🔍 Response ok?', response.ok)
 
-      const data = await response.json()
-      console.log('Response data:', data)
+      let data
+      try {
+        data = await response.json()
+        console.log('📄 Response data:', data)
+      } catch (parseError) {
+        console.error('❌ Failed to parse JSON response:', parseError)
+        console.log('📝 Raw response text:', await response.text())
+        throw new Error('Server returned invalid response')
+      }
 
       if (!response.ok) {
-        console.error('Response not OK:', response.status, data)
+        console.error('❌ Response not OK:', response.status, data)
         throw new Error(data.error || `Server error: ${response.status}`)
       }
 
+      console.log('✅ Success! Moving to verify step')
       setSuccess('Verification code sent! Check your text messages.')
       setStep('verify')
     } catch (err: any) {
-      console.error('Send verification error:', err)
-      setError(err.message || 'Network error occurred')
+      console.error('💥 Send verification error details:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      })
+      setError(`Error: ${err.message || 'Network error occurred'}`)
     } finally {
       setIsLoading(false)
     }
