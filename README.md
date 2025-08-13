@@ -1,62 +1,48 @@
-# BittieTasks - Community Monetization Platform
+# BittieTasks - Mobile Task Marketplace
 
-A mobile-first marketplace enabling parents to earn money by sharing daily tasks with neighbors, featuring subscription tiers, corporate sponsorships, and comprehensive earnings tracking.
+A community-based task marketplace that connects neighbors and enables local earning opportunities through intelligent task matching.
 
-## 🚀 Revenue Features
+## Features
 
-### Task Marketplace
-- Create and join earning opportunities
-- Real-time task management and completion tracking
-- Community-based income generation
+- **Task Marketplace**: Browse and complete tasks in your community
+- **Real-Time Payments**: Automatic Stripe payment processing upon task verification
+- **Multi-Revenue Streams**: P2P tasks, corporate partnerships, and platform-funded opportunities
+- **Mobile-First Design**: Optimized for mobile devices with responsive UI
+- **Verification System**: Photo/video verification with automated approval
+- **Earnings Dashboard**: Track payments, verification stats, and transaction history
 
-### Subscription Tiers
-- **Free**: 10% platform fee
-- **Pro** ($9.99/month): 7% platform fee  
-- **Premium** ($19.99/month): 5% platform fee
+## Revenue Model
 
-### Corporate Sponsorship
-- Ethical partner evaluation system
-- Sponsored tasks with 25-50% higher payouts
-- Community bonus programs
+- **P2P Tasks**: 7% platform fee on peer-to-peer transactions
+- **Corporate Sponsored**: 15% fee on business partnership tasks
+- **Platform-Funded**: Full payouts for user acquisition (0% fee)
 
-### Access Control
-- Email verification required for monetization features
-- Secure Supabase authentication
-- Professional onboarding flow
+## Tech Stack
 
-## 🛠 Tech Stack
-
-- **Frontend**: Next.js 15 with TypeScript
-- **Database**: Supabase with PostgreSQL
+- **Frontend**: Next.js 15, React 18, TypeScript
+- **Backend**: Node.js, Express.js, Supabase
+- **Payments**: Stripe integration with webhook processing
+- **Database**: PostgreSQL with Supabase
 - **Authentication**: Supabase Auth with email verification
-- **Payments**: Stripe integration for subscriptions
-- **Email**: SendGrid SMTP for notifications
-- **Styling**: Tailwind CSS with mobile-first design
+- **Styling**: Tailwind CSS with Radix UI components
 
-## 🚀 Deployment Status
-Platform ready for live revenue generation - Vercel deployment in progress.
+## Getting Started
 
-## 🏃‍♂️ Quick Start
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables (see `.env.example`)
+4. Run development server: `npm run dev`
+5. Visit `http://localhost:5000`
 
-```bash
-npm install
-npm run dev
-```
+## Production Deployment
 
-## 🌐 Deployment
+The application is production-ready with:
+- Automated payment processing
+- Mobile-optimized interface
+- Real-time earnings tracking
+- Comprehensive verification system
+- Multi-revenue stream support
 
-This platform is optimized for deployment on Vercel with automatic GitHub integration.
+## License
 
-## 💰 Business Model
-
-Platform generates revenue through:
-- Tiered subscription fees
-- Platform transaction fees
-- Corporate partnership commissions
-- Achievement reward programs
-
----
-
-**Ready to start earning? Deploy today and begin generating community-based income immediately.**# Professional Styling Deployed
-# Professional Styling Ready for Deployment - Sun Aug 10 06:00:03 PM UTC 2025
-# Professional Styling Ready for Deployment - Sun Aug 10 06:00:53 PM UTC 2025
+MIT License - see LICENSE file for details
