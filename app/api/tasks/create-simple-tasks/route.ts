@@ -12,99 +12,120 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🚀 Creating simple platform tasks...')
+    console.log('🎯 Creating simple platform tasks using only existing columns...')
 
-    // Simple tasks using only the columns we know exist
+    // Use ONLY the columns that already exist in the database
     const simpleTasks = [
       {
         title: 'Organize Kids\' Artwork Portfolio',
-        description: 'Create a digital portfolio of your child\'s artwork throughout the year. Sort, photograph, and create a beautiful memory book.',
-        earning_potential: 35.00,
-        location: 'Remote/Home',
-        duration: '2-3 hours',
-        max_participants: 10,
-        current_participants: 0,
+        description: 'Create a digital portfolio of your child\'s artwork throughout the year. Earn $35 by documenting your organization system and sharing tips with other families.',
+        category_id: 1,
+        type: 'platform_funded',
         status: 'open'
       },
       {
-        title: 'Create Meal Prep System for School Mornings',
-        description: 'Develop and document a weekly meal prep routine that saves 30+ minutes every morning.',
-        earning_potential: 42.00,
-        location: 'Remote/Home',
-        duration: '4-5 hours',
-        max_participants: 8,
-        current_participants: 0,
+        title: 'Create Meal Prep System',
+        description: 'Develop and document a weekly meal prep routine that saves 30+ minutes every morning. Earn $42 for sharing your efficient system.',
+        category_id: 2,
+        type: 'platform_funded', 
         status: 'open'
       },
       {
-        title: 'Design Budget Birthday Party at Home',
-        description: 'Plan and execute a memorable birthday party for under $50. Document everything for other parents.',
-        earning_potential: 38.00,
-        location: 'Remote/Home',
-        duration: '3-4 hours',
-        max_participants: 12,
-        current_participants: 0,
+        title: 'Design Budget Birthday Party',
+        description: 'Plan and execute a memorable birthday party for under $50. Earn $38 for documenting decorations, activities, and timeline.',
+        category_id: 1,
+        type: 'platform_funded',
         status: 'open'
       },
       {
-        title: 'Family Fitness Routine for Small Spaces',
-        description: 'Create a comprehensive fitness program that families can do together in apartments or small homes.',
-        earning_potential: 45.00,
-        location: 'Remote/Home',
-        duration: '4-5 hours',
-        max_participants: 6,
-        current_participants: 0,
+        title: 'Family Fitness Routine',
+        description: 'Create a comprehensive fitness program that families can do together in small spaces. Earn $45 for your exercise guide.',
+        category_id: 3,
+        type: 'platform_funded',
         status: 'open'
       },
       {
-        title: 'Math Practice Games for Elementary Kids',
-        description: 'Create visual, auditory, and kinesthetic math games that make practice enjoyable.',
-        earning_potential: 52.00,
-        location: 'Remote/Home',
-        duration: '6-7 hours',
-        max_participants: 5,
-        current_participants: 0,
+        title: 'Math Practice Games',
+        description: 'Create visual, auditory, and kinesthetic math games that make practice enjoyable for children. Earn $52.',
+        category_id: 4,
+        type: 'platform_funded',
         status: 'open'
       },
       {
-        title: 'After-School Snack Prep Guide',
-        description: 'Develop healthy, kid-approved snacks that can be prepped in advance.',
-        earning_potential: 32.00,
-        location: 'Remote/Home',
-        duration: '2-3 hours',
-        max_participants: 15,
-        current_participants: 0,
+        title: 'After-School Snack Prep',
+        description: 'Develop healthy, kid-approved snacks that can be prepped in advance. Include nutritional info and storage tips. Earn $32.',
+        category_id: 2,
+        type: 'platform_funded',
+        status: 'open'
+      },
+      {
+        title: 'Pantry Organization System',
+        description: 'Design an efficient pantry organization system with clear labeling for easy meal planning. Earn $28.',
+        category_id: 1,
+        type: 'platform_funded',
+        status: 'open'
+      },
+      {
+        title: 'Reading Comprehension Activities',
+        description: 'Create engaging activities that improve reading skills for elementary students. Earn $45.',
+        category_id: 4,
+        type: 'platform_funded',
+        status: 'open'
+      },
+      {
+        title: 'Morning Routine Optimization',
+        description: 'Design 15-minute morning routines that reduce stress and increase energy for busy families. Earn $30.',
+        category_id: 5,
+        type: 'platform_funded',
+        status: 'open'
+      },
+      {
+        title: 'Digital Photo Organization',
+        description: 'Create a family photo organization system with cloud storage and easy retrieval methods. Earn $30.',
+        category_id: 1,
+        type: 'platform_funded',
         status: 'open'
       }
     ]
 
-    // Insert tasks directly
+    console.log(`Attempting to insert ${simpleTasks.length} simple tasks...`)
+
+    // Insert tasks using only basic columns
     const { data: insertedTasks, error: insertError } = await supabase
       .from('tasks')
       .insert(simpleTasks)
       .select()
 
     if (insertError) {
-      console.error('Error inserting tasks:', insertError)
+      console.error('Error inserting simple tasks:', insertError)
       return NextResponse.json({
         success: false,
-        error: 'Failed to insert platform tasks',
-        details: insertError
+        error: 'Failed to insert simple tasks',
+        details: insertError,
+        attempted_columns: Object.keys(simpleTasks[0])
       }, { status: 500 })
     }
 
-    const totalValue = insertedTasks?.reduce((sum, task) => sum + task.earning_potential, 0) || 0
-    const maxPotential = insertedTasks?.reduce((sum, task) => sum + (task.earning_potential * task.max_participants), 0) || 0
-
-    console.log(`✅ Successfully created ${insertedTasks?.length || 0} platform-funded tasks`)
+    console.log(`✅ Successfully created ${insertedTasks?.length || 0} platform tasks!`)
 
     return NextResponse.json({
       success: true,
       message: `Successfully created ${insertedTasks?.length || 0} platform-funded tasks`,
-      tasks: insertedTasks,
-      total_value: totalValue,
-      max_monthly_potential: maxPotential,
-      budget_impact: `$${totalValue} base value, up to $${maxPotential} if all slots filled`
+      tasks_created: insertedTasks?.length || 0,
+      marketplace_status: 'BittieTasks marketplace is now live with earning opportunities!',
+      tasks: insertedTasks?.map(task => ({
+        id: task.id,
+        title: task.title,
+        description: task.description.substring(0, 100) + '...',
+        category_id: task.category_id,
+        type: task.type,
+        status: task.status
+      })),
+      next_steps: [
+        'Tasks are now visible on the website',
+        'Users can browse and apply for platform-funded opportunities',
+        'Database schema can be updated later to add earning amounts'
+      ]
     })
 
   } catch (error) {
