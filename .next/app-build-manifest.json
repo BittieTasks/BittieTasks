@@ -1,5 +1,10 @@
 {
   "pages": {
+    "/api/auth/signin/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/auth/signin/route.js"
+    ],
     "/api/auth/signup/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

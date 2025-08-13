@@ -33,8 +33,19 @@ export class EmailVerificationService {
       const token = this.generateVerificationToken()
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
       
-      // Store token in Supabase
-      const { error: dbError } = await supabase
+      // Store token in Supabase using service role client to bypass RLS
+      const supabaseAdmin = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
+          }
+        }
+      )
+      
+      const { error: dbError } = await supabaseAdmin
         .from('verification_tokens')
         .upsert({
           user_id: userId,
