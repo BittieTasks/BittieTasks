@@ -1,5 +1,3 @@
 {
-  "/marketplace/page": "app/marketplace/page.js",
-  "/create-task/page": "app/create-task/page.js",
-  "/platform/page": "app/platform/page.js"
+  "/auth/page": "app/auth/page.js"
 }
