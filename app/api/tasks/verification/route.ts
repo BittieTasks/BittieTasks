@@ -154,22 +154,22 @@ async function performAutomatedVerification(submission: any, requirements: any) 
   let totalPossibleScore = 0
   let earnedScore = 0
   
-  if (requiredMethods.includes('photo')) {
+  if (requiredMethods.includes('photo' as any)) {
     totalPossibleScore += 100
     earnedScore += Math.min(scores.photo, 100)
   }
   
-  if (requiredMethods.includes('video')) {
+  if (requiredMethods.includes('video' as any)) {
     totalPossibleScore += 100  
     earnedScore += Math.min(scores.video, 100)
   }
   
-  if (requiredMethods.includes('gps_tracking')) {
+  if (requiredMethods.includes('gps_tracking' as any)) {
     totalPossibleScore += 100
     earnedScore += Math.min(scores.location, 100)
   }
   
-  if (requiredMethods.includes('time_tracking')) {
+  if (requiredMethods.includes('time_tracking' as any)) {
     totalPossibleScore += 100
     earnedScore += Math.min(scores.time, 100)
   }
