@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createServiceClient } from '../../../../lib/supabase'
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-07-30.basil'
-})
-
 export async function POST(request: NextRequest) {
+  // Initialize Stripe inside the function to avoid build-time errors
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 })
+  }
+  
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2025-07-30.basil'
+  })
   try {
     const supabase = createServiceClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -225,6 +228,15 @@ export async function POST(request: NextRequest) {
 // GET endpoint for payment status
 export async function GET(request: NextRequest) {
   try {
+    // Initialize Stripe inside the function
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 })
+    }
+    
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-07-30.basil'
+    })
+    
     const supabase = createServiceClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
