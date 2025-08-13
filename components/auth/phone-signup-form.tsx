@@ -71,7 +71,7 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
         throw new Error(data.error || 'Failed to send verification code')
       }
 
-      setSuccess('Verification code sent! Check your text messages.')
+      setSuccess('Verification code sent! Check your text messages. (May take up to 5 minutes)')
       setStep('verify')
     } catch (err: any) {
       setError(err.message || 'Network error occurred')
