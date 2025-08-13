@@ -31,9 +31,16 @@ Business model strategy: Hybrid three-stream revenue model combining peer-to-pee
 - **Database**: PostgreSQL with Drizzle ORM, hosted on Neon Database.
 - **Authentication**: Supabase authentication with JWT tokens, PKCE flow, and email verification via SendGrid. Includes user verification and access control for monetization features.
 - **Payment Processing**: Stripe for subscription billing, platform fees, and split payments. Escrow.com for high-value transactions.
-- **Business Model**: Tiered subscription plans (Free, Pro, Premium), corporate sponsored tasks with ethical evaluation, and an achievement system with monetary rewards.
-- **Task System**: Supports solo, community, barter, and self-care tasks with application questions, photo upload, progress tracking, and payment/tax compliance for barter.
-- **Core Features**: Task marketplace, subscription tiers, corporate sponsorship portal, earnings dashboard, and mobile-first UI.
+- **Business Model**: Hybrid three-stream revenue model (P2P marketplace 7% fees, corporate partnerships 50% margins, platform-funded tasks $8K/month budget).
+- **Task System**: Comprehensive verification system supporting peer-to-peer, platform-funded, and corporate sponsored tasks with automated scoring and three-tier approval.
+- **Verification System**: Photo/video/GPS/time tracking with fraud detection, auto-approval (70%), AI-assisted (25%), manual review (5%).
+- **Core Features**: Task marketplace, platform-funded tasks, subscription tiers, corporate sponsorship portal, earnings dashboard, and mobile-first UI.
+
+### Recent Changes (August 2025)
+- **Task Verification System**: Complete API with automated scoring and three-tier approval process
+- **Platform-Funded Tasks**: 6 ready-to-complete tasks ($15-30 payouts) with $8,000/month budget
+- **Revenue Stream Integration**: Enhanced task creation supporting all three revenue streams
+- **Verification Workflow**: Full photo/video/GPS/time tracking with fraud prevention and instant payments
 
 ### System Design Choices
 - Server-side rendering (SSR) via Next.js for performance.
