@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+// Add CORS headers for better browser compatibility
+function addCorsHeaders(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type')
+  return response
+}
+
+export async function OPTIONS(request: NextRequest) {
+  return addCorsHeaders(new NextResponse(null, { status: 200 }))
+}
+
 // Admin client for database operations
 function getSupabaseAdmin() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
@@ -94,17 +106,19 @@ export async function POST(request: NextRequest) {
 
     console.log(`Phone number verified successfully: ${phoneNumber}`)
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: 'Phone number verified successfully',
       phoneNumber: phoneNumber
     })
+    return addCorsHeaders(response)
 
   } catch (error: any) {
     console.error('Phone verification error:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
+    return addCorsHeaders(response)
   }
 }

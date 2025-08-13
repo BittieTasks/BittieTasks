@@ -57,6 +57,7 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
     try {
       // Format phone number consistently with country code
       const formattedPhone = `+1${phoneNumber.replace(/\D/g, '')}`
+      console.log('Sending verification request for phone:', formattedPhone)
       
       const response = await fetch('/api/auth/send-verification', {
         method: 'POST',
@@ -68,16 +69,22 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
         }),
       })
 
+      console.log('Response status:', response.status)
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()))
+
       const data = await response.json()
+      console.log('Response data:', data)
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to send verification code')
+        console.error('Response not OK:', response.status, data)
+        throw new Error(data.error || `Server error: ${response.status}`)
       }
 
       setSuccess('Verification code sent! Check your text messages.')
       setStep('verify')
     } catch (err: any) {
-      setError(err.message)
+      console.error('Send verification error:', err)
+      setError(err.message || 'Network error occurred')
     } finally {
       setIsLoading(false)
     }
@@ -89,6 +96,7 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
     
     try {
       const formattedPhone = `+1${phoneNumber.replace(/\D/g, '')}`
+      console.log('Verifying phone code for:', formattedPhone, 'with code:', verificationCode)
       
       const response = await fetch('/api/auth/verify-phone', {
         method: 'POST',
@@ -101,16 +109,20 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
         }),
       })
 
+      console.log('Verify response status:', response.status)
       const data = await response.json()
+      console.log('Verify response data:', data)
 
       if (!response.ok) {
-        throw new Error(data.error || 'Invalid verification code')
+        console.error('Verify response not OK:', response.status, data)
+        throw new Error(data.error || `Server error: ${response.status}`)
       }
 
       setSuccess('Phone verified! Now create your profile.')
       setStep('profile')
     } catch (err: any) {
-      setError(err.message)
+      console.error('Verify phone error:', err)
+      setError(err.message || 'Network error occurred')
     } finally {
       setIsLoading(false)
     }
@@ -122,6 +134,12 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
     
     try {
       const formattedPhone = `+1${phoneNumber.replace(/\D/g, '')}`
+      console.log('Creating account for:', formattedPhone, 'with data:', {
+        phoneNumber: formattedPhone,
+        firstName,
+        lastName,
+        email: email || undefined
+      })
       
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
@@ -137,10 +155,13 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
         }),
       })
 
+      console.log('Signup response status:', response.status)
       const data = await response.json()
+      console.log('Signup response data:', data)
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create account')
+        console.error('Signup response not OK:', response.status, data)
+        throw new Error(data.error || `Server error: ${response.status}`)
       }
 
       setSuccess('Account created successfully! Welcome to BittieTasks!')
@@ -155,7 +176,8 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
       }, 2000)
       
     } catch (err: any) {
-      setError(err.message)
+      console.error('Create account error:', err)
+      setError(err.message || 'Network error occurred')
     } finally {
       setIsLoading(false)
     }

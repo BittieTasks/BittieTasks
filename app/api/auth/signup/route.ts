@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { emailVerification } from '@/lib/email-verification'
 
+// Add CORS headers for better browser compatibility
+function addCorsHeaders(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type')
+  return response
+}
+
+export async function OPTIONS(request: NextRequest) {
+  return addCorsHeaders(new NextResponse(null, { status: 200 }))
+}
+
 // Regular client for general operations - only create when needed
 function getSupabaseClient() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
