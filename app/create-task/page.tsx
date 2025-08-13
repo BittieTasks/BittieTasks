@@ -32,9 +32,18 @@ const categories = [
 ]
 
 const taskTypes = [
-  { value: 'solo', label: 'Solo Task', description: 'Individual task completed independently' },
-  { value: 'shared', label: 'Shared Task', description: 'Collaborative task with other community members' },
-  { value: 'self_care', label: 'Self-Care Task', description: 'Personal wellness with optional accountability partners' }
+  { value: 'peer_to_peer', label: 'Peer-to-Peer Task', description: 'Community members help each other - You pay the helper directly', revenueStream: 'peer_to_peer' },
+  { value: 'solo', label: 'Solo Task', description: 'Individual task completed independently', revenueStream: 'peer_to_peer' },
+  { value: 'shared', label: 'Shared Task', description: 'Collaborative task with other community members', revenueStream: 'peer_to_peer' },
+  { value: 'self_care', label: 'Self-Care Task', description: 'Personal wellness with optional accountability partners', revenueStream: 'peer_to_peer' }
+]
+
+const platformTaskTemplates = [
+  { title: '30-Minute Neighborhood Walk', payout: 15, description: 'Complete a 30-minute walk in your neighborhood and document with photos', verification: ['photo', 'gps_tracking', 'time_tracking'] },
+  { title: 'Try a New Local Business', payout: 20, description: 'Visit a local business you\'ve never been to and write a review', verification: ['photo', 'receipt_upload', 'social_proof'] },
+  { title: 'Community Cleanup Activity', payout: 25, description: 'Spend 1 hour cleaning up a public area in your neighborhood', verification: ['photo', 'gps_tracking', 'time_tracking'] },
+  { title: 'Learn Something New', payout: 30, description: 'Complete an online course or tutorial and share what you learned', verification: ['photo', 'video', 'social_proof'] },
+  { title: 'Home Organization Project', payout: 20, description: 'Organize a room or area in your house with before/after photos', verification: ['photo'] }
 ]
 
 export default function CreateTaskPage() {
@@ -46,13 +55,16 @@ export default function CreateTaskPage() {
     description: '',
     category: '',
     type: '',
+    revenueStream: 'peer_to_peer', // Default to peer-to-peer
     payout: '',
     maxParticipants: '',
     deadline: '',
     location: '',
     timeCommitment: '',
-    requirements: ''
+    requirements: '',
+    verificationMethods: [] as string[]
   })
+  const [showPlatformTasks, setShowPlatformTasks] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -137,8 +149,46 @@ export default function CreateTaskPage() {
         <div style={{ marginBottom: '32px' }}>
           <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>Create New Task</h1>
           <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.8)' }}>
-            Share a task with your community and start earning together
+            Choose how you want to create earnings in your community
           </p>
+        </div>
+
+        {/* Task Type Selection */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className={`cursor-pointer transition-all hover:shadow-lg ${formData.revenueStream === 'peer_to_peer' ? 'ring-2 ring-primary' : ''}`}
+                onClick={() => setFormData(prev => ({ ...prev, revenueStream: 'peer_to_peer' }))}>
+            <CardContent className="p-6 text-center">
+              <Users className="h-8 w-8 mx-auto mb-3 text-blue-600" />
+              <h3 className="font-semibold mb-2">Peer-to-Peer Tasks</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Create tasks for neighbors to help each other. You pay helpers directly.
+              </p>
+              <Badge className="bg-blue-100 text-blue-800">You Pay Helper</Badge>
+            </CardContent>
+          </Card>
+
+          <Card className={`cursor-pointer transition-all hover:shadow-lg ${showPlatformTasks ? 'ring-2 ring-primary' : ''}`}
+                onClick={() => setShowPlatformTasks(true)}>
+            <CardContent className="p-6 text-center">
+              <Coins className="h-8 w-8 mx-auto mb-3 text-green-600" />
+              <h3 className="font-semibold mb-2">Platform-Funded Tasks</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Complete pre-made tasks funded by BittieTasks. Instant earnings!
+              </p>
+              <Badge className="bg-green-100 text-green-800">BittieTasks Pays You</Badge>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer transition-all hover:shadow-lg opacity-60">
+            <CardContent className="p-6 text-center">
+              <Award className="h-8 w-8 mx-auto mb-3 text-purple-600" />
+              <h3 className="font-semibold mb-2">Corporate Sponsored</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Business partnership tasks. Higher payouts for brand activities.
+              </p>
+              <Badge className="bg-purple-100 text-purple-800">Coming Soon</Badge>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Verification Notice */}
