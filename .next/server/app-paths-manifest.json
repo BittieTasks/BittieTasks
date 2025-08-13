@@ -1,3 +1,5 @@
 {
-  "/api/auth/status/route": "app/api/auth/status/route.js"
+  "/marketplace/page": "app/marketplace/page.js",
+  "/create-task/page": "app/create-task/page.js",
+  "/platform/page": "app/platform/page.js"
 }
