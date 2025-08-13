@@ -16,11 +16,14 @@ import { z } from 'zod';
 
 // Enums
 export const taskStatusEnum = pgEnum('task_status', ['open', 'active', 'completed', 'cancelled']);
-export const taskTypeEnum = pgEnum('task_type', ['shared', 'solo', 'sponsored', 'barter']);
+export const taskTypeEnum = pgEnum('task_type', ['shared', 'solo', 'sponsored', 'barter', 'platform_funded', 'corporate_sponsored', 'peer_to_peer']);
 export const approvalStatusEnum = pgEnum('approval_status', ['pending', 'auto_approved', 'manual_review', 'approved', 'rejected', 'flagged']);
 export const reviewTierEnum = pgEnum('review_tier', ['auto_approve', 'standard_review', 'enhanced_review', 'corporate_review']);
 export const transactionTypeEnum = pgEnum('transaction_type', ['task_completion', 'referral_bonus', 'corporate_sponsorship', 'platform_fee', 'subscription_payment']);
 export const transactionStatusEnum = pgEnum('transaction_status', ['pending', 'processing', 'completed', 'failed', 'refunded']);
+export const verificationMethodEnum = pgEnum('verification_method', ['photo', 'video', 'gps_tracking', 'time_tracking', 'community_verification', 'receipt_upload', 'social_proof']);
+export const verificationStatusEnum = pgEnum('verification_status', ['pending', 'auto_verified', 'manual_review', 'verified', 'rejected', 'requires_additional_proof']);
+export const revenueStreamEnum = pgEnum('revenue_stream', ['peer_to_peer', 'corporate_partnership', 'platform_funded']);
 
 // Session storage table (required for authentication)
 export const sessions = pgTable(
@@ -128,6 +131,102 @@ export const taskParticipants = pgTable("task_participants", {
   completedAt: timestamp("completed_at"),
 });
 
+// Task verification requirements
+export const taskVerificationRequirements = pgTable("task_verification_requirements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  taskId: varchar("task_id").references(() => tasks.id).notNull(),
+  revenueStream: revenueStreamEnum("revenue_stream").notNull(),
+  requiredMethods: varchar("required_methods").array().notNull(), // ['photo', 'gps_tracking', 'time_tracking']
+  photoRequirements: jsonb("photo_requirements"), // {count: 2, requiresLocation: true, requiresTimestamp: true}
+  videoRequirements: jsonb("video_requirements"), // {minDuration: 30, maxDuration: 300, requiresAudio: true}
+  locationRequirements: jsonb("location_requirements"), // {radius: 100, specificAddress: "123 Main St"}
+  timeRequirements: jsonb("time_requirements"), // {minDuration: 1800, trackingInterval: 60}
+  additionalRequirements: text("additional_requirements"),
+  autoApprovalCriteria: jsonb("auto_approval_criteria"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Task completion submissions
+export const taskCompletionSubmissions = pgTable("task_completion_submissions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  taskId: varchar("task_id").references(() => tasks.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  participantId: varchar("participant_id").references(() => taskParticipants.id).notNull(),
+  verificationStatus: verificationStatusEnum("verification_status").default('pending'),
+  verificationMethods: verificationMethodEnum("verification_methods").array().notNull(),
+  
+  // Photo/Video evidence
+  photoUrls: varchar("photo_urls").array(),
+  videoUrls: varchar("video_urls").array(),
+  photoMetadata: jsonb("photo_metadata"), // GPS, timestamp, device info
+  videoMetadata: jsonb("video_metadata"), // Duration, resolution, timestamp
+  
+  // Location verification
+  gpsCoordinates: varchar("gps_coordinates").array(), // [lat, lng] for tracking
+  locationHistory: jsonb("location_history"), // Full GPS tracking data
+  startLocation: varchar("start_location"),
+  endLocation: varchar("end_location"),
+  
+  // Time verification
+  startTime: timestamp("start_time"),
+  endTime: timestamp("end_time"),
+  totalDuration: integer("total_duration"), // seconds
+  timeTrackingData: jsonb("time_tracking_data"), // Detailed time tracking
+  
+  // Community verification
+  communityVerifications: jsonb("community_verifications"), // User confirmations
+  businessVerification: varchar("business_verification"), // Business owner confirmation
+  receiptUrls: varchar("receipt_urls").array(),
+  socialProofUrls: varchar("social_proof_urls").array(),
+  
+  // System verification
+  autoVerificationScore: integer("auto_verification_score"), // 0-100 confidence
+  aiAnalysisResults: jsonb("ai_analysis_results"), // AI content analysis
+  fraudDetectionScore: integer("fraud_detection_score"), // 0-100 fraud risk
+  qualityScore: integer("quality_score"), // 0-100 submission quality
+  
+  // Review process
+  reviewedBy: varchar("reviewed_by"), // admin user ID or 'system'
+  reviewNotes: text("review_notes"),
+  rejectionReason: text("rejection_reason"),
+  approvedAt: timestamp("approved_at"),
+  paymentReleased: boolean("payment_released").default(false),
+  paymentReleasedAt: timestamp("payment_released_at"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User reputation and verification history
+export const userVerificationHistory = pgTable("user_verification_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  submissionId: varchar("submission_id").references(() => taskCompletionSubmissions.id).notNull(),
+  verificationOutcome: verificationStatusEnum("verification_outcome").notNull(),
+  qualityScore: integer("quality_score"), // 0-100 submission quality
+  fraudScore: integer("fraud_score"), // 0-100 fraud risk
+  timeliness: integer("timeliness"), // How quickly they completed
+  accuracyScore: integer("accuracy_score"), // How well submission matched requirements
+  impactOnReputation: integer("impact_on_reputation"), // +/- reputation change
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Corporate partner verification settings
+export const corporateVerificationSettings = pgTable("corporate_verification_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sponsorId: varchar("sponsor_id").references(() => sponsors.id).notNull(),
+  brandComplianceRequired: boolean("brand_compliance_required").default(true),
+  contentQualityThreshold: integer("content_quality_threshold").default(80), // 0-100
+  manualReviewRequired: boolean("manual_review_required").default(false),
+  autoApprovalEnabled: boolean("auto_approval_enabled").default(true),
+  maxAutoApprovalAmount: decimal("max_auto_approval_amount", { precision: 8, scale: 2 }).default('100.00'),
+  requiredVerificationMethods: verificationMethodEnum("required_verification_methods").array(),
+  brandGuidelinesUrl: varchar("brand_guidelines_url"),
+  approvalTimeoutHours: integer("approval_timeout_hours").default(24),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Transactions
 export const transactions = pgTable("transactions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -230,6 +329,10 @@ export type Sponsor = typeof sponsors.$inferSelect;
 export type TaskParticipant = typeof taskParticipants.$inferSelect;
 export type TaskApprovalLog = typeof taskApprovalLogs.$inferSelect;
 export type ProhibitedContent = typeof prohibitedContent.$inferSelect;
+export type TaskVerificationRequirement = typeof taskVerificationRequirements.$inferSelect;
+export type TaskCompletionSubmission = typeof taskCompletionSubmissions.$inferSelect;
+export type UserVerificationHistory = typeof userVerificationHistory.$inferSelect;
+export type CorporateVerificationSettings = typeof corporateVerificationSettings.$inferSelect;
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -257,6 +360,17 @@ export const insertMessageSchema = createInsertSchema(messages).omit({
 });
 
 export const insertCategorySchema = createInsertSchema(categories).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTaskCompletionSubmissionSchema = createInsertSchema(taskCompletionSubmissions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertTaskVerificationRequirementSchema = createInsertSchema(taskVerificationRequirements).omit({
   id: true,
   createdAt: true,
 });
