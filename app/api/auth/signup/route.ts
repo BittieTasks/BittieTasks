@@ -41,24 +41,44 @@ function getSupabaseAdmin() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email, password, firstName, lastName } = body
+    const { phoneNumber, password, firstName, lastName, email } = body
 
-    if (!email || !password) {
+    if (!phoneNumber || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Phone number and password are required' },
         { status: 400 }
       )
     }
 
-    // Create user using admin client to bypass email confirmation
+    // Verify that phone number has been verified
     const supabaseAdmin = getSupabaseAdmin()
+    const { data: verificationCheck, error: verificationError } = await supabaseAdmin
+      .from('phone_verification_codes')
+      .select('*')
+      .eq('phoneNumber', phoneNumber)
+      .eq('verified', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (verificationError || !verificationCheck) {
+      return NextResponse.json(
+        { error: 'Phone number must be verified before creating account' },
+        { status: 400 }
+      )
+    }
+
+    // Create user using admin client
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
-      email,
+      phone: phoneNumber,
       password,
-      email_confirm: true, // Mark as confirmed so user can sign in immediately
+      phone_confirm: true, // Mark phone as confirmed since we verified it
+      email_confirm: email ? false : true, // Email needs verification if provided
       user_metadata: {
+        phone_number: phoneNumber,
         first_name: firstName,
         last_name: lastName,
+        email: email || null,
       }
     })
 

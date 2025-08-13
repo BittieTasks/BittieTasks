@@ -39,13 +39,17 @@ export const sessions = pgTable(
 // User storage table
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
+  phoneNumber: varchar("phone_number").unique().notNull(),
+  email: varchar("email"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   location: varchar("location"),
   bio: text("bio"),
+  phoneVerified: boolean("phone_verified").default(false),
   verified: boolean("verified").default(false),
+  emailNotifications: boolean("email_notifications").default(true),
+  smsNotifications: boolean("sms_notifications").default(true),
   totalEarnings: decimal("total_earnings", { precision: 10, scale: 2 }).default('0.00'),
   tasksCompleted: integer("tasks_completed").default(0),
   activeReferrals: integer("active_referrals").default(0),
@@ -67,8 +71,19 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Email verification tokens table
-export const verificationTokens = pgTable('verification_tokens', {
+// Phone verification codes table
+export const phoneVerificationCodes = pgTable('phone_verification_codes', {
+  id: varchar('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  phoneNumber: varchar('phone_number').notNull(),
+  code: varchar('code', { length: 6 }).notNull(),
+  attempts: integer('attempts').default(0),
+  verified: boolean('verified').default(false),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Email verification tokens table (now optional for notifications)
+export const emailVerificationTokens = pgTable('email_verification_tokens', {
   id: varchar('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   user_id: varchar('user_id').notNull(),
   email: text('email').notNull(),
