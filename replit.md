@@ -1,6 +1,6 @@
 # Overview
 
-BittieTasks is a mobile-first community task marketplace that connects neighbors and enables local earning opportunities through intelligent task matching. The platform facilitates three revenue streams: peer-to-peer tasks (7% platform fee), corporate sponsored tasks (15% fee), and platform-funded opportunities (0% fee). The application features real-time payments through Stripe integration, automated verification systems, and comprehensive earnings tracking.
+BittieTasks is a mobile-first community task marketplace that connects neighbors and enables local earning opportunities through intelligent task matching. The platform operates with a dual payment model: peer-to-peer tasks (users pay users, 7% platform fee) and BittieTasks platform payments (BittieTasks pays users directly, 0% fee). Additional revenue comes from corporate sponsored tasks (15% fee). The application features real-time payments through Stripe integration, automated verification systems, and comprehensive earnings tracking.
 
 # User Preferences
 
@@ -31,7 +31,10 @@ Preferred communication style: Simple, everyday language.
 
 ## Payment Processing
 - **Payment Gateway**: Stripe integration with webhook processing
-- **Revenue Models**: Multi-tier fee structure based on task type
+- **Dual Payment Model**: 
+  - Peer-to-Peer: Users pay other users directly, BittieTasks takes 7% commission
+  - Platform Payments: BittieTasks pays users directly for completed tasks (0% fee)
+- **Revenue Streams**: P2P commissions (7%), corporate partnerships (15%), platform investment (0%)
 - **Verification System**: Automated photo/video verification with manual review fallback
 - **Payout Processing**: Automatic payment release upon task verification
 - **Transaction Tracking**: Comprehensive earnings dashboard and payment history
