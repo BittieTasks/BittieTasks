@@ -243,15 +243,27 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
               <p className="text-sm text-gray-600">
                 Enter the 6-digit code sent to {phoneNumber}
               </p>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setStep('phone')}
-                className="text-sm"
-              >
-                Wrong number? Go back
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setStep('phone')}
+                  className="text-sm"
+                >
+                  Wrong number? Go back
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={sendVerificationCode}
+                  disabled={isLoading}
+                  className="text-sm"
+                >
+                  Resend code
+                </Button>
+              </div>
             </div>
           )}
 

@@ -46,7 +46,7 @@ export async function sendPhoneVerification(phoneNumber: string, code: string): 
     
     const client = getTwilioClient()
     const message = await client.messages.create({
-      body: `Your BittieTasks verification code is: ${code}\n\nWelcome to the neighborhood! This code expires in 10 minutes.`,
+      body: `BittieTasks verification code: ${code}`,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: phoneNumber
     })
