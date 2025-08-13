@@ -1,1 +1,4 @@
-{}
+{
+  "/api/auth/check-sendgrid/route": "app/api/auth/check-sendgrid/route.js",
+  "/api/auth/test-full-email-flow/route": "app/api/auth/test-full-email-flow/route.js"
+}

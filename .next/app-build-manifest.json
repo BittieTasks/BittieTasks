@@ -1,3 +1,14 @@
 {
-  "pages": {}
+  "pages": {
+    "/api/auth/check-sendgrid/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/auth/check-sendgrid/route.js"
+    ],
+    "/api/auth/test-full-email-flow/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/auth/test-full-email-flow/route.js"
+    ]
+  }
 }

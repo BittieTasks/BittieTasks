@@ -136,16 +136,25 @@ Need help? Contact us at support@bittietasks.com
       }
 
       // Update user as verified in auth.users metadata
-      const { error: updateError } = await supabase.auth.admin.updateUserById(
-        tokenData.user_id,
-        {
-          email_confirm: true,
-          user_metadata: {
-            email_verified: true,
-            email_confirmed_at: new Date().toISOString()
+      // Only update if it's a real UUID (not test data)
+      const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(tokenData.user_id)
+      
+      let updateError = null
+      if (isValidUUID) {
+        const result = await supabase.auth.admin.updateUserById(
+          tokenData.user_id,
+          {
+            email_confirm: true,
+            user_metadata: {
+              email_verified: true,
+              email_confirmed_at: new Date().toISOString()
+            }
           }
-        }
-      )
+        )
+        updateError = result.error
+      } else {
+        console.log('Skipping user update for test user ID:', tokenData.user_id)
+      }
 
       if (updateError) {
         console.error('Error updating user verification status:', updateError)
