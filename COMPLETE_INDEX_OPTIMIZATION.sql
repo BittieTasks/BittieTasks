@@ -1,44 +1,13 @@
-# Database Index Optimization
+-- Complete Foreign Key Index Optimization for BittieTasks
+-- This addresses all unindexed foreign key performance recommendations
 
-## Performance Recommendations Found:
-
-### Critical: Missing Foreign Key Indexes
-These will improve join performance significantly:
-
-```sql
--- Add indexes for foreign keys that are frequently joined
+-- Core task system indexes (already added)
 CREATE INDEX IF NOT EXISTS idx_task_participants_user_id ON public.task_participants(user_id);
 CREATE INDEX IF NOT EXISTS idx_task_participants_task_id ON public.task_participants(task_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_task_id ON public.transactions(task_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON public.transactions(user_id);
-```
 
-### Optional: Remove Unused Indexes (Cleanup)
-These indexes consume storage but aren't being used:
-
-```sql
--- Remove unused indexes to free up storage and improve write performance
-DROP INDEX IF EXISTS idx_user_challenges_user_id;
-DROP INDEX IF EXISTS idx_users_username;
-DROP INDEX IF EXISTS idx_users_referral_code;
-DROP INDEX IF EXISTS idx_tasks_category_id;
-DROP INDEX IF EXISTS idx_tasks_task_type;
-DROP INDEX IF EXISTS idx_task_completions_user_id;
-DROP INDEX IF EXISTS idx_task_completions_task_id;
-DROP INDEX IF EXISTS idx_payments_payer_id;
-DROP INDEX IF EXISTS idx_payments_payee_id;
-DROP INDEX IF EXISTS idx_messages_from_user_id;
-DROP INDEX IF EXISTS idx_messages_to_user_id;
-DROP INDEX IF EXISTS idx_user_achievements_user_id;
-DROP INDEX IF EXISTS idx_accountability_partnerships_creator_id;
-DROP INDEX IF EXISTS idx_accountability_partnerships_partner_id;
-DROP INDEX IF EXISTS idx_accountability_partnerships_task_completion_id;
-```
-
-## Complete Foreign Key Index Optimization
-
-### Additional Missing Indexes Found:
-```sql
+-- Additional missing foreign key indexes
 -- Accountability partnerships
 CREATE INDEX IF NOT EXISTS idx_accountability_partnerships_creator_id ON public.accountability_partnerships(creator_id);
 CREATE INDEX IF NOT EXISTS idx_accountability_partnerships_partner_id ON public.accountability_partnerships(partner_id);
@@ -50,11 +19,11 @@ CREATE INDEX IF NOT EXISTS idx_barter_transactions_accepter_id ON public.barter_
 CREATE INDEX IF NOT EXISTS idx_barter_transactions_offerer_id ON public.barter_transactions(offerer_id);
 CREATE INDEX IF NOT EXISTS idx_barter_transactions_task_completion_id ON public.barter_transactions(task_completion_id);
 
--- Messages
+-- Messages system
 CREATE INDEX IF NOT EXISTS idx_messages_from_user_id ON public.messages(from_user_id);
 CREATE INDEX IF NOT EXISTS idx_messages_to_user_id ON public.messages(to_user_id);
 
--- Payments
+-- Payment system
 CREATE INDEX IF NOT EXISTS idx_payments_payee_id ON public.payments(payee_id);
 CREATE INDEX IF NOT EXISTS idx_payments_payer_id ON public.payments(payer_id);
 
@@ -62,9 +31,14 @@ CREATE INDEX IF NOT EXISTS idx_payments_payer_id ON public.payments(payer_id);
 CREATE INDEX IF NOT EXISTS idx_task_completions_task_id ON public.task_completions(task_id);
 CREATE INDEX IF NOT EXISTS idx_task_completions_user_id ON public.task_completions(user_id);
 
--- Tasks
+-- Tasks categorization
 CREATE INDEX IF NOT EXISTS idx_tasks_category_id ON public.tasks(category_id);
-```
 
-## Performance Impact:
-These indexes will optimize ALL foreign key joins throughout your platform, ensuring maximum performance for your $8K/month revenue system.
+-- Additional composite indexes for common query patterns
+CREATE INDEX IF NOT EXISTS idx_task_participants_user_task ON public.task_participants(user_id, task_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON public.transactions(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_messages_conversation ON public.messages(from_user_id, to_user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_task_completions_user_status ON public.task_completions(user_id, status);
+
+-- Performance optimization complete
+-- All foreign keys now have covering indexes for optimal join performance
