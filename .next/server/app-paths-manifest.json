@@ -1,3 +1,6 @@
 {
-  "/page": "app/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/test-sendgrid/route": "app/api/auth/test-sendgrid/route.js",
+  "/api/auth/verify-sendgrid-setup/route": "app/api/auth/verify-sendgrid-setup/route.js",
+  "/api/auth/check-sendgrid/route": "app/api/auth/check-sendgrid/route.js"
 }
