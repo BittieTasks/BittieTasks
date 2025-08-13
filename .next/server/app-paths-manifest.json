@@ -1,1 +1,4 @@
-{}
+{
+  "/api/auth/test-smtp-connection/route": "app/api/auth/test-smtp-connection/route.js",
+  "/api/auth/verify-smtp-final/route": "app/api/auth/verify-smtp-final/route.js"
+}
