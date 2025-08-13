@@ -63,8 +63,18 @@ export class EmailVerificationService {
         return { success: false, error: 'Failed to store verification token' }
       }
 
-      // Create verification URL
-      const verificationUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:5000'}/verify-email?token=${token}`
+      // Create verification URL - use request header for development
+      let baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+      if (!baseUrl) {
+        // In development, construct from available environment variables
+        const isDev = process.env.NODE_ENV === 'development'
+        if (isDev) {
+          baseUrl = 'http://localhost:5000'
+        } else {
+          baseUrl = 'https://www.bittietasks.com'
+        }
+      }
+      const verificationUrl = `${baseUrl}/verify-email?token=${token}`
       
       // Send email via SendGrid
       const emailResult = await sendEmail({

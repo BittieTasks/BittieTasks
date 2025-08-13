@@ -154,16 +154,16 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
         throw new Error(data.error || `Server error: ${response.status}`)
       }
 
-      setSuccess('Account created successfully! Welcome to BittieTasks!')
+      setSuccess('Account created successfully! Please check your email to verify your account, then you can access the dashboard.')
       
-      // Redirect to dashboard or call onSuccess
+      // Show user they can continue without waiting for email verification
       setTimeout(() => {
         if (onSuccess) {
           onSuccess()
         } else {
           router.push('/dashboard')
         }
-      }, 2000)
+      }, 3000)
       
     } catch (err: any) {
       console.error('Create account error:', err)
