@@ -1,21 +1,28 @@
 import twilio from 'twilio'
 
-if (!process.env.TWILIO_ACCOUNT_SID) {
-  throw new Error('TWILIO_ACCOUNT_SID environment variable must be set')
-}
+// Initialize Twilio client lazily to avoid build-time errors
+let twilioClient: any = null
 
-if (!process.env.TWILIO_AUTH_TOKEN) {
-  throw new Error('TWILIO_AUTH_TOKEN environment variable must be set')
+function getTwilioClient() {
+  if (!twilioClient) {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID
+    const authToken = process.env.TWILIO_AUTH_TOKEN
+    
+    if (!accountSid) {
+      throw new Error('TWILIO_ACCOUNT_SID environment variable must be set')
+    }
+    if (!authToken) {
+      throw new Error('TWILIO_AUTH_TOKEN environment variable must be set')
+    }
+    if (!process.env.TWILIO_PHONE_NUMBER) {
+      throw new Error('TWILIO_PHONE_NUMBER environment variable must be set')
+    }
+    
+    twilioClient = twilio(accountSid, authToken)
+  }
+  
+  return twilioClient
 }
-
-if (!process.env.TWILIO_PHONE_NUMBER) {
-  throw new Error('TWILIO_PHONE_NUMBER environment variable must be set')
-}
-
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-)
 
 export interface PhoneVerificationResult {
   success: boolean
@@ -27,6 +34,7 @@ export async function sendPhoneVerification(phoneNumber: string, code: string): 
   try {
     console.log(`Sending SMS verification to: ${phoneNumber}`)
     
+    const client = getTwilioClient()
     const message = await client.messages.create({
       body: `Your BittieTasks verification code is: ${code}\n\nWelcome to the neighborhood! This code expires in 10 minutes.`,
       from: process.env.TWILIO_PHONE_NUMBER,
@@ -55,6 +63,7 @@ export async function sendTaskNotification(
   try {
     console.log(`Sending task notification SMS to: ${phoneNumber}`)
     
+    const client = getTwilioClient()
     const sms = await client.messages.create({
       body: `BittieTasks: ${message}`,
       from: process.env.TWILIO_PHONE_NUMBER,
