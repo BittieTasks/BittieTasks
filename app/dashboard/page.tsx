@@ -174,44 +174,28 @@ export default function Dashboard() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button 
-                  onClick={(e) => {
-                    e.preventDefault()
-                    console.log('Solo button clicked, navigating to /solo')
-                    window.location.href = '/solo'
-                  }}
+                  onClick={() => window.location.href = '/solo'}
                   className="bg-green-600 hover:bg-green-700 text-white"
                   data-testid="button-solo-tasks"
                 >
                   Solo Tasks
                 </Button>
                 <Button 
-                  onClick={(e) => {
-                    e.preventDefault()
-                    console.log('Community button clicked, navigating to /community')
-                    window.location.href = '/community'
-                  }}
+                  onClick={() => window.location.href = '/community'}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                   data-testid="button-community-tasks"
                 >
                   Community
                 </Button>
                 <Button 
-                  onClick={(e) => {
-                    e.preventDefault()
-                    console.log('Corporate button clicked, navigating to /corporate')
-                    window.location.href = '/corporate'
-                  }}
+                  onClick={() => window.location.href = '/corporate'}
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                   data-testid="button-corporate-tasks"
                 >
                   Corporate
                 </Button>
                 <Button 
-                  onClick={(e) => {
-                    e.preventDefault()
-                    console.log('Barter button clicked, navigating to /barter')
-                    window.location.href = '/barter'
-                  }}
+                  onClick={() => window.location.href = '/barter'}
                   className="bg-orange-600 hover:bg-orange-700 text-white"
                   data-testid="button-barter-tasks"
                 >
