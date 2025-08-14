@@ -195,9 +195,17 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
         const timingMsg = data.timing ? 
           `Processed in ${data.timing.processingTime} (submitted ${data.timing.submittedAt}, approved ${data.timing.approvedAt})` :
           ''
+        
+        // Show detailed AI analysis
+        const aiDetails = data.aiAnalysis ? [
+          `Confidence: ${data.aiAnalysis.confidence}%`,
+          data.aiAnalysis.detectedObjects?.length > 0 ? `Objects: ${data.aiAnalysis.detectedObjects.join(', ')}` : '',
+          data.aiAnalysis.reasoning || ''
+        ].filter(Boolean).join(' • ') : ''
+        
         toast({
           title: "AI Verified & Paid! 🎉",
-          description: `${data.message} You earned $${data.payment.amount}! ${timingMsg} ${data.remainingCompletions > 0 ? `${data.remainingCompletions} completion(s) remaining.` : 'Task limit reached.'}`,
+          description: `${data.message} You earned $${data.payment.amount}! ${aiDetails} ${timingMsg} ${data.remainingCompletions > 0 ? `${data.remainingCompletions} completion(s) remaining.` : 'Task limit reached.'}`,
         })
       } else if (data.verification?.status === 'pending') {
         toast({
@@ -415,6 +423,21 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
               </div>
             </div>
 
+            {/* AI Analysis Preview */}
+            {verificationPhoto.trim() && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-medium text-blue-800 mb-2">🔍 AI Analysis Preview</h4>
+                <div className="text-sm text-blue-600 space-y-1">
+                  <p><strong>Task:</strong> {task.title}</p>
+                  <p><strong>Looking for:</strong> {getTaskRequirements(task.id)}</p>
+                  <p><strong>Your content:</strong> {photoPreview ? 'Photo uploaded' : `"${verificationPhoto.slice(0, 80)}${verificationPhoto.length > 80 ? '...' : ''}"`}</p>
+                  <p className="text-xs text-blue-500 mt-2">
+                    AI will analyze for: cleanliness, organization, completion evidence, and task-specific elements
+                  </p>
+                </div>
+              </div>
+            )}
+
             <Button 
               onClick={handleVerifyAndPay}
               disabled={loading || !verificationPhoto.trim()}
@@ -428,4 +451,16 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
       </DialogContent>
     </Dialog>
   )
+}
+
+// Helper function to show what AI looks for in each task
+function getTaskRequirements(taskId: string): string {
+  const requirements: Record<string, string> = {
+    'platform-001': 'folded clothes, clean laundry, organized clothing',
+    'platform-002': 'clean dishes, organized kitchen, sparkling surfaces', 
+    'platform-003': 'exercise poses, yoga mat, workout activity',
+    'platform-004': 'groceries, shopping bags, food items, receipts',
+    'platform-005': 'organized spaces, tidy rooms, before/after comparison'
+  }
+  return requirements[taskId] || 'task completion evidence'
 }
