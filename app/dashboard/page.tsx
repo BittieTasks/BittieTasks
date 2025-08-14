@@ -174,28 +174,40 @@ export default function Dashboard() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button 
-                  onClick={() => router.push('/solo')}
+                  onClick={() => {
+                    console.log('Solo button clicked, navigating to /solo')
+                    router.push('/solo')
+                  }}
                   className="bg-green-600 hover:bg-green-700 text-white"
                   data-testid="button-solo-tasks"
                 >
                   Solo Tasks
                 </Button>
                 <Button 
-                  onClick={() => router.push('/community')}
+                  onClick={() => {
+                    console.log('Community button clicked, navigating to /community')
+                    router.push('/community')
+                  }}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                   data-testid="button-community-tasks"
                 >
                   Community
                 </Button>
                 <Button 
-                  onClick={() => router.push('/corporate')}
+                  onClick={() => {
+                    console.log('Corporate button clicked, navigating to /corporate')
+                    router.push('/corporate')
+                  }}
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                   data-testid="button-corporate-tasks"
                 >
                   Corporate
                 </Button>
                 <Button 
-                  onClick={() => router.push('/barter')}
+                  onClick={() => {
+                    console.log('Barter button clicked, navigating to /barter')
+                    router.push('/barter')
+                  }}
                   className="bg-orange-600 hover:bg-orange-700 text-white"
                   data-testid="button-barter-tasks"
                 >
