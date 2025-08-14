@@ -54,12 +54,28 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // Verify photo using AI analysis
+    const photoVerification = await fetch('/api/tasks/photo-verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        taskId,
+        photoUrl: verificationPhoto,
+        description: verificationPhoto
+      })
+    })
+
+    const photoResult = await photoVerification.json()
+    const isAutoApproved = photoResult.verification?.autoApproved || false
+
     // Create verification record
     const verification: TaskVerification = {
       taskId,
       userId,
       verificationPhoto,
-      status: 'approved', // Auto-approve for demo purposes
+      status: isAutoApproved ? 'approved' : 'pending',
       submissionDate: new Date().toISOString(),
       paymentIntentId: paymentIntent.id
     }
