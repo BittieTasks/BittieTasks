@@ -4,10 +4,10 @@ import crypto from 'crypto';
 async function testWebhookLocal() {
   const testPayload = {
     user: {
-      phone: "+15551234567"
+      phone: "+16036611164"
     },
     sms: {
-      otp: "123456"
+      otp: "789012"
     }
   };
 

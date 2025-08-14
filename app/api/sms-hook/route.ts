@@ -10,25 +10,25 @@ interface SmsWebhookPayload {
   };
 }
 
-async function sendMessageBirdSMS(phone: string, otp: string) {
+async function sendTwilioSMS(phone: string, otp: string) {
   const messageBody = `Your BittieTasks verification code is: ${otp}`;
   
-  const response = await fetch('https://rest.messagebird.com/messages', {
+  const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, {
     method: 'POST',
     headers: {
-      'Authorization': `AccessKey ${process.env.MESSAGEBIRD_API_KEY}`,
-      'Content-Type': 'application/json',
+      'Authorization': `Basic ${Buffer.from(`${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`).toString('base64')}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: JSON.stringify({
-      originator: '12345', // Using number temporarily until sender ID is registered
-      recipients: [phone],
-      body: messageBody,
+    body: new URLSearchParams({
+      From: process.env.TWILIO_PHONE_NUMBER!,
+      To: phone,
+      Body: messageBody,
     }),
   });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`MessageBird API error: ${error}`);
+    throw new Error(`Twilio API error: ${error}`);
   }
 
   return response.json();
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       console.log('✅ Webhook signature verified successfully');
     } catch (verifyError) {
       console.log('⚠️ Signature verification failed, attempting JSON parse for testing...');
-      console.log('Verification error:', verifyError.message);
+      console.log('Verification error:', verifyError instanceof Error ? verifyError.message : String(verifyError));
       
       // For development/testing: try direct JSON parse
       try {
@@ -91,8 +91,8 @@ export async function POST(req: NextRequest) {
     // Ensure phone number has + prefix
     const phoneNumber = user.phone.startsWith('+') ? user.phone : `+${user.phone}`;
 
-    // Send SMS via MessageBird
-    await sendMessageBirdSMS(phoneNumber, sms.otp);
+    // Send SMS via Twilio
+    await sendTwilioSMS(phoneNumber, sms.otp);
 
     console.log(`SMS sent successfully to ${phoneNumber}`);
     return NextResponse.json({ success: true });
