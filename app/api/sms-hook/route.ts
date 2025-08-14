@@ -20,7 +20,7 @@ async function sendMessageBirdSMS(phone: string, otp: string) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      originator: 'BittieTasks',
+      originator: '12345', // Using number temporarily until sender ID is registered
       recipients: [phone],
       body: messageBody,
     }),
