@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '../../hooks/use-toast';
-import { Check, Coins, Crown, Zap } from 'lucide-react';
+import { Check, Coins, Crown, Zap, Calculator, TrendingUp, Star } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/navigation';
 
@@ -27,13 +27,14 @@ interface PlanFeatures {
 
 const SUBSCRIPTION_PLANS: Record<string, PlanFeatures> = {
   free: {
-    name: 'Free Plan',
+    name: 'Community Member',
     price: 0,
     fee: '10%',
-    taskLimit: 5,
+    taskLimit: 10,
     features: [
-      'Up to 5 tasks per month',
-      '10% platform fee',
+      'Access to Solo tasks (BittieTasks-funded)',
+      '10 Community tasks per month',
+      '10% platform fee on Community tasks', 
       'Basic task categories',
       'Community messaging',
       'Email support'
@@ -42,15 +43,17 @@ const SUBSCRIPTION_PLANS: Record<string, PlanFeatures> = {
     color: 'border-gray-200'
   },
   pro: {
-    name: 'Pro Plan',
+    name: 'Pro Earner',
     price: 9.99,
     fee: '7%',
     taskLimit: 50,
     features: [
-      'Up to 50 tasks per month',
+      'Everything in Community Member',
+      'Up to 50 Community tasks per month',
       '7% platform fee (save 30%)',
       'Priority task matching',
-      'Advanced analytics',
+      'Access to Corporate sponsored tasks',
+      'Advanced earnings analytics',
       'Priority support',
       'Early access to new features'
     ],
@@ -59,22 +62,24 @@ const SUBSCRIPTION_PLANS: Record<string, PlanFeatures> = {
     popular: true
   },
   premium: {
-    name: 'Premium Plan',
+    name: 'Power User',
     price: 19.99,
     fee: '5%',
     taskLimit: -1,
     features: [
-      'Unlimited tasks',
+      'Everything in Pro Earner',
+      'Unlimited Community tasks',
       '5% platform fee (save 50%)',
       'Premium badge visibility',
       'Ad-free experience',
+      'Priority Corporate task access',
       'Custom task categories',
-      'Direct messaging with sponsors',
+      'Direct messaging with Corporate sponsors',
       '24/7 priority support',
-      'Monthly strategy consultation'
+      'Monthly earnings consultation'
     ],
     icon: Crown,
-    color: 'border-yellow-200'
+    color: 'border-purple-200'
   }
 };
 
@@ -229,11 +234,64 @@ export default function Subscribe() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Choose Your Plan
+            Maximize Your Earnings
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Unlock better earning potential with lower platform fees and premium features
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
+            Lower platform fees, higher earning potential, and exclusive access to premium opportunities
           </p>
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto">
+            <p className="text-green-800 font-medium">
+              💡 Solo tasks are always FREE - BittieTasks pays you directly!
+            </p>
+          </div>
+        </div>
+
+        {/* Earnings Calculator */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-12 max-w-4xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <Calculator className="h-6 w-6 text-teal-600" />
+            <h2 className="text-2xl font-semibold text-gray-900">See Your Potential Savings</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-3xl font-bold text-gray-900 mb-2">$100</div>
+              <div className="text-sm text-gray-600 mb-3">Monthly Community Task Earnings</div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Free Plan (10% fee):</span>
+                  <span className="font-medium text-red-600">$10 fee</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Pro Plan (7% fee):</span>
+                  <span className="font-medium text-teal-600">$7 fee</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Premium Plan (5% fee):</span>
+                  <span className="font-medium text-purple-600">$5 fee</span>
+                </div>
+              </div>
+            </div>
+            <div className="text-center p-4 bg-teal-50 rounded-lg">
+              <div className="text-3xl font-bold text-teal-600 mb-2">$36</div>
+              <div className="text-sm text-gray-600 mb-3">Annual Savings with Pro</div>
+              <div className="text-xs text-gray-500">
+                $3 saved per $100 × 12 months = $36 saved annually
+              </div>
+              <div className="mt-2 text-sm font-medium text-teal-600">
+                Pays for itself in 3.3 months!
+              </div>
+            </div>
+            <div className="text-center p-4 bg-purple-50 rounded-lg">
+              <div className="text-3xl font-bold text-purple-600 mb-2">$60</div>
+              <div className="text-sm text-gray-600 mb-3">Annual Savings with Premium</div>
+              <div className="text-xs text-gray-500">
+                $5 saved per $100 × 12 months = $60 saved annually
+              </div>
+              <div className="mt-2 text-sm font-medium text-purple-600">
+                Pays for itself in 4 months!
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -300,6 +358,66 @@ export default function Subscribe() {
         </div>
 
         <div className="mt-16 text-center">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-4xl mx-auto mb-8">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Platform Fee Breakdown</h3>
+            <div className="grid md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">0%</div>
+                <div className="text-sm text-gray-600">Solo Tasks</div>
+                <div className="text-xs text-gray-500">BittieTasks pays you</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-600">10%</div>
+                <div className="text-sm text-gray-600">Community (Free)</div>
+                <div className="text-xs text-gray-500">Peer-to-peer tasks</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-teal-600">7%</div>
+                <div className="text-sm text-gray-600">Community (Pro)</div>
+                <div className="text-xs text-green-600">Save 30%</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">5%</div>
+                <div className="text-sm text-gray-600">Community (Premium)</div>
+                <div className="text-xs text-green-600">Save 50%</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Success Stories */}
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto mb-8">
+            <div className="flex items-center gap-3 mb-6">
+              <Star className="h-6 w-6 text-yellow-500" />
+              <h3 className="text-xl font-semibold text-gray-900">Why Users Upgrade</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-teal-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="text-sm font-medium text-teal-800">Pro Earner Success</div>
+                  <Badge className="bg-teal-600 text-white text-xs">7% fee</Badge>
+                </div>
+                <p className="text-sm text-gray-700 mb-2">
+                  "I was earning $200/month on Community tasks. The 3% fee savings from upgrading to Pro pays for the subscription and puts $6 extra in my pocket monthly."
+                </p>
+                <div className="text-xs text-teal-600 font-medium">
+                  Monthly savings: $6 • Annual profit: $192
+                </div>
+              </div>
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="text-sm font-medium text-purple-800">Power User Success</div>
+                  <Badge className="bg-purple-600 text-white text-xs">5% fee</Badge>
+                </div>
+                <p className="text-sm text-gray-700 mb-2">
+                  "Premium unlocked Corporate sponsors for me. I now earn $500/month with lower fees AND exclusive high-paying tasks. Best investment I made."
+                </p>
+                <div className="text-xs text-purple-600 font-medium">
+                  Monthly savings: $25 • Corporate access: Priceless
+                </div>
+              </div>
+            </div>
+          </div>
+
           <p className="text-gray-600 mb-4">
             All plans include secure payments, community features, and email support
           </p>
