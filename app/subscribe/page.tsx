@@ -192,6 +192,62 @@ export default function Subscribe() {
   // Only require authentication when actually subscribing
 
   if (selectedPlan) {
+    // Redirect to authentication if user is not logged in
+    if (!user && !isLoading) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-teal-50 to-emerald-50 py-12">
+          <div className="max-w-2xl mx-auto px-4">
+            <div className="text-center mb-8">
+              <Button
+                variant="ghost"
+                onClick={() => setSelectedPlan(null)}
+                className="mb-4"
+              >
+                ← Back to Plans
+              </Button>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Sign In Required
+              </h1>
+              <p className="text-gray-600">
+                Please sign in to subscribe to {SUBSCRIPTION_PLANS[selectedPlan].name}
+              </p>
+            </div>
+
+            <Card className="p-6">
+              <div className="text-center space-y-4">
+                <p className="text-gray-600">
+                  Create an account or sign in to continue with your subscription to {SUBSCRIPTION_PLANS[selectedPlan].name}.
+                </p>
+                <div className="space-y-2">
+                  <Button 
+                    onClick={() => router.push('/auth')}
+                    className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+                  >
+                    Sign In / Create Account
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setSelectedPlan(null)}
+                    className="w-full"
+                  >
+                    Back to Plans
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      );
+    }
+
+    if (isLoading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full" />
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-emerald-50 py-12">
         <div className="max-w-2xl mx-auto px-4">
