@@ -172,13 +172,36 @@ export default function Dashboard() {
                   Track your earnings, manage tasks, and grow your community impact
                 </p>
               </div>
-              <Button 
-                onClick={() => router.push('/marketplace')}
-                className="bg-teal-600 hover:bg-teal-700 text-white"
-                data-testid="button-browse-tasks"
-              >
-                Browse Tasks
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  onClick={() => router.push('/solo')}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  data-testid="button-solo-tasks"
+                >
+                  Solo Tasks
+                </Button>
+                <Button 
+                  onClick={() => router.push('/community')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  data-testid="button-community-tasks"
+                >
+                  Community
+                </Button>
+                <Button 
+                  onClick={() => router.push('/corporate')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                  data-testid="button-corporate-tasks"
+                >
+                  Corporate
+                </Button>
+                <Button 
+                  onClick={() => router.push('/barter')}
+                  className="bg-orange-600 hover:bg-orange-700 text-white"
+                  data-testid="button-barter-tasks"
+                >
+                  Barter
+                </Button>
+              </div>
             </div>
           </div>
         </div>
