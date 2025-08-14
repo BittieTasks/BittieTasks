@@ -162,7 +162,7 @@ export default function Dashboard() {
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                    Welcome back, {user?.user_metadata?.firstName || user?.email?.split('@')[0] || 'User'}!
+                    Welcome back, {user?.firstName || user?.email?.split('@')[0] || 'User'}!
                   </h1>
                   <Badge className={subscriptionBadge.color}>
                     {subscriptionBadge.label}
