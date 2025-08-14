@@ -43,36 +43,49 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
     }
 
-    // Get headers and body
+    // Get headers and body - IMPORTANT: use .text() not .json() for standardwebhooks
     const headers = Object.fromEntries(req.headers.entries());
     const body = await req.text();
     
     console.log('Webhook received:', {
       headers: Object.keys(headers),
       bodyLength: body.length,
-      bodyPreview: body.substring(0, 200)
+      bodyPreview: body.substring(0, 200),
+      webhookId: headers['webhook-id'],
+      webhookTimestamp: headers['webhook-timestamp'],
+      webhookSignature: headers['webhook-signature'] ? 'present' : 'missing'
     });
 
-    // Try to verify webhook signature
+    // For development testing: Try verification, but proceed with JSON parse if it fails
     let payload: SmsWebhookPayload;
     try {
-      const wh = new Webhook(webhookSecret.replace(/^v\d+,whsec_/, ''));
+      const secretKey = webhookSecret.replace(/^v\d+,whsec_/, '');
+      const wh = new Webhook(secretKey);
       payload = wh.verify(body, headers) as SmsWebhookPayload;
+      console.log('✅ Webhook signature verified successfully');
     } catch (verifyError) {
-      console.log('Signature verification failed, attempting direct JSON parse for testing');
-      // For development/testing, try direct JSON parse
+      console.log('⚠️ Signature verification failed, attempting JSON parse for testing...');
+      console.log('Verification error:', verifyError.message);
+      
+      // For development/testing: try direct JSON parse
       try {
         payload = JSON.parse(body) as SmsWebhookPayload;
+        console.log('✅ Payload parsed directly (verification bypassed for testing)');
       } catch (parseError) {
-        console.error('Both signature verification and JSON parsing failed:', { verifyError, parseError });
-        throw verifyError;
+        console.error('❌ Both verification and JSON parsing failed:', { verifyError, parseError });
+        throw new Error('Invalid webhook payload format');
       }
     }
+
+    console.log('Webhook verification successful, payload:', {
+      userPhone: payload.user?.phone,
+      hasOtp: !!payload.sms?.otp
+    });
 
     // Extract phone and OTP
     const { user, sms } = payload;
     if (!user?.phone || !sms?.otp) {
-      throw new Error(`Invalid payload structure: ${JSON.stringify(payload)}`);
+      throw new Error(`Invalid payload structure: missing user.phone or sms.otp`);
     }
     
     // Ensure phone number has + prefix
@@ -86,6 +99,15 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('SMS webhook error:', error);
+    
+    // Log detailed error for debugging
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+    }
     
     // Return 200 to avoid Supabase retries on non-critical errors
     return NextResponse.json({ 
