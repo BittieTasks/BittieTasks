@@ -188,18 +188,8 @@ export default function Subscribe() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    router.push('/auth');
-    return null;
-  }
+  // Allow viewing of subscription plans without authentication
+  // Only require authentication when actually subscribing
 
   if (selectedPlan) {
     return (
@@ -339,6 +329,11 @@ export default function Subscribe() {
                       if (key === 'free') {
                         router.push('/dashboard');
                       } else {
+                        // Check if user is authenticated before allowing subscription
+                        if (!user) {
+                          router.push('/auth');
+                          return;
+                        }
                         setSelectedPlan(key as 'pro' | 'premium');
                       }
                     }}
@@ -349,7 +344,7 @@ export default function Subscribe() {
                         : 'border-teal-600 text-teal-600 hover:bg-teal-50'
                     }`}
                   >
-                    {key === 'free' ? 'Current Plan' : 'Upgrade Now'}
+                    {key === 'free' ? 'Current Plan' : user ? 'Upgrade Now' : 'Sign Up to Upgrade'}
                   </Button>
                 </CardContent>
               </Card>

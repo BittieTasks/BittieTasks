@@ -408,7 +408,7 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <Button 
-                      onClick={() => router.push('/subscription')}
+                      onClick={() => router.push('/subscribe')}
                       variant="outline"
                       data-testid="button-subscription-upgrade"
                     >
