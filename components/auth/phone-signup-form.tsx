@@ -22,7 +22,7 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  // Removed password - Supabase handles phone auth without passwords
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -57,18 +57,15 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
     try {
       const formattedPhone = `+1${phoneNumber.replace(/\D/g, '')}`
       
-      const response = await fetch('/api/auth/send-verification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phoneNumber: formattedPhone }),
+      // Use Supabase's built-in SMS authentication
+      const { supabase } = await import('@/lib/supabase')
+      
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: formattedPhone,
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send verification code')
+      if (error) {
+        throw new Error(error.message || 'Failed to send verification code')
       }
 
       setSuccess('Verification code sent! Check your text messages.')
@@ -86,26 +83,25 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
     
     try {
       const formattedPhone = `+1${phoneNumber.replace(/\D/g, '')}`
-      console.log('Verifying phone code for:', formattedPhone, 'with code:', verificationCode)
       
-      const response = await fetch('/api/auth/verify-phone', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber: formattedPhone,
-          code: verificationCode
-        }),
+      // Use Supabase's built-in phone verification
+      const { supabase } = await import('@/lib/supabase')
+      
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone: formattedPhone,
+        token: verificationCode,
+        type: 'sms'
       })
 
-      console.log('Verify response status:', response.status)
-      const data = await response.json()
-      console.log('Verify response data:', data)
+      if (error) {
+        throw new Error(error.message || 'Invalid verification code')
+      }
 
-      if (!response.ok) {
-        console.error('Verify response not OK:', response.status, data)
-        throw new Error(data.error || `Server error: ${response.status}`)
+      if (data.user) {
+        setSuccess('Phone verified! Welcome to BittieTasks!')
+        // User is now signed in, redirect to dashboard
+        router.push('/dashboard')
+        return
       }
 
       setSuccess('Phone verified! Now create your profile.')
@@ -123,47 +119,31 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
     setError('')
     
     try {
-      const formattedPhone = `+1${phoneNumber.replace(/\D/g, '')}`
-      console.log('Creating account for:', formattedPhone, 'with data:', {
-        phoneNumber: formattedPhone,
-        firstName,
-        lastName,
-        email: email || undefined
-      })
+      // Update user profile with additional information
+      const { supabase } = await import('@/lib/supabase')
       
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber: formattedPhone,
-          password,
-          firstName,
-          lastName,
-          email: email || undefined
-        }),
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          email: email || null
+        }
       })
 
-      console.log('Signup response status:', response.status)
-      const data = await response.json()
-      console.log('Signup response data:', data)
-
-      if (!response.ok) {
-        console.error('Signup response not OK:', response.status, data)
-        throw new Error(data.error || `Server error: ${response.status}`)
+      if (error) {
+        throw new Error(error.message || 'Failed to update profile')
       }
 
-      setSuccess('Account created successfully! Please check your email to verify your account, then you can access the dashboard.')
+      setSuccess('Profile updated successfully! Welcome to BittieTasks!')
       
-      // Show user they can continue without waiting for email verification
+      // Redirect to dashboard
       setTimeout(() => {
         if (onSuccess) {
           onSuccess()
         } else {
           router.push('/dashboard')
         }
-      }, 3000)
+      }, 1500)
       
     } catch (err: any) {
       console.error('Create account error:', err)
@@ -187,7 +167,7 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
 
   const isPhoneValid = phoneNumber.replace(/\D/g, '').length === 10
   const isCodeValid = verificationCode.length === 6
-  const isProfileValid = firstName.trim() && lastName.trim() && password.length >= 8
+  const isProfileValid = firstName.trim() && lastName.trim()
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -293,19 +273,7 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
                 </div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="At least 8 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  data-testid="input-password"
-                  minLength={8}
-                  required
-                />
-              </div>
+
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email (Optional)</Label>
