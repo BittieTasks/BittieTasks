@@ -62,7 +62,10 @@ export default function HomePage() {
             Transform everyday activities into profitable opportunities.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors">
+            <button 
+              onClick={() => router.push('/dashboard')}
+              className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
+            >
               Get Started
               <ArrowRight size={20} className="ml-2" />
             </button>
