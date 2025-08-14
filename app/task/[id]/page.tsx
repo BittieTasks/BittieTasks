@@ -292,7 +292,7 @@ export default function TaskDetailPage() {
                   Split between {task.max_participants} participants
                 </p>
                 <p className="text-small text-muted-foreground">
-                  <span className="text-primary cursor-pointer" onClick={() => router.push('/subscriptions')}>
+                  <span className="text-primary cursor-pointer" onClick={() => router.push('/subscribe')}>
                     Upgrade your plan
                   </span> to reduce platform fees
                 </p>
