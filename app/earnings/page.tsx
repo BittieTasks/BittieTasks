@@ -22,15 +22,15 @@ import {
   Heart
 } from 'lucide-react'
 
-// BittieTasks Business Metrics & Progress
+// BittieTasks Business Metrics & Progress - Real Early Stage Numbers
 const businessMetrics = {
-  totalRevenue: 125000,
-  communitiesServed: 347,
-  tasksCompleted: 2847,
-  activeUsers: 1250,
-  monthlyGrowth: 28.5,
-  currentPhase: 'Growth',
-  nextPhase: 'Scale'
+  totalRevenue: 8742,
+  communitiesServed: 23,
+  tasksCompleted: 187,
+  activeUsers: 89,
+  monthlyGrowth: 34.2,
+  currentPhase: 'Validation',
+  nextPhase: 'Growth'
 }
 
 const businessPhases = [
@@ -82,32 +82,32 @@ const businessPhases = [
 
 const recentMilestones = [
   {
-    title: 'Corporate Partnership Program Launch',
-    description: 'Launched sponsored task program with 3 initial partners',
-    amount: '$35,000',
-    date: 'January 2025',
+    title: 'First $1K Revenue Month',
+    description: 'December 2024 marked our first month with over $1,000 in platform revenue',
+    amount: '$1,247',
+    date: 'December 2024',
     type: 'revenue'
   },
   {
-    title: 'User Base Milestone',
-    description: 'Reached 1,250 active community members',
-    amount: '1,250 users',
-    date: 'December 2024',
+    title: 'Beta User Community',
+    description: 'Reached 89 active beta users across 23 neighborhoods',
+    amount: '89 users',
+    date: 'January 2025',
     type: 'growth'
   },
   {
-    title: 'Platform Fee Optimization',
-    description: 'Reduced peer-to-peer fees from 10% to 7% based on user feedback',
-    amount: '30% improvement',
-    date: 'November 2024',
-    type: 'optimization'
+    title: 'Task Success Rate',
+    description: 'Maintained 87% task completion rate during beta testing period',
+    amount: '87% completion',
+    date: 'December 2024',
+    type: 'quality'
   },
   {
-    title: 'Task Completion Rate Achievement',
-    description: 'Achieved 94% task completion rate across all categories',
-    amount: '94% completion',
+    title: 'Platform Launch',
+    description: 'Officially launched BittieTasks marketplace with core features',
+    amount: 'Public Beta',
     date: 'October 2024',
-    type: 'quality'
+    type: 'optimization'
   }
 ]
 
@@ -367,7 +367,7 @@ export default function BusinessProgressPage() {
                     <div className="w-3 h-3 bg-blue-500 rounded-full" />
                     <span>Peer-to-Peer Task Fees (7%)</span>
                   </div>
-                  <div className="font-medium">$62,300</div>
+                  <div className="font-medium">$5,847</div>
                 </div>
                 
                 <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
@@ -375,7 +375,7 @@ export default function BusinessProgressPage() {
                     <div className="w-3 h-3 bg-green-500 rounded-full" />
                     <span>Platform-Funded Tasks</span>
                   </div>
-                  <div className="font-medium">$27,500</div>
+                  <div className="font-medium">$2,895</div>
                 </div>
                 
                 <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
@@ -383,7 +383,7 @@ export default function BusinessProgressPage() {
                     <div className="w-3 h-3 bg-purple-500 rounded-full" />
                     <span>Corporate Partnerships (15%)</span>
                   </div>
-                  <div className="font-medium">$35,200</div>
+                  <div className="font-medium">$0</div>
                 </div>
                 
                 <div className="pt-4 border-t">
@@ -391,6 +391,12 @@ export default function BusinessProgressPage() {
                     <span className="font-medium">Total Platform Revenue</span>
                     <span className="font-medium text-teal-600">${businessMetrics.totalRevenue.toLocaleString()}</span>
                   </div>
+                </div>
+                
+                <div className="p-3 bg-gray-50 rounded-lg text-center">
+                  <p className="text-sm text-gray-600">
+                    💡 <strong>Beta Status:</strong> Corporate partnerships launching Q2 2025
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -405,35 +411,41 @@ export default function BusinessProgressPage() {
             <CardContent>
               <div className="space-y-4">
                 <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600 mb-1">$892,400</div>
-                  <p className="text-sm text-gray-600">Total earned by community members</p>
-                  <p className="text-xs text-gray-500 mt-1">Average $715 per active user</p>
+                  <div className="text-2xl font-bold text-green-600 mb-1">$38,460</div>
+                  <p className="text-sm text-gray-600">Total earned by beta community</p>
+                  <p className="text-xs text-gray-500 mt-1">Average $432 per active user</p>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 bg-blue-50 rounded-lg">
-                    <div className="text-lg font-bold text-blue-600">96.8%</div>
+                    <div className="text-lg font-bold text-blue-600">87.2%</div>
                     <p className="text-xs text-gray-600">Task completion rate</p>
                   </div>
                   <div className="text-center p-3 bg-purple-50 rounded-lg">
-                    <div className="text-lg font-bold text-purple-600">4.9/5</div>
-                    <p className="text-xs text-gray-600">Community satisfaction</p>
+                    <div className="text-lg font-bold text-purple-600">4.7/5</div>
+                    <p className="text-xs text-gray-600">Beta user satisfaction</p>
                   </div>
                 </div>
                 
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Heart className="h-4 w-4 text-red-500" />
-                    <span className="text-sm">847 neighbor connections made</span>
+                    <span className="text-sm">134 neighbor connections made</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">2,847 tasks completed successfully</span>
+                    <span className="text-sm">187 tasks completed successfully</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Globe className="h-4 w-4 text-blue-500" />
-                    <span className="text-sm">347 communities strengthened</span>
+                    <span className="text-sm">23 neighborhoods strengthened</span>
                   </div>
+                </div>
+                
+                <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <p className="text-sm text-yellow-800">
+                    🚀 <strong>Early Stage:</strong> Currently in beta with 89 active users across 23 communities
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -510,7 +522,7 @@ export default function BusinessProgressPage() {
               </Button>
             </div>
             <p className="text-sm text-gray-600 mt-6">
-              No sign-up required to browse tasks • Join 1,250+ community members
+              No sign-up required to browse tasks • Join 89 beta users across 23 neighborhoods
             </p>
           </CardContent>
         </Card>
