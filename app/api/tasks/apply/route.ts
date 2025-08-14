@@ -4,6 +4,8 @@ interface TaskApplication {
   taskId: string
   userId: string
   applicationDate: string
+  applicationTime: string
+  status: 'applied' | 'in_progress' | 'completed'
 }
 
 // Mock storage for task applications
@@ -32,11 +34,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create new application
+    // Create new application with detailed timestamps
+    const now = new Date()
     const newApplication: TaskApplication = {
       taskId,
       userId,
-      applicationDate: new Date().toISOString()
+      applicationDate: now.toISOString(),
+      applicationTime: now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      }),
+      status: 'applied'
     }
 
     taskApplications.push(newApplication)

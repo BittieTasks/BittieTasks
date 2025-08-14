@@ -190,16 +190,19 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
         throw new Error(data.error || 'Failed to verify task')
       }
 
-      // Handle different verification outcomes
+      // Handle different verification outcomes with timing details
       if (data.verification?.status === 'approved') {
+        const timingMsg = data.timing ? 
+          `Processed in ${data.timing.processingTime} (submitted ${data.timing.submittedAt}, approved ${data.timing.approvedAt})` :
+          ''
         toast({
           title: "AI Verified & Paid! 🎉",
-          description: `${data.message} You earned $${data.payment.amount}! ${data.remainingCompletions > 0 ? `${data.remainingCompletions} completion(s) remaining.` : 'Task limit reached.'}`,
+          description: `${data.message} You earned $${data.payment.amount}! ${timingMsg} ${data.remainingCompletions > 0 ? `${data.remainingCompletions} completion(s) remaining.` : 'Task limit reached.'}`,
         })
       } else if (data.verification?.status === 'pending') {
         toast({
           title: "Under AI Review 🔍",
-          description: data.message,
+          description: `${data.message} Submitted at ${data.verification?.submissionTime || 'now'} - Manual review in progress.`,
         })
       } else {
         throw new Error(data.error || 'Verification failed')

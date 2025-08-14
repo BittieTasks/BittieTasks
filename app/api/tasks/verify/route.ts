@@ -15,6 +15,10 @@ interface TaskVerification {
   verificationPhoto: string
   status: 'pending' | 'approved' | 'rejected'
   submissionDate: string
+  submissionTime: string
+  completionDate: string
+  completionTime: string
+  processingTime: number // milliseconds from submission to approval
   paymentIntentId?: string
 }
 
@@ -85,13 +89,28 @@ export async function POST(request: NextRequest) {
     const confidence = verification.confidence || 0
     const reasoning = verification.reasoning || 'Manual review required'
 
-    // Create verification record with AI analysis results
+    // Create verification record with detailed timestamps
+    const now = new Date()
+    const submissionTime = Date.now()
     const verificationRecord: TaskVerification = {
       taskId,
       userId,
       verificationPhoto,
       status: isAutoApproved ? 'approved' : (confidence > 0.3 ? 'pending' : 'rejected'),
-      submissionDate: new Date().toISOString(),
+      submissionDate: now.toISOString(),
+      submissionTime: now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true 
+      }),
+      completionDate: now.toDateString(),
+      completionTime: now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      }),
+      processingTime: 0, // Will be updated when approved
       paymentIntentId: paymentIntent.id
     }
 
@@ -100,11 +119,24 @@ export async function POST(request: NextRequest) {
     // Handle payment based on verification status
     if (verificationRecord.status === 'approved') {
       // Auto-approved: Process payment immediately
+      const approvalTime = Date.now()
+      verificationRecord.processingTime = approvalTime - submissionTime
       userCompletionCounts[userKey] = currentCount + 1
       
       return NextResponse.json({
         success: true,
         verification: verificationRecord,
+        timing: {
+          submittedAt: verificationRecord.submissionTime,
+          approvedAt: new Date().toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true 
+          }),
+          processingTime: `${verificationRecord.processingTime}ms`,
+          sameDay: true
+        },
         aiAnalysis: {
           confidence: Math.round(confidence * 100),
           reasoning: reasoning,
@@ -119,7 +151,7 @@ export async function POST(request: NextRequest) {
         },
         completionCount: userCompletionCounts[userKey],
         remainingCompletions: 2 - userCompletionCounts[userKey],
-        message: `✅ AI Verified & Paid! Confidence: ${Math.round(confidence * 100)}% - ${reasoning}`
+        message: `✅ AI Verified & Paid in ${verificationRecord.processingTime}ms! Confidence: ${Math.round(confidence * 100)}% - ${reasoning}`
       })
     } else if (verificationRecord.status === 'pending') {
       // Pending manual review
