@@ -35,48 +35,48 @@ const businessMetrics = {
 
 const businessPhases = [
   {
-    phase: 'Foundation',
-    description: 'Building core platform and initial user base',
+    phase: 'Limited Beta',
+    description: 'All tasks have limited weekly availability to manage cash flow',
     status: 'completed',
     metrics: {
-      users: '0-100',
-      revenue: '$0-10K',
-      features: 'Basic marketplace'
+      taskAvailability: '2-3 tasks per category per week',
+      revenue: '$0-5K',
+      sustainability: 'Bootstrapped operations'
     },
-    completedDate: 'Q2 2024'
+    completedDate: 'Q3 2024'
   },
   {
     phase: 'Validation',
-    description: 'Proving market fit and refining user experience',
-    status: 'completed',
-    metrics: {
-      users: '100-500',
-      revenue: '$10K-50K',
-      features: 'Payment system, verification'
-    },
-    completedDate: 'Q4 2024'
-  },
-  {
-    phase: 'Growth',
-    description: 'Scaling user base and expanding task categories',
+    description: 'Moderate task availability while building sustainable revenue',
     status: 'current',
     metrics: {
-      users: '500-2K',
-      revenue: '$50K-250K',
-      features: 'Corporate partnerships, mobile app'
+      taskAvailability: '5-10 tasks per category per week',
+      revenue: '$5K-25K',
+      sustainability: 'Covering basic operations'
     },
     targetDate: 'Q2 2025'
   },
   {
-    phase: 'Scale',
-    description: 'Multi-city expansion and advanced features',
+    phase: 'Growth',
+    description: 'Increased task availability as revenue covers expanded operations',
     status: 'upcoming',
     metrics: {
-      users: '2K-10K',
-      revenue: '$250K-1M',
-      features: 'AI matching, franchise model'
+      taskAvailability: '15-25 tasks per category per week',
+      revenue: '$25K-75K',
+      sustainability: 'Break-even point reached'
     },
     targetDate: 'Q4 2025'
+  },
+  {
+    phase: 'Unlimited Solo',
+    description: 'Solo tasks become unlimited when platform reaches full sustainability',
+    status: 'upcoming',
+    metrics: {
+      taskAvailability: 'Solo: Unlimited | Others: 25+ per week',
+      revenue: '$75K+ monthly',
+      sustainability: 'Profitable operations + expansion fund'
+    },
+    targetDate: 'Q2 2026'
   }
 ]
 
@@ -113,9 +113,9 @@ const recentMilestones = [
 
 export default function BusinessProgressPage() {
   const router = useRouter()
-  const [selectedPhase, setSelectedPhase] = useState('Growth')
+  const [selectedPhase, setSelectedPhase] = useState('Validation')
 
-  const currentPhaseData = businessPhases.find(p => p.phase === selectedPhase) || businessPhases[2]
+  const currentPhaseData = businessPhases.find(p => p.phase === selectedPhase) || businessPhases[1]
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -220,28 +220,28 @@ export default function BusinessProgressPage() {
           </Card>
         </div>
 
-        {/* Current Business Phase */}
+        {/* Task Availability Roadmap */}
         <Card className="border-gray-200 mb-16">
           <CardHeader>
-            <CardTitle className="text-2xl">Current Business Phase: {businessMetrics.currentPhase}</CardTitle>
-            <CardDescription>We're transparent about where we are and where we're heading</CardDescription>
+            <CardTitle className="text-2xl">Task Availability Roadmap</CardTitle>
+            <CardDescription>How task availability expands as we reach sustainability milestones</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-lg font-semibold mb-4">Phase Progress</h3>
+                <h3 className="text-lg font-semibold mb-4">Current Phase: {businessMetrics.currentPhase}</h3>
                 <div className="space-y-4">
                   {businessPhases.map((phase, index) => (
                     <div 
                       key={phase.phase}
-                      className={`flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-all ${
+                      className={`flex items-start gap-4 p-4 rounded-lg cursor-pointer transition-all ${
                         phase.status === 'current' ? 'bg-teal-50 border-2 border-teal-200' :
                         phase.status === 'completed' ? 'bg-green-50 border border-green-200' :
                         'bg-gray-50 border border-gray-200'
                       }`}
                       onClick={() => setSelectedPhase(phase.phase)}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         phase.status === 'completed' ? 'bg-green-600' :
                         phase.status === 'current' ? 'bg-teal-600' :
                         'bg-gray-400'
@@ -251,22 +251,27 @@ export default function BusinessProgressPage() {
                         ) : phase.status === 'current' ? (
                           <Rocket className="h-5 w-5 text-white" />
                         ) : (
-                          <span className="text-white text-sm font-bold">{index + 1}</span>
+                          <Target className="h-5 w-5 text-white" />
                         )}
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold">{phase.phase}</h4>
-                        <p className="text-sm text-gray-600">{phase.description}</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold">{phase.phase}</h4>
+                          <Badge className={`text-xs ${
+                            phase.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            phase.status === 'current' ? 'bg-teal-100 text-teal-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {phase.status === 'completed' ? 'Complete' :
+                             phase.status === 'current' ? 'Current' :
+                             'Future'}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">{phase.description}</p>
+                        <p className="text-xs font-medium text-teal-700">
+                          {phase.metrics.taskAvailability}
+                        </p>
                       </div>
-                      <Badge className={
-                        phase.status === 'completed' ? 'bg-green-100 text-green-800' :
-                        phase.status === 'current' ? 'bg-teal-100 text-teal-800' :
-                        'bg-gray-100 text-gray-800'
-                      }>
-                        {phase.status === 'completed' ? 'Complete' :
-                         phase.status === 'current' ? 'In Progress' :
-                         'Upcoming'}
-                      </Badge>
                     </div>
                   ))}
                 </div>
@@ -276,21 +281,24 @@ export default function BusinessProgressPage() {
                 <h3 className="text-lg font-semibold mb-4">{selectedPhase} Phase Details</h3>
                 <div className="space-y-4">
                   <div className="p-4 bg-gray-50 rounded-lg">
-                    <h4 className="font-medium mb-2">Target Metrics</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Users:</span>
-                        <span className="font-medium">{currentPhaseData.metrics.users}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Revenue:</span>
-                        <span className="font-medium">{currentPhaseData.metrics.revenue}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Key Features:</span>
-                        <span className="font-medium">{currentPhaseData.metrics.features}</span>
-                      </div>
-                    </div>
+                    <h4 className="font-medium mb-3">Task Availability</h4>
+                    <p className="text-lg font-semibold text-teal-700 mb-2">
+                      {currentPhaseData.metrics.taskAvailability}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {currentPhaseData.phase === 'Limited Beta' && 'Limited availability to manage cash flow during initial testing'}
+                      {currentPhaseData.phase === 'Validation' && 'Moderate availability while building sustainable user base'}
+                      {currentPhaseData.phase === 'Growth' && 'Increased availability as operations become profitable'}
+                      {currentPhaseData.phase === 'Unlimited Solo' && 'Solo tasks unlimited once platform reaches full sustainability'}
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <h4 className="font-medium mb-2">Revenue Target</h4>
+                    <p className="text-sm">
+                      <span className="font-medium">{currentPhaseData.metrics.revenue}</span>
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">{currentPhaseData.metrics.sustainability}</p>
                   </div>
                   
                   <div className="p-4 bg-teal-50 rounded-lg">
@@ -304,6 +312,20 @@ export default function BusinessProgressPage() {
                       </span>
                     </p>
                   </div>
+                  
+                  {currentPhaseData.phase === 'Unlimited Solo' && (
+                    <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-medium text-green-900">End Goal Achievement</h4>
+                          <p className="text-sm text-green-800">
+                            Solo tasks become unlimited once we reach break-even and full operational sustainability.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -452,21 +474,21 @@ export default function BusinessProgressPage() {
           </Card>
         </div>
 
-        {/* Future Vision & Roadmap */}
+        {/* The Path to Unlimited Solo Tasks */}
         <Card className="border-gray-200 mb-16 bg-gradient-to-br from-teal-50 to-blue-50">
           <CardHeader>
-            <CardTitle className="text-2xl">Our Vision for the Future</CardTitle>
-            <CardDescription>Building sustainable communities through meaningful work</CardDescription>
+            <CardTitle className="text-2xl">The Path to Unlimited Solo Tasks</CardTitle>
+            <CardDescription>How we'll achieve our end goal of unlimited earning opportunities</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div className="text-center p-4">
                 <div className="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Globe className="h-8 w-8 text-teal-600" />
+                  <DollarSign className="h-8 w-8 text-teal-600" />
                 </div>
-                <h4 className="font-semibold mb-2">Multi-City Expansion</h4>
+                <h4 className="font-semibold mb-2">Revenue Sustainability</h4>
                 <p className="text-sm text-gray-600">
-                  Connect communities across major cities, creating a network of neighborhood helpers nationwide.
+                  Reaching $75K+ monthly revenue ensures we can fund unlimited solo tasks while maintaining operations.
                 </p>
               </div>
               
@@ -474,9 +496,9 @@ export default function BusinessProgressPage() {
                 <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="h-8 w-8 text-blue-600" />
                 </div>
-                <h4 className="font-semibold mb-2">AI-Powered Matching</h4>
+                <h4 className="font-semibold mb-2">Operational Efficiency</h4>
                 <p className="text-sm text-gray-600">
-                  Smart algorithms that match tasks with the perfect community members based on skills and availability.
+                  Automated systems and AI matching reduce costs, enabling more tasks with better profit margins.
                 </p>
               </div>
               
@@ -484,10 +506,32 @@ export default function BusinessProgressPage() {
                 <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Heart className="h-8 w-8 text-purple-600" />
                 </div>
-                <h4 className="font-semibold mb-2">Community Investment</h4>
+                <h4 className="font-semibold mb-2">Community Growth</h4>
                 <p className="text-sm text-gray-600">
-                  Profit-sharing model where successful communities receive investment for local improvement projects.
+                  Larger user base creates network effects, generating enough transaction volume to support unlimited tasks.
                 </p>
+              </div>
+            </div>
+            
+            <div className="p-6 bg-white rounded-lg border border-teal-200">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center">
+                  <Target className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-lg">Break-Even Goal: Q2 2026</h4>
+                  <p className="text-gray-600">When Solo Tasks Become Unlimited</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="font-medium mb-1">Financial Milestone:</p>
+                  <p className="text-gray-600">$75K+ monthly recurring revenue</p>
+                </div>
+                <div>
+                  <p className="font-medium mb-1">Community Milestone:</p>
+                  <p className="text-gray-600">2,500+ active users across 50+ cities</p>
+                </div>
               </div>
             </div>
           </CardContent>
