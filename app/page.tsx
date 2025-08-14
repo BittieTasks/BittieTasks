@@ -43,6 +43,12 @@ export default function HomePage() {
                 How It Works
               </button>
               <button 
+                onClick={() => router.push('/earnings')}
+                className="text-gray-700 hover:text-teal-600 font-medium"
+              >
+                Our Progress
+              </button>
+              <button 
                 onClick={() => router.push('/sponsors')}
                 className="text-gray-700 hover:text-teal-600 font-medium"
               >
@@ -76,10 +82,11 @@ export default function HomePage() {
               <ArrowRight size={20} className="ml-2" />
             </button>
             <button 
-              onClick={() => router.push('/subscribe')}
+              onClick={() => router.push('/earnings')}
               className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
             >
-              View Subscriptions
+              <TrendingUp size={20} className="mr-2" />
+              Our Growth Journey
             </button>
           </div>
         </div>
