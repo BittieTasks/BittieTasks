@@ -111,6 +111,15 @@ export default function CommunityPage() {
             Join your neighbors in collaborative tasks! Work together, share earnings (7% platform fee), 
             and build stronger community connections through group messaging.
           </p>
+          <div className="mt-6">
+            <Button 
+              size="lg" 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
+              data-testid="button-create-community-task"
+            >
+              Create Community Task
+            </Button>
+          </div>
         </div>
 
         {/* Stats Bar */}

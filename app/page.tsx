@@ -84,10 +84,10 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => router.push('/marketplace')}
+              onClick={() => router.push('/dashboard')}
               className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
             >
-              Browse Tasks
+              My Dashboard
               <ArrowRight size={20} className="ml-2" />
             </button>
             <button
@@ -135,12 +135,12 @@ export default function HomePage() {
                 </div>
                 <CardTitle className="text-lg text-gray-900">Solo</CardTitle>
                 <Badge className="bg-green-100 text-green-800 border-green-200 mx-auto">
-                  7% Fee
+                  0% Fee - Paid by BittieTasks
                 </Badge>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 text-center text-sm">
-                  Work independently on tasks that match your skills. Keep 93% of earnings.
+                  BittieTasks-funded tasks. Work independently and keep 100% of earnings.
                 </p>
               </CardContent>
             </Card>

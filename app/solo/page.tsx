@@ -129,8 +129,8 @@ export default function SoloPage() {
             Solo Tasks
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Work independently on tasks that match your skills. Keep 93% of your earnings 
-            with just a 7% platform fee. Perfect for building your reputation and income.
+            5 active BittieTasks-funded individual tasks. Complete these platform-paid tasks and keep 100% of earnings.
+            No fees - we invest in our community.
           </p>
         </div>
 
@@ -150,7 +150,7 @@ export default function SoloPage() {
               <div className="text-sm text-gray-600">Average Rating</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">93%</div>
+              <div className="text-2xl font-bold text-orange-600">100%</div>
               <div className="text-sm text-gray-600">Your Take-Home</div>
             </div>
           </div>

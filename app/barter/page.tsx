@@ -157,6 +157,23 @@ export default function BarterPage() {
             Trade skills, services, and items without money! Connect with neighbors for mutually beneficial exchanges. 
             No platform fees - just community-driven value trading.
           </p>
+          <div className="mt-6 space-x-4">
+            <Button 
+              size="lg" 
+              className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3"
+              data-testid="button-create-barter-trade"
+            >
+              Create Barter Trade
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="border-orange-600 text-orange-600 hover:bg-orange-50 px-8 py-3"
+              data-testid="button-chat-traders"
+            >
+              Chat with Traders
+            </Button>
+          </div>
         </div>
 
         {/* Stats Bar */}
