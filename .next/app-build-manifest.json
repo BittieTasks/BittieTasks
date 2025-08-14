@@ -1,9 +1,3 @@
 {
-  "pages": {
-    "/api/sms-hook/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/sms-hook/route.js"
-    ]
-  }
+  "pages": {}
 }
