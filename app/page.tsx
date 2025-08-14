@@ -36,35 +36,14 @@ export default function HomePage() {
             
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
-              <button 
-                onClick={() => router.push('/community')} 
-                className="text-gray-700 hover:text-teal-600 font-medium"
-              >
-                Community
+              <button className="text-gray-700 hover:text-teal-600 font-medium">
+                About
               </button>
-              <button 
-                onClick={() => router.push('/solo')} 
-                className="text-gray-700 hover:text-teal-600 font-medium"
-              >
-                Solo
+              <button className="text-gray-700 hover:text-teal-600 font-medium">
+                How It Works
               </button>
-              <button 
-                onClick={() => router.push('/corporate')} 
-                className="text-gray-700 hover:text-teal-600 font-medium"
-              >
-                Corporate
-              </button>
-              <button 
-                onClick={() => router.push('/barter')} 
-                className="text-gray-700 hover:text-teal-600 font-medium"
-              >
-                Barter
-              </button>
-              <button 
-                onClick={() => router.push('/dashboard')} 
-                className="text-gray-700 hover:text-teal-600 font-medium"
-              >
-                Dashboard
+              <button className="text-gray-700 hover:text-teal-600 font-medium">
+                Contact
               </button>
             </div>
           </div>
@@ -83,101 +62,52 @@ export default function HomePage() {
             Transform everyday activities into profitable opportunities.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
-            >
-              My Dashboard
+            <button className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors">
+              Get Started
               <ArrowRight size={20} className="ml-2" />
+            </button>
+            <button className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors">
+              Learn More
             </button>
           </div>
         </div>
 
-        {/* Task Categories */}
+        {/* How It Works Section */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
-            Choose Your Earning Style
+            How BittieTasks Works
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card 
-              className="border-blue-200 hover:shadow-lg transition-all duration-200 cursor-pointer bg-blue-50"
-              onClick={() => router.push('/community')}
-            >
-              <CardHeader className="text-center pb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <Users size={24} className="text-blue-600" />
-                </div>
-                <CardTitle className="text-lg text-gray-900">Community</CardTitle>
-                <Badge className="bg-blue-100 text-blue-800 border-blue-200 mx-auto">
-                  7% Fee
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 text-center text-sm">
-                  Team up with neighbors on group tasks. Share earnings and build connections through messaging.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="border-green-200 hover:shadow-lg transition-all duration-200 cursor-pointer bg-green-50"
-              onClick={() => router.push('/solo')}
-            >
-              <CardHeader className="text-center pb-4">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <Target size={24} className="text-green-600" />
-                </div>
-                <CardTitle className="text-lg text-gray-900">Solo</CardTitle>
-                <Badge className="bg-green-100 text-green-800 border-green-200 mx-auto">
-                  0% Fee - Paid by BittieTasks
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 text-center text-sm">
-                  BittieTasks-funded tasks. Work independently and keep 100% of earnings.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="border-purple-200 hover:shadow-lg transition-all duration-200 cursor-pointer bg-purple-50"
-              onClick={() => router.push('/corporate')}
-            >
-              <CardHeader className="text-center pb-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <Crown size={24} className="text-purple-600" />
-                </div>
-                <CardTitle className="text-lg text-gray-900">Corporate</CardTitle>
-                <Badge className="bg-purple-100 text-purple-800 border-purple-200 mx-auto">
-                  15% Fee
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 text-center text-sm">
-                  Partner with brands on sponsored tasks. Higher pay with professional benefits.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="border-orange-200 hover:shadow-lg transition-all duration-200 cursor-pointer bg-orange-50"
-              onClick={() => router.push('/barter')}
-            >
-              <CardHeader className="text-center pb-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <Heart size={24} className="text-orange-600" />
-                </div>
-                <CardTitle className="text-lg text-gray-900">Barter</CardTitle>
-                <Badge className="bg-orange-100 text-orange-800 border-orange-200 mx-auto">
-                  0% Fee
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 text-center text-sm">
-                  Trade skills and services without money. Pure value exchange with neighbors.
-                </p>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-teal-600 font-bold text-xl">1</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Sign Up & Browse</h3>
+              <p className="text-gray-600">
+                Create your profile and explore available tasks in your neighborhood. 
+                Choose what fits your schedule and skills.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-green-600 font-bold text-xl">2</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Complete Tasks</h3>
+              <p className="text-gray-600">
+                Accept tasks, coordinate with neighbors, and complete them safely. 
+                Share verification photos when done.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-purple-600 font-bold text-xl">3</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Get Paid</h3>
+              <p className="text-gray-600">
+                Receive secure payments directly to your account after task completion. 
+                Build your reputation and earnings.
+              </p>
+            </div>
           </div>
         </div>
 
