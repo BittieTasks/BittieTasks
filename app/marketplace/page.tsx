@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, Clock, Users, Coins, Filter, Star, Briefcase, Award, Target } from 'lucide-react'
+import TaskApplicationModal from '@/components/TaskApplicationModal'
 
 // Sample task data
 import { comprehensiveTasks } from '../../data/comprehensiveTasks'
@@ -219,75 +220,89 @@ export default function MarketplacePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTasks.map((task) => {
             const availableSpots = task.max_participants - task.current_participants
-            const platformFee = Math.round(task.payout * 0.1) // 10% fee for Free users
+            const platformFee = task.platform_funded ? 0 : Math.round(task.payout * 0.07) // 7% fee for peer-to-peer
             const netEarnings = task.payout - platformFee
 
             return (
-              <Card key={task.id} className="hover-lift cursor-pointer card-clean"
-                onClick={() => router.push(`/task/${task.id}`)}>
+              <Card key={task.id} className="hover-lift card-clean">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex gap-2">
                       <Badge className={getTypeColor(task.type)}>
                         {task.type.replace('_', ' ')}
                       </Badge>
-
+                      {task.platform_funded && (
+                        <Badge className="bg-teal-100 text-teal-800">
+                          Platform Funded
+                        </Badge>
+                      )}
+                      {task.completion_limit && (
+                        <Badge className="bg-orange-100 text-orange-800">
+                          Max {task.completion_limit}x
+                        </Badge>
+                      )}
                     </div>
                     <Badge className={getSpotsBadgeColor(availableSpots)}>
                       {availableSpots} spot{availableSpots !== 1 ? 's' : ''} left
                     </Badge>
                   </div>
                   <CardTitle className="text-lg">{task.title}</CardTitle>
-                  <CardDescription className="text-small">
+                  <CardDescription className="text-sm">
                     {task.description}
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
                   {/* Earnings Info */}
-                  <div className="bg-muted rounded-lg p-3">
+                  <div className="bg-gray-50 rounded-lg p-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-small text-muted-foreground">Gross Payout</span>
+                      <span className="text-sm text-gray-600">Gross Payout</span>
                       <span className="font-semibold">${task.payout}</span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-small text-muted-foreground">Platform Fee (10%)</span>
-                      <span className="text-small text-red-600">-${platformFee}</span>
-                    </div>
-                    <div className="flex justify-between items-center pt-2 border-t border-border">
+                    {task.platform_funded ? (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Platform Fee</span>
+                        <span className="text-sm text-green-600">$0 (Platform Funded)</span>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Platform Fee (7%)</span>
+                        <span className="text-sm text-red-600">-${platformFee}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center pt-2 border-t border-gray-200">
                       <span className="font-medium">Net Earnings</span>
                       <span className="font-bold text-green-600">${netEarnings}</span>
                     </div>
                   </div>
 
                   {/* Task Details */}
-                  <div className="space-y-2 text-small">
+                  <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <MapPin className="h-4 w-4 text-gray-500" />
                       <span>{task.location}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <Clock className="h-4 w-4 text-gray-500" />
                       <span>{task.time_commitment}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <Users className="h-4 w-4 text-gray-500" />
                       <span>{task.current_participants}/{task.max_participants} participants</span>
                     </div>
                   </div>
 
                   {/* Action Button */}
-                  <Button
-                    className="w-full button-clean"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      router.push(`/task/${task.id}`)
-                    }}
-                    disabled={!isVerified || availableSpots === 0}
-                  >
-                    {!isVerified ? 'Verify Email to Join' : 
-                     availableSpots === 0 ? 'Task Full' : 'View Details'}
-                  </Button>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <TaskApplicationModal 
+                      task={task}
+                      userId={user.id}
+                      onSuccess={() => {
+                        // Refresh page or update state
+                        window.location.reload()
+                      }}
+                    />
+                  </div>
                 </CardContent>
               </Card>
             )
@@ -298,14 +313,14 @@ export default function MarketplacePage() {
         {filteredTasks.length === 0 && (
           <Card className="card-clean">
             <CardContent className="p-12 text-center">
-              <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-subheading mb-2">No tasks found</h3>
-              <p className="text-body text-muted-foreground mb-6">
+              <Target className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">No tasks found</h3>
+              <p className="text-gray-600 mb-6">
                 Try adjusting your filters or search terms
               </p>
               <Button 
                 onClick={() => router.push('/create-task')}
-                className="button-clean"
+                className="bg-teal-600 hover:bg-teal-700 text-white"
               >
                 Create Your Own Task
               </Button>
@@ -314,5 +329,7 @@ export default function MarketplacePage() {
         )}
       </main>
     </CleanLayout>
+  )
+}
   )
 }
