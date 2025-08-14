@@ -309,7 +309,7 @@ export default function EarningsPage() {
                     <span className="font-medium text-red-600">-$84.75</span>
                   </div>
                   <p className="text-small text-muted-foreground mt-1">
-                    10% fee on Free plan • <span className="text-primary cursor-pointer" onClick={() => router.push('/subscriptions')}>Upgrade to reduce fees</span>
+                    10% fee on Free plan • <span className="text-primary cursor-pointer" onClick={() => router.push('/subscribe')}>Upgrade to reduce fees</span>
                   </p>
                 </div>
               </div>
@@ -326,7 +326,7 @@ export default function EarningsPage() {
             Browse More Tasks
           </Button>
           <Button 
-            onClick={() => router.push('/subscriptions')}
+            onClick={() => router.push('/subscribe')}
             variant="outline"
             className="button-outline"
           >
