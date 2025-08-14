@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { MapPin, Clock, ArrowLeftRight, User, Heart, Handshake } from 'lucide-react'
-import { TaskApplicationModal } from '@/components/TaskApplicationModal'
+import TaskApplicationModal from '@/components/TaskApplicationModal'
 
 interface BarterTask {
   id: string
@@ -312,16 +312,16 @@ export default function BarterPage() {
               id: selectedTask.id,
               title: selectedTask.title,
               description: selectedTask.description,
-              price: 0, // No monetary value for barter
               category: selectedTask.category,
+              type: 'barter',
+              payout: 0, // No monetary value for barter
               location: selectedTask.location,
-              timeEstimate: selectedTask.timeEstimate,
-              difficulty: selectedTask.difficulty,
+              time_commitment: selectedTask.timeEstimate,
               requirements: [`Can provide: ${selectedTask.seeking}`, `Will receive: ${selectedTask.offering}`],
-              tags: selectedTask.tags
+              platform_funded: false
             }}
-            isOpen={showApplicationModal}
-            onClose={() => setShowApplicationModal(false)}
+            userId="current-user"
+            onSuccess={() => setShowApplicationModal(false)}
           />
         )}
       </div>

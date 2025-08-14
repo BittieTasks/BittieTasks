@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { MessageCircle, Users, MapPin, Clock, DollarSign } from 'lucide-react'
-import { TaskApplicationModal } from '@/components/TaskApplicationModal'
+import TaskApplicationModal from '@/components/TaskApplicationModal'
 
 interface CommunityTask {
   id: string
@@ -222,16 +222,16 @@ export default function CommunityPage() {
               id: selectedTask.id,
               title: selectedTask.title,
               description: selectedTask.description,
-              price: selectedTask.price,
               category: selectedTask.category,
+              type: 'community',
+              payout: selectedTask.price,
               location: selectedTask.location,
-              timeEstimate: selectedTask.estimatedTime,
-              difficulty: selectedTask.difficulty,
+              time_commitment: selectedTask.estimatedTime,
               requirements: ['Valid ID', 'Team player attitude'],
-              tags: ['community', 'group', 'shared-earnings']
+              platform_funded: false
             }}
-            isOpen={showApplicationModal}
-            onClose={() => setShowApplicationModal(false)}
+            userId="current-user"
+            onSuccess={() => setShowApplicationModal(false)}
           />
         )}
       </div>

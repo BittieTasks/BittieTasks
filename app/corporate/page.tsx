@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Clock, DollarSign, Building2, Award, Users } from 'lucide-react'
-import { TaskApplicationModal } from '@/components/TaskApplicationModal'
+import TaskApplicationModal from '@/components/TaskApplicationModal'
 
 interface CorporateTask {
   id: string
@@ -293,16 +293,16 @@ export default function CorporatePage() {
               id: selectedTask.id,
               title: selectedTask.title,
               description: selectedTask.description,
-              price: selectedTask.price,
               category: selectedTask.category,
+              type: 'corporate',
+              payout: selectedTask.price,
               location: selectedTask.location,
-              timeEstimate: selectedTask.timeEstimate,
-              difficulty: selectedTask.difficulty,
+              time_commitment: selectedTask.timeEstimate,
               requirements: selectedTask.requirements,
-              tags: ['corporate', 'sponsored', 'professional']
+              platform_funded: false
             }}
-            isOpen={showApplicationModal}
-            onClose={() => setShowApplicationModal(false)}
+            userId="current-user"
+            onSuccess={() => setShowApplicationModal(false)}
           />
         )}
       </div>
