@@ -174,9 +174,10 @@ export default function Dashboard() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button 
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault()
                     console.log('Solo button clicked, navigating to /solo')
-                    router.push('/solo')
+                    window.location.href = '/solo'
                   }}
                   className="bg-green-600 hover:bg-green-700 text-white"
                   data-testid="button-solo-tasks"
@@ -184,9 +185,10 @@ export default function Dashboard() {
                   Solo Tasks
                 </Button>
                 <Button 
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault()
                     console.log('Community button clicked, navigating to /community')
-                    router.push('/community')
+                    window.location.href = '/community'
                   }}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                   data-testid="button-community-tasks"
@@ -194,9 +196,10 @@ export default function Dashboard() {
                   Community
                 </Button>
                 <Button 
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault()
                     console.log('Corporate button clicked, navigating to /corporate')
-                    router.push('/corporate')
+                    window.location.href = '/corporate'
                   }}
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                   data-testid="button-corporate-tasks"
@@ -204,9 +207,10 @@ export default function Dashboard() {
                   Corporate
                 </Button>
                 <Button 
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault()
                     console.log('Barter button clicked, navigating to /barter')
-                    router.push('/barter')
+                    window.location.href = '/barter'
                   }}
                   className="bg-orange-600 hover:bg-orange-700 text-white"
                   data-testid="button-barter-tasks"
