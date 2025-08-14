@@ -1,8 +1,1 @@
-{
-  "/icon/route": "app/icon/route.js",
-  "/page": "app/page.js",
-  "/solo/page": "app/solo/page.js",
-  "/community/page": "app/community/page.js",
-  "/barter/page": "app/barter/page.js",
-  "/corporate/page": "app/corporate/page.js"
-}
+{}
