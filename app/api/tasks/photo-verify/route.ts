@@ -61,28 +61,34 @@ async function simulatePhotoAnalysis(photoUrl: string, rules: any): Promise<Phot
   let matchedObjects: string[] = []
   let confidence = 0
   
-  // Check for task-relevant keywords in the URL/description
+  // Enhanced keyword matching with scoring
   for (const keyword of rules.keywords) {
     if (descriptionLower.includes(keyword)) {
       matchedObjects.push(keyword)
-      confidence += 0.15
+      confidence += 0.2 // Increased weight for relevant keywords
     }
   }
   
-  // Check for required objects
+  // Enhanced object detection
   for (const object of rules.requiredObjects) {
     if (descriptionLower.includes(object.toLowerCase())) {
       matchedObjects.push(object)
-      confidence += 0.2
+      confidence += 0.25 // Higher weight for required objects
     }
   }
   
-  // Basic validation
-  const hasValidFormat = photoUrl.includes('http') || photoUrl.includes('imgur') || photoUrl.includes('image') || photoUrl.length > 20
-  if (hasValidFormat) confidence += 0.1
+  // Photo/description quality checks
+  const hasValidFormat = photoUrl.includes('http') || photoUrl.includes('imgur') || photoUrl.includes('image') || descriptionLower.length > 15
+  const hasDetailedDescription = descriptionLower.length > 30
+  const hasMeasurableProgress = descriptionLower.includes('before') || descriptionLower.includes('after') || descriptionLower.includes('complete')
   
-  const isValid = confidence >= 0.3 && matchedObjects.length >= 1
-  const requiresManualReview = confidence < 0.5 || matchedObjects.length < 2
+  if (hasValidFormat) confidence += 0.15
+  if (hasDetailedDescription) confidence += 0.1
+  if (hasMeasurableProgress) confidence += 0.15
+  
+  // Adjusted thresholds for better accuracy
+  const isValid = confidence >= 0.7 && matchedObjects.length >= 2 // Higher threshold for auto-approval
+  const requiresManualReview = confidence < 0.7 && confidence >= 0.4 // Manual review zone
   
   return {
     isValid,

@@ -106,10 +106,20 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
         throw new Error(data.error || 'Failed to verify task')
       }
 
-      toast({
-        title: "Payment Successful! 🎉",
-        description: `You earned $${data.payment.amount}! ${data.remainingCompletions > 0 ? `You can complete this task ${data.remainingCompletions} more time(s).` : 'You have reached the completion limit for this task.'}`,
-      })
+      // Handle different verification outcomes
+      if (data.verification?.status === 'approved') {
+        toast({
+          title: "AI Verified & Paid! 🎉",
+          description: `${data.message} You earned $${data.payment.amount}! ${data.remainingCompletions > 0 ? `${data.remainingCompletions} completion(s) remaining.` : 'Task limit reached.'}`,
+        })
+      } else if (data.verification?.status === 'pending') {
+        toast({
+          title: "Under AI Review 🔍",
+          description: data.message,
+        })
+      } else {
+        throw new Error(data.error || 'Verification failed')
+      }
 
       setIsOpen(false)
       onSuccess?.()
@@ -211,11 +221,14 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
 
         {step === 'verify' && (
           <div className="space-y-4">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <h3 className="font-semibold text-green-800">Ready to Get Paid!</h3>
-              <p className="text-sm text-green-600 mt-1">
-                Submit verification to receive your ${task.payout} payment
+            <div className="text-center p-4 bg-gradient-to-r from-teal-50 to-green-50 rounded-lg border border-teal-200">
+              <h3 className="font-semibold text-teal-800">AI-Powered Verification</h3>
+              <p className="text-sm text-teal-600 mt-1">
+                Our smart system analyzes your submission for instant ${task.payout} payment
               </p>
+              <div className="mt-2 text-xs text-teal-500">
+                ✓ 70%+ confidence = Instant payment • 40-70% = Manual review • Under 40% = More details needed
+              </div>
             </div>
 
             <div>
@@ -232,9 +245,15 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
                 rows={4}
                 data-testid={`input-verification-${task.id}`}
               />
-              <p className="text-xs text-gray-500 mt-1">
-                For photo verification, you can upload to any free image hosting service and paste the link here.
-              </p>
+              <div className="text-xs text-gray-500 mt-2 space-y-1">
+                <p><strong>Tips for better verification:</strong></p>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>Use specific keywords like "clean", "organized", "completed"</li>
+                  <li>Describe what you accomplished (e.g., "folded all laundry and organized clothes")</li>
+                  <li>Include before/after details for better AI confidence</li>
+                  <li>Photo URLs from imgur.com, drive.google.com work great</li>
+                </ul>
+              </div>
             </div>
 
             <Button 

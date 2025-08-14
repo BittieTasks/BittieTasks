@@ -55,52 +55,102 @@ export async function POST(request: NextRequest) {
     })
 
     // Verify photo using AI analysis
-    const photoVerification = await fetch('/api/tasks/photo-verify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        taskId,
-        photoUrl: verificationPhoto,
-        description: verificationPhoto
+    let photoResult: any = { verification: { autoApproved: false, confidence: 0, reasoning: 'No verification performed' } }
+    
+    try {
+      const photoVerificationResponse = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:5000'}/api/tasks/photo-verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          taskId,
+          photoUrl: verificationPhoto,
+          description: verificationPhoto
+        })
       })
-    })
+      
+      if (photoVerificationResponse.ok) {
+        photoResult = await photoVerificationResponse.json()
+      }
+    } catch (error) {
+      console.error('Photo verification failed, falling back to manual review:', error)
+    }
 
-    const photoResult = await photoVerification.json()
-    const isAutoApproved = photoResult.verification?.autoApproved || false
+    const verification = photoResult.verification || {}
+    const isAutoApproved = verification.autoApproved || false
+    const confidence = verification.confidence || 0
+    const reasoning = verification.reasoning || 'Manual review required'
 
-    // Create verification record
-    const verification: TaskVerification = {
+    // Create verification record with AI analysis results
+    const verificationRecord: TaskVerification = {
       taskId,
       userId,
       verificationPhoto,
-      status: isAutoApproved ? 'approved' : 'pending',
+      status: isAutoApproved ? 'approved' : (confidence > 0.3 ? 'pending' : 'rejected'),
       submissionDate: new Date().toISOString(),
       paymentIntentId: paymentIntent.id
     }
 
-    taskVerifications.push(verification)
+    taskVerifications.push(verificationRecord)
 
-    // Update completion count
-    userCompletionCounts[userKey] = currentCount + 1
-
-    // For demo purposes, we'll simulate payment completion
-    // In production, this would integrate with actual bank transfers or digital wallets
-
-    return NextResponse.json({
-      success: true,
-      verification,
-      payment: {
-        amount: 2.00,
-        currency: 'USD',
-        status: 'completed',
-        paymentIntentId: paymentIntent.id
-      },
-      completionCount: userCompletionCounts[userKey],
-      remainingCompletions: 2 - userCompletionCounts[userKey],
-      message: 'Task verified and payment processed successfully!'
-    })
+    // Handle payment based on verification status
+    if (verificationRecord.status === 'approved') {
+      // Auto-approved: Process payment immediately
+      userCompletionCounts[userKey] = currentCount + 1
+      
+      return NextResponse.json({
+        success: true,
+        verification: verificationRecord,
+        aiAnalysis: {
+          confidence: Math.round(confidence * 100),
+          reasoning: reasoning,
+          autoApproved: true,
+          detectedObjects: verification.detectedObjects || []
+        },
+        payment: {
+          amount: 2.00,
+          currency: 'USD',
+          status: 'completed',
+          paymentIntentId: paymentIntent.id
+        },
+        completionCount: userCompletionCounts[userKey],
+        remainingCompletions: 2 - userCompletionCounts[userKey],
+        message: `✅ AI Verified & Paid! Confidence: ${Math.round(confidence * 100)}% - ${reasoning}`
+      })
+    } else if (verificationRecord.status === 'pending') {
+      // Pending manual review
+      return NextResponse.json({
+        success: true,
+        verification: verificationRecord,
+        aiAnalysis: {
+          confidence: Math.round(confidence * 100),
+          reasoning: reasoning,
+          autoApproved: false,
+          requiresReview: true
+        },
+        payment: {
+          amount: 2.00,
+          currency: 'USD',
+          status: 'pending',
+          paymentIntentId: paymentIntent.id
+        },
+        message: `🔍 Under Review - Confidence: ${Math.round(confidence * 100)}%. Payment pending manual verification.`
+      })
+    } else {
+      // Rejected
+      return NextResponse.json({
+        success: false,
+        verification: verificationRecord,
+        aiAnalysis: {
+          confidence: Math.round(confidence * 100),
+          reasoning: reasoning,
+          autoApproved: false,
+          rejected: true
+        },
+        error: `❌ Verification Failed - ${reasoning}. Please provide clearer evidence of task completion.`
+      }, { status: 400 })
+    }
 
   } catch (error) {
     console.error('Error verifying task:', error)
