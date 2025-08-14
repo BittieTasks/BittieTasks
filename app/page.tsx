@@ -69,8 +69,11 @@ export default function HomePage() {
               Get Started
               <ArrowRight size={20} className="ml-2" />
             </button>
-            <button className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors">
-              Learn More
+            <button 
+              onClick={() => router.push('/subscriptions')}
+              className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
+            >
+              View Subscriptions
             </button>
           </div>
         </div>
