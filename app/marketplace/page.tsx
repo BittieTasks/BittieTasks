@@ -51,8 +51,9 @@ export default function MarketplacePage() {
   //   return null
   // } // Removed auth guard for testing
 
-  // Filter and sort tasks
+  // Filter to show only platform-funded tasks during testing phase
   const filteredTasks = sampleTasks
+    .filter(task => task.platform_funded === true) // Only show platform-funded tasks
     .filter(task => 
       selectedCategory === 'All' || task.category === selectedCategory
     )
@@ -98,8 +99,11 @@ export default function MarketplacePage() {
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">Task Marketplace</h1>
           <p className="text-lg text-gray-600">
-            Discover earning opportunities in your community. Join tasks or create your own!
+            AI-verified platform-funded tasks with instant $2 payouts
           </p>
+          <div className="mt-2 text-sm text-teal-600 bg-teal-50 p-3 rounded-lg border border-teal-200">
+            <strong>Testing Phase:</strong> Only platform-funded tasks active. AI verification system operational for all 5 tasks.
+          </div>
         </div>
 
         {/* Verification Notice */}
@@ -318,12 +322,9 @@ export default function MarketplacePage() {
               <p className="text-gray-600 mb-6">
                 Try adjusting your filters or search terms
               </p>
-              <Button 
-                onClick={() => router.push('/create-task')}
-                className="bg-teal-600 hover:bg-teal-700 text-white"
-              >
-                Create Your Own Task
-              </Button>
+              <p className="text-sm text-teal-600">
+                Currently showing only platform-funded tasks for AI verification testing
+              </p>
             </CardContent>
           </Card>
         )}
