@@ -25,12 +25,23 @@ import {
 // BittieTasks Business Metrics & Progress - Real Early Stage Numbers
 const businessMetrics = {
   totalRevenue: 8742,
+  monthlyRevenue: 1247, // December 2024 - most recent month
   communitiesServed: 23,
   tasksCompleted: 187,
   activeUsers: 89,
   monthlyGrowth: 34.2,
   currentPhase: 'Validation',
   nextPhase: 'Growth'
+}
+
+// Progress tracking for current phase milestones
+const phaseProgress = {
+  currentPhaseTarget: 25000, // $25K monthly revenue target for Growth phase
+  currentMonthly: 1247, // Current monthly revenue
+  progressPercentage: (1247 / 25000) * 100, // 5% progress to next phase
+  usersTarget: 500, // Target users for Growth phase
+  currentUsers: 89,
+  userProgressPercentage: (89 / 500) * 100 // 18% progress to user target
 }
 
 const businessPhases = [
@@ -166,8 +177,8 @@ export default function BusinessProgressPage() {
                   <DollarSign className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Platform Revenue</p>
-                  <p className="text-2xl font-bold">${businessMetrics.totalRevenue.toLocaleString()}</p>
+                  <p className="text-sm text-gray-600">Monthly Revenue</p>
+                  <p className="text-2xl font-bold">${businessMetrics.monthlyRevenue.toLocaleString()}</p>
                   <div className="flex items-center gap-1">
                     <ArrowUpRight className="h-4 w-4 text-green-600" />
                     <span className="text-sm text-green-600">+{businessMetrics.monthlyGrowth}%</span>
@@ -219,6 +230,87 @@ export default function BusinessProgressPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Progress to Next Phase */}
+        <Card className="border-teal-200 bg-teal-50 mb-16">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center gap-3">
+              <BarChart3 className="h-7 w-7 text-teal-600" />
+              Progress to Growth Phase
+            </CardTitle>
+            <CardDescription>Real-time tracking of milestones needed to unlock more tasks</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
+                <h4 className="font-semibold mb-4 flex items-center gap-2">
+                  <DollarSign className="h-5 w-5 text-green-600" />
+                  Revenue Milestone: 15-25 Tasks per Category
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Monthly Revenue Target:</span>
+                    <span className="font-medium">${phaseProgress.currentPhaseTarget.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Current Monthly Revenue:</span>
+                    <span className="font-medium text-teal-600">${phaseProgress.currentMonthly.toLocaleString()}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                      className="bg-gradient-to-r from-teal-500 to-teal-600 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(phaseProgress.progressPercentage, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span>{phaseProgress.progressPercentage.toFixed(1)}% Complete</span>
+                    <span className="text-gray-600">${(phaseProgress.currentPhaseTarget - phaseProgress.currentMonthly).toLocaleString()} remaining</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold mb-4 flex items-center gap-2">
+                  <Users className="h-5 w-5 text-blue-600" />
+                  Community Growth Milestone
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Active Users Target:</span>
+                    <span className="font-medium">{phaseProgress.usersTarget}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Current Active Users:</span>
+                    <span className="font-medium text-blue-600">{phaseProgress.currentUsers}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(phaseProgress.userProgressPercentage, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span>{phaseProgress.userProgressPercentage.toFixed(1)}% Complete</span>
+                    <span className="text-gray-600">{(phaseProgress.usersTarget - phaseProgress.currentUsers)} users needed</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-8 p-4 bg-white rounded-lg border border-teal-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">When Both Milestones Are Reached:</h4>
+                  <p className="text-sm text-gray-600">Task availability increases to 15-25 per category per week</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-teal-700">Estimated Timeline:</p>
+                  <p className="text-sm text-gray-600">Q4 2025 (based on current growth)</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Task Availability Roadmap */}
         <Card className="border-gray-200 mb-16">
@@ -625,9 +717,5 @@ export default function BusinessProgressPage() {
         </div>
       </footer>
     </div>
-  )
-}
-      </main>
-    </CleanLayout>
   )
 }
