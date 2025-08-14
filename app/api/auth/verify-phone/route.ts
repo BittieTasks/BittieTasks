@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { verifyPhoneCode } from '@/lib/phone-verification'
 
 // Add CORS headers for better browser compatibility
 function addCorsHeaders(response: NextResponse) {
@@ -13,103 +13,39 @@ export async function OPTIONS(request: NextRequest) {
   return addCorsHeaders(new NextResponse(null, { status: 200 }))
 }
 
-// Admin client for database operations
-function getSupabaseAdmin() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    throw new Error('NEXT_PUBLIC_SUPABASE_URL is required')
-  }
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required')
-  }
-  
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }
-  )
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { phoneNumber, code } = body
 
     if (!phoneNumber || !code) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Phone number and verification code are required' },
         { status: 400 }
       )
+      return addCorsHeaders(response)
     }
 
-    const supabase = getSupabaseAdmin()
+    // Use Supabase's built-in OTP verification
+    const verificationResult = await verifyPhoneCode(phoneNumber, code)
 
-    // Find verification code record
-    const { data: verificationRecord, error: fetchError } = await supabase
-      .from('phone_verification_codes')
-      .select('*')
-      .eq('phone_number', phoneNumber)
-      .eq('verified', false)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-
-    if (fetchError || !verificationRecord) {
-      console.error('Verification code not found:', fetchError)
-      return NextResponse.json(
-        { error: 'Invalid or expired verification code' },
+    if (!verificationResult.success) {
+      console.error('Phone verification failed:', verificationResult.error)
+      const response = NextResponse.json(
+        { error: verificationResult.error || 'Invalid verification code' },
         { status: 400 }
       )
+      return addCorsHeaders(response)
     }
-
-    // Check if code has expired
-    const now = new Date()
-    const expiresAt = new Date(verificationRecord.expires_at)
-    if (now > expiresAt) {
-      return NextResponse.json(
-        { error: 'Verification code has expired. Please request a new code.' },
-        { status: 400 }
-      )
-    }
-
-    // Check attempt limit (max 3 attempts)
-    if (verificationRecord.attempts >= 3) {
-      return NextResponse.json(
-        { error: 'Too many failed attempts. Please request a new verification code.' },
-        { status: 400 }
-      )
-    }
-
-    // Verify the code
-    if (verificationRecord.code !== code) {
-      // Increment attempts
-      await supabase
-        .from('phone_verification_codes')
-        .update({ attempts: verificationRecord.attempts + 1 })
-        .eq('id', verificationRecord.id)
-
-      return NextResponse.json(
-        { error: 'Invalid verification code. Please try again.' },
-        { status: 400 }
-      )
-    }
-
-    // Mark code as verified
-    await supabase
-      .from('phone_verification_codes')
-      .update({ verified: true })
-      .eq('id', verificationRecord.id)
 
     console.log(`Phone number verified successfully: ${phoneNumber}`)
 
     const response = NextResponse.json({
       success: true,
       message: 'Phone number verified successfully',
-      phoneNumber: phoneNumber
+      phoneNumber: phoneNumber,
+      session: verificationResult.data?.session,
+      user: verificationResult.data?.user
     })
     return addCorsHeaders(response)
 

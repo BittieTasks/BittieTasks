@@ -1,64 +1,56 @@
-import twilio from 'twilio'
+import { createClient } from '@supabase/supabase-js'
 
-// Initialize Twilio client lazily to avoid build-time errors
-let twilioClient: any = null
-
-function getTwilioClient() {
-  if (!twilioClient) {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID
-    const authToken = process.env.TWILIO_AUTH_TOKEN
-    
-    if (!accountSid) {
-      throw new Error('TWILIO_ACCOUNT_SID environment variable must be set')
-    }
-    if (!authToken) {
-      throw new Error('TWILIO_AUTH_TOKEN environment variable must be set')
-    }
-    if (!process.env.TWILIO_PHONE_NUMBER) {
-      throw new Error('TWILIO_PHONE_NUMBER environment variable must be set')
-    }
-    
-    twilioClient = twilio(accountSid, authToken)
+// Initialize Supabase client for auth operations
+function getSupabaseClient() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL environment variable must be set')
+  }
+  if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable must be set')
   }
   
-  return twilioClient
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
 }
 
 export interface PhoneVerificationResult {
   success: boolean
-  sid?: string
+  data?: any
   error?: string
 }
 
-export async function sendPhoneVerification(phoneNumber: string, code: string): Promise<PhoneVerificationResult> {
+export async function sendPhoneVerification(phoneNumber: string): Promise<PhoneVerificationResult> {
   try {
     console.log(`Sending SMS verification to: ${phoneNumber}`)
     
-    // Development mode: skip actual SMS for test numbers
-    if (process.env.NODE_ENV === 'development' && phoneNumber.includes('555')) {
-      console.log('🧪 Development mode: Skipping SMS for test number')
-      console.log('🔢 Verification code for', phoneNumber, 'is:', code)
-      return {
-        success: true,
-        sid: 'dev_test_' + Date.now()
-      }
-    }
+    const supabase = getSupabaseClient()
     
-    const client = getTwilioClient()
-    const message = await client.messages.create({
-      body: `BittieTasks verification code: ${code}`,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: phoneNumber
+    // Use Supabase's built-in SMS OTP
+    const { data, error } = await supabase.auth.signInWithOtp({
+      phone: phoneNumber,
+      options: {
+        channel: 'sms'
+      }
     })
 
-    console.log(`SMS sent successfully. SID: ${message.sid}`)
+    if (error) {
+      console.error('Supabase SMS error:', error)
+      return {
+        success: false,
+        error: error.message || 'Failed to send verification SMS'
+      }
+    }
+
+    console.log(`SMS sent successfully via Supabase`)
     
     return {
       success: true,
-      sid: message.sid
+      data
     }
   } catch (error: any) {
-    console.error('Twilio SMS error:', error)
+    console.error('Phone verification error:', error)
     return {
       success: false,
       error: error.message || 'Failed to send verification SMS'
@@ -66,31 +58,38 @@ export async function sendPhoneVerification(phoneNumber: string, code: string): 
   }
 }
 
-export async function sendTaskNotification(
-  phoneNumber: string, 
-  message: string
-): Promise<PhoneVerificationResult> {
+export async function verifyPhoneCode(phoneNumber: string, code: string): Promise<PhoneVerificationResult> {
   try {
-    console.log(`Sending task notification SMS to: ${phoneNumber}`)
+    console.log(`Verifying SMS code for: ${phoneNumber}`)
     
-    const client = getTwilioClient()
-    const sms = await client.messages.create({
-      body: `BittieTasks: ${message}`,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: phoneNumber
+    const supabase = getSupabaseClient()
+    
+    // Verify the OTP code
+    const { data, error } = await supabase.auth.verifyOtp({
+      phone: phoneNumber,
+      token: code,
+      type: 'sms'
     })
 
-    console.log(`Task notification sent successfully. SID: ${sms.sid}`)
+    if (error) {
+      console.error('Supabase verification error:', error)
+      return {
+        success: false,
+        error: error.message || 'Invalid verification code'
+      }
+    }
+
+    console.log(`Phone verification successful for ${phoneNumber}`)
     
     return {
       success: true,
-      sid: sms.sid
+      data
     }
   } catch (error: any) {
-    console.error('Twilio task notification error:', error)
+    console.error('Phone verification error:', error)
     return {
       success: false,
-      error: error.message || 'Failed to send task notification'
+      error: error.message || 'Failed to verify phone number'
     }
   }
 }
