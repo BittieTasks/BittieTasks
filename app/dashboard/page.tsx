@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '../../components/auth/AuthProvider'
+// import { useAuth } from '../../components/auth/AuthProvider' // Removed for testing
 import CleanLayout from '../../components/CleanLayout'
 import { Button } from '../../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
@@ -32,7 +32,12 @@ interface TaskActivity {
 }
 
 export default function Dashboard() {
-  const { user } = useAuth()
+  // const { user } = useAuth() // Removed for testing
+  const user = { 
+    firstName: 'Test User',
+    email: 'test@example.com',
+    user_metadata: { subscription_tier: 'free' } 
+  } // Mock user for testing
   const { toast } = useToast()
   const router = useRouter()
   const [loading, setLoading] = useState(true)

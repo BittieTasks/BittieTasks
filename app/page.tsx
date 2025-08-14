@@ -37,6 +37,18 @@ export default function HomePage() {
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
               <button 
+                onClick={() => router.push('/marketplace')} 
+                className="text-gray-700 hover:text-teal-600 font-medium"
+              >
+                Marketplace
+              </button>
+              <button 
+                onClick={() => router.push('/dashboard')} 
+                className="text-gray-700 hover:text-teal-600 font-medium"
+              >
+                Dashboard
+              </button>
+              <button 
                 onClick={() => router.push('/examples')} 
                 className="text-gray-700 hover:text-teal-600 font-medium"
               >
@@ -47,12 +59,6 @@ export default function HomePage() {
                 className="text-gray-700 hover:text-teal-600 font-medium"
               >
                 Sponsors
-              </button>
-              <button 
-                onClick={() => router.push('/auth/phone-login')} 
-                className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium"
-              >
-                Sign In
               </button>
             </div>
           </div>
@@ -72,17 +78,17 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => router.push('/auth/phone-signup')}
+              onClick={() => router.push('/marketplace')}
               className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
             >
-              Let's Get Started
+              Browse Tasks
               <ArrowRight size={20} className="ml-2" />
             </button>
             <button
-              onClick={() => router.push('/examples')}
+              onClick={() => router.push('/dashboard')}
               className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
             >
-              Explore Opportunities
+              Create Task
             </button>
           </div>
         </div>
@@ -168,13 +174,13 @@ export default function HomePage() {
           <p className="text-xl mb-8 text-teal-100">
             Be among the first to earn money from your daily tasks
           </p>
-          <a
-            href="/auth/phone-signup"
+          <button
+            onClick={() => router.push('/marketplace')}
             className="inline-flex items-center justify-center px-8 py-4 bg-white text-teal-600 hover:bg-gray-100 text-lg font-semibold rounded-lg transition-colors"
           >
-            Join the Community
+            Start Exploring
             <ArrowRight size={20} className="ml-2" />
-          </a>
+          </button>
         </div>
       </main>
       
