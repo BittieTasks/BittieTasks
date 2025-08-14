@@ -13,6 +13,12 @@ interface SmsWebhookPayload {
 async function sendTwilioSMS(phone: string, otp: string) {
   const messageBody = `Your BittieTasks verification code is: ${otp}`;
   
+  console.log('🔄 Sending SMS via Twilio:', {
+    to: phone,
+    from: process.env.TWILIO_PHONE_NUMBER,
+    body: messageBody
+  });
+  
   const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, {
     method: 'POST',
     headers: {
@@ -26,12 +32,21 @@ async function sendTwilioSMS(phone: string, otp: string) {
     }),
   });
 
+  const result = await response.json();
+  console.log('📱 Twilio API response:', {
+    success: response.ok,
+    status: response.status,
+    messageId: result.sid,
+    messagingStatus: result.status,
+    errorCode: result.error_code,
+    errorMessage: result.error_message
+  });
+
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Twilio API error: ${error}`);
+    throw new Error(`Twilio API error: ${JSON.stringify(result)}`);
   }
 
-  return response.json();
+  return result;
 }
 
 export async function POST(req: NextRequest) {
