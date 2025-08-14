@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY')
+// Initialize Stripe with proper error handling for build
+const getStripe = () => {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY')
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY)
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 interface TaskVerification {
   taskId: string
@@ -43,6 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create Stripe payment intent for $2 payout
+    const stripe = getStripe()
     const paymentIntent = await stripe.paymentIntents.create({
       amount: 200, // $2.00 in cents
       currency: 'usd',
@@ -173,13 +176,12 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get user's verifications
-    const userVerifications = taskVerifications.filter(ver => ver.userId === userId)
-
-    const approvedVerifications = userVerifications.filter(v => v.status === 'approved')
+    const userVerifications = taskVerifications.filter(v => v.userId === userId)
+    
     return NextResponse.json({
+      success: true,
       verifications: userVerifications,
-      totalEarnings: approvedVerifications.length * 2
+      totalCompletions: userVerifications.length
     })
 
   } catch (error) {
