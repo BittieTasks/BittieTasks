@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { MessageCircle, Users, MapPin, Clock, DollarSign } from 'lucide-react'
 import TaskApplicationModal from '@/components/TaskApplicationModal'
+import { useRouter } from 'next/navigation'
 
 interface CommunityTask {
   id: string
@@ -73,6 +74,7 @@ const communityTasks: CommunityTask[] = [
 ]
 
 export default function CommunityPage() {
+  const router = useRouter()
   const [selectedTask, setSelectedTask] = useState<CommunityTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
 
@@ -116,6 +118,7 @@ export default function CommunityPage() {
               size="lg" 
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
               data-testid="button-create-community-task"
+              onClick={() => router.push('/create-task')}
             >
               Create Community Task
             </Button>

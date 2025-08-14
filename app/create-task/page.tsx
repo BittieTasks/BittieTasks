@@ -38,12 +38,62 @@ const taskTypes = [
   { value: 'self_care', label: 'Self-Care Task', description: 'Personal wellness with optional accountability partners', revenueStream: 'peer_to_peer' }
 ]
 
-const platformTaskTemplates = [
-  { title: '30-Minute Neighborhood Walk', payout: 15, description: 'Complete a 30-minute walk in your neighborhood and document with photos', verification: ['photo', 'gps_tracking', 'time_tracking'] },
-  { title: 'Try a New Local Business', payout: 20, description: 'Visit a local business you\'ve never been to and write a review', verification: ['photo', 'receipt_upload', 'social_proof'] },
-  { title: 'Community Cleanup Activity', payout: 25, description: 'Spend 1 hour cleaning up a public area in your neighborhood', verification: ['photo', 'gps_tracking', 'time_tracking'] },
-  { title: 'Learn Something New', payout: 30, description: 'Complete an online course or tutorial and share what you learned', verification: ['photo', 'video', 'social_proof'] },
-  { title: 'Home Organization Project', payout: 20, description: 'Organize a room or area in your house with before/after photos', verification: ['photo'] }
+// Task templates based on successful solo tasks for peer-to-peer collaboration
+const peerToPeerTaskTemplates = [
+  { 
+    title: 'Grocery Shopping & Delivery', 
+    payout: 35, 
+    description: 'Shop for groceries from provided list and deliver to community member. Must have reliable transportation and attention to detail.',
+    category: 'Delivery',
+    timeEstimate: '2 hours',
+    requiredSkills: ['Reliable transport', 'Attention to detail'],
+    maxParticipants: 1
+  },
+  { 
+    title: 'Pet Walking Service', 
+    payout: 25, 
+    description: 'Walk friendly pets for community members. Perfect for animal lovers who want flexible earning opportunities.',
+    category: 'Pet Care',
+    timeEstimate: '1 hour',
+    requiredSkills: ['Love for animals', 'Physical fitness'],
+    maxParticipants: 1
+  },
+  { 
+    title: 'Furniture Assembly Help', 
+    payout: 75, 
+    description: 'Assemble furniture for community members. Must bring own tools and have assembly experience.',
+    category: 'Handyman',
+    timeEstimate: '4 hours',
+    requiredSkills: ['Tool ownership', 'Assembly experience', 'Physical strength'],
+    maxParticipants: 2
+  },
+  { 
+    title: 'Garden Maintenance', 
+    payout: 45, 
+    description: 'Weed flower beds and prune shrubs for community members. Knowledge of plants preferred but not required.',
+    category: 'Gardening',
+    timeEstimate: '3 hours',
+    requiredSkills: ['Physical stamina', 'Basic gardening knowledge'],
+    maxParticipants: 2
+  },
+  { 
+    title: 'House Cleaning Service', 
+    payout: 85, 
+    description: 'Deep clean homes for community members including bathrooms, kitchen, and living areas. Cleaning supplies provided.',
+    category: 'Cleaning',
+    timeEstimate: '5 hours',
+    requiredSkills: ['Attention to detail', 'Physical stamina'],
+    maxParticipants: 2
+  },
+  { 
+    title: 'Computer Repair & Setup', 
+    payout: 65, 
+    description: 'Diagnose and fix computer issues, set up new software, and provide training to community members.',
+    category: 'Technology',
+    timeEstimate: '2.5 hours',
+    requiredSkills: ['Computer expertise', 'Patience', 'Teaching ability'],
+    maxParticipants: 1
+  }
 ]
 
 export default function CreateTaskPage() {
@@ -64,7 +114,7 @@ export default function CreateTaskPage() {
     requirements: '',
     verificationMethods: [] as string[]
   })
-  const [showPlatformTasks, setShowPlatformTasks] = useState(false)
+  const [showTaskTemplates, setShowTaskTemplates] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -137,7 +187,21 @@ export default function CreateTaskPage() {
   }
 
   const calculatePlatformFee = (payout: number) => {
-    return Math.round(payout * 0.1) // 10% for Free users
+    return Math.round(payout * 0.07) // 7% for peer-to-peer tasks
+  }
+
+  const applyTaskTemplate = (template: any) => {
+    setFormData(prev => ({
+      ...prev,
+      title: template.title,
+      description: template.description,
+      category: template.category,
+      payout: template.payout.toString(),
+      timeCommitment: template.timeEstimate,
+      maxParticipants: template.maxParticipants.toString(),
+      requirements: template.requiredSkills.join(', ')
+    }))
+    setShowTaskTemplates(false)
   }
 
   return (
@@ -167,15 +231,15 @@ export default function CreateTaskPage() {
             </CardContent>
           </Card>
 
-          <Card className={`cursor-pointer transition-all hover:shadow-lg ${showPlatformTasks ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setShowPlatformTasks(true)}>
+          <Card className={`cursor-pointer transition-all hover:shadow-lg ${showTaskTemplates ? 'ring-2 ring-primary' : ''}`}
+                onClick={() => setShowTaskTemplates(true)}>
             <CardContent className="p-6 text-center">
               <Coins className="h-8 w-8 mx-auto mb-3 text-green-600" />
-              <h3 className="font-semibold mb-2">Platform-Funded Tasks</h3>
+              <h3 className="font-semibold mb-2">Use Task Templates</h3>
               <p className="text-sm text-muted-foreground mb-3">
-                Complete pre-made tasks funded by BittieTasks. Instant earnings!
+                Start with proven task templates from successful peer-to-peer tasks.
               </p>
-              <Badge className="bg-green-100 text-green-800">BittieTasks Pays You</Badge>
+              <Badge className="bg-green-100 text-green-800">Browse Templates</Badge>
             </CardContent>
           </Card>
 
@@ -203,6 +267,56 @@ export default function CreateTaskPage() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Task Templates Modal */}
+        {showTaskTemplates && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[80vh] overflow-y-auto">
+              <div className="p-6 border-b">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold">Choose a Task Template</h2>
+                  <Button variant="ghost" onClick={() => setShowTaskTemplates(false)}>
+                    ✕
+                  </Button>
+                </div>
+                <p className="text-muted-foreground mt-2">
+                  Based on successful peer-to-peer tasks. Click any template to get started.
+                </p>
+              </div>
+              <div className="p-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  {peerToPeerTaskTemplates.map((template, index) => (
+                    <Card key={index} className="cursor-pointer hover:shadow-lg transition-all" onClick={() => applyTaskTemplate(template)}>
+                      <CardHeader>
+                        <CardTitle className="text-lg">{template.title}</CardTitle>
+                        <div className="flex gap-2 flex-wrap">
+                          <Badge variant="outline">{template.category}</Badge>
+                          <Badge variant="outline">${template.payout}</Badge>
+                          <Badge variant="outline">{template.timeEstimate}</Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {template.description}
+                        </p>
+                        <div className="space-y-2">
+                          <p className="text-xs font-medium">Required Skills:</p>
+                          <div className="flex gap-1 flex-wrap">
+                            {template.requiredSkills.map((skill: string, skillIndex: number) => (
+                              <Badge key={skillIndex} variant="secondary" className="text-xs">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -404,7 +518,7 @@ export default function CreateTaskPage() {
                     <span className="font-semibold">${formData.payout}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Platform Fee (10%)</span>
+                    <span>Platform Fee (7%)</span>
                     <span className="text-red-600">
                       -${calculatePlatformFee(parseInt(formData.payout) || 0)}
                     </span>
@@ -423,6 +537,25 @@ export default function CreateTaskPage() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Task Templates */}
+            <Card className="card-clean">
+              <CardHeader>
+                <CardTitle className="text-lg">Task Templates</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-small text-muted-foreground mb-3">
+                  Use proven task templates based on successful peer-to-peer tasks
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => setShowTaskTemplates(true)}
+                >
+                  Browse Templates
+                </Button>
+              </CardContent>
+            </Card>
 
             {/* Tips */}
             <Card className="card-clean">
