@@ -32,6 +32,8 @@ Preferred communication style: Simple, everyday language.
 - **SWITCHED BACK TO TWILIO**: Replaced unreliable MessageBird with working Twilio SMS integration for immediate functionality
 - **SMS SYSTEM FULLY OPERATIONAL**: Complete phone verification working end-to-end with Supabase webhook → Twilio SMS delivery confirmed
 - **AUTHENTICATION REMOVED FOR TESTING**: Temporarily disabled all authentication requirements to enable testing of core marketplace functionality without signup barriers, updated homepage navigation to direct access marketplace and dashboard
+- **PRODUCTION BUILD FIXED**: Resolved syntax error in photo verification API, build now generates 54 pages successfully
+- **LEGAL COMPLIANCE ANALYSIS**: Identified key legal risks including employment classification, payment compliance, and platform liability requiring legal consultation
 
 # System Architecture
 
@@ -100,3 +102,42 @@ Preferred communication style: Simple, everyday language.
 - **Performance Monitoring**: Next.js built-in analytics and performance metrics
 - **User Analytics**: Google Analytics integration for user behavior tracking
 - **Database Performance**: Supabase performance insights and query optimization
+
+# Legal Compliance and Risk Management
+
+## Critical Legal Risks Identified
+
+### Employment Classification
+- **Primary Risk**: Worker misclassification as independent contractors vs. employees
+- **Compliance Requirements**: Clear independent contractor agreements with task-specific language
+- **Penalties**: Back wages, benefits, taxes, and DOL/IRS fines
+- **Mitigation**: Employment lawyer consultation in major operating states
+
+### Payment and Financial Compliance
+- **Money Transmission Laws**: May require licenses in all 50 states for holding user funds
+- **Tax Reporting**: 1099-NEC requirements for workers earning $600+ annually
+- **Recommendation**: Use escrow services or immediate payment processing through Stripe
+
+### Platform Liability and Insurance
+- **Worker Safety**: Limited protection for injury during tasks
+- **Required Coverage**: General liability insurance, especially for physical tasks
+- **Task Verification**: AI verification errors could create payment disputes
+- **Dispute Resolution**: Need clear procedures and arbitration clauses
+
+### Data Protection and Privacy
+- **Photo Processing**: AI verification involves personal image data processing
+- **Compliance Requirements**: State privacy laws (California CCPA, etc.)
+- **Security Measures**: Robust data protection and breach notification procedures
+
+### Regulatory Requirements
+- **Background Checks**: Required for tasks involving homes, children, vulnerable populations
+- **Business Licensing**: May need licenses in each operating jurisdiction
+- **Insurance/Bonding**: Professional liability and task-specific bonding requirements
+
+## Legal Action Items
+1. Consult employment lawyers in major operating states
+2. Implement comprehensive independent contractor agreements
+3. Establish clear verification and dispute resolution procedures
+4. Obtain appropriate business insurance coverage
+5. Develop state-specific compliance procedures
+6. Regular legal review for evolving gig economy regulations
