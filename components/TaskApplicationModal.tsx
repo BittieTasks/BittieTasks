@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -37,7 +37,91 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
   const [loading, setLoading] = useState(false)
   const [applied, setApplied] = useState(false)
   const [verificationPhoto, setVerificationPhoto] = useState('')
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
+
+  // Convert file to base64 for verification
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          resolve(reader.result)
+        } else {
+          reject(new Error('Failed to convert file to base64'))
+        }
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+
+  // Handle camera capture or file selection
+  const handlePhotoCapture = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please select an image file.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please select an image under 10MB.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      const base64String = await convertFileToBase64(file)
+      setVerificationPhoto(base64String)
+      setPhotoPreview(base64String)
+      
+      toast({
+        title: "Photo Captured!",
+        description: "Your verification photo is ready to submit.",
+      })
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to process the image. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Open camera on mobile devices
+  const openCamera = () => {
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click()
+    }
+  }
+
+  // Open file picker
+  const openFilePicker = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click()
+    }
+  }
+
+  // Clear selected photo
+  const clearPhoto = () => {
+    setVerificationPhoto('')
+    setPhotoPreview(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+    if (cameraInputRef.current) cameraInputRef.current.value = ''
+  }
 
   const handleApply = async () => {
     setLoading(true)
@@ -80,7 +164,7 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
     if (!verificationPhoto.trim()) {
       toast({
         title: "Verification Required",
-        description: "Please provide a photo or description to verify task completion.",
+        description: "Please take a photo or provide a description to verify task completion.",
         variant: "destructive",
       })
       return
@@ -234,25 +318,97 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
             <div>
               <Label htmlFor="verification" className="text-sm font-medium flex items-center gap-2">
                 <Camera className="h-4 w-4" />
-                Verification Photo/Description
+                Verification Photo
               </Label>
-              <Textarea
-                id="verification"
-                placeholder="Describe how you completed the task or paste a photo URL as verification..."
-                value={verificationPhoto}
-                onChange={(e) => setVerificationPhoto(e.target.value)}
-                className="mt-2"
-                rows={4}
-                data-testid={`input-verification-${task.id}`}
+              
+              {/* Photo Preview */}
+              {photoPreview && (
+                <div className="mt-2 relative">
+                  <img 
+                    src={photoPreview} 
+                    alt="Verification preview" 
+                    className="w-full max-w-sm h-48 object-cover rounded-lg border"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={clearPhoto}
+                  >
+                    ✕
+                  </Button>
+                </div>
+              )}
+
+              {/* Photo Capture Buttons */}
+              <div className="grid grid-cols-2 gap-3 mt-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex items-center gap-2 h-12"
+                  onClick={openCamera}
+                  data-testid="button-take-photo"
+                >
+                  <Camera className="h-4 w-4" />
+                  Take Photo
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex items-center gap-2 h-12"
+                  onClick={openFilePicker}
+                  data-testid="button-upload-photo"
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload Photo
+                </Button>
+              </div>
+
+              {/* Hidden file inputs */}
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handlePhotoCapture}
+                className="hidden"
+                data-testid="input-camera"
               />
-              <div className="text-xs text-gray-500 mt-2 space-y-1">
-                <p><strong>Tips for better verification:</strong></p>
-                <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>Use specific keywords like "clean", "organized", "completed"</li>
-                  <li>Describe what you accomplished (e.g., "folded all laundry and organized clothes")</li>
-                  <li>Include before/after details for better AI confidence</li>
-                  <li>Photo URLs from imgur.com, drive.google.com work great</li>
-                </ul>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoCapture}
+                className="hidden"
+                data-testid="input-file"
+              />
+
+              {/* Fallback text input */}
+              <div className="mt-4">
+                <Label htmlFor="verification-text" className="text-sm">Or describe completion (optional)</Label>
+                <Textarea
+                  id="verification-text"
+                  placeholder="Describe how you completed this task..."
+                  value={verificationPhoto.startsWith('data:') ? '' : verificationPhoto}
+                  onChange={(e) => !photoPreview && setVerificationPhoto(e.target.value)}
+                  className="mt-1"
+                  rows={3}
+                  disabled={!!photoPreview}
+                  data-testid={`input-verification-${task.id}`}
+                />
+              </div>
+
+              <div className="text-xs text-gray-500 mt-2">
+                <p className="font-medium text-teal-600">📸 Take a clear photo showing task completion for instant AI verification and payment</p>
+                <div className="mt-1 space-y-1">
+                  <p><strong>Tips for better verification:</strong></p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>Show the completed task clearly (organized space, finished items)</li>
+                    <li>Good lighting and focus help AI recognition</li>
+                    <li>Include task-specific items in the photo</li>
+                  </ul>
+                </div>
               </div>
             </div>
 
@@ -262,7 +418,7 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
               className="w-full bg-green-600 hover:bg-green-700"
               data-testid={`button-verify-${task.id}`}
             >
-              {loading ? 'Processing Payment...' : `Submit & Receive $${task.payout}`}
+              {loading ? 'Processing Payment...' : photoPreview ? 'Submit Photo & Receive $2' : `Submit & Receive $${task.payout}`}
             </Button>
           </div>
         )}
