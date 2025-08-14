@@ -69,8 +69,9 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
       console.log('SMS response:', { data, error })
 
       if (error) {
-        console.error('SMS error:', error)
-        throw new Error(error.message || 'Failed to send verification code')
+        console.error('SMS error details:', error)
+        // More detailed error message for debugging
+        throw new Error(`SMS Error: ${error.message} (Code: ${error.status || 'unknown'})`)
       }
 
       setSuccess('Verification code sent! Check your text messages.')
