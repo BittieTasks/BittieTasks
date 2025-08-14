@@ -1,1 +1,3 @@
-{}
+{
+  "/api/sms-hook/route": "app/api/sms-hook/route.js"
+}
