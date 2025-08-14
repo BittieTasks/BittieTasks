@@ -42,6 +42,12 @@ export default function HomePage() {
               <button className="text-gray-700 hover:text-teal-600 font-medium">
                 How It Works
               </button>
+              <button 
+                onClick={() => router.push('/sponsors')}
+                className="text-gray-700 hover:text-teal-600 font-medium"
+              >
+                Sponsors
+              </button>
               <button className="text-gray-700 hover:text-teal-600 font-medium">
                 Contact
               </button>

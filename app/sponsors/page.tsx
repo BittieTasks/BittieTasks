@@ -14,7 +14,8 @@ import {
   TrendingUp,
   CheckCircle,
   Building,
-  ArrowRight
+  ArrowRight,
+  Crown
 } from 'lucide-react'
 
 // Sample sponsor data
@@ -353,24 +354,283 @@ export default function SponsorsPage() {
           ))}
         </div>
 
+        {/* Partnership Requirements */}
+        <Card className="border-gray-200 mb-16">
+          <CardHeader>
+            <CardTitle className="text-2xl">Partnership Requirements</CardTitle>
+            <CardDescription>What we look for in corporate sponsors</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h4 className="font-semibold mb-4 text-lg">Ethics & Values</h4>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium">Minimum 85% Ethics Score</p>
+                      <p className="text-sm text-gray-600">Independent evaluation of business practices, employee treatment, and community impact</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium">Community-First Values</p>
+                      <p className="text-sm text-gray-600">Demonstrated commitment to supporting local communities and neighborhood wellbeing</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium">Family-Friendly Focus</p>
+                      <p className="text-sm text-gray-600">All sponsored tasks must be appropriate for adults and families</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold mb-4 text-lg">Business Requirements</h4>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium">Minimum $5,000 Monthly Budget</p>
+                      <p className="text-sm text-gray-600">Commitment to funding meaningful community tasks consistently</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium">12-Month Partnership</p>
+                      <p className="text-sm text-gray-600">Minimum commitment to ensure stable opportunities for community members</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium">Verified Business Status</p>
+                      <p className="text-sm text-gray-600">Registered business with valid licenses and insurance coverage</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Sponsorship Packages */}
+        <Card className="border-gray-200 mb-16">
+          <CardHeader>
+            <CardTitle className="text-2xl">Sponsorship Packages</CardTitle>
+            <CardDescription>Choose the partnership level that fits your goals</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Community Partner */}
+              <Card className="border-2 border-blue-200 bg-blue-50">
+                <CardHeader className="text-center">
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Heart className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <CardTitle className="text-xl">Community Partner</CardTitle>
+                  <p className="text-2xl font-bold text-blue-600">$5,000/mo</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">5-10 sponsored tasks monthly</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Company logo on task pages</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Monthly performance report</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Community impact metrics</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Growth Partner */}
+              <Card className="border-2 border-teal-200 bg-teal-50 ring-2 ring-teal-400">
+                <CardHeader className="text-center">
+                  <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <TrendingUp className="h-6 w-6 text-teal-600" />
+                  </div>
+                  <CardTitle className="text-xl">Growth Partner</CardTitle>
+                  <p className="text-2xl font-bold text-teal-600">$15,000/mo</p>
+                  <Badge className="bg-teal-600 text-white">Most Popular</Badge>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">15-25 sponsored tasks monthly</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Featured sponsor placement</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Custom task categories</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Weekly analytics dashboard</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Dedicated account manager</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Enterprise Partner */}
+              <Card className="border-2 border-purple-200 bg-purple-50">
+                <CardHeader className="text-center">
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Crown className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <CardTitle className="text-xl">Enterprise Partner</CardTitle>
+                  <p className="text-2xl font-bold text-purple-600">$35,000/mo</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">50+ sponsored tasks monthly</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Homepage sponsor highlight</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Custom branded task pages</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Real-time analytics access</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">Partnership marketing support</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Success Metrics */}
+        <Card className="border-gray-200 mb-16">
+          <CardHeader>
+            <CardTitle className="text-2xl">Proven Impact Metrics</CardTitle>
+            <CardDescription>Results from our current corporate partnerships</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="text-center p-6 bg-green-50 rounded-lg">
+                <div className="text-3xl font-bold text-green-600 mb-2">94%</div>
+                <p className="text-sm text-gray-600">Task Completion Rate</p>
+                <p className="text-xs text-gray-500 mt-1">Higher than industry average</p>
+              </div>
+              
+              <div className="text-center p-6 bg-blue-50 rounded-lg">
+                <div className="text-3xl font-bold text-blue-600 mb-2">4.8</div>
+                <p className="text-sm text-gray-600">Avg Sponsor Rating</p>
+                <p className="text-xs text-gray-500 mt-1">From community participants</p>
+              </div>
+              
+              <div className="text-center p-6 bg-purple-50 rounded-lg">
+                <div className="text-3xl font-bold text-purple-600 mb-2">73%</div>
+                <p className="text-sm text-gray-600">Brand Recall Increase</p>
+                <p className="text-xs text-gray-500 mt-1">In sponsored communities</p>
+              </div>
+              
+              <div className="text-center p-6 bg-orange-50 rounded-lg">
+                <div className="text-3xl font-bold text-orange-600 mb-2">2.3x</div>
+                <p className="text-sm text-gray-600">Community Engagement</p>
+                <p className="text-xs text-gray-500 mt-1">Compared to traditional ads</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Application Process */}
+        <Card className="border-gray-200 mb-16">
+          <CardHeader>
+            <CardTitle className="text-2xl">Partnership Application Process</CardTitle>
+            <CardDescription>Simple 4-step process to become a BittieTasks sponsor</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-teal-600 font-bold">1</span>
+                </div>
+                <h4 className="font-semibold mb-2">Submit Application</h4>
+                <p className="text-sm text-gray-600">Complete our online partnership form with company details and goals</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-teal-600 font-bold">2</span>
+                </div>
+                <h4 className="font-semibold mb-2">Ethics Review</h4>
+                <p className="text-sm text-gray-600">Independent evaluation of business practices and community alignment</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-teal-600 font-bold">3</span>
+                </div>
+                <h4 className="font-semibold mb-2">Partnership Design</h4>
+                <p className="text-sm text-gray-600">Collaborative planning of sponsored tasks and community impact goals</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-teal-600 font-bold">4</span>
+                </div>
+                <h4 className="font-semibold mb-2">Launch & Track</h4>
+                <p className="text-sm text-gray-600">Begin sponsoring tasks with full analytics and performance tracking</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Become a Sponsor CTA */}
         <Card className="border-gray-200 text-center">
           <CardContent className="p-8">
             <div className="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center mx-auto mb-4">
               <Briefcase className="h-8 w-8 text-teal-600" />
             </div>
-            <h3 className="text-2xl font-bold mb-3">Interested in Becoming a Sponsor?</h3>
+            <h3 className="text-2xl font-bold mb-3">Ready to Partner With Us?</h3>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              Partner with BittieTasks to reach engaged adult communities while supporting meaningful tasks
+              Join leading companies supporting community growth while building authentic connections with engaged adults
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button className="bg-teal-600 hover:bg-teal-700 text-white">
-                Learn About Sponsorship
+                Apply for Partnership
               </Button>
               <Button variant="outline" className="border-teal-600 text-teal-600 hover:bg-teal-50">
-                Contact Partnership Team
+                Schedule Discovery Call
               </Button>
             </div>
+            <p className="text-sm text-gray-500 mt-4">
+              Partnership applications typically reviewed within 5-7 business days
+            </p>
           </CardContent>
         </Card>
       </main>
