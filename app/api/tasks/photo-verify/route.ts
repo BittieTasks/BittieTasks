@@ -257,30 +257,6 @@ async function simulatePhotoAnalysis(photoUrl: string, rules: any): Promise<Phot
     requiresManualReview: confidence < 0.6
   }
 }
-  
-  // Photo/description quality checks
-  const hasValidFormat = photoUrl.includes('http') || photoUrl.includes('imgur') || photoUrl.includes('image') || descriptionLower.length > 15
-  const hasDetailedDescription = descriptionLower.length > 30
-  const hasMeasurableProgress = descriptionLower.includes('before') || descriptionLower.includes('after') || descriptionLower.includes('complete')
-  
-  if (hasValidFormat) confidence += 0.15
-  if (hasDetailedDescription) confidence += 0.1
-  if (hasMeasurableProgress) confidence += 0.15
-  
-  // Adjusted thresholds for better accuracy
-  const isValid = confidence >= 0.7 && matchedObjects.length >= 2 // Higher threshold for auto-approval
-  const requiresManualReview = confidence < 0.7 && confidence >= 0.4 // Manual review zone
-  
-  return {
-    isValid,
-    confidence: Math.min(confidence, 1.0),
-    detectedObjects: matchedObjects,
-    reasoning: isValid 
-      ? `Detected relevant content: ${matchedObjects.join(', ')}. Confidence: ${Math.round(confidence * 100)}%`
-      : `Insufficient evidence of task completion. Need more specific verification.`,
-    requiresManualReview
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {
