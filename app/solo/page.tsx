@@ -99,6 +99,72 @@ const soloTasks: SoloTask[] = [
     requiredSkills: ['Computer expertise', 'Patience', 'Teaching ability'],
     rating: 4.9,
     completedCount: 78
+  },
+  // BittieTasks Platform-Funded Tasks (moved from marketplace)
+  {
+    id: 'platform-001',
+    title: 'Laundry Day',
+    description: 'Complete a full load of laundry: wash, dry, and fold. Share a photo of your neatly folded clean clothes.',
+    price: 2,
+    location: 'Your Home',
+    timeEstimate: '2 hours',
+    category: 'Home Organization',
+    difficulty: 'Easy',
+    requiredSkills: ['Access to washer/dryer', 'Photo verification'],
+    rating: 4.9,
+    completedCount: 0
+  },
+  {
+    id: 'platform-002',
+    title: 'Kitchen Clean-Up',
+    description: 'Wash all dishes and clean kitchen counters. Take before/after photos showing your sparkling clean kitchen.',
+    price: 2,
+    location: 'Your Home',
+    timeEstimate: '30 minutes',
+    category: 'Home Organization',
+    difficulty: 'Easy',
+    requiredSkills: ['Kitchen access', 'Before/after photos'],
+    rating: 4.8,
+    completedCount: 0
+  },
+  {
+    id: 'platform-003',
+    title: 'Pilates Session',
+    description: 'Complete a 30-minute pilates workout. Share a photo or video of you doing pilates poses.',
+    price: 2,
+    location: 'Your Home or Studio',
+    timeEstimate: '30 minutes',
+    category: 'Health & Fitness',
+    difficulty: 'Easy',
+    requiredSkills: ['Exercise mat', 'Workout verification photo/video'],
+    rating: 4.7,
+    completedCount: 0
+  },
+  {
+    id: 'platform-004',
+    title: 'Grocery Run',
+    description: 'Pick up essential groceries for the week. Share a photo of your grocery haul or receipt.',
+    price: 2,
+    location: 'Local Grocery Store',
+    timeEstimate: '1 hour',
+    category: 'Transportation',
+    difficulty: 'Easy',
+    requiredSkills: ['Transportation to store', 'Receipt or grocery photo'],
+    rating: 4.6,
+    completedCount: 0
+  },
+  {
+    id: 'platform-005',
+    title: 'Room Organization',
+    description: 'Organize and tidy one room in your home. Take before and after photos showing the transformation.',
+    price: 2,
+    location: 'Your Home',
+    timeEstimate: '1 hour',
+    category: 'Home Organization',
+    difficulty: 'Easy',
+    requiredSkills: ['Before/after photos', 'Room access'],
+    rating: 4.5,
+    completedCount: 0
   }
 ]
 
