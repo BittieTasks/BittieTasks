@@ -218,7 +218,7 @@ export default function HomePage() {
             Be among the first to earn money from your daily tasks
           </p>
           <button
-            onClick={() => router.push('/marketplace')}
+            onClick={() => router.push('/dashboard')}
             className="inline-flex items-center justify-center px-8 py-4 bg-white text-teal-600 hover:bg-gray-100 text-lg font-semibold rounded-lg transition-colors"
           >
             Start Exploring
