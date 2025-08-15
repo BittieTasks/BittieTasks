@@ -647,7 +647,7 @@ export default function SponsorsPage() {
             </p>
           </CardContent>
         </Card>
-      </main>
+      </div>
     </div>
   )
 }
