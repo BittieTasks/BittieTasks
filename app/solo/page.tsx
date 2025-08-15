@@ -31,132 +31,67 @@ interface SoloTask {
 const soloTasks: SoloTask[] = [
   {
     id: 'platform-001',
-    title: 'Deep Clean Bathroom',
-    description: 'Thoroughly clean and sanitize your bathroom including toilet, shower/tub, sink, mirror, and floor. Upload before/after photos for AI verification of cleanliness standards.',
-    price: 15,
+    title: 'Laundry Day',
+    description: 'Complete a full load of laundry from start to finish: wash, dry, fold, and put away. Take photos showing your clean, folded, and organized clothes.',
+    price: 20,
     location: 'Your Home',
-    timeEstimate: '45 minutes',
-    category: 'Home Maintenance',
+    timeEstimate: '2 hours',
+    category: 'Home Organization',
     difficulty: 'Easy',
-    requiredSkills: ['Cleaning supplies', 'Before/after photos', 'AI photo verification'],
+    requiredSkills: ['Access to washer/dryer', 'Photo verification'],
     rating: 4.9,
     completedCount: 0
   },
   {
     id: 'platform-002',
-    title: 'Complete Laundry Cycle',
-    description: 'Wash, dry, fold, and put away a full load of laundry. Document the process with photos showing sorted clothes, washing machine running, and final organized results.',
-    price: 12,
+    title: 'Kitchen Clean-Up',
+    description: 'Wash all dishes and clean kitchen counters thoroughly. Take before/after photos showing your sparkling clean kitchen transformation.',
+    price: 15,
     location: 'Your Home',
-    timeEstimate: '2.5 hours',
-    category: 'Home Maintenance',
+    timeEstimate: '30 minutes',
+    category: 'Home Organization',
     difficulty: 'Easy',
-    requiredSkills: ['Washer/dryer access', 'Process documentation', 'Final photo verification'],
+    requiredSkills: ['Kitchen access', 'Before/after photos'],
     rating: 4.8,
     completedCount: 0
   },
   {
     id: 'platform-003',
-    title: '30-Minute Cardio Workout',
-    description: 'Complete a 30-minute cardio exercise session (running, cycling, dancing, etc.). Record a brief video showing your workout activity and post-exercise state for verification.',
-    price: 10,
-    location: 'Home, Gym, or Outdoors',
+    title: 'Pilates Session',
+    description: 'Complete a 30-minute pilates workout session. Share a photo or video of you doing pilates poses and your post-workout state.',
+    price: 12,
+    location: 'Your Home or Studio',
     timeEstimate: '30 minutes',
     category: 'Health & Fitness',
-    difficulty: 'Medium',
-    requiredSkills: ['Exercise equipment/space', 'Video recording capability', 'Heart rate monitoring'],
+    difficulty: 'Easy',
+    requiredSkills: ['Exercise mat', 'Workout verification photo/video'],
     rating: 4.7,
     completedCount: 0
   },
   {
     id: 'platform-004',
-    title: 'Weekly Grocery Shopping',
-    description: 'Plan and complete a thoughtful weekly grocery shopping trip. Document your shopping list, cart during shopping, receipt, and organized groceries at home.',
-    price: 18,
+    title: 'Grocery Run',
+    description: 'Pick up essential groceries for the week from your local store. Share a photo of your grocery haul or receipt as verification.',
+    price: 25,
     location: 'Local Grocery Store',
-    timeEstimate: '1.5 hours',
-    category: 'Errands',
+    timeEstimate: '1 hour',
+    category: 'Transportation',
     difficulty: 'Easy',
-    requiredSkills: ['Transportation', 'Shopping list planning', 'Receipt and photo documentation'],
+    requiredSkills: ['Transportation to store', 'Receipt or grocery photo'],
     rating: 4.6,
     completedCount: 0
   },
   {
     id: 'platform-005',
-    title: 'Kitchen Deep Clean',
-    description: 'Complete kitchen cleaning including all dishes, counters, appliances (inside microwave, stovetop, sink), and pantry organization. Submit comprehensive before/after photos.',
-    price: 20,
+    title: 'Room Organization',
+    description: 'Organize and tidy one room in your home completely. Take before and after photos showing the amazing transformation.',
+    price: 30,
     location: 'Your Home',
     timeEstimate: '1 hour',
-    category: 'Home Maintenance',
-    difficulty: 'Medium',
-    requiredSkills: ['Cleaning supplies', 'Appliance cleaning knowledge', 'Organization skills', 'Photo verification'],
-    rating: 4.8,
-    completedCount: 0
-  },
-  {
-    id: 'platform-006',
-    title: 'Mindfulness Meditation Session',
-    description: 'Complete a 20-minute guided meditation session focused on mindfulness and stress relief. Record a brief 2-minute reflection video about your experience and mental state.',
-    price: 8,
-    location: 'Quiet Space at Home',
-    timeEstimate: '25 minutes',
-    category: 'Mental Health',
-    difficulty: 'Easy',
-    requiredSkills: ['Meditation app/guide access', 'Quiet environment', 'Self-reflection video recording'],
-    rating: 4.9,
-    completedCount: 0
-  },
-  {
-    id: 'platform-007',
-    title: 'Organize One Closet',
-    description: 'Completely organize a bedroom or storage closet by sorting, decluttering, and arranging items logically. Document before/after transformation and any items set aside for donation.',
-    price: 25,
-    location: 'Your Home',
-    timeEstimate: '2 hours',
     category: 'Home Organization',
-    difficulty: 'Medium',
-    requiredSkills: ['Organization supplies', 'Decision-making skills', 'Before/after documentation'],
-    rating: 4.7,
-    completedCount: 0
-  },
-  {
-    id: 'platform-008',
-    title: 'Prepare Nutritious Meal',
-    description: 'Plan and cook a well-balanced homemade meal including vegetables, protein, and whole grains. Document ingredients, cooking process, and beautifully plated final meal.',
-    price: 16,
-    location: 'Your Kitchen',
-    timeEstimate: '1 hour',
-    category: 'Nutrition & Wellness',
-    difficulty: 'Medium',
-    requiredSkills: ['Basic cooking skills', 'Meal planning knowledge', 'Food photography', 'Nutritional awareness'],
-    rating: 4.6,
-    completedCount: 0
-  },
-  {
-    id: 'platform-009',
-    title: 'Vehicle Interior Detailing',
-    description: 'Thoroughly vacuum and clean your vehicle interior including seats, dashboard, cup holders, floor mats, and windows. Document detailed before/after condition photos.',
-    price: 22,
-    location: 'Your Driveway/Parking Area',
-    timeEstimate: '45 minutes',
-    category: 'Vehicle Maintenance',
     difficulty: 'Easy',
-    requiredSkills: ['Vehicle access', 'Vacuum and cleaning supplies', 'Detail-oriented photography'],
+    requiredSkills: ['Before/after photos', 'Room access'],
     rating: 4.5,
-    completedCount: 0
-  },
-  {
-    id: 'platform-010',
-    title: 'Personal Wellness Routine',
-    description: 'Complete a comprehensive self-care routine including skincare, grooming, and relaxation activities. Document your routine and record a reflection on the wellness benefits.',
-    price: 14,
-    location: 'Your Home',
-    timeEstimate: '1 hour',
-    category: 'Personal Wellness',
-    difficulty: 'Easy',
-    requiredSkills: ['Personal care products', 'Self-documentation', 'Wellness reflection recording'],
-    rating: 4.8,
     completedCount: 0
   }
 ]
@@ -224,7 +159,7 @@ export default function SoloPage() {
             Solo Tasks
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            10 active BittieTasks-funded household and self-care tasks. Complete these platform-paid tasks and keep 100% of earnings.
+            5 active BittieTasks-funded household and self-care tasks. Complete these platform-paid tasks and keep 100% of earnings.
             No fees - we invest in your wellness and productivity.
           </p>
         </div>
@@ -237,7 +172,7 @@ export default function SoloPage() {
               <div className="text-sm text-gray-600">Available Tasks</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">$16</div>
+              <div className="text-2xl font-bold text-blue-600">$20</div>
               <div className="text-sm text-gray-600">Average Payout</div>
             </div>
             <div className="text-center">
