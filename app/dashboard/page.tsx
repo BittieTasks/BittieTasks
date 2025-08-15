@@ -63,66 +63,78 @@ export default function Dashboard() {
 
   const loadUserStats = async () => {
     try {
-      // Mock user stats for now - will connect to profile API
-      const mockStats: UserStats = {
-        total_earnings: 324.50,
-        tasks_completed: 12,
-        active_tasks: 3,
-        rating: 4.8,
-        achievements: ['Early Adopter', 'Community Helper', 'Reliable Partner'],
-        monthly_goal: 500.00,
-        subscription_tier: user?.user_metadata?.subscription_tier || 'free'
+      // Fetch actual user stats from API
+      const response = await fetch('/api/auth/profile', {
+        credentials: 'include'
+      })
+      
+      if (response.ok) {
+        const userProfile = await response.json()
+        setStats({
+          total_earnings: userProfile.total_earnings || 0,
+          tasks_completed: userProfile.tasks_completed || 0,
+          active_tasks: userProfile.active_tasks || 0,
+          rating: userProfile.rating || 0,
+          achievements: userProfile.achievements || [],
+          monthly_goal: userProfile.monthly_goal || 500.00,
+          subscription_tier: userProfile.subscription_tier || 'free'
+        })
+      } else {
+        // Set realistic starting values for new users
+        setStats({
+          total_earnings: 0,
+          tasks_completed: 0,
+          active_tasks: 0,
+          rating: 0,
+          achievements: [],
+          monthly_goal: 500.00,
+          subscription_tier: 'free'
+        })
       }
-      setStats(mockStats)
     } catch (error) {
       console.error('Error loading user stats:', error)
+      setStats({
+        total_earnings: 0,
+        tasks_completed: 0,
+        active_tasks: 0,
+        rating: 0,
+        achievements: [],
+        monthly_goal: 500.00,
+        subscription_tier: 'free'
+      })
     }
   }
 
   const loadMyTasks = async () => {
     try {
-      // Add your incomplete solo task application
-      const mockTasks: TaskActivity[] = [
-        {
-          id: 'incomplete-solo-1',
-          title: 'Solo Task Application (Incomplete)',
-          status: 'applied',
-          payout: 0, // Will be set based on which task
-          location: 'Pending Selection',
-          applied_at: new Date().toISOString(),
-          task_type: 'solo'
-        },
-        {
-          id: '1',
-          title: 'School Pickup Carpool',
-          status: 'accepted',
-          payout: 25.00,
-          location: 'Lincoln Elementary',
-          applied_at: new Date().toISOString(),
-          task_type: 'shared'
-        },
-        {
-          id: '2',
-          title: 'Grocery Shopping Helper',
-          status: 'completed',
-          payout: 35.00,
-          location: 'Safeway',
-          applied_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          task_type: 'solo'
-        },
-        {
-          id: '3',
-          title: 'After-School Activities',
-          status: 'applied',
-          payout: 45.00,
-          location: 'Community Center',
-          applied_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-          task_type: 'shared'
+      // Fetch actual user task applications from API
+      const response = await fetch('/api/tasks/applications', {
+        credentials: 'include'
+      })
+      
+      if (response.ok) {
+        const realTasks = await response.json()
+        setMyTasks(realTasks)
+      } else {
+        // Only show incomplete solo task if user actually has one
+        const hasIncompleteApplication = localStorage.getItem('incomplete-solo-application')
+        if (hasIncompleteApplication) {
+          setMyTasks([{
+            id: 'incomplete-solo-1',
+            title: 'Solo Task Application (Incomplete)',
+            status: 'applied',
+            payout: 0,
+            location: 'Pending Selection',
+            applied_at: new Date().toISOString(),
+            task_type: 'solo'
+          }])
+        } else {
+          setMyTasks([])
         }
-      ]
-      setMyTasks(mockTasks)
+      }
     } catch (error) {
       console.error('Error loading tasks:', error)
+      setMyTasks([])
     } finally {
       setLoading(false)
     }
@@ -499,17 +511,35 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {stats.achievements.map((achievement, index) => (
-                  <Card key={index} className="bg-white shadow-sm border border-gray-200">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <Award className="w-6 h-6 text-yellow-600" />
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-1">{achievement}</h3>
-                      <p className="text-sm text-gray-500">Earned this month</p>
-                    </CardContent>
-                  </Card>
-                  ))}
+                {stats.achievements.length > 0 ? (
+                  stats.achievements.map((achievement, index) => (
+                    <Card key={index} className="bg-white shadow-sm border border-gray-200">
+                      <CardContent className="p-6 text-center">
+                        <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Award className="w-6 h-6 text-yellow-600" />
+                        </div>
+                        <h3 className="font-semibold text-gray-900 mb-1">{achievement}</h3>
+                        <p className="text-sm text-gray-500">Earned this month</p>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-12">
+                    <div className="text-gray-400 mb-4">
+                      <Award className="w-12 h-12 mx-auto" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No achievements yet</h3>
+                    <p className="text-gray-500 mb-4">
+                      Complete tasks to earn your first achievements
+                    </p>
+                    <Button 
+                      onClick={() => router.push('/solo')}
+                      className="bg-teal-600 hover:bg-teal-700 text-white"
+                    >
+                      Start Earning
+                    </Button>
+                  </div>
+                )}
                   </div>
                 </CardContent>
               </Card>
@@ -532,7 +562,10 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <Button 
-                      onClick={() => router.push('/subscribe')}
+                      onClick={() => {
+                        console.log('Navigating to subscribe page...')
+                        router.push('/subscribe')
+                      }}
                       variant="outline"
                       data-testid="button-subscription-upgrade"
                     >
