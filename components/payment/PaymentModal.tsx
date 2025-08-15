@@ -12,6 +12,7 @@ import { Loader2, CreditCard, CheckCircle, AlertTriangle, DollarSign } from 'luc
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/components/auth/AuthProvider'
 import FeeBreakdown from './FeeBreakdown'
+import { EscrowStatus } from './EscrowStatus'
 import type { TaskType } from '@/lib/fee-calculator'
 
 // Initialize Stripe
@@ -56,6 +57,7 @@ function PaymentForm({
   const [clientSecret, setClientSecret] = useState('')
   const [error, setError] = useState('')
   const [paymentIntentId, setPaymentIntentId] = useState('')
+  const [feeBreakdown, setFeeBreakdown] = useState<any>(null)
 
   // Create payment intent when component mounts
   useEffect(() => {
@@ -94,6 +96,7 @@ function PaymentForm({
 
         setClientSecret(data.clientSecret)
         setPaymentIntentId(data.paymentIntentId)
+        setFeeBreakdown(data.feeBreakdown)
 
       } catch (error: any) {
         setError(error.message || 'Failed to initialize payment')
@@ -210,6 +213,16 @@ function PaymentForm({
         taskType={taskType}
         variant="detailed" 
       />
+
+      {/* Escrow Status */}
+      {feeBreakdown && (
+        <EscrowStatus 
+          isEscrow={feeBreakdown.isEscrow}
+          escrowThreshold={feeBreakdown.escrowThreshold}
+          amount={amount}
+          status="pending"
+        />
+      )}
 
       {/* Payment Element */}
       <Card>

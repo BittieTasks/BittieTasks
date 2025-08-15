@@ -20,11 +20,18 @@ export const payments = pgTable('payments', {
   processingFee: decimal('processing_fee', { precision: 10, scale: 2 }).notNull(),
   netAmount: decimal('net_amount', { precision: 10, scale: 2 }).notNull(),
   taskType: varchar('task_type').notNull(), // 'solo', 'community', 'barter', 'corporate'
-  status: varchar('status').notNull().default('pending'), // 'pending', 'completed', 'failed', 'requires_action'
+  status: varchar('status').notNull().default('pending'), // 'pending', 'completed', 'failed', 'requires_action', 'escrowed', 'released'
   stripePaymentIntentId: varchar('stripe_payment_intent_id'),
   stripeChargeId: varchar('stripe_charge_id'),
   feeBreakdown: jsonb('fee_breakdown'), // Detailed fee calculation
   failureReason: text('failure_reason'),
+  isEscrow: varchar('is_escrow').default('false'), // 'true' for escrow payments, 'false' for immediate
+  escrowedAt: timestamp('escrowed_at'),
+  releaseScheduledAt: timestamp('release_scheduled_at'), // Auto-release timestamp
+  releasedAt: timestamp('released_at'),
+  disputeStatus: varchar('dispute_status'), // 'none', 'pending', 'resolved'
+  disputeReason: text('dispute_reason'),
+  disputedAt: timestamp('disputed_at'),
   createdAt: timestamp('created_at').defaultNow(),
   completedAt: timestamp('completed_at'),
   failedAt: timestamp('failed_at')

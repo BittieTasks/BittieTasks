@@ -16,12 +16,21 @@ export interface FeeCalculation {
   netAmount: number
   feePercentage: number
   taskType: TaskType
+  requiresEscrow: boolean
+  escrowThreshold: number
   breakdown: {
     gross: string
     platformFee: string
     processingFee: string
     net: string
   }
+}
+
+// Escrow Configuration - Hybrid approach for optimal protection
+export const ESCROW_CONFIG = {
+  THRESHOLD: 50.00, // $50 threshold for escrow protection
+  AUTO_RELEASE_HOURS: 24, // Auto-release after 24 hours if no disputes
+  DISPUTE_WINDOW_HOURS: 72 // 72 hour window for disputes after completion
 }
 
 // BittieTasks Transparent Fee Structure
@@ -53,7 +62,19 @@ export const FEE_STRUCTURES: Record<TaskType, FeeStructure> = {
 }
 
 /**
- * Calculate transparent fee breakdown for BittieTasks
+ * Determine if task requires escrow based on hybrid approach
+ */
+export function requiresEscrow(amount: number, taskType: TaskType): boolean {
+  // Barter tasks never need escrow (no money involved)
+  if (taskType === 'barter') return false
+  
+  // Solo tasks under $50: immediate payment (simple convenience tasks)
+  // Tasks $50+: escrow protection (larger commitments need security)
+  return amount >= ESCROW_CONFIG.THRESHOLD
+}
+
+/**
+ * Calculate transparent fee breakdown for BittieTasks with escrow logic
  */
 export function calculateFees(grossAmount: number, taskType: TaskType): FeeCalculation {
   const feeStructure = FEE_STRUCTURES[taskType]
@@ -75,6 +96,8 @@ export function calculateFees(grossAmount: number, taskType: TaskType): FeeCalcu
   const processingFee = processingFeeCents / 100
   const netAmount = netCents / 100
   
+  const needsEscrow = requiresEscrow(grossAmount, taskType)
+
   return {
     grossAmount,
     platformFee,
@@ -82,6 +105,8 @@ export function calculateFees(grossAmount: number, taskType: TaskType): FeeCalcu
     netAmount: Math.max(0, netAmount), // Ensure non-negative
     feePercentage: feeStructure.feePercentage,
     taskType,
+    requiresEscrow: needsEscrow,
+    escrowThreshold: ESCROW_CONFIG.THRESHOLD,
     breakdown: {
       gross: formatCurrency(grossAmount),
       platformFee: formatCurrency(platformFee),
