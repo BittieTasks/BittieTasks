@@ -3,11 +3,14 @@ import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { ESCROW_CONFIG } from '@/lib/fee-calculator'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY must be set')
+// Environment variable check moved to runtime
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) {
+    throw new Error('STRIPE_SECRET_KEY must be set')
+  }
+  return new Stripe(key)
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 function createSupabaseClient() {
   return createClient(
@@ -18,6 +21,7 @@ function createSupabaseClient() {
 
 export async function POST(request: NextRequest) {
   try {
+    const stripe = getStripe()
     const body = await request.json()
     const { paymentId, taskId, reason = 'task_completed' } = body
 

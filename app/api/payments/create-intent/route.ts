@@ -4,11 +4,14 @@ import { createClient } from '@supabase/supabase-js'
 import { calculateFees, validateTaskAmount } from '@/lib/fee-calculator'
 import type { TaskType } from '@/lib/fee-calculator'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY must be set')
+// Environment variable check moved to runtime to avoid build issues
+function getStripeSecretKey() {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) {
+    throw new Error('STRIPE_SECRET_KEY must be set')
+  }
+  return key
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 // Create authenticated Supabase client for server-side operations
 function createSupabaseClient() {
@@ -20,6 +23,8 @@ function createSupabaseClient() {
 
 export async function POST(request: NextRequest) {
   try {
+    // Initialize Stripe with runtime environment check
+    const stripe = new Stripe(getStripeSecretKey())
     const body = await request.json()
     const { 
       taskId, 
