@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import TaskApplicationModal from '@/components/TaskApplicationModal'
+import TaskMessaging from '@/components/TaskMessaging'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { apiRequest } from '@/lib/lib/queryClient'
@@ -27,6 +28,7 @@ export default function CommunityPage() {
   const router = useRouter()
   const [selectedTask, setSelectedTask] = useState<CommunityTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
+  const [selectedTaskForChat, setSelectedTaskForChat] = useState<CommunityTask | null>(null)
 
   // Fetch community tasks from API
   const { data: communityTasks = [], isLoading, error } = useQuery({
@@ -247,6 +249,7 @@ export default function CommunityPage() {
                     <Button 
                       size="sm" 
                       variant="outline"
+                      onClick={() => setSelectedTaskForChat(task)}
                       data-testid={`button-message-${task.id}`}
                     >
                       <MessageCircle className="w-4 h-4" />

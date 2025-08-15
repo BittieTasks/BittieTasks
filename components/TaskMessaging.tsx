@@ -1,200 +1,269 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Send, Users, Clock, MapPin } from 'lucide-react'
-
-interface Message {
-  id: string
-  sender: string
-  senderAvatar?: string
-  content: string
-  timestamp: string
-  isOwn: boolean
-}
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Send, MessageCircle, Users, X } from 'lucide-react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { apiRequest } from '@/lib/lib/queryClient'
+import { useToast } from '@/hooks/use-toast'
+import type { Message } from '@shared/schema'
 
 interface TaskMessagingProps {
   taskId: string
   taskTitle: string
-  taskLocation: string
-  participants: Array<{
-    id: string
-    name: string
-    avatar?: string
-    joinedAt: string
-  }>
-  messages: Message[]
-  onSendMessage: (message: string) => void
+  currentUserId: string
+  currentUserName: string
+  isOpen: boolean
+  onClose: () => void
 }
 
-export function TaskMessaging({
-  taskId,
-  taskTitle,
-  taskLocation,
-  participants,
-  messages,
-  onSendMessage
+export default function TaskMessaging({ 
+  taskId, 
+  taskTitle, 
+  currentUserId, 
+  currentUserName,
+  isOpen,
+  onClose 
 }: TaskMessagingProps) {
   const [newMessage, setNewMessage] = useState('')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      onSendMessage(newMessage.trim())
+  // Fetch messages for this task
+  const { data: messages = [], isLoading } = useQuery({
+    queryKey: ['/api/messages', taskId],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/messages?taskId=${taskId}`)
+      return response.json()
+    },
+    enabled: isOpen,
+    refetchInterval: 5000, // Refresh every 5 seconds for real-time feel
+  })
+
+  // Send message mutation
+  const sendMessageMutation = useMutation({
+    mutationFn: async (messageData: { message: string }) => {
+      const response = await apiRequest('POST', '/api/messages', {
+        taskId,
+        senderId: currentUserId,
+        senderName: currentUserName,
+        message: messageData.message,
+        messageType: 'text'
+      })
+      return response.json()
+    },
+    onSuccess: () => {
       setNewMessage('')
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', taskId] })
+      // Scroll to bottom after sending
+      setTimeout(() => scrollToBottom(), 100)
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to Send Message",
+        description: error.message,
+        variant: "destructive",
+      })
+    },
+  })
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom()
+    }
+  }, [messages])
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (newMessage.trim()) {
+      sendMessageMutation.mutate({ message: newMessage.trim() })
     }
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today'
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday'
+    } else {
+      return date.toLocaleDateString()
     }
   }
+
+  const groupMessagesByDate = (messages: Message[]) => {
+    const groups: { [key: string]: Message[] } = {}
+    
+    messages.forEach(message => {
+      const date = new Date(message.createdAt!).toDateString()
+      if (!groups[date]) {
+        groups[date] = []
+      }
+      groups[date].push(message)
+    })
+    
+    return Object.entries(groups).sort(([a], [b]) => 
+      new Date(a).getTime() - new Date(b).getTime()
+    )
+  }
+
+  if (!isOpen) return null
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6">
-      {/* Task Header */}
-      <Card className="border-blue-200 bg-blue-50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-blue-900">
-            <Users className="w-5 h-5" />
-            {taskTitle}
-          </CardTitle>
-          <div className="flex items-center gap-4 text-sm text-blue-700">
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              {taskLocation}
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <Card className="w-full max-w-md h-[600px] flex flex-col">
+        <CardHeader className="flex-shrink-0 pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-blue-600" />
+              <CardTitle className="text-lg">Task Chat</CardTitle>
             </div>
-            <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
-              {participants.length} participants
-            </Badge>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              data-testid="button-close-chat"
+            >
+              <X className="w-4 h-4" />
+            </Button>
           </div>
+          <div className="text-sm text-gray-600 truncate">{taskTitle}</div>
         </CardHeader>
-      </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Participants Sidebar */}
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              Participants
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {participants.map((participant) => (
-              <div key={participant.id} className="flex items-center gap-3">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src={participant.avatar} />
-                  <AvatarFallback className="bg-blue-100 text-blue-600">
-                    {participant.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900">
-                    {participant.name}
-                  </div>
-                  <div className="text-xs text-gray-500 flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {participant.joinedAt}
-                  </div>
-                </div>
+        <CardContent className="flex-1 flex flex-col p-0">
+          {/* Messages Area */}
+          <ScrollArea className="flex-1 px-4">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full" />
               </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Chat Area */}
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle className="text-lg">Task Discussion</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Messages */}
-            <ScrollArea className="h-96 w-full border rounded-lg p-4 bg-gray-50">
-              <div className="space-y-4">
-                {messages.length === 0 ? (
-                  <div className="text-center text-gray-500 py-8">
-                    <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>No messages yet. Start the conversation!</p>
-                  </div>
-                ) : (
-                  messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex gap-3 ${
-                        message.isOwn ? 'flex-row-reverse' : 'flex-row'
-                      }`}
-                    >
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage src={message.senderAvatar} />
-                        <AvatarFallback className="bg-gray-200 text-gray-600">
-                          {message.sender.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div
-                        className={`flex flex-col max-w-xs lg:max-w-md ${
-                          message.isOwn ? 'items-end' : 'items-start'
-                        }`}
-                      >
-                        <div
-                          className={`px-4 py-2 rounded-lg ${
-                            message.isOwn
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-white border border-gray-200'
+            ) : messages.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Users className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm">No messages yet</p>
+                <p className="text-xs">Start the conversation!</p>
+              </div>
+            ) : (
+              <div className="space-y-4 py-4">
+                {groupMessagesByDate(messages).map(([dateString, dayMessages]) => (
+                  <div key={dateString}>
+                    {/* Date Separator */}
+                    <div className="flex items-center justify-center py-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {formatDate(dateString)}
+                      </Badge>
+                    </div>
+                    
+                    {/* Messages for this date */}
+                    <div className="space-y-3">
+                      {dayMessages.map((message) => (
+                        <div 
+                          key={message.id}
+                          className={`flex gap-2 ${
+                            message.senderId === currentUserId ? 'justify-end' : 'justify-start'
                           }`}
                         >
-                          <p className="text-sm">{message.content}</p>
+                          {message.senderId !== currentUserId && (
+                            <Avatar className="w-6 h-6 flex-shrink-0">
+                              <AvatarFallback className="text-xs">
+                                {message.senderName.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          )}
+                          
+                          <div className={`max-w-[70%] ${
+                            message.senderId === currentUserId ? 'order-first' : ''
+                          }`}>
+                            {message.messageType === 'system' ? (
+                              <div className="text-center">
+                                <Badge variant="outline" className="text-xs text-gray-500">
+                                  {message.message}
+                                </Badge>
+                              </div>
+                            ) : (
+                              <div className={`rounded-lg px-3 py-2 ${
+                                message.senderId === currentUserId
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-gray-100 text-gray-900'
+                              }`}>
+                                {message.senderId !== currentUserId && (
+                                  <div className="text-xs font-medium mb-1">
+                                    {message.senderName}
+                                  </div>
+                                )}
+                                <div className="text-sm break-words">
+                                  {message.message}
+                                </div>
+                                <div className={`text-xs mt-1 ${
+                                  message.senderId === currentUserId
+                                    ? 'text-blue-100'
+                                    : 'text-gray-500'
+                                }`}>
+                                  {formatTime(message.createdAt!)}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {message.senderId === currentUserId && (
+                            <Avatar className="w-6 h-6 flex-shrink-0">
+                              <AvatarFallback className="text-xs bg-blue-600 text-white">
+                                {currentUserName.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          )}
                         </div>
-                        <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
-                          <span>{message.sender}</span>
-                          <span>•</span>
-                          <span>{message.timestamp}</span>
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  ))
-                )}
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
               </div>
-            </ScrollArea>
+            )}
+          </ScrollArea>
 
-            {/* Message Input */}
-            <div className="flex gap-2">
+          {/* Message Input */}
+          <div className="border-t p-4">
+            <form onSubmit={handleSendMessage} className="flex gap-2">
               <Input
-                placeholder="Type your message..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
+                placeholder="Type a message..."
                 className="flex-1"
+                disabled={sendMessageMutation.isPending}
                 data-testid="input-message"
               />
-              <Button 
-                onClick={handleSendMessage}
-                disabled={!newMessage.trim()}
+              <Button
+                type="submit"
+                size="sm"
+                disabled={!newMessage.trim() || sendMessageMutation.isPending}
                 data-testid="button-send-message"
               >
                 <Send className="w-4 h-4" />
               </Button>
-            </div>
-
-            {/* Message Guidelines */}
-            <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
-              <p className="font-medium mb-1">Community Guidelines:</p>
-              <ul className="space-y-1">
-                <li>• Keep discussions relevant to the task</li>
-                <li>• Be respectful and helpful to all participants</li>
-                <li>• Share updates on your progress</li>
-                <li>• Coordinate meeting times and locations</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </form>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
