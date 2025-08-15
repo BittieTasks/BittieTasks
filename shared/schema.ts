@@ -12,6 +12,7 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from 'drizzle-zod';
+import { relations } from 'drizzle-orm';
 import { z } from 'zod';
 
 // Enums
@@ -343,7 +344,6 @@ export type Task = typeof tasks.$inferSelect;
 export type Transaction = typeof transactions.$inferSelect;
 export type Achievement = typeof achievements.$inferSelect;
 export type UserAchievement = typeof userAchievements.$inferSelect;
-export type Message = typeof messages.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type Sponsor = typeof sponsors.$inferSelect;
 export type TaskParticipant = typeof taskParticipants.$inferSelect;
@@ -427,39 +427,15 @@ export const userFormSchema = z.object({
   lastName: z.string().min(1).max(50).optional(),
 });
 
-// Messages table for task communication
-export const messages = pgTable("messages", {
-  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
-  taskId: text("task_id").notNull().references(() => tasks.id, { onDelete: 'cascade' }),
-  senderId: text("sender_id").notNull(),
-  senderName: text("sender_name").notNull(),
-  message: text("message").notNull(),
-  messageType: text("message_type", { enum: ["text", "system"] }).default("text"),
-  createdAt: timestamp("created_at").defaultNow(),
-});
 
-export const messagesRelations = relations(messages, ({ one }) => ({
-  task: one(tasks, {
-    fields: [messages.taskId],
-    references: [tasks.id],
-  }),
-}));
 
 // Update existing tasks relations to include messages
 export const tasksRelations = relations(tasks, ({ many }) => ({
   participants: many(taskParticipants),
-  verifications: many(verificationSubmissions),
+  verifications: many(taskCompletionSubmissions),
   transactions: many(transactions),
   messages: many(messages),
 }));
-
-// Message schemas
-export const insertMessageSchema = createInsertSchema(messages).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const selectMessageSchema = createSelectSchema(messages);
 
 // Type exports for forms
 export type CommunityTaskFormData = z.infer<typeof communityTaskFormSchema>;

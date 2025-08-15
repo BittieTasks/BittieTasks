@@ -215,15 +215,15 @@ export default function BarterPage() {
         {/* Task Grid */}
         {!isLoading && !error && barterTasks.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {barterTasks.map((task) => (
+            {barterTasks.map((task: BarterTask) => (
             <Card key={task.id} className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-start mb-2">
-                  <Badge className={getDifficultyColor(task.difficulty)} variant="outline">
-                    {task.difficulty}
+                  <Badge className={getDifficultyColor(task.difficulty || 'medium')} variant="outline">
+                    {task.difficulty || 'Medium'}
                   </Badge>
-                  <Badge className={getTradeTypeColor(task.tradeType)} variant="outline">
-                    {task.tradeType}
+                  <Badge className={getTradeTypeColor(task.tradeType || 'Service')} variant="outline">
+                    {task.tradeType || 'Service'}
                   </Badge>
                 </div>
                 
@@ -239,11 +239,11 @@ export default function BarterPage() {
                   <Avatar className="w-8 h-8">
                     <AvatarImage src="" />
                     <AvatarFallback className="bg-orange-100 text-orange-600">
-                      {task.postedBy.charAt(0)}
+                      {(task.postedBy || 'Anonymous').charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <div className="text-sm font-medium">{task.postedBy}</div>
+                    <div className="text-sm font-medium">{task.postedBy || 'Anonymous'}</div>
                     <div className="text-xs text-gray-500">{task.postedAt}</div>
                   </div>
                 </div>
@@ -285,23 +285,25 @@ export default function BarterPage() {
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <User className="w-4 h-4" />
-                    {task.category}
+                    {task.categoryId || 'General'}
                   </div>
                 </div>
 
                 {/* Tags */}
-                <div className="flex flex-wrap gap-1">
-                  {task.tags.slice(0, 3).map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs bg-orange-50 text-orange-700">
-                      {tag}
-                    </Badge>
-                  ))}
-                  {task.tags.length > 3 && (
-                    <Badge variant="secondary" className="text-xs">
-                      +{task.tags.length - 3}
-                    </Badge>
-                  )}
-                </div>
+                {task.tags && task.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {task.tags.slice(0, 3).map((tag, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs bg-orange-50 text-orange-700">
+                        {tag}
+                      </Badge>
+                    ))}
+                    {task.tags.length > 3 && (
+                      <Badge variant="secondary" className="text-xs">
+                        +{task.tags.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                )}
 
                 {/* Action */}
                 <div className="pt-4 border-t">
@@ -326,11 +328,11 @@ export default function BarterPage() {
               id: selectedTask.id,
               title: selectedTask.title,
               description: selectedTask.description,
-              category: selectedTask.category,
+              category: selectedTask.categoryId || 'General',
               type: 'barter',
               payout: 0, // No monetary value for barter
-              location: selectedTask.location,
-              time_commitment: selectedTask.timeEstimate,
+              location: selectedTask.location || 'Not specified',
+              time_commitment: selectedTask.timeEstimate || 'Not specified',
               requirements: [`Can provide: ${selectedTask.seeking}`, `Will receive: ${selectedTask.offering}`],
               platform_funded: false
             }}

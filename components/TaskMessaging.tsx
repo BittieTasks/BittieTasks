@@ -185,7 +185,7 @@ export default function TaskMessaging({
                           {message.senderId !== currentUserId && (
                             <Avatar className="w-6 h-6 flex-shrink-0">
                               <AvatarFallback className="text-xs">
-                                {message.senderName.charAt(0).toUpperCase()}
+                                {(message.senderId || 'U').charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                           )}
@@ -196,7 +196,7 @@ export default function TaskMessaging({
                             {message.messageType === 'system' ? (
                               <div className="text-center">
                                 <Badge variant="outline" className="text-xs text-gray-500">
-                                  {message.message}
+                                  {message.content}
                                 </Badge>
                               </div>
                             ) : (
@@ -207,18 +207,18 @@ export default function TaskMessaging({
                               }`}>
                                 {message.senderId !== currentUserId && (
                                   <div className="text-xs font-medium mb-1">
-                                    {message.senderName}
+                                    {message.senderId || 'User'}
                                   </div>
                                 )}
                                 <div className="text-sm break-words">
-                                  {message.message}
+                                  {message.content}
                                 </div>
                                 <div className={`text-xs mt-1 ${
                                   message.senderId === currentUserId
                                     ? 'text-blue-100'
                                     : 'text-gray-500'
                                 }`}>
-                                  {formatTime(message.createdAt!)}
+                                  {formatTime(message.createdAt?.toISOString() || new Date().toISOString())}
                                 </div>
                               </div>
                             )}

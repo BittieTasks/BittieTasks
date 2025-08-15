@@ -22,6 +22,9 @@ import type { Task } from '@shared/schema'
 interface CommunityTask extends Task {
   postedBy?: string
   postedAt?: string
+  price?: number
+  participants?: number
+  estimatedTime?: string
 }
 
 export default function CommunityPage() {
@@ -38,9 +41,9 @@ export default function CommunityPage() {
       const tasks = await response.json()
       return tasks.map((task: Task) => ({
         ...task,
-        price: Number(task.earningPotential),
-        participants: task.currentParticipants,
-        estimatedTime: task.duration,
+        price: Number(task.earningPotential || 0),
+        participants: task.currentParticipants || 0,
+        estimatedTime: task.duration || 'Not specified',
         postedBy: 'Community Member', // Placeholder until we have user data
         postedAt: new Date(task.createdAt!).toLocaleDateString(),
       }))
@@ -133,15 +136,15 @@ export default function CommunityPage() {
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{communityTasks.filter(t => t.status === 'open').length}</div>
+              <div className="text-2xl font-bold text-blue-600">{communityTasks.filter((t: Task) => t.status === 'open').length}</div>
               <div className="text-sm text-gray-600">Active Tasks</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{communityTasks.reduce((sum, t) => sum + (t.participants || 0), 0)}</div>
+              <div className="text-2xl font-bold text-green-600">{communityTasks.reduce((sum: number, t: CommunityTask) => sum + (t.participants || 0), 0)}</div>
               <div className="text-sm text-gray-600">Total Participants</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">${communityTasks.reduce((sum, t) => sum + (t.price || 0), 0)}</div>
+              <div className="text-2xl font-bold text-purple-600">${communityTasks.reduce((sum: number, t: CommunityTask) => sum + (t.price || 0), 0)}</div>
               <div className="text-sm text-gray-600">Total Earnings</div>
             </div>
             <div className="text-center">
@@ -190,15 +193,15 @@ export default function CommunityPage() {
         {/* Task Grid */}
         {!isLoading && !error && communityTasks.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {communityTasks.filter(task => task.status === 'open').map((task) => (
+            {communityTasks.filter((task: CommunityTask) => task.status === 'open').map((task: CommunityTask) => (
             <Card key={task.id} className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-start mb-2">
-                  <Badge className={getDifficultyColor(task.difficulty)} variant="outline">
-                    {task.difficulty}
+                  <Badge className={getDifficultyColor(task.difficulty || 'medium')} variant="outline">
+                    {task.difficulty || 'Medium'}
                   </Badge>
-                  <Badge className={getStatusColor(task.status)} variant="outline">
-                    {task.status}
+                  <Badge className={getStatusColor(task.status || 'open')} variant="outline">
+                    {task.status || 'Open'}
                   </Badge>
                 </div>
                 <CardTitle className="text-lg line-clamp-2">{task.title}</CardTitle>
@@ -213,12 +216,12 @@ export default function CommunityPage() {
                   <Avatar className="w-8 h-8">
                     <AvatarImage src="" />
                     <AvatarFallback className="bg-blue-100 text-blue-600">
-                      {task.postedBy.charAt(0)}
+                      {(task.postedBy || 'Unknown').charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <div className="text-sm font-medium">{task.postedBy}</div>
-                    <div className="text-xs text-gray-500">{task.postedAt}</div>
+                    <div className="text-sm font-medium">{task.postedBy || 'Unknown'}</div>
+                    <div className="text-xs text-gray-500">{task.postedAt || 'Recently'}</div>
                   </div>
                 </div>
 
@@ -257,10 +260,10 @@ export default function CommunityPage() {
                     <Button 
                       size="sm"
                       onClick={() => handleApplyClick(task)}
-                      disabled={task.participants >= task.maxParticipants || task.status !== 'open'}
+                      disabled={(task.participants || 0) >= (task.maxParticipants || 1) || task.status !== 'open'}
                       data-testid={`button-join-${task.id}`}
                     >
-                      {task.participants >= task.maxParticipants ? 'Full' : 'Join Task'}
+                      {(task.participants || 0) >= (task.maxParticipants || 1) ? 'Full' : 'Join Task'}
                     </Button>
                   </div>
                 </div>
@@ -277,11 +280,11 @@ export default function CommunityPage() {
               id: selectedTask.id,
               title: selectedTask.title,
               description: selectedTask.description,
-              category: selectedTask.category,
+              category: selectedTask.categoryId || 'General',
               type: 'community',
-              payout: selectedTask.price,
-              location: selectedTask.location,
-              time_commitment: selectedTask.estimatedTime,
+              payout: selectedTask.price || 0,
+              location: selectedTask.location || 'Not specified',
+              time_commitment: selectedTask.estimatedTime || 'Not specified',
               requirements: ['Valid ID', 'Team player attitude'],
               platform_funded: false
             }}

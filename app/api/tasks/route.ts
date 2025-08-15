@@ -8,13 +8,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type')
     
-    let query = db.select().from(tasks)
-    
-    if (type) {
-      query = query.where(eq(tasks.type, type as any))
-    }
-    
-    const allTasks = await query.orderBy(desc(tasks.createdAt))
+    const allTasks = type 
+      ? await db.select().from(tasks).where(eq(tasks.type, type as any)).orderBy(desc(tasks.createdAt))
+      : await db.select().from(tasks).orderBy(desc(tasks.createdAt))
     
     return NextResponse.json(allTasks)
   } catch (error) {
