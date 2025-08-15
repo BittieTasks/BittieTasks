@@ -269,14 +269,19 @@ export default function SoloPage() {
               id: selectedTask.id,
               title: selectedTask.title,
               description: selectedTask.description,
-              price: selectedTask.price,
-              location: selectedTask.location,
-              timeEstimate: selectedTask.timeEstimate,
               category: selectedTask.category,
-              difficulty: selectedTask.difficulty,
-              requiredSkills: selectedTask.requiredSkills,
-              rating: selectedTask.rating,
-              taskType: 'solo'
+              type: 'solo',
+              payout: selectedTask.price,
+              location: selectedTask.location,
+              time_commitment: selectedTask.timeEstimate,
+              requirements: selectedTask.requiredSkills,
+              platform_funded: true,
+              verification_type: 'photo'
+            }}
+            userId="demo-user"
+            onSuccess={() => {
+              setShowApplicationModal(false)
+              setSelectedTask(null)
             }}
           />
         )}
