@@ -203,7 +203,7 @@ Need help? Contact us at support@bittietasks.com
       return {
         success: true,
         message: 'Email verified successfully! You can now access all features.',
-        redirectUrl: '/marketplace'
+        redirectUrl: '/dashboard'
       }
     } catch (error) {
       console.error('Email verification error:', error)

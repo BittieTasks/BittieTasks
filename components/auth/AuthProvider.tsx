@@ -189,14 +189,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (error.message.includes('Password is known to be weak')) {
         throw new Error('Please use a stronger password with uppercase, lowercase, numbers and special characters.')
       }
-      if (error.message.includes('Error sending confirmation email')) {
-        throw new Error('Account created but email verification is temporarily unavailable. Please try signing in.')
-      }
       throw error
     }
     
     // Check if user was created successfully
     if (data.user) {
+      console.log('User created successfully, sending custom verification email...')
+      
+      // Send custom verification email via our API (with better error handling)
+      try {
+        const emailResponse = await fetch('/api/auth/send-verification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            userId: data.user.id,
+            email: email 
+          })
+        })
+        
+        if (!emailResponse.ok) {
+          console.error('Failed to send custom verification email')
+        } else {
+          console.log('Custom verification email sent successfully')
+        }
+      } catch (emailError) {
+        console.error('Error sending custom verification email:', emailError)
+      }
+      
       if (data.session) {
         // User is immediately signed in (email confirmation disabled)
         console.log('User signed up and automatically signed in')
