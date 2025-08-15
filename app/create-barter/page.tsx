@@ -17,6 +17,7 @@ import { ArrowLeft, ArrowLeftRight, Heart, Handshake, MapPin, Clock, Tag, X } fr
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiRequest } from '@/lib/lib/queryClient'
+import { useAuth } from '../../components/auth/AuthProvider'
 
 const tradeTypeOptions = [
   { 
@@ -62,6 +63,7 @@ export default function CreateBarterPage() {
   const router = useRouter()
   const { toast } = useToast()
   const queryClient = useQueryClient()
+  const { user, isAuthenticated, loading: authLoading } = useAuth()
   const [customTag, setCustomTag] = useState('')
 
   const form = useForm<BarterTaskFormData>({
@@ -81,12 +83,16 @@ export default function CreateBarterPage() {
 
   const createBarterMutation = useMutation({
     mutationFn: async (data: BarterTaskFormData) => {
+      if (!user) {
+        throw new Error('You must be logged in to create trades')
+      }
+      
       const response = await apiRequest('POST', '/api/tasks', {
         ...data,
         type: 'barter',
         earningPotential: 0, // No monetary value for barter
         maxParticipants: 1, // Barter is typically 1-on-1
-        hostId: 'demo-user', // Replace with actual user ID from auth
+        hostId: user.id,
       })
       return response.json()
     },
@@ -108,6 +114,15 @@ export default function CreateBarterPage() {
   })
 
   const onSubmit = (data: BarterTaskFormData) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to create trades",
+        variant: "destructive",
+      })
+      router.push('/auth')
+      return
+    }
     createBarterMutation.mutate(data)
   }
 
@@ -128,6 +143,36 @@ export default function CreateBarterPage() {
       addTag(customTag.trim())
       setCustomTag('')
     }
+  }
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Redirect to auth if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100 p-4 flex items-center justify-center">
+        <div className="max-w-md mx-auto text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
+          <p className="text-gray-600 mb-6">You need to be signed in to create trades.</p>
+          <Button 
+            onClick={() => router.push('/auth')}
+            className="bg-orange-600 hover:bg-orange-700 text-white"
+          >
+            Sign In
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
