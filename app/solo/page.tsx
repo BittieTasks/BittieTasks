@@ -26,6 +26,7 @@ interface SoloTask {
   requiredSkills: string[]
   rating: number
   completedCount: number
+  maxUsers?: number
 }
 
 const soloTasks: SoloTask[] = [
@@ -40,7 +41,8 @@ const soloTasks: SoloTask[] = [
     difficulty: 'Easy',
     requiredSkills: ['Access to washer/dryer', 'Photo verification'],
     rating: 4.9,
-    completedCount: 0
+    completedCount: 0,
+    maxUsers: 2
   },
   {
     id: 'platform-002',
@@ -53,7 +55,8 @@ const soloTasks: SoloTask[] = [
     difficulty: 'Easy',
     requiredSkills: ['Kitchen access', 'Before/after photos'],
     rating: 4.8,
-    completedCount: 0
+    completedCount: 0,
+    maxUsers: 2
   },
   {
     id: 'platform-003',
@@ -66,7 +69,8 @@ const soloTasks: SoloTask[] = [
     difficulty: 'Easy',
     requiredSkills: ['Exercise mat', 'Workout verification photo/video'],
     rating: 4.7,
-    completedCount: 0
+    completedCount: 0,
+    maxUsers: 2
   },
   {
     id: 'platform-004',
@@ -79,7 +83,8 @@ const soloTasks: SoloTask[] = [
     difficulty: 'Easy',
     requiredSkills: ['Transportation to store', 'Receipt or grocery photo'],
     rating: 4.6,
-    completedCount: 0
+    completedCount: 0,
+    maxUsers: 2
   },
   {
     id: 'platform-005',
@@ -92,7 +97,148 @@ const soloTasks: SoloTask[] = [
     difficulty: 'Easy',
     requiredSkills: ['Before/after photos', 'Room access'],
     rating: 4.5,
-    completedCount: 0
+    completedCount: 0,
+    maxUsers: 2
+  },
+  {
+    id: 'platform-006',
+    title: 'Deep Clean Bathroom',
+    description: 'Thoroughly clean and sanitize your bathroom including toilet, shower/tub, sink, mirror, and floor. Upload before/after photos for verification.',
+    price: 18,
+    location: 'Your Home',
+    timeEstimate: '45 minutes',
+    category: 'Home Maintenance',
+    difficulty: 'Easy',
+    requiredSkills: ['Cleaning supplies', 'Before/after photos', 'AI photo verification'],
+    rating: 4.9,
+    completedCount: 0,
+    maxUsers: 2
+  },
+  {
+    id: 'platform-007',
+    title: 'Morning Yoga Flow',
+    description: 'Complete a 20-minute morning yoga routine focusing on stretching and mindfulness. Record a video showing key poses and post-practice reflection.',
+    price: 10,
+    location: 'Your Home',
+    timeEstimate: '25 minutes',
+    category: 'Health & Fitness',
+    difficulty: 'Easy',
+    requiredSkills: ['Yoga mat', 'Video recording', 'Basic yoga knowledge'],
+    rating: 4.8,
+    completedCount: 0,
+    maxUsers: 2
+  },
+  {
+    id: 'platform-008',
+    title: 'Meal Prep Session',
+    description: 'Prepare 3 healthy meals for the week with proper portioning. Document ingredients, cooking process, and final meal containers.',
+    price: 35,
+    location: 'Your Kitchen',
+    timeEstimate: '2 hours',
+    category: 'Nutrition & Wellness',
+    difficulty: 'Medium',
+    requiredSkills: ['Cooking skills', 'Meal planning', 'Food photography', 'Nutrition awareness'],
+    rating: 4.6,
+    completedCount: 0,
+    maxUsers: 2
+  },
+  {
+    id: 'platform-009',
+    title: 'Closet Deep Clean',
+    description: 'Organize one closet completely: sort, declutter, donate unwanted items, and arrange remaining clothes logically. Document the transformation.',
+    price: 28,
+    location: 'Your Home',
+    timeEstimate: '90 minutes',
+    category: 'Home Organization',
+    difficulty: 'Medium',
+    requiredSkills: ['Organization supplies', 'Decision-making', 'Before/after photos'],
+    rating: 4.7,
+    completedCount: 0,
+    maxUsers: 2
+  },
+  {
+    id: 'platform-010',
+    title: 'Vehicle Exterior Wash',
+    description: 'Wash and clean your vehicle exterior including wheels, windows, and body. Take before/after photos showing the clean results.',
+    price: 22,
+    location: 'Your Driveway',
+    timeEstimate: '1 hour',
+    category: 'Vehicle Maintenance',
+    difficulty: 'Easy',
+    requiredSkills: ['Car washing supplies', 'Vehicle access', 'Before/after photos'],
+    rating: 4.5,
+    completedCount: 0,
+    maxUsers: 2
+  },
+  {
+    id: 'platform-011',
+    title: 'Meditation & Journaling',
+    description: 'Complete a 15-minute meditation session followed by 10 minutes of reflective journaling. Share photos of your setup and journal entry.',
+    price: 8,
+    location: 'Quiet Space',
+    timeEstimate: '25 minutes',
+    category: 'Mental Health',
+    difficulty: 'Easy',
+    requiredSkills: ['Meditation app/guide', 'Journal/writing materials', 'Photo documentation'],
+    rating: 4.9,
+    completedCount: 0,
+    maxUsers: 2
+  },
+  {
+    id: 'platform-012',
+    title: 'Garden/Plant Care',
+    description: 'Water, trim, and care for indoor or outdoor plants. Document plant health before and after care with detailed photos.',
+    price: 14,
+    location: 'Your Home/Garden',
+    timeEstimate: '30 minutes',
+    category: 'Home Maintenance',
+    difficulty: 'Easy',
+    requiredSkills: ['Plant care knowledge', 'Watering supplies', 'Before/after photos'],
+    rating: 4.6,
+    completedCount: 0,
+    maxUsers: 2
+  },
+  {
+    id: 'platform-013',
+    title: 'Digital Detox Walk',
+    description: 'Take a 30-minute walk without phone/devices, focusing on mindfulness and nature observation. Record reflections before and after the walk.',
+    price: 11,
+    location: 'Outdoors/Neighborhood',
+    timeEstimate: '40 minutes',
+    category: 'Mental Health',
+    difficulty: 'Easy',
+    requiredSkills: ['Walking ability', 'Reflection recording', 'Mindfulness practice'],
+    rating: 4.8,
+    completedCount: 0,
+    maxUsers: 2
+  },
+  {
+    id: 'platform-014',
+    title: 'Home Office Organization',
+    description: 'Organize your desk and workspace area completely. Clear clutter, organize supplies, and clean surfaces. Document the transformation.',
+    price: 16,
+    location: 'Your Home Office',
+    timeEstimate: '45 minutes',
+    category: 'Home Organization',
+    difficulty: 'Easy',
+    requiredSkills: ['Organization supplies', 'Before/after photos', 'Workspace access'],
+    rating: 4.7,
+    completedCount: 0,
+    maxUsers: 2
+  },
+  {
+    id: 'platform-015',
+    title: 'Self-Care Spa Hour',
+    description: 'Create a relaxing spa experience at home with skincare, bath/shower routine, and relaxation time. Document your self-care process.',
+    price: 13,
+    location: 'Your Home',
+    timeEstimate: '1 hour',
+    category: 'Personal Wellness',
+    difficulty: 'Easy',
+    requiredSkills: ['Self-care products', 'Relaxation space', 'Process documentation'],
+    rating: 4.8,
+    completedCount: 0,
+    maxUsers: 2
   }
 ]
 
@@ -159,8 +305,8 @@ export default function SoloPage() {
             Solo Tasks
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            5 active BittieTasks-funded household and self-care tasks. Complete these platform-paid tasks and keep 100% of earnings.
-            No fees - we invest in your wellness and productivity.
+            15 active BittieTasks-funded household and self-care tasks. Complete these platform-paid tasks and keep 100% of earnings.
+            No fees - we invest in your wellness and productivity. Limited to 2 users per task.
           </p>
         </div>
 
@@ -230,6 +376,10 @@ export default function SoloPage() {
                     <User size={14} />
                     <span>{task.completedCount} completed</span>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Users size={14} />
+                    <span>Limited to {task.maxUsers} users</span>
+                  </div>
                 </div>
 
                 {/* Skills */}
@@ -260,11 +410,6 @@ export default function SoloPage() {
         {/* Application Modal */}
         {selectedTask && (
           <TaskApplicationModal
-            isOpen={showApplicationModal}
-            onClose={() => {
-              setShowApplicationModal(false)
-              setSelectedTask(null)
-            }}
             task={{
               id: selectedTask.id,
               title: selectedTask.title,
