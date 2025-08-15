@@ -6,21 +6,22 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabaseAuth = createServerClient() 
+    // Get authenticated user from Supabase with request context
+    const supabase = createServerClient(request)
     const supabaseDb = createServiceClient()
     const { id: taskId } = await context.params
     
-    // Get user from authentication header
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader) {
-      return NextResponse.json({ error: 'Authorization required' }, { status: 401 })
-    }
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token)
+    console.log('Task [id] apply auth check:', {
+      hasUser: !!user,
+      userEmail: user?.email,
+      authError: authError?.message,
+      taskId
+    })
     
     if (authError || !user) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
     const { message } = await request.json()

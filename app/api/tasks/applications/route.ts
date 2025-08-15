@@ -7,7 +7,7 @@ import { eq, desc } from 'drizzle-orm'
 export async function GET(request: NextRequest) {
   try {
     // Get authenticated user from Supabase
-    const supabase = createServerClient()
+    const supabase = createServerClient(request)
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {

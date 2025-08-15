@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '@/components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -27,6 +28,7 @@ interface BarterTask extends Task {
 export default function BarterPage() {
   const [selectedTask, setSelectedTask] = useState<BarterTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
+  const { user, isAuthenticated } = useAuth()
   const router = useRouter()
 
   // Fetch barter tasks from API
@@ -45,6 +47,10 @@ export default function BarterPage() {
   })
 
   const handleApplyClick = (task: BarterTask) => {
+    if (!isAuthenticated) {
+      router.push('/auth?message=Please sign in to apply for barter tasks')
+      return
+    }
     setSelectedTask(task)
     setShowApplicationModal(true)
   }
