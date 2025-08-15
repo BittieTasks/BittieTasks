@@ -9,22 +9,22 @@ ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
 -- Create basic RLS policies if they don't exist
 DO $$ 
 BEGIN 
-  -- Allow users to view their own profile
+  -- Allow users to view their own profile (using proper UUID casting)
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'users' AND policyname = 'Users can view own profile') THEN
     CREATE POLICY "Users can view own profile" ON users
-      FOR SELECT USING (auth.uid()::text = id OR auth.uid()::text = auth_user_id);
+      FOR SELECT USING (auth.uid() = id::uuid);
   END IF;
   
   -- Allow users to update their own profile  
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'users' AND policyname = 'Users can update own profile') THEN
     CREATE POLICY "Users can update own profile" ON users
-      FOR UPDATE USING (auth.uid()::text = id OR auth.uid()::text = auth_user_id);
+      FOR UPDATE USING (auth.uid() = id::uuid);
   END IF;
   
   -- Allow authenticated users to insert their profile
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'users' AND policyname = 'Users can create profile') THEN
     CREATE POLICY "Users can create profile" ON users
-      FOR INSERT WITH CHECK (auth.uid()::text = id OR auth.uid()::text = auth_user_id);
+      FOR INSERT WITH CHECK (auth.uid() = id::uuid);
   END IF;
   
   -- Tasks viewable by everyone
@@ -33,7 +33,7 @@ BEGIN
       FOR SELECT USING (true);
   END IF;
   
-  -- Users can create tasks
+  -- Users can create tasks (host_id should match auth.uid)
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'tasks' AND policyname = 'Users can create tasks') THEN
     CREATE POLICY "Users can create tasks" ON tasks
       FOR INSERT WITH CHECK (auth.uid()::text = host_id);
