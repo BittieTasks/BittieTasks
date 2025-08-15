@@ -1,18 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '../../hooks/use-toast';
 import { Check, Coins, Crown, Zap, Calculator, TrendingUp, Star } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/navigation';
 
-// Load Stripe  
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_VITE_STRIPE_PUBLIC_KEY || process.env.VITE_STRIPE_PUBLIC_KEY!);
+// Stripe integration removed for public preview - will be re-enabled with authentication
 
 interface PlanFeatures {
   name: string;
@@ -83,171 +79,45 @@ const SUBSCRIPTION_PLANS: Record<string, PlanFeatures> = {
   }
 };
 
-function SubscribeForm({ planType }: { planType: 'pro' | 'premium' }) {
-  const stripe = useStripe();
-  const elements = useElements();
+// SubscribeForm removed - will be re-implemented when authentication is ready
+
+function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/dashboard?subscription=success`,
-      },
+  const handleSignUpRequired = () => {
+    toast({
+      title: "Sign Up Required",
+      description: "Please create an account to subscribe to this plan.",
+      variant: "default",
     });
-
-    if (error) {
-      toast({
-        title: "Payment Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-
-    setIsLoading(false);
+    // In the future, redirect to auth page
+    // router.push('/auth');
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement />
+    <div className="text-center space-y-4">
+      <p className="text-gray-600">
+        Ready to upgrade to {SUBSCRIPTION_PLANS[planType].name}?
+      </p>
       <Button 
-        type="submit" 
-        disabled={!stripe || isLoading}
-        className="w-full bg-teal-600 hover:bg-teal-700"
+        onClick={handleSignUpRequired}
+        className="w-full bg-teal-600 hover:bg-teal-700 text-white"
       >
-        {isLoading ? 'Processing...' : `Subscribe to ${SUBSCRIPTION_PLANS[planType].name}`}
+        Sign Up to Subscribe
       </Button>
-    </form>
-  );
-}
-
-function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
-  const [clientSecret, setClientSecret] = useState('');
-  const { user } = useAuth();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    if (!user) return;
-
-    // Create subscription
-    fetch('/api/stripe/create-subscription', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.access_token}`
-      },
-      body: JSON.stringify({ planType }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          toast({
-            title: "Error",
-            description: data.error,
-            variant: "destructive",
-          });
-          return;
-        }
-        setClientSecret(data.clientSecret);
-      })
-      .catch((error) => {
-        toast({
-          title: "Error",
-          description: "Failed to initialize payment",
-          variant: "destructive",
-        });
-      });
-  }, [user, planType, toast]);
-
-  if (!clientSecret) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-  return (
-    <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <SubscribeForm planType={planType} />
-    </Elements>
+      <p className="text-sm text-gray-500">
+        Authentication system will be activated soon. Stay tuned!
+      </p>
+    </div>
   );
 }
 
 export default function Subscribe() {
   const [selectedPlan, setSelectedPlan] = useState<'pro' | 'premium' | null>(null);
-  const { user, isLoading } = useAuth();
   const router = useRouter();
 
-  // Allow viewing of subscription plans without authentication
-  // Only require authentication when actually subscribing
-
   if (selectedPlan) {
-    // Redirect to authentication if user is not logged in
-    if (!user && !isLoading) {
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-teal-50 to-emerald-50 py-12">
-          <div className="max-w-2xl mx-auto px-4">
-            <div className="text-center mb-8">
-              <Button
-                variant="ghost"
-                onClick={() => setSelectedPlan(null)}
-                className="mb-4"
-              >
-                ← Back to Plans
-              </Button>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Sign In Required
-              </h1>
-              <p className="text-gray-600">
-                Please sign in to subscribe to {SUBSCRIPTION_PLANS[selectedPlan].name}
-              </p>
-            </div>
-
-            <Card className="p-6">
-              <div className="text-center space-y-4">
-                <p className="text-gray-600">
-                  Create an account or sign in to continue with your subscription to {SUBSCRIPTION_PLANS[selectedPlan].name}.
-                </p>
-                <div className="space-y-2">
-                  <Button 
-                    onClick={() => router.push('/auth')}
-                    className="w-full bg-teal-600 hover:bg-teal-700 text-white"
-                  >
-                    Sign In / Create Account
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => setSelectedPlan(null)}
-                    className="w-full"
-                  >
-                    Back to Plans
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      );
-    }
-
-    if (isLoading) {
-      return (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full" />
-        </div>
-      );
-    }
-
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-emerald-50 py-12">
         <div className="max-w-2xl mx-auto px-4">
@@ -385,11 +255,12 @@ export default function Subscribe() {
                       if (key === 'free') {
                         router.push('/dashboard');
                       } else {
-                        // Check if user is authenticated before allowing subscription
-                        if (!user) {
-                          router.push('/auth');
-                          return;
-                        }
+                        // Subscription will be enabled after authentication is ready
+                        toast({
+                          title: "Coming Soon",
+                          description: "Subscriptions will be available after authentication launch",
+                          variant: "default",
+                        });
                         setSelectedPlan(key as 'pro' | 'premium');
                       }
                     }}
@@ -400,7 +271,7 @@ export default function Subscribe() {
                         : 'border-teal-600 text-teal-600 hover:bg-teal-50'
                     }`}
                   >
-                    {key === 'free' ? 'Current Plan' : user ? 'Upgrade Now' : 'Sign Up to Upgrade'}
+                    {key === 'free' ? 'Get Started' : 'Preview Plan'}
                   </Button>
                 </CardContent>
               </Card>

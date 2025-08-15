@@ -5,7 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { MessageCircle, Users, MapPin, Clock, DollarSign } from 'lucide-react'
+import { MessageCircle, Users, MapPin, Clock, DollarSign, ArrowLeft, Menu } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import TaskApplicationModal from '@/components/TaskApplicationModal'
 import { useRouter } from 'next/navigation'
 
@@ -104,6 +110,41 @@ export default function CommunityPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-6xl mx-auto">
+        {/* Navigation Header */}
+        <div className="flex items-center justify-between mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
+          >
+            <ArrowLeft size={20} />
+            Back to Dashboard
+          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Menu size={16} />
+                Browse Tasks
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => router.push('/solo')}>
+                Solo Tasks
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/sponsors')}>
+                Corporate Tasks
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/barter')}>
+                Barter Exchange
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/')}>
+                Home
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">

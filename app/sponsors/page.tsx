@@ -4,6 +4,12 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { 
   Briefcase, 
   Star, 
@@ -15,7 +21,9 @@ import {
   CheckCircle,
   Building,
   ArrowRight,
-  Crown
+  Crown,
+  ArrowLeft,
+  Menu
 } from 'lucide-react'
 
 // Sample sponsor data
@@ -99,36 +107,42 @@ export default function SponsorsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <button onClick={() => router.push('/')} className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">B</span>
-              </div>
-              <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
-            </button>
-            
-            {/* Navigation Links */}
-            <div className="flex items-center space-x-6">
-              <button onClick={() => router.push('/examples')} className="text-gray-700 hover:text-teal-600 font-medium">
-                Examples
-              </button>
-              <button onClick={() => router.push('/sponsors')} className="text-teal-600 font-medium">
-                Sponsors
-              </button>
-              <button onClick={() => router.push('/auth')} className="px-4 py-2 text-gray-700 hover:text-teal-600 font-medium">
-                Sign In
-              </button>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 p-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Navigation Header */}
+        <div className="flex items-center justify-between mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-2 text-gray-700 hover:text-purple-600"
+          >
+            <ArrowLeft size={20} />
+            Back to Dashboard
+          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Menu size={16} />
+                Browse Tasks
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => router.push('/solo')}>
+                Solo Tasks
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/community')}>
+                Community Tasks
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/barter')}>
+                Barter Exchange
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/')}>
+                Home
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </header>
-      
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">

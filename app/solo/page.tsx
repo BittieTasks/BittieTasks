@@ -4,7 +4,14 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Clock, DollarSign, User, Star } from 'lucide-react'
+import { MapPin, Clock, DollarSign, User, Star, ArrowLeft, Menu } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useRouter } from 'next/navigation'
 import TaskApplicationModal from '@/components/TaskApplicationModal'
 
 interface SoloTask {
@@ -171,6 +178,7 @@ const soloTasks: SoloTask[] = [
 export default function SoloPage() {
   const [selectedTask, setSelectedTask] = useState<SoloTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
+  const router = useRouter()
 
   const handleApplyClick = (task: SoloTask) => {
     setSelectedTask(task)
@@ -189,6 +197,41 @@ export default function SoloPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-4">
       <div className="max-w-6xl mx-auto">
+        {/* Navigation Header */}
+        <div className="flex items-center justify-between mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-2 text-gray-700 hover:text-green-600"
+          >
+            <ArrowLeft size={20} />
+            Back to Dashboard
+          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Menu size={16} />
+                Browse Tasks
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => router.push('/community')}>
+                Community Tasks
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/sponsors')}>
+                Corporate Tasks
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/barter')}>
+                Barter Exchange
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/')}>
+                Home
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">

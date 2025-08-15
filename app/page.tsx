@@ -49,6 +49,12 @@ export default function HomePage() {
                 Our Progress
               </button>
               <button 
+                onClick={() => router.push('/subscribe')}
+                className="text-gray-700 hover:text-teal-600 font-medium"
+              >
+                Pricing
+              </button>
+              <button 
                 onClick={() => router.push('/sponsors')}
                 className="text-gray-700 hover:text-teal-600 font-medium"
               >
