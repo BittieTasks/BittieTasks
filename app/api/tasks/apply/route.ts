@@ -1,54 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-interface TaskApplication {
-  taskId: string
-  userId: string
-  applicationDate: string
-  applicationTime: string
-  status: 'applied' | 'in_progress' | 'completed'
-}
-
-// Mock storage for task applications
-let taskApplications: TaskApplication[] = []
+import { createServerClient } from '@/lib/supabase'
+import { db } from '../../../../server/db'
+import { taskParticipants } from '@shared/schema'
+import { eq, and } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
-    const { taskId, userId } = await request.json()
+    // Get authenticated user from Supabase
+    const supabase = createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!taskId || !userId) {
+    if (authError || !user) {
       return NextResponse.json(
-        { error: 'Task ID and User ID are required' },
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const { taskId } = await request.json()
+
+    if (!taskId) {
+      return NextResponse.json(
+        { error: 'Task ID is required' },
         { status: 400 }
       )
     }
 
-    // Check if user already applied for this task
-    const existingApplication = taskApplications.find(
-      app => app.taskId === taskId && app.userId === userId
-    )
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
 
-    if (existingApplication) {
+    // Check if user already applied for this task
+    const existingApplication = await db
+      .select()
+      .from(taskParticipants)
+      .where(and(
+        eq(taskParticipants.taskId, taskId),
+        eq(taskParticipants.userId, user.id)
+      ))
+      .limit(1)
+
+    if (existingApplication.length > 0) {
       return NextResponse.json(
         { error: 'You have already applied for this task' },
         { status: 400 }
       )
     }
 
-    // Create new application with detailed timestamps
-    const now = new Date()
-    const newApplication: TaskApplication = {
-      taskId,
-      userId,
-      applicationDate: now.toISOString(),
-      applicationTime: now.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true 
-      }),
-      status: 'applied'
-    }
-
-    taskApplications.push(newApplication)
+    // Create new application in database
+    const [newApplication] = await db
+      .insert(taskParticipants)
+      .values({
+        taskId: taskId,
+        userId: user.id,
+        status: 'joined'
+      })
+      .returning()
 
     return NextResponse.json({
       success: true,
@@ -67,18 +78,27 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
+    // Get authenticated user from Supabase
+    const supabase = createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!userId) {
+    if (authError || !user) {
       return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
+        { error: 'Authentication required' },
+        { status: 401 }
       )
     }
 
-    // Get user's applications
-    const userApplications = taskApplications.filter(app => app.userId === userId)
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json({ applications: [] })
+    }
+
+    // Get user's applications from database
+    const userApplications = await db
+      .select()
+      .from(taskParticipants)
+      .where(eq(taskParticipants.userId, user.id))
 
     return NextResponse.json({
       applications: userApplications

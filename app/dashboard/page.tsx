@@ -39,7 +39,7 @@ interface TaskActivity {
 }
 
 export default function Dashboard() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth()
+  const { user, isAuthenticated, loading: authLoading, signOut } = useAuth()
   const { toast } = useToast()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -242,14 +242,15 @@ export default function Dashboard() {
                   Track your earnings, manage tasks, and grow your community impact
                 </p>
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="bg-teal-600 hover:bg-teal-700 text-white" data-testid="dropdown-explore-tasks">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Explore Tasks
-                    <ChevronDown className="w-4 h-4 ml-2" />
-                  </Button>
-                </DropdownMenuTrigger>
+              <div className="flex items-center gap-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="bg-teal-600 hover:bg-teal-700 text-white" data-testid="dropdown-explore-tasks">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Explore Tasks
+                      <ChevronDown className="w-4 h-4 ml-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem 
                     onClick={() => router.push('/solo')}
@@ -312,8 +313,30 @@ export default function Dashboard() {
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                </DropdownMenu>
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    try {
+                      await signOut()
+                      toast({
+                        title: "Signed Out",
+                        description: "You have been successfully signed out.",
+                      })
+                    } catch (error) {
+                      toast({
+                        title: "Sign Out Failed",
+                        description: "There was an error signing out. Please try again.",
+                        variant: "destructive",
+                      })
+                    }
+                  }}
+                  className="text-gray-600 border-gray-300 hover:bg-gray-50"
+                  data-testid="button-sign-out"
+                >
+                  Sign Out
+                </Button>
+              </div>
           </div>
         </div>
 

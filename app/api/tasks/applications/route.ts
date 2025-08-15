@@ -1,12 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@/lib/supabase'
 import { db } from '../../../../server/db'
 import { tasks, taskParticipants } from '@shared/schema'
 import { eq, desc } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Get actual user ID from authentication
-    const userId = 'demo-user' // Replace with actual auth
+    // Get authenticated user from Supabase
+    const supabase = createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json([])
+    }
     
     // Fetch user's task applications
     const userApplications = await db
@@ -21,7 +35,7 @@ export async function GET(request: NextRequest) {
       })
       .from(taskParticipants)
       .innerJoin(tasks, eq(taskParticipants.taskId, tasks.id))
-      .where(eq(taskParticipants.userId, userId))
+      .where(eq(taskParticipants.userId, user.id))
       .orderBy(desc(taskParticipants.joinedAt))
     
     // Transform to match expected interface
