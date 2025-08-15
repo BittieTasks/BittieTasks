@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     
     // Validate required fields
-    if (!body.title || !body.description || !body.hostId) {
+    if (!body.title || !body.description || !body.creatorId) {
       return NextResponse.json(
-        { error: 'Missing required fields: title, description, hostId' },
+        { error: 'Missing required fields: title, description, creatorId' },
         { status: 400 }
       )
     }

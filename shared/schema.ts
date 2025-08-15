@@ -109,7 +109,7 @@ export const tasks = pgTable("tasks", {
   title: varchar("title").notNull(),
   description: text("description").notNull(),
   categoryId: varchar("category_id").references(() => categories.id),
-  hostId: varchar("host_id").references(() => users.id).notNull(),
+  creatorId: varchar("creator_id").references(() => users.id).notNull(),
   type: taskTypeEnum("type").default('shared'),
   status: taskStatusEnum("status").default('open'),
   // Approval system fields

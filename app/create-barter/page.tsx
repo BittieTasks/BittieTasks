@@ -92,7 +92,7 @@ export default function CreateBarterPage() {
         type: 'barter',
         earningPotential: 0, // No monetary value for barter
         maxParticipants: 1, // Barter is typically 1-on-1
-        hostId: user.id,
+        creatorId: user.id,
       })
       return response.json()
     },

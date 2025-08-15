@@ -54,7 +54,7 @@ export default function CreateTaskPage() {
       const response = await apiRequest('POST', '/api/tasks', {
         ...data,
         type: 'shared',
-        hostId: user.id,
+        creatorId: user.id,
       })
       return response.json()
     },
