@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-// import { useAuth } from '../../components/auth/AuthProvider' // Removed for testing
+import { useAuth } from '../../components/auth/AuthProvider'
 import CleanLayout from '../../components/CleanLayout'
 import { Button } from '../../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
@@ -39,15 +39,40 @@ interface TaskActivity {
 }
 
 export default function Dashboard() {
-  // const { user } = useAuth() // Removed for testing
-  const user = { 
-    firstName: 'Test User',
-    email: 'test@example.com',
-    user_metadata: { subscription_tier: 'free' } 
-  } // Mock user for testing
+  const { user, isAuthenticated, loading: authLoading } = useAuth()
   const { toast } = useToast()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Redirect to auth if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="max-w-md mx-auto text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
+          <p className="text-gray-600 mb-6">You need to be signed in to view your dashboard.</p>
+          <Button 
+            onClick={() => router.push('/auth')}
+            className="bg-teal-600 hover:bg-teal-700 text-white"
+          >
+            Sign In
+          </Button>
+        </div>
+      </div>
+    )
+  }
   const [stats, setStats] = useState<UserStats>({
     total_earnings: 0,
     tasks_completed: 0,
@@ -207,7 +232,7 @@ export default function Dashboard() {
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                    Welcome back, {user?.firstName || user?.email?.split('@')[0] || 'User'}!
+                    Welcome back, {user?.email?.split('@')[0] || 'User'}!
                   </h1>
                   <Badge className={subscriptionBadge.color}>
                     {subscriptionBadge.label}
