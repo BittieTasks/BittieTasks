@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -14,11 +15,13 @@ import {
   ArrowRight,
   CheckCircle,
   Crown,
-  Target
+  Target,
+  User
 } from 'lucide-react'
 
 export default function HomePage() {
   const router = useRouter()
+  const { user, isAuthenticated, loading } = useAuth()
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,6 +57,38 @@ export default function HomePage() {
               >
                 Sponsors
               </button>
+              
+              {/* Authentication-aware navigation */}
+              {loading ? (
+                <div className="w-20 h-9 bg-gray-100 rounded animate-pulse"></div>
+              ) : isAuthenticated ? (
+                <div className="flex items-center space-x-3">
+                  <Button
+                    onClick={() => router.push('/dashboard')}
+                    variant="outline"
+                    className="border-teal-600 text-teal-600 hover:bg-teal-50"
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <Button
+                    onClick={() => router.push('/auth')}
+                    variant="outline"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    onClick={() => router.push('/auth')}
+                    className="bg-teal-600 hover:bg-teal-700 text-white"
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -71,20 +106,41 @@ export default function HomePage() {
             Transform everyday activities into profitable opportunities.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-              onClick={() => router.push('/dashboard')}
-              className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
-            >
-              Get Started
-              <ArrowRight size={20} className="ml-2" />
-            </button>
-            <button 
-              onClick={() => router.push('/earnings')}
-              className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
-            >
-              <TrendingUp size={20} className="mr-2" />
-              Our Growth Journey
-            </button>
+            {isAuthenticated ? (
+              <>
+                <button 
+                  onClick={() => router.push('/dashboard')}
+                  className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
+                >
+                  <User size={20} className="mr-2" />
+                  Go to Dashboard
+                  <ArrowRight size={20} className="ml-2" />
+                </button>
+                <button 
+                  onClick={() => router.push('/solo')}
+                  className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
+                >
+                  View Tasks
+                </button>
+              </>
+            ) : (
+              <>
+                <button 
+                  onClick={() => router.push('/auth')}
+                  className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
+                >
+                  Get Started
+                  <ArrowRight size={20} className="ml-2" />
+                </button>
+                <button 
+                  onClick={() => router.push('/earnings')}
+                  className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
+                >
+                  <TrendingUp size={20} className="mr-2" />
+                  Our Growth Journey
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -204,17 +260,35 @@ export default function HomePage() {
 
         {/* CTA Section */}
         <div className="bg-teal-600 rounded-2xl p-12 text-center text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-xl mb-8 text-teal-100">
-            Be among the first to earn money from your daily tasks
-          </p>
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="inline-flex items-center justify-center px-8 py-4 bg-white text-teal-600 hover:bg-gray-100 text-lg font-semibold rounded-lg transition-colors"
-          >
-            Start Exploring
-            <ArrowRight size={20} className="ml-2" />
-          </button>
+          {isAuthenticated ? (
+            <>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Welcome back!</h2>
+              <p className="text-xl mb-8 text-teal-100">
+                Ready to continue earning from your daily tasks?
+              </p>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="inline-flex items-center justify-center px-8 py-4 bg-white text-teal-600 hover:bg-gray-100 text-lg font-semibold rounded-lg transition-colors"
+              >
+                Go to Dashboard
+                <ArrowRight size={20} className="ml-2" />
+              </button>
+            </>
+          ) : (
+            <>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
+              <p className="text-xl mb-8 text-teal-100">
+                Be among the first to earn money from your daily tasks
+              </p>
+              <button
+                onClick={() => router.push('/auth')}
+                className="inline-flex items-center justify-center px-8 py-4 bg-white text-teal-600 hover:bg-gray-100 text-lg font-semibold rounded-lg transition-colors"
+              >
+                Sign Up Now
+                <ArrowRight size={20} className="ml-2" />
+              </button>
+            </>
+          )}
         </div>
       </main>
       

@@ -9,9 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { useQuery } from '@tanstack/react-query'
 import { 
   Coins, Award, Clock, Star, Plus, ChevronDown, Users, Calendar, MapPin, 
-  TrendingUp 
+  TrendingUp, CheckCircle, AlertCircle, Loader2 
 } from 'lucide-react'
 
 interface UserStats {
@@ -38,7 +39,39 @@ export default function Dashboard() {
   const { user, isAuthenticated, loading: authLoading, signOut } = useAuth()
   const { toast } = useToast()
   const router = useRouter()
-  const [loading, setLoading] = useState(true)
+
+  // Fetch user's task applications
+  const { data: taskApplications = [], isLoading: applicationsLoading, error: applicationsError } = useQuery({
+    queryKey: ['/api/tasks/applications'],
+    enabled: isAuthenticated && !!user,
+    retry: 1,
+    queryFn: async () => {
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      const headers: Record<string, string> = {}
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+      }
+      
+      const response = await fetch('/api/tasks/applications', { headers })
+      if (!response.ok) {
+        throw new Error('Failed to fetch applications')
+      }
+      return response.json()
+    }
+  })
+
+  // Calculate user stats from applications
+  const userStats: UserStats = {
+    total_earnings: taskApplications.filter((app: TaskActivity) => app.status === 'verified').reduce((sum: number, app: TaskActivity) => sum + app.payout, 0),
+    tasks_completed: taskApplications.filter((app: TaskActivity) => app.status === 'completed' || app.status === 'verified').length,
+    active_tasks: taskApplications.filter((app: TaskActivity) => app.status === 'applied' || app.status === 'accepted').length,
+    rating: 4.8, // Default rating
+    achievements: ['First Task', 'Community Helper'],
+    monthly_goal: 500,
+    subscription_tier: 'free'
+  }
 
   if (authLoading) {
     return (
@@ -161,23 +194,156 @@ export default function Dashboard() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardContent className="p-6">
-              <div className="text-center">
-                <div className="text-gray-400 mb-4">
-                  <Clock className="w-12 h-12 mx-auto" />
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <Card className="bg-white shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <Coins className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Total Earnings</p>
+                    <p className="text-2xl font-bold text-gray-900">${userStats.total_earnings}</p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Dashboard Loading</h3>
-                <p className="text-gray-500 mb-4">
-                  Your dashboard is being set up. All authentication and task features are working properly.
-                </p>
-                <Button 
-                  onClick={() => router.push('/solo')}
-                  className="bg-teal-600 hover:bg-teal-700 text-white"
-                >
-                  Start with Solo Tasks
-                </Button>
-              </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <CheckCircle className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Tasks Completed</p>
+                    <p className="text-2xl font-bold text-gray-900">{userStats.tasks_completed}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <Clock className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Active Tasks</p>
+                    <p className="text-2xl font-bold text-gray-900">{userStats.active_tasks}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="p-2 bg-purple-100 rounded-lg">
+                    <Star className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Rating</p>
+                    <p className="text-2xl font-bold text-gray-900">{userStats.rating}/5</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recent Applications */}
+          <Card className="bg-white shadow-sm mb-6">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">Recent Task Applications</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {applicationsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+                  <span className="ml-2 text-gray-600">Loading your applications...</span>
+                </div>
+              ) : applicationsError ? (
+                <div className="text-center py-8">
+                  <AlertCircle className="w-12 h-12 mx-auto text-red-500 mb-4" />
+                  <p className="text-gray-600 mb-4">Unable to load applications</p>
+                  <Button 
+                    onClick={() => window.location.reload()}
+                    variant="outline"
+                  >
+                    Try Again
+                  </Button>
+                </div>
+              ) : taskApplications.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-gray-400 mb-4">
+                    <Calendar className="w-16 h-16 mx-auto" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Applications Yet</h3>
+                  <p className="text-gray-500 mb-6">
+                    Start by applying to your first task to see your activity here.
+                  </p>
+                  <div className="flex gap-3 justify-center">
+                    <Button 
+                      onClick={() => router.push('/solo')}
+                      className="bg-teal-600 hover:bg-teal-700 text-white"
+                    >
+                      Browse Solo Tasks
+                    </Button>
+                    <Button 
+                      onClick={() => router.push('/community')}
+                      variant="outline"
+                      className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                    >
+                      Community Tasks
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {taskApplications.slice(0, 5).map((application: TaskActivity) => (
+                    <div key={application.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-3 h-3 rounded-full ${
+                          application.status === 'verified' ? 'bg-green-500' :
+                          application.status === 'completed' ? 'bg-blue-500' :
+                          application.status === 'accepted' ? 'bg-orange-500' :
+                          'bg-gray-400'
+                        }`}></div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">{application.title}</h4>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span className="capitalize">{application.status.replace('_', ' ')}</span>
+                            <span>•</span>
+                            <span>${application.payout}</span>
+                            <span>•</span>
+                            <span>{application.location}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <Badge 
+                        className={
+                          application.status === 'verified' ? 'bg-green-100 text-green-800' :
+                          application.status === 'completed' ? 'bg-blue-100 text-blue-800' :
+                          application.status === 'accepted' ? 'bg-orange-100 text-orange-800' :
+                          'bg-gray-100 text-gray-800'
+                        }
+                      >
+                        {application.status}
+                      </Badge>
+                    </div>
+                  ))}
+                  
+                  {taskApplications.length > 5 && (
+                    <div className="text-center pt-4">
+                      <Button variant="outline" onClick={() => router.push('/earnings')}>
+                        View All Applications ({taskApplications.length})
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
