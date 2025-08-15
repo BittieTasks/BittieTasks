@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '@/components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -29,6 +30,7 @@ interface CommunityTask extends Task {
 
 export default function CommunityPage() {
   const router = useRouter()
+  const { user, isAuthenticated } = useAuth()
   const [selectedTask, setSelectedTask] = useState<CommunityTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
   const [selectedTaskForChat, setSelectedTaskForChat] = useState<CommunityTask | null>(null)
@@ -51,6 +53,10 @@ export default function CommunityPage() {
   })
 
   const handleApplyClick = (task: CommunityTask) => {
+    if (!isAuthenticated) {
+      router.push('/auth?message=Please sign in to apply for tasks')
+      return
+    }
     setSelectedTask(task)
     setShowApplicationModal(true)
   }

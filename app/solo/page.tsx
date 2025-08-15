@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '@/components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -245,9 +246,15 @@ const soloTasks: SoloTask[] = [
 export default function SoloPage() {
   const [selectedTask, setSelectedTask] = useState<SoloTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
+  const { user, isAuthenticated } = useAuth()
   const router = useRouter()
 
   const handleApplyClick = (task: SoloTask) => {
+    if (!isAuthenticated) {
+      // Guide unauthenticated users to sign in
+      router.push('/auth?message=Please sign in to apply for tasks')
+      return
+    }
     setSelectedTask(task)
     setShowApplicationModal(true)
   }
@@ -429,7 +436,7 @@ export default function SoloPage() {
               platform_funded: true,
               verification_type: 'photo'
             }}
-            userId="demo-user"
+            userId={user?.id || ''}
             isOpen={showApplicationModal}
             onOpenChange={setShowApplicationModal}
             onSuccess={() => {

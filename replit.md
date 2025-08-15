@@ -15,6 +15,9 @@ BittieTasks is a mobile-first community task marketplace designed to connect nei
 - **Sign-Out Functionality**: Added proper sign-out button to dashboard with error handling
 - **Solo Task Applications**: Fixed database integration - applications now persist and show on dashboard
 - **Professional UI**: Enhanced visual design with color-coded navigation and improved user experience
+- **Critical Build Fix**: Resolved JSX syntax error that was blocking GitHub deployments (January 15, 2025)
+- **Task Application Authentication**: Added proper auth checks to task pages - unauthenticated users are guided to sign-in instead of getting API errors
+- **User Experience Enhancement**: All task pages now gracefully handle authentication state with clear user guidance
 
 # User Preferences
 
