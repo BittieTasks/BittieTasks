@@ -42,7 +42,7 @@ export default function VerifyEmailPage() {
         
         // Redirect to marketplace after 3 seconds
         setTimeout(() => {
-          router.push(data.redirectUrl || '/marketplace')
+          router.push(data.redirectUrl || '/dashboard')
         }, 3000)
       } else {
         setStatus('error')
@@ -58,8 +58,8 @@ export default function VerifyEmailPage() {
     router.push('/auth')
   }
 
-  const handleGoToMarketplace = () => {
-    router.push('/marketplace')
+  const handleGoToDashboard = () => {
+    router.push('/dashboard')
   }
 
   return (
@@ -92,10 +92,10 @@ export default function VerifyEmailPage() {
                 </p>
               </div>
               <Button 
-                onClick={handleGoToMarketplace}
+                onClick={handleGoToDashboard}
                 className="w-full bg-teal-600 hover:bg-teal-700"
               >
-                Go to Marketplace Now
+                Go to Dashboard
               </Button>
             </div>
           )}

@@ -560,7 +560,7 @@ export default function Dashboard() {
                       Start earning by applying to tasks in the marketplace
                     </p>
                     <Button 
-                      onClick={() => router.push('/marketplace')}
+                      onClick={() => router.push('/community')}
                       className="bg-teal-600 hover:bg-teal-700 text-white"
                       data-testid="button-browse-tasks-empty"
                     >

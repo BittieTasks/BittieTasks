@@ -103,11 +103,11 @@ export default function TaskDetailPage() {
         {/* Back Button */}
         <Button 
           variant="ghost" 
-          onClick={() => router.push('/marketplace')}
+          onClick={() => router.push('/community')}
           className="mb-6 p-0 h-auto font-normal text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Marketplace
+          Back to Tasks
         </Button>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -258,7 +258,7 @@ export default function TaskDetailPage() {
                     Your application has been sent to {task.creator.name}. You'll be notified when they respond.
                   </p>
                   <Button
-                    onClick={() => router.push('/marketplace')}
+                    onClick={() => router.push('/community')}
                     className="button-clean"
                   >
                     Browse More Tasks
@@ -374,7 +374,7 @@ export default function TaskDetailPage() {
                 <Button 
                   variant="outline" 
                   className="w-full button-outline"
-                  onClick={() => router.push('/marketplace')}
+                  onClick={() => router.push('/community')}
                 >
                   View All Tasks
                 </Button>

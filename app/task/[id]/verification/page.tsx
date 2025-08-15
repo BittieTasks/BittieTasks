@@ -296,8 +296,8 @@ export default function TaskVerificationPage() {
               <p className="text-muted-foreground mb-4">
                 The task or verification requirements could not be loaded.
               </p>
-              <Button onClick={() => router.push('/marketplace')}>
-                Back to Marketplace
+              <Button onClick={() => router.push('/dashboard')}>
+                Back to Dashboard
               </Button>
             </CardContent>
           </Card>
