@@ -81,8 +81,17 @@ export default function Dashboard() {
 
   const loadMyTasks = async () => {
     try {
-      // Mock task activity for now - will connect to API
+      // Add your incomplete solo task application
       const mockTasks: TaskActivity[] = [
+        {
+          id: 'incomplete-solo-1',
+          title: 'Solo Task Application (Incomplete)',
+          status: 'applied',
+          payout: 0, // Will be set based on which task
+          location: 'Pending Selection',
+          applied_at: new Date().toISOString(),
+          task_type: 'solo'
+        },
         {
           id: '1',
           title: 'School Pickup Carpool',
@@ -116,6 +125,23 @@ export default function Dashboard() {
       console.error('Error loading tasks:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleTaskClick = (task: TaskActivity) => {
+    if (task.id === 'incomplete-solo-1') {
+      // Redirect to solo tasks page to complete application
+      router.push('/solo')
+      toast({
+        title: "Complete Your Application",
+        description: "Redirecting to solo tasks to complete your application form.",
+      })
+    } else if (task.status === 'applied' && task.task_type === 'solo') {
+      // For other pending solo tasks
+      router.push(`/task/${task.id}`)
+    } else {
+      // For other task types
+      router.push(`/task/${task.id}`)
     }
   }
 
@@ -326,7 +352,11 @@ export default function Dashboard() {
             <TabsContent value="tasks" className="mt-6">
               <div className="space-y-4">
                 {myTasks.map((task) => (
-                  <Card key={task.id} className="bg-white shadow-sm border border-gray-200">
+                  <Card 
+                    key={task.id} 
+                    className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => handleTaskClick(task)}
+                  >
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -340,6 +370,11 @@ export default function Dashboard() {
                                 Sponsored
                               </Badge>
                             )}
+                            {task.id === 'incomplete-solo-1' && (
+                              <Badge className="text-xs bg-orange-100 text-orange-800">
+                                Action Required
+                              </Badge>
+                            )}
                           </div>
                           <div className="flex items-center gap-4 text-sm text-gray-500">
                             <div className="flex items-center gap-1">
@@ -351,11 +386,16 @@ export default function Dashboard() {
                               Applied {new Date(task.applied_at).toLocaleDateString()}
                             </div>
                           </div>
+                          {task.id === 'incomplete-solo-1' && (
+                            <p className="text-sm text-orange-600 mt-2 font-medium">
+                              Click to complete your solo task application
+                            </p>
+                          )}
                         </div>
                         <div className="text-right">
                           <div className="flex items-center text-teal-600 font-bold text-lg">
                             <Coins className="w-4 h-4 mr-1" />
-                            ${task.payout.toFixed(2)}
+                            ${task.payout === 0 ? 'TBD' : task.payout.toFixed(2)}
                           </div>
                         </div>
                       </div>
