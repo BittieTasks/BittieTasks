@@ -1,0 +1,76 @@
+{
+  "soloTaskTemplate": {
+    "instructions": "Use this template when adding new solo tasks. Copy the structure and update the values. Ensure pricing follows current market rates and verification requirements are clear.",
+    "taskIdFormat": "platform-XXX (use sequential numbers starting from 016)",
+    "priceRange": {
+      "minimum": 8,
+      "maximum": 25,
+      "note": "Prices should reflect fair market value for time and effort required"
+    },
+    "template": {
+      "id": "platform-XXX",
+      "title": "Task Title (be specific and actionable)",
+      "description": "Clear description of what needs to be done, including specific requirements and expectations",
+      "price": 0,
+      "category": "Choose from: Household Tasks, Self-Care & Wellness, Organization, Cleaning, Cooking, Technology",
+      "difficulty": "Easy|Medium|Hard",
+      "duration": "X minutes|X hour|X hours",
+      "location": "Choose appropriate location type",
+      "tags": ["relevant", "descriptive", "tags"],
+      "verificationRequirements": {
+        "photoRequired": true,
+        "description": "Specific photo requirements for verification",
+        "example": "Take a clear photo showing the completed task"
+      },
+      "instructions": [
+        "Step 1: Clear actionable instruction",
+        "Step 2: Another step if needed",
+        "Step 3: Final verification step"
+      ]
+    }
+  },
+  "currentTasks": {
+    "platform-001": { "title": "Quick Kitchen Clean", "price": 12 },
+    "platform-002": { "title": "10-Minute Living Room Tidy", "price": 8 },
+    "platform-003": { "title": "Bathroom Deep Clean", "price": 18 },
+    "platform-004": { "title": "Grocery Shopping Run", "price": 15 },
+    "platform-005": { "title": "Laundry Wash & Fold", "price": 10 },
+    "platform-006": { "title": "Garden Watering Session", "price": 9 },
+    "platform-007": { "title": "5-Minute Meditation", "price": 8 },
+    "platform-008": { "title": "Desk Organization", "price": 11 },
+    "platform-009": { "title": "Car Interior Vacuum", "price": 14 },
+    "platform-010": { "title": "Daily Meal Prep", "price": 20 },
+    "platform-011": { "title": "Dog Walking Adventure", "price": 16 },
+    "platform-012": { "title": "Plant Care Routine", "price": 9 },
+    "platform-013": { "title": "Quick Workout Session", "price": 12 },
+    "platform-014": { "title": "Home Office Organization", "price": 16 },
+    "platform-015": { "title": "Self-Care Spa Hour", "price": 13 }
+  },
+  "guidelines": {
+    "pricing": {
+      "factors": [
+        "Time required (typically 15 minutes to 2 hours)",
+        "Physical effort involved",
+        "Skill level required",
+        "Market value of similar services"
+      ],
+      "feeStructure": "All solo tasks have 3% processing fee deducted from gross amount"
+    },
+    "verification": {
+      "photoRequired": "Always true for solo tasks",
+      "aiVerification": "Tasks should be designed for AI photo verification",
+      "clearEvidence": "Completion should be visually verifiable"
+    },
+    "categories": [
+      "Household Tasks",
+      "Self-Care & Wellness", 
+      "Organization",
+      "Cleaning",
+      "Cooking",
+      "Technology",
+      "Exercise & Fitness",
+      "Pet Care",
+      "Garden & Plants"
+    ]
+  }
+}
