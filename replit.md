@@ -1,6 +1,6 @@
 # Overview
 
-BittieTasks is a mobile-first community task marketplace designed to connect neighbors and facilitate local earning opportunities through intelligent task matching. The platform supports a dual payment model: peer-to-peer tasks with a 7% platform fee, and BittieTasks platform-funded tasks with 0% fees. Additional revenue is generated from corporate-sponsored tasks, incurring a 15% fee. Key capabilities include real-time payments via Stripe, automated verification systems for task completion, and comprehensive earnings tracking. The business vision aims for significant market penetration by offering diverse task categories and fostering community engagement.
+BittieTasks is a mobile-first community task marketplace designed to connect neighbors and facilitate local earning opportunities through intelligent task matching. The platform features complete fee transparency with a tiered structure: solo tasks (3% processing fee), community tasks (7% platform fee), barter exchange (0% fees), and corporate tasks (15% fee). Key capabilities include real-time payments via Stripe, automated AI verification systems for task completion, transparent payment breakdowns showing gross/net amounts, and comprehensive earnings tracking. The business vision emphasizes radical transparency and community trust through clear fee structures and fair market pricing.
 
 # User Preferences
 
@@ -33,13 +33,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Payment Processing
 - **Payment Gateway**: Stripe is integrated for all payment processing and webhook handling.
-- **Dual Payment Model**:
-    - **Peer-to-Peer**: Users pay other users directly, with BittieTasks taking a 7% commission.
-    - **Platform Payments**: BittieTasks directly compensates users for specific tasks, with a 0% fee.
-- **Revenue Streams**: Commissions from P2P tasks (7%), corporate partnerships (15%), and strategic platform investment (0% fee tasks).
-- **Verification System**: Automated photo/video verification is used, with a manual review fallback.
-- **Payout Processing**: Payments are automatically released upon task verification.
-- **Transaction Tracking**: A comprehensive earnings dashboard and payment history are provided.
+- **Transparent Fee Structure**:
+    - **Solo Tasks**: 3% processing fee for platform-funded convenience tasks
+    - **Community Tasks**: 7% platform fee for peer-to-peer coordination and messaging
+    - **Barter Exchange**: 0% fees for direct value trading without monetary exchange
+    - **Corporate Tasks**: 15% fee for high-value corporate partnerships
+- **Payment Transparency**: All task displays show gross amount, fee breakdown, and net payout
+- **Revenue Streams**: Processing fees from solo tasks (3%), commissions from community tasks (7%), corporate partnerships (15%).
+- **Verification System**: AI-powered photo/video verification with manual review fallback.
+- **Payout Processing**: Net payments automatically released upon task verification.
+- **Transaction Tracking**: Comprehensive earnings dashboard showing gross/net amounts and fee transparency.
 
 ## Verification and Trust System
 - **Auto-Verification**: Leverages machine learning for photo/video verification.
