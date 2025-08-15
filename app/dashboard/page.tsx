@@ -6,7 +6,7 @@ import CleanLayout from '../../components/CleanLayout'
 import { Button } from '../../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs'
+{/* Tabs import removed - using card-based navigation now */}
 import { useToast } from '../../hooks/use-toast'
 import { Coins, TrendingUp, Users, Clock, Calendar, MapPin, Star, Award } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -341,16 +341,79 @@ export default function Dashboard() {
             <FeeTransparency variant="full" />
           </div>
 
-          {/* Tabs for different views */}
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="tasks">My Tasks</TabsTrigger>
-              <TabsTrigger value="achievements">Achievements</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-            </TabsList>
+          {/* Navigation Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card 
+              className={`cursor-pointer transition-all duration-200 ${
+                activeTab === 'tasks' 
+                  ? 'bg-teal-50 border-teal-200 shadow-md' 
+                  : 'bg-white hover:bg-gray-50 border-gray-200'
+              }`}
+              onClick={() => setActiveTab('tasks')}
+            >
+              <CardContent className="p-6 text-center">
+                <div className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${
+                  activeTab === 'tasks' ? 'bg-teal-100' : 'bg-gray-100'
+                }`}>
+                  <Clock className={`w-6 h-6 ${activeTab === 'tasks' ? 'text-teal-600' : 'text-gray-600'}`} />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">My Tasks</h3>
+                <p className="text-sm text-gray-500">{myTasks.length} active applications</p>
+              </CardContent>
+            </Card>
 
-            <TabsContent value="tasks" className="mt-6">
-              <div className="space-y-4">
+            <Card 
+              className={`cursor-pointer transition-all duration-200 ${
+                activeTab === 'achievements' 
+                  ? 'bg-yellow-50 border-yellow-200 shadow-md' 
+                  : 'bg-white hover:bg-gray-50 border-gray-200'
+              }`}
+              onClick={() => setActiveTab('achievements')}
+            >
+              <CardContent className="p-6 text-center">
+                <div className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${
+                  activeTab === 'achievements' ? 'bg-yellow-100' : 'bg-gray-100'
+                }`}>
+                  <Award className={`w-6 h-6 ${activeTab === 'achievements' ? 'text-yellow-600' : 'text-gray-600'}`} />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">Achievements</h3>
+                <p className="text-sm text-gray-500">{stats.achievements.length} earned</p>
+              </CardContent>
+            </Card>
+
+            <Card 
+              className={`cursor-pointer transition-all duration-200 ${
+                activeTab === 'settings' 
+                  ? 'bg-blue-50 border-blue-200 shadow-md' 
+                  : 'bg-white hover:bg-gray-50 border-gray-200'
+              }`}
+              onClick={() => setActiveTab('settings')}
+            >
+              <CardContent className="p-6 text-center">
+                <div className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${
+                  activeTab === 'settings' ? 'bg-blue-100' : 'bg-gray-100'
+                }`}>
+                  <Users className={`w-6 h-6 ${activeTab === 'settings' ? 'text-blue-600' : 'text-gray-600'}`} />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">Account</h3>
+                <p className="text-sm text-gray-500">Settings & preferences</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Content sections without Tabs wrapper */}
+          <div className="space-y-8">
+
+            {activeTab === 'tasks' && (
+              <Card className="bg-white shadow-sm border border-gray-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-teal-600" />
+                    My Task Applications
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
                 {myTasks.map((task) => (
                   <Card 
                     key={task.id} 
@@ -419,13 +482,23 @@ export default function Dashboard() {
                     >
                       Browse Tasks
                     </Button>
+                    </div>
+                  )}
                   </div>
-                )}
-              </div>
-            </TabsContent>
+                </CardContent>
+              </Card>
+            )}
 
-            <TabsContent value="achievements" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {activeTab === 'achievements' && (
+              <Card className="bg-white shadow-sm border border-gray-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="w-5 h-5 text-yellow-600" />
+                    Your Achievements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {stats.achievements.map((achievement, index) => (
                   <Card key={index} className="bg-white shadow-sm border border-gray-200">
                     <CardContent className="p-6 text-center">
@@ -436,14 +509,19 @@ export default function Dashboard() {
                       <p className="text-sm text-gray-500">Earned this month</p>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-            </TabsContent>
+                  ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-            <TabsContent value="settings" className="mt-6">
+            {activeTab === 'settings' && (
               <Card className="bg-white shadow-sm border border-gray-200">
                 <CardHeader>
-                  <CardTitle>Account Settings</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-blue-600" />
+                    Account Settings
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -465,8 +543,8 @@ export default function Dashboard() {
 
                 </CardContent>
               </Card>
-            </TabsContent>
-          </Tabs>
+            )}
+          </div>
         </div>
       </div>
     </CleanLayout>
