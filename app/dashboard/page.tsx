@@ -8,7 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { Badge } from '../../components/ui/badge'
 {/* Tabs import removed - using card-based navigation now */}
 import { useToast } from '../../hooks/use-toast'
-import { Coins, TrendingUp, Users, Clock, Calendar, MapPin, Star, Award } from 'lucide-react'
+import { Coins, TrendingUp, Users, Clock, Calendar, MapPin, Star, Award, Plus, ChevronDown } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../components/ui/dropdown-menu'
 import { useRouter } from 'next/navigation'
 import FeeTransparency from '../../components/FeeTransparency'
 
@@ -211,36 +217,77 @@ export default function Dashboard() {
                   Track your earnings, manage tasks, and grow your community impact
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  onClick={() => window.location.href = '/solo'}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                  data-testid="button-solo-tasks"
-                >
-                  Solo Tasks
-                </Button>
-                <Button 
-                  onClick={() => window.location.href = '/community'}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                  data-testid="button-community-tasks"
-                >
-                  Community
-                </Button>
-                <Button 
-                  onClick={() => window.location.href = '/corporate'}
-                  className="bg-purple-600 hover:bg-purple-700 text-white"
-                  data-testid="button-corporate-tasks"
-                >
-                  Corporate
-                </Button>
-                <Button 
-                  onClick={() => window.location.href = '/barter'}
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
-                  data-testid="button-barter-tasks"
-                >
-                  Barter
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="bg-teal-600 hover:bg-teal-700 text-white" data-testid="dropdown-explore-tasks">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Explore Tasks
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem 
+                    onClick={() => router.push('/solo')}
+                    className="cursor-pointer"
+                    data-testid="menu-solo-tasks"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <Coins className="w-4 h-4 text-green-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Solo Tasks</div>
+                        <div className="text-xs text-gray-500">Platform-funded • 3% fee</div>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => router.push('/community')}
+                    className="cursor-pointer"
+                    data-testid="menu-community-tasks"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Users className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Community Tasks</div>
+                        <div className="text-xs text-gray-500">Shared work • 7% fee</div>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => router.push('/corporate')}
+                    className="cursor-pointer"
+                    data-testid="menu-corporate-tasks"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <TrendingUp className="w-4 h-4 text-purple-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Corporate Tasks</div>
+                        <div className="text-xs text-gray-500">Sponsored work • 15% fee</div>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => router.push('/barter')}
+                    className="cursor-pointer"
+                    data-testid="menu-barter-tasks"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <Award className="w-4 h-4 text-orange-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Barter Exchange</div>
+                        <div className="text-xs text-gray-500">Trade services • 0% fees</div>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
