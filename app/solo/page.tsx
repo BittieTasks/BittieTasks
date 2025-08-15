@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Clock, DollarSign, User, Star, ArrowLeft, Menu } from 'lucide-react'
+import { MapPin, Clock, DollarSign, User, Users, Star, ArrowLeft, Menu } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
