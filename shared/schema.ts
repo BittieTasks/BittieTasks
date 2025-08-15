@@ -58,7 +58,7 @@ export const users = pgTable("users", {
   // Subscription fields
   subscriptionTier: varchar("subscription_tier").default('free'), // free, pro, premium
   subscriptionStatus: varchar("subscription_status").default('active'), // active, cancelled, past_due
-  stripeCustomerId: varchar("stripe_customer_id"),
+  stripeCustomerId: varchar("stripe_customer_id"), // For payment integration
   stripeSubscriptionId: varchar("stripe_subscription_id"),
   subscriptionStartDate: timestamp("subscription_start_date"),
   subscriptionEndDate: timestamp("subscription_end_date"),
@@ -315,6 +315,38 @@ export const sponsors = pgTable("sponsors", {
 });
 
 // Task approval logs
+// Payments table for transparent fee tracking
+export const payments = pgTable('payments', {
+  id: varchar('id').primaryKey(), // Stripe payment intent ID
+  taskId: varchar('task_id').references(() => tasks.id),
+  userId: varchar('user_id').references(() => users.id),
+  amount: varchar('amount').notNull(), // Store as string to avoid decimal precision issues
+  platformFee: varchar('platform_fee').notNull(),
+  processingFee: varchar('processing_fee').notNull(),
+  netAmount: varchar('net_amount').notNull(),
+  taskType: varchar('task_type').notNull(), // 'solo', 'community', 'barter', 'corporate'
+  status: varchar('status').notNull().default('pending'), // 'pending', 'completed', 'failed', 'requires_action'
+  stripePaymentIntentId: varchar('stripe_payment_intent_id'),
+  stripeChargeId: varchar('stripe_charge_id'),
+  feeBreakdown: jsonb('fee_breakdown'), // Detailed fee calculation
+  failureReason: varchar('failure_reason'),
+  createdAt: timestamp('created_at').defaultNow(),
+  completedAt: timestamp('completed_at'),
+  failedAt: timestamp('failed_at')
+});
+
+// User earnings tracking for transparent reporting
+export const userEarnings = pgTable('user_earnings', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id).notNull(),
+  taskId: varchar('task_id').references(() => tasks.id),
+  paymentId: varchar('payment_id').references(() => payments.id),
+  amount: varchar('amount').notNull(), // Net amount earned
+  taskType: varchar('task_type').notNull(),
+  earnedAt: timestamp('earned_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
 export const taskApprovalLogs = pgTable("task_approval_logs", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   taskId: varchar("task_id").references(() => tasks.id).notNull(),

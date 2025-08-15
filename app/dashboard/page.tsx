@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/auth/AuthProvider'
+import EarningsOverview from '@/components/dashboard/EarningsOverview'
 import { useToast } from '@/hooks/use-toast'
 import CleanLayout from '@/components/CleanLayout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from 'next/navigation'
 import TaskApplicationModal from '@/components/TaskApplicationModal'
+import EnhancedTaskCard from '@/components/task/EnhancedTaskCard'
 import Navigation from '@/components/shared/Navigation'
 
 interface SoloTask {
