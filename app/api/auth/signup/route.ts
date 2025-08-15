@@ -55,42 +55,37 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { phoneNumber, password, firstName, lastName, email } = body
 
-    if (!phoneNumber || !password) {
+    if (!email || !password) {
       return NextResponse.json(
-        { error: 'Phone number and password are required' },
+        { error: 'Email and password are required' },
         { status: 400 }
       )
     }
 
-    // Verify that phone number has been verified
+    if (!firstName || !lastName) {
+      return NextResponse.json(
+        { error: 'First name and last name are required' },
+        { status: 400 }
+      )
+    }
+
+    // For email-first verification, skip phone verification requirement
+    // Users can still provide phone for optional features later
+
     const supabaseAdmin = getSupabaseAdmin()
-    const { data: verificationCheck, error: verificationError } = await supabaseAdmin
-      .from('phone_verification_codes')
-      .select('*')
-      .eq('phone_number', phoneNumber)
-      .eq('verified', true)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-
-    if (verificationError || !verificationCheck) {
-      return NextResponse.json(
-        { error: 'Phone number must be verified before creating account' },
-        { status: 400 }
-      )
-    }
-
-    // Create user using admin client
+    
+    // Create user using admin client with email-first approach
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
-      phone: phoneNumber,
+      email: email,
       password,
-      phone_confirm: true, // Mark phone as confirmed since we verified it
-      email_confirm: email ? false : true, // Email needs verification if provided
+      phone: phoneNumber || null, // Phone is optional
+      email_confirm: false, // Email needs verification
+      phone_confirm: phoneNumber ? false : true, // Phone verification optional
       user_metadata: {
-        phone_number: phoneNumber,
         first_name: firstName,
         last_name: lastName,
-        email: email || null,
+        phone_number: phoneNumber || null,
+        email: email,
       }
     })
 

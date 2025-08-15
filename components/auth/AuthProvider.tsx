@@ -150,6 +150,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       if (error) {
         console.error('Sign in error details:', error)
+        
+        // Handle email not confirmed error specifically
+        if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
+          throw new Error('Please verify your email before signing in. Check your email for the verification link.')
+        }
+        
         throw new Error(error.message)
       }
       
@@ -166,67 +172,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signUp = async (email: string, password: string, userData?: any) => {
     console.log('AuthProvider signUp called with:', email, userData)
     
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: userData,
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    })
-    
-    console.log('Sign up result:', { data, error })
-    
-    if (error) {
-      console.error('Sign up error details:', error)
-      // Provide user-friendly error messages
-      if (error.message.includes('Email not confirmed')) {
-        throw new Error('Please check your email and click the confirmation link before signing in.')
+    try {
+      // Use our custom signup API instead of Supabase directly
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          password,
+          firstName: userData?.firstName || '',
+          lastName: userData?.lastName || '',
+          phoneNumber: userData?.phoneNumber || null,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Signup failed')
       }
-      if (error.message.includes('User already registered')) {
-        throw new Error('An account with this email already exists. Try signing in instead.')
-      }
-      if (error.message.includes('Password is known to be weak')) {
-        throw new Error('Please use a stronger password with uppercase, lowercase, numbers and special characters.')
-      }
-      throw error
-    }
-    
-    // Check if user was created successfully
-    if (data.user) {
-      console.log('User created successfully, sending custom verification email...')
-      
-      // Send custom verification email via our API (with better error handling)
-      try {
-        const emailResponse = await fetch('/api/auth/send-verification', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            userId: data.user.id,
-            email: email 
-          })
-        })
-        
-        if (!emailResponse.ok) {
-          console.error('Failed to send custom verification email')
-        } else {
-          console.log('Custom verification email sent successfully')
-        }
-      } catch (emailError) {
-        console.error('Error sending custom verification email:', emailError)
-      }
-      
-      if (data.session) {
-        // User is immediately signed in (email confirmation disabled)
-        console.log('User signed up and automatically signed in')
-        return
+
+      if (result.success) {
+        console.log('Custom signup successful:', result.message)
+        return result
       } else {
-        // User created but needs email verification
-        console.log('User created, email verification required')
-        throw new Error('Account created successfully! Please check your email and click the verification link to complete registration.')
+        throw new Error(result.error || 'Signup failed')
       }
-    } else {
-      throw new Error('Account creation failed. Please try again.')
+    } catch (error: any) {
+      console.error('Custom signup failed:', error)
+      throw new Error(error.message || 'Signup failed. Please try again.')
     }
   }
 
