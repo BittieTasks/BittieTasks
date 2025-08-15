@@ -31,14 +31,48 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 })
 
 // Server-side Supabase instance for API routes
-export const createServerClient = () => {
+export const createServerClient = (request?: Request) => {
   // For API routes, use the same client-side config but with server context
-  return createClient(supabaseUrl, supabaseAnonKey, {
+  const client = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
     },
   })
+  
+  // If a request is provided, extract the auth token from cookies or headers
+  if (request) {
+    const cookieString = request.headers.get('cookie')
+    const authorizationHeader = request.headers.get('authorization')
+    
+    if (authorizationHeader) {
+      // Extract token from Authorization header
+      const token = authorizationHeader.replace('Bearer ', '')
+      client.auth.setSession({
+        access_token: token,
+        refresh_token: '',
+      } as any)
+    } else if (cookieString) {
+      // Extract tokens from cookies
+      const cookies = cookieString.split(';').reduce((acc: Record<string, string>, cookie) => {
+        const [key, value] = cookie.trim().split('=')
+        if (key && value) acc[key] = decodeURIComponent(value)
+        return acc
+      }, {})
+      
+      const accessToken = cookies['sb-access-token'] || cookies['supabase-auth-token']
+      const refreshToken = cookies['sb-refresh-token'] || cookies['supabase-refresh-token']
+      
+      if (accessToken) {
+        client.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken || '',
+        } as any)
+      }
+    }
+  }
+  
+  return client
 }
 
 // Service role client for admin operations (separate function)

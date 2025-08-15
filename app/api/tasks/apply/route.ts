@@ -6,9 +6,17 @@ import { eq, and } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user from Supabase
-    const supabase = createServerClient()
+    // Get authenticated user from Supabase with request context
+    const supabase = createServerClient(request)
     const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    console.log('Task apply auth check:', {
+      hasUser: !!user,
+      userEmail: user?.email,
+      authError: authError?.message,
+      hasAuthHeader: !!request.headers.get('authorization'),
+      hasCookies: !!request.headers.get('cookie')
+    })
 
     if (authError || !user) {
       return NextResponse.json(
@@ -78,8 +86,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Get authenticated user from Supabase
-    const supabase = createServerClient()
+    // Get authenticated user from Supabase with request context
+    const supabase = createServerClient(request)
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {

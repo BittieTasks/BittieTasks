@@ -130,11 +130,22 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
   const handleApply = async () => {
     setLoading(true)
     try {
+      // Get the current session token from Supabase
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      }
+      
+      // Include auth token if available
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+      }
+      
       const response = await fetch('/api/tasks/apply', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           taskId: task.id,
           userId: userId
@@ -176,11 +187,22 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
 
     setLoading(true)
     try {
+      // Get the current session token from Supabase
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      }
+      
+      // Include auth token if available
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+      }
+      
       const response = await fetch('/api/tasks/verify', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           taskId: task.id,
           userId: userId,
