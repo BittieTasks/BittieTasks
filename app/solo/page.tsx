@@ -305,8 +305,8 @@ export default function SoloPage() {
             Solo Tasks
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            15 active BittieTasks-funded household and self-care tasks. Complete these platform-paid tasks and keep 100% of earnings.
-            No fees - we invest in your wellness and productivity. Limited to 2 users per task.
+            15 active BittieTasks-funded household and self-care tasks. Complete these platform-paid tasks with our convenient solo format.
+            Small 3% processing fee for the solo convenience. Limited to 2 users per task.
           </p>
         </div>
 
@@ -326,7 +326,7 @@ export default function SoloPage() {
               <div className="text-sm text-gray-600">Average Rating</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">100%</div>
+              <div className="text-2xl font-bold text-orange-600">97%</div>
               <div className="text-sm text-gray-600">Your Take-Home</div>
             </div>
           </div>
@@ -354,12 +354,18 @@ export default function SoloPage() {
               
               <CardContent className="space-y-4">
                 {/* Payment */}
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
-                  <div className="flex items-center gap-2">
-                    <DollarSign size={18} className="text-green-600" />
-                    <span className="font-semibold text-green-600">${task.price}</span>
+                <div className="p-3 bg-green-50 rounded-lg border border-green-100">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <DollarSign size={18} className="text-green-600" />
+                      <span className="font-semibold text-green-600">${task.price}</span>
+                    </div>
+                    <span className="text-xs text-green-600 font-medium">Platform Funded</span>
                   </div>
-                  <span className="text-xs text-green-600 font-medium">Platform Funded</span>
+                  <div className="flex items-center justify-between text-xs text-gray-600">
+                    <span>You earn: ${(task.price * 0.97).toFixed(2)}</span>
+                    <span>(3% processing fee)</span>
+                  </div>
                 </div>
 
                 {/* Details */}

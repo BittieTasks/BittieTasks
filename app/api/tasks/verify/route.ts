@@ -68,18 +68,24 @@ export async function POST(request: NextRequest) {
     }
 
     const taskPayout = taskPricing[taskId] || 2 // fallback to $2 for unknown tasks
+    const processingFeeRate = 0.03 // 3% processing fee for solo tasks
+    const processingFee = taskPayout * processingFeeRate
+    const netPayout = taskPayout - processingFee
     
-    // Create Stripe payment intent for fair market payout
+    // Create Stripe payment intent for net payout (after 3% processing fee)
     const stripe = getStripe()
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: taskPayout * 100, // Convert dollars to cents
+      amount: Math.round(netPayout * 100), // Convert dollars to cents
       currency: 'usd',
-      description: `BittieTasks platform payment for task completion: ${taskId}`,
+      description: `BittieTasks solo task payment for: ${taskId} (Net: $${netPayout.toFixed(2)}, Fee: $${processingFee.toFixed(2)})`,
       metadata: {
         taskId,
         userId,
         platform_funded: 'true',
-        amount: taskPayout
+        grossAmount: taskPayout,
+        processingFee: processingFee.toFixed(2),
+        netAmount: netPayout.toFixed(2),
+        feeRate: '3%'
       }
     })
 
@@ -166,14 +172,16 @@ export async function POST(request: NextRequest) {
           detectedObjects: verification.detectedObjects || []
         },
         payment: {
-          amount: taskPayout,
+          grossAmount: taskPayout,
+          processingFee: processingFee,
+          netAmount: netPayout,
           currency: 'USD',
           status: 'completed',
           paymentIntentId: paymentIntent.id
         },
         completionCount: userCompletionCounts[userKey],
         remainingCompletions: 2 - userCompletionCounts[userKey],
-        message: `✅ AI Verified & Paid in ${verificationRecord.processingTime}ms! Confidence: ${Math.round(confidence * 100)}% - ${reasoning}`
+        message: `✅ AI Verified & Paid $${netPayout.toFixed(2)} in ${verificationRecord.processingTime}ms! (3% processing fee: $${processingFee.toFixed(2)}) - ${reasoning}`
       })
     } else if (verificationRecord.status === 'pending') {
       // Pending manual review
@@ -187,7 +195,9 @@ export async function POST(request: NextRequest) {
           requiresReview: true
         },
         payment: {
-          amount: taskPayout,
+          grossAmount: taskPayout,
+          processingFee: processingFee,
+          netAmount: netPayout,
           currency: 'USD',
           status: 'pending',
           paymentIntentId: paymentIntent.id

@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/ta
 import { useToast } from '../../hooks/use-toast'
 import { Coins, TrendingUp, Users, Clock, Calendar, MapPin, Star, Award } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import FeeTransparency from '../../components/FeeTransparency'
 
 interface UserStats {
   total_earnings: number
@@ -308,6 +309,11 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Fee Transparency */}
+          <div className="mb-8">
+            <FeeTransparency variant="full" />
+          </div>
 
           {/* Tabs for different views */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
