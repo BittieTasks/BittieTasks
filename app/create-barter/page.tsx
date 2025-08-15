@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiRequest } from '@/lib/lib/queryClient'
 import { useAuth } from '../../components/auth/AuthProvider'
+import Navigation from '@/components/shared/Navigation'
 
 const tradeTypeOptions = [
   { 
@@ -176,26 +177,16 @@ export default function CreateBarterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100 p-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Navigation Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.push('/barter')}
-            className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-            data-testid="button-back-barter"
-          >
-            <ArrowLeft size={20} />
-            Back to Barter Exchange
-          </Button>
-        </div>
-
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
+      <Navigation showBackButton={true} backUrl="/barter" title="Create Barter Trade" />
+      
+      <div className="max-w-2xl mx-auto p-4">
+        {/* Enhanced Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Create Barter Trade
-          </h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h1 className="text-3xl font-bold text-gray-900">Create Barter Trade</h1>
+            <Badge className="bg-orange-100 text-orange-800">0% Fees</Badge>
+          </div>
           <p className="text-lg text-gray-600 max-w-lg mx-auto">
             Trade skills, services, and items with your neighbors! No money required - just mutually beneficial exchanges.
           </p>

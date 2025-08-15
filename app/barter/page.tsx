@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { MapPin, Clock, ArrowLeftRight, User, Heart, Handshake, ArrowLeft, Menu, Plus } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { MapPin, Clock, ArrowLeftRight, User, Heart, Handshake, ArrowLeft, Menu, Plus, Search, Filter, MessageCircle } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from 'next/navigation'
 import TaskApplicationModal from '@/components/TaskApplicationModal'
+import Navigation from '@/components/shared/Navigation'
 import { useQuery } from '@tanstack/react-query'
 import { apiRequest } from '@/lib/lib/queryClient'
 import type { Task } from '@shared/schema'
@@ -30,6 +33,12 @@ export default function BarterPage() {
   const [showApplicationModal, setShowApplicationModal] = useState(false)
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
+  
+  // Filtering state
+  const [searchTerm, setSearchTerm] = useState('')
+  const [difficultyFilter, setDifficultyFilter] = useState('all')
+  const [tradeTypeFilter, setTradeTypeFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('newest')
 
   // Fetch barter tasks from API
   const { data: barterTasks = [], isLoading, error } = useQuery({
@@ -74,49 +83,33 @@ export default function BarterPage() {
     }
   }
 
+  // Filter and sort tasks
+  const filteredTasks = barterTasks.filter((task: BarterTask) => {
+    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         task.description.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesDifficulty = difficultyFilter === 'all' || task.difficulty === difficultyFilter
+    const matchesTradeType = tradeTypeFilter === 'all' || task.tradeType === tradeTypeFilter
+    return matchesSearch && matchesDifficulty && matchesTradeType
+  }).sort((a: BarterTask, b: BarterTask) => {
+    switch (sortBy) {
+      case 'newest': return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      case 'oldest': return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+      default: return 0
+    }
+  })
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100 p-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Navigation Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2 text-gray-700 hover:text-orange-600"
-          >
-            <ArrowLeft size={20} />
-            Back to Dashboard
-          </Button>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Menu size={16} />
-                Browse Tasks
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => router.push('/solo')}>
-                Solo Tasks
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/community')}>
-                Community Tasks
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/sponsors')}>
-                Corporate Tasks
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/')}>
-                Home
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
+      <Navigation showBackButton={true} backUrl="/dashboard" title="Barter Exchange" />
+      
+      <div className="max-w-6xl mx-auto p-4">
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Barter Exchange
-          </h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h1 className="text-4xl font-bold text-gray-900">Barter Exchange</h1>
+            <Badge className="bg-orange-100 text-orange-800">0% Fees</Badge>
+          </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Trade skills, services, and items without money! Connect with neighbors for mutually beneficial exchanges. 
             No platform fees - just community-driven value trading.
@@ -128,6 +121,7 @@ export default function BarterPage() {
               data-testid="button-create-barter-trade"
               onClick={() => router.push('/create-barter')}
             >
+              <Plus className="w-5 h-5 mr-2" />
               Create Barter Trade
             </Button>
             <Button 
@@ -136,8 +130,59 @@ export default function BarterPage() {
               className="border-orange-600 text-orange-600 hover:bg-orange-50 px-8 py-3"
               data-testid="button-chat-traders"
             >
+              <MessageCircle className="w-5 h-5 mr-2" />
               Chat with Traders
             </Button>
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search trades..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Difficulty" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Difficulties</SelectItem>
+                <SelectItem value="Easy">Easy</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="Hard">Hard</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={tradeTypeFilter} onValueChange={setTradeTypeFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Trade Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Trade Types</SelectItem>
+                <SelectItem value="Service for Service">Service ↔ Service</SelectItem>
+                <SelectItem value="Item for Service">Item ↔ Service</SelectItem>
+                <SelectItem value="Service for Item">Service ↔ Item</SelectItem>
+                <SelectItem value="Item for Item">Item ↔ Item</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

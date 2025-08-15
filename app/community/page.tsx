@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { MessageCircle, Users, MapPin, Clock, DollarSign, ArrowLeft, Menu, Plus } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { MessageCircle, Users, MapPin, Clock, DollarSign, ArrowLeft, Menu, Plus, Search, Filter } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import TaskApplicationModal from '@/components/TaskApplicationModal'
 import TaskMessaging from '@/components/TaskMessaging'
+import Navigation from '@/components/shared/Navigation'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { apiRequest } from '@/lib/lib/queryClient'
@@ -34,6 +37,12 @@ export default function CommunityPage() {
   const [selectedTask, setSelectedTask] = useState<CommunityTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
   const [selectedTaskForChat, setSelectedTaskForChat] = useState<CommunityTask | null>(null)
+  
+  // Filtering state
+  const [searchTerm, setSearchTerm] = useState('')
+  const [difficultyFilter, setDifficultyFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('newest')
 
   // Fetch community tasks from API
   const { data: communityTasks = [], isLoading, error } = useQuery({
@@ -79,51 +88,37 @@ export default function CommunityPage() {
     }
   }
 
+  // Filter and sort tasks
+  const filteredTasks = communityTasks.filter((task: CommunityTask) => {
+    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         task.description.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesDifficulty = difficultyFilter === 'all' || task.difficulty === difficultyFilter
+    const matchesStatus = statusFilter === 'all' || task.status === statusFilter
+    return matchesSearch && matchesDifficulty && matchesStatus
+  }).sort((a: CommunityTask, b: CommunityTask) => {
+    switch (sortBy) {
+      case 'price-high': return (b.price || 0) - (a.price || 0)
+      case 'price-low': return (a.price || 0) - (b.price || 0)
+      case 'newest': return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      case 'oldest': return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+      default: return 0
+    }
+  })
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Navigation Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-          >
-            <ArrowLeft size={20} />
-            Back to Dashboard
-          </Button>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Menu size={16} />
-                Browse Tasks
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => router.push('/solo')}>
-                Solo Tasks
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/sponsors')}>
-                Corporate Tasks
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/barter')}>
-                Barter Exchange
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/')}>
-                Home
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <Navigation showBackButton={true} backUrl="/dashboard" title="Community Tasks" />
+      
+      <div className="max-w-6xl mx-auto p-4">
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Community Tasks
-          </h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h1 className="text-4xl font-bold text-gray-900">Community Tasks</h1>
+            <Badge className="bg-blue-100 text-blue-800">7% Platform Fee</Badge>
+          </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Join your neighbors in collaborative tasks! Work together, share earnings (7% platform fee), 
+            Join your neighbors in collaborative tasks! Work together, share earnings, 
             and build stronger community connections through group messaging.
           </p>
           <div className="mt-6">
@@ -133,8 +128,60 @@ export default function CommunityPage() {
               data-testid="button-create-community-task"
               onClick={() => router.push('/create-task')}
             >
+              <Plus className="w-5 h-5 mr-2" />
               Create Community Task
             </Button>
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search tasks..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Difficulty" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Difficulties</SelectItem>
+                <SelectItem value="Easy">Easy</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="Hard">Hard</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="price-high">Highest Pay</SelectItem>
+                <SelectItem value="price-low">Lowest Pay</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -197,9 +244,9 @@ export default function CommunityPage() {
         )}
 
         {/* Task Grid */}
-        {!isLoading && !error && communityTasks.length > 0 && (
+        {!isLoading && !error && filteredTasks.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {communityTasks.filter((task: CommunityTask) => task.status === 'open').map((task: CommunityTask) => (
+            {filteredTasks.map((task: CommunityTask) => (
             <Card key={task.id} className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-start mb-2">

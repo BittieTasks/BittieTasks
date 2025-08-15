@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiRequest } from '@/lib/lib/queryClient'
 import { useAuth } from '../../components/auth/AuthProvider'
+import Navigation from '@/components/shared/Navigation'
 
 const difficultyOptions = [
   { value: 'easy', label: 'Easy', description: 'Simple tasks, minimal experience needed' },
@@ -119,26 +120,16 @@ export default function CreateTaskPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Navigation Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.push('/community')}
-            className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-            data-testid="button-back-community"
-          >
-            <ArrowLeft size={20} />
-            Back to Community Tasks
-          </Button>
-        </div>
-
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <Navigation showBackButton={true} backUrl="/community" title="Create Community Task" />
+      
+      <div className="max-w-2xl mx-auto p-4">
+        {/* Enhanced Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Create Community Task
-          </h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h1 className="text-3xl font-bold text-gray-900">Create Community Task</h1>
+            <Badge className="bg-blue-100 text-blue-800">7% Platform Fee</Badge>
+          </div>
           <p className="text-lg text-gray-600 max-w-lg mx-auto">
             Post a collaborative task for your neighbors! Share the work and earnings with others in your community.
           </p>
