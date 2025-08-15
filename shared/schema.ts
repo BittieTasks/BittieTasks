@@ -131,6 +131,11 @@ export const tasks = pgTable("tasks", {
   sponsorBudget: decimal("sponsor_budget", { precision: 10, scale: 2 }),
   scheduledDate: timestamp("scheduled_date"),
   completedAt: timestamp("completed_at"),
+  // Barter-specific fields
+  offering: text("offering"), // What the poster is offering
+  seeking: text("seeking"), // What the poster wants in return
+  tradeType: varchar("trade_type", { enum: ["service_for_service", "item_for_service", "service_for_item", "item_for_item"] }),
+  tags: varchar("tags").array(), // Tags for better discovery
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -391,14 +396,29 @@ export const insertTaskVerificationRequirementSchema = createInsertSchema(taskVe
 });
 
 // Form schemas with additional validation
-export const taskFormSchema = z.object({
-  title: z.string().min(1).max(100),
-  description: z.string().min(10).max(500),
-  earningPotential: z.number().min(5).max(500),
-  maxParticipants: z.number().min(1).max(20),
-  location: z.string().min(1).max(200),
-  duration: z.string().optional(),
+export const communityTaskFormSchema = z.object({
+  title: z.string().min(1, "Title is required").max(100, "Title must be under 100 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters").max(500, "Description must be under 500 characters"),
+  earningPotential: z.number().min(5, "Minimum earning is $5").max(500, "Maximum earning is $500"),
+  maxParticipants: z.number().min(1, "At least 1 participant required").max(20, "Maximum 20 participants"),
+  location: z.string().min(1, "Location is required").max(200, "Location must be under 200 characters"),
+  duration: z.string().min(1, "Duration is required"),
+  difficulty: z.enum(["easy", "medium", "hard"]),
   requirements: z.string().optional(),
+  categoryId: z.string().optional(),
+});
+
+export const barterTaskFormSchema = z.object({
+  title: z.string().min(1, "Title is required").max(100, "Title must be under 100 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters").max(500, "Description must be under 500 characters"),
+  offering: z.string().min(1, "What you're offering is required").max(200, "Offering must be under 200 characters"),
+  seeking: z.string().min(1, "What you're seeking is required").max(200, "Seeking must be under 200 characters"),
+  location: z.string().min(1, "Location is required").max(200, "Location must be under 200 characters"),
+  duration: z.string().min(1, "Time estimate is required"),
+  difficulty: z.enum(["easy", "medium", "hard"]),
+  tradeType: z.enum(["service_for_service", "item_for_service", "service_for_item", "item_for_item"]),
+  tags: z.array(z.string()).min(1, "At least one tag is required").max(10, "Maximum 10 tags"),
+  categoryId: z.string().optional(),
 });
 
 export const userFormSchema = z.object({
@@ -408,5 +428,6 @@ export const userFormSchema = z.object({
 });
 
 // Type exports for forms
-export type TaskFormData = z.infer<typeof taskFormSchema>;
+export type CommunityTaskFormData = z.infer<typeof communityTaskFormSchema>;
+export type BarterTaskFormData = z.infer<typeof barterTaskFormSchema>;
 export type UserFormData = z.infer<typeof userFormSchema>;

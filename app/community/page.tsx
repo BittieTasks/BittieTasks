@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { MessageCircle, Users, MapPin, Clock, DollarSign, ArrowLeft, Menu } from 'lucide-react'
+import { MessageCircle, Users, MapPin, Clock, DollarSign, ArrowLeft, Menu, Plus } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,75 +14,36 @@ import {
 } from "@/components/ui/dropdown-menu"
 import TaskApplicationModal from '@/components/TaskApplicationModal'
 import { useRouter } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
+import { apiRequest } from '@/lib/lib/queryClient'
+import type { Task } from '@shared/schema'
 
-interface CommunityTask {
-  id: string
-  title: string
-  description: string
-  price: number
-  location: string
-  postedBy: string
-  postedAt: string
-  participants: number
-  maxParticipants: number
-  category: string
-  difficulty: 'Easy' | 'Medium' | 'Hard'
-  estimatedTime: string
-  status: 'open' | 'in-progress' | 'completed'
+interface CommunityTask extends Task {
+  postedBy?: string
+  postedAt?: string
 }
-
-const communityTasks: CommunityTask[] = [
-  {
-    id: 'comm-1',
-    title: 'Neighborhood Clean-Up Day',
-    description: 'Join our monthly neighborhood clean-up! We need volunteers to help pick up litter, plant flowers, and make our community beautiful.',
-    price: 25,
-    location: 'Riverside Park',
-    postedBy: 'Sarah M.',
-    postedAt: '2 hours ago',
-    participants: 8,
-    maxParticipants: 15,
-    category: 'Community Service',
-    difficulty: 'Easy',
-    estimatedTime: '3 hours',
-    status: 'open'
-  },
-  {
-    id: 'comm-2',
-    title: 'Block Party Setup Crew',
-    description: 'Help set up tables, chairs, and decorations for our annual block party. Great way to meet neighbors and have fun!',
-    price: 40,
-    location: 'Elm Street',
-    postedBy: 'Mike R.',
-    postedAt: '1 day ago',
-    participants: 5,
-    maxParticipants: 10,
-    category: 'Event Setup',
-    difficulty: 'Medium',
-    estimatedTime: '4 hours',
-    status: 'open'
-  },
-  {
-    id: 'comm-3',
-    title: 'Community Garden Maintenance',
-    description: 'Weekly maintenance of our shared garden space. Watering, weeding, and harvesting vegetables to share with the community.',
-    price: 30,
-    location: 'Community Center',
-    postedBy: 'Lisa K.',
-    postedAt: '3 days ago',
-    participants: 12,
-    maxParticipants: 12,
-    category: 'Gardening',
-    difficulty: 'Easy',
-    estimatedTime: '2 hours',
-    status: 'in-progress'
-  }
-]
 
 export default function CommunityPage() {
   const router = useRouter()
   const [selectedTask, setSelectedTask] = useState<CommunityTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
+
+  // Fetch community tasks from API
+  const { data: communityTasks = [], isLoading, error } = useQuery({
+    queryKey: ['/api/tasks', 'shared'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/tasks?type=shared')
+      const tasks = await response.json()
+      return tasks.map((task: Task) => ({
+        ...task,
+        price: Number(task.earningPotential),
+        participants: task.currentParticipants,
+        estimatedTime: task.duration,
+        postedBy: 'Community Member', // Placeholder until we have user data
+        postedAt: new Date(task.createdAt!).toLocaleDateString(),
+      }))
+    }
+  })
 
   const handleApplyClick = (task: CommunityTask) => {
     setSelectedTask(task)
@@ -174,11 +135,11 @@ export default function CommunityPage() {
               <div className="text-sm text-gray-600">Active Tasks</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{communityTasks.reduce((sum, t) => sum + t.participants, 0)}</div>
+              <div className="text-2xl font-bold text-green-600">{communityTasks.reduce((sum, t) => sum + (t.participants || 0), 0)}</div>
               <div className="text-sm text-gray-600">Total Participants</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">${communityTasks.reduce((sum, t) => sum + t.price, 0)}</div>
+              <div className="text-2xl font-bold text-purple-600">${communityTasks.reduce((sum, t) => sum + (t.price || 0), 0)}</div>
               <div className="text-sm text-gray-600">Total Earnings</div>
             </div>
             <div className="text-center">
@@ -188,9 +149,46 @@ export default function CommunityPage() {
           </div>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="text-center py-8">
+            <p className="text-gray-600 mb-4">Failed to load community tasks</p>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !error && communityTasks.length === 0 && (
+          <div className="text-center py-12">
+            <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No Community Tasks Yet</h3>
+            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              Be the first to create a community task! Post collaborative work and share earnings with your neighbors.
+            </p>
+            <Button 
+              onClick={() => router.push('/create-task')}
+              className="bg-blue-600 hover:bg-blue-700"
+              data-testid="button-create-first-task"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create First Community Task
+            </Button>
+          </div>
+        )}
+
         {/* Task Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {communityTasks.map((task) => (
+        {!isLoading && !error && communityTasks.length > 0 && (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {communityTasks.filter(task => task.status === 'open').map((task) => (
             <Card key={task.id} className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-start mb-2">
@@ -266,7 +264,8 @@ export default function CommunityPage() {
               </CardContent>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Application Modal */}
         {selectedTask && (

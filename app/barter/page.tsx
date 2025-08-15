@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { MapPin, Clock, ArrowLeftRight, User, Heart, Handshake, ArrowLeft, Menu } from 'lucide-react'
+import { MapPin, Clock, ArrowLeftRight, User, Heart, Handshake, ArrowLeft, Menu, Plus } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,120 +14,35 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from 'next/navigation'
 import TaskApplicationModal from '@/components/TaskApplicationModal'
+import { useQuery } from '@tanstack/react-query'
+import { apiRequest } from '@/lib/lib/queryClient'
+import type { Task } from '@shared/schema'
 
-interface BarterTask {
-  id: string
-  title: string
-  description: string
-  offering: string
-  seeking: string
-  location: string
-  timeEstimate: string
-  category: string
-  postedBy: string
-  postedAt: string
-  difficulty: 'Easy' | 'Medium' | 'Hard'
-  tradeType: 'Service for Service' | 'Item for Service' | 'Service for Item' | 'Item for Item'
-  tags: string[]
+interface BarterTask extends Task {
+  timeEstimate?: string
+  postedBy?: string
+  postedAt?: string
 }
-
-const barterTasks: BarterTask[] = [
-  {
-    id: 'barter-1',
-    title: 'Piano Lessons for Garden Help',
-    description: 'I\'m a certified piano teacher willing to give weekly 1-hour lessons in exchange for help maintaining my vegetable garden.',
-    offering: '4 piano lessons (1 hour each)',
-    seeking: 'Garden weeding & watering (4 visits)',
-    location: 'Maple Street',
-    timeEstimate: '1 month commitment',
-    category: 'Education & Gardening',
-    postedBy: 'Maria T.',
-    postedAt: '1 day ago',
-    difficulty: 'Medium',
-    tradeType: 'Service for Service',
-    tags: ['music', 'education', 'gardening', 'ongoing']
-  },
-  {
-    id: 'barter-2',
-    title: 'Homemade Bread for Dog Walking',
-    description: 'I bake fresh artisan bread weekly and would love to trade loaves for someone to walk my elderly dog twice a week.',
-    offering: '2 fresh bread loaves weekly',
-    seeking: 'Dog walking (2x per week)',
-    location: 'Oak Ridge',
-    timeEstimate: '30 minutes per walk',
-    category: 'Food & Pet Care',
-    postedBy: 'Tom R.',
-    postedAt: '3 hours ago',
-    difficulty: 'Easy',
-    tradeType: 'Item for Service',
-    tags: ['food', 'baking', 'pets', 'weekly']
-  },
-  {
-    id: 'barter-3',
-    title: 'Graphic Design for House Cleaning',
-    description: 'Professional graphic designer offering logo design and branding package in exchange for deep cleaning of my 2-bedroom apartment.',
-    offering: 'Custom logo + branding package',
-    seeking: 'Deep apartment cleaning',
-    location: 'Downtown Loft',
-    timeEstimate: '5 hours cleaning',
-    category: 'Design & Cleaning',
-    postedBy: 'Alex K.',
-    postedAt: '2 days ago',
-    difficulty: 'Hard',
-    tradeType: 'Service for Service',
-    tags: ['design', 'branding', 'cleaning', 'professional']
-  },
-  {
-    id: 'barter-4',
-    title: 'Fresh Vegetables for Handyman Work',
-    description: 'My garden is overflowing! I have fresh tomatoes, cucumbers, and herbs to trade for help fixing my fence and shed door.',
-    offering: '20 lbs fresh organic vegetables',
-    seeking: 'Fence repair & shed door fix',
-    location: 'Suburban Home',
-    timeEstimate: '3-4 hours work',
-    category: 'Food & Maintenance',
-    postedBy: 'Linda S.',
-    postedAt: '5 hours ago',
-    difficulty: 'Medium',
-    tradeType: 'Item for Service',
-    tags: ['organic', 'vegetables', 'handyman', 'repair']
-  },
-  {
-    id: 'barter-5',
-    title: 'Web Development for Photography Session',
-    description: 'I\'ll build you a professional website with hosting setup in exchange for a family portrait session and edited photos.',
-    offering: 'Custom website + 1 year hosting',
-    seeking: 'Family photo session (2 hours)',
-    location: 'Park or Studio',
-    timeEstimate: '2 hours photo session',
-    category: 'Technology & Photography',
-    postedBy: 'Sarah M.',
-    postedAt: '1 week ago',
-    difficulty: 'Hard',
-    tradeType: 'Service for Service',
-    tags: ['web-development', 'photography', 'family', 'professional']
-  },
-  {
-    id: 'barter-6',
-    title: 'Yoga Classes for Meal Prep Service',
-    description: 'Certified yoga instructor offering private sessions in exchange for weekly healthy meal prep for busy schedule.',
-    offering: '4 private yoga sessions',
-    seeking: 'Weekly meal prep (4 weeks)',
-    location: 'Home or Studio',
-    timeEstimate: '1 hour per session',
-    category: 'Wellness & Food',
-    postedBy: 'Emma C.',
-    postedAt: '4 days ago',
-    difficulty: 'Medium',
-    tradeType: 'Service for Service',
-    tags: ['yoga', 'wellness', 'meal-prep', 'health']
-  }
-]
 
 export default function BarterPage() {
   const [selectedTask, setSelectedTask] = useState<BarterTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
   const router = useRouter()
+
+  // Fetch barter tasks from API
+  const { data: barterTasks = [], isLoading, error } = useQuery({
+    queryKey: ['/api/tasks', 'barter'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/tasks?type=barter')
+      const tasks = await response.json()
+      return tasks.map((task: Task) => ({
+        ...task,
+        timeEstimate: task.duration,
+        postedBy: 'Trader', // Placeholder until we have user data
+        postedAt: new Date(task.createdAt!).toLocaleDateString(),
+      }))
+    }
+  })
 
   const handleApplyClick = (task: BarterTask) => {
     setSelectedTask(task)
@@ -205,6 +120,7 @@ export default function BarterPage() {
               size="lg" 
               className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3"
               data-testid="button-create-barter-trade"
+              onClick={() => router.push('/create-barter')}
             >
               Create Barter Trade
             </Button>
@@ -260,9 +176,46 @@ export default function BarterPage() {
           </div>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full" />
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="text-center py-8">
+            <p className="text-gray-600 mb-4">Failed to load barter trades</p>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !error && barterTasks.length === 0 && (
+          <div className="text-center py-12">
+            <ArrowLeftRight className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No Barter Trades Yet</h3>
+            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              Start the first trade! Exchange skills, services, and items with your neighbors without any money.
+            </p>
+            <Button 
+              onClick={() => router.push('/create-barter')}
+              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+              data-testid="button-create-first-barter"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create First Barter Trade
+            </Button>
+          </div>
+        )}
+
         {/* Task Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {barterTasks.map((task) => (
+        {!isLoading && !error && barterTasks.length > 0 && (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {barterTasks.map((task) => (
             <Card key={task.id} className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-start mb-2">
@@ -363,7 +316,8 @@ export default function BarterPage() {
               </CardContent>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Application Modal */}
         {selectedTask && (
