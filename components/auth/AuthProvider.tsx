@@ -78,11 +78,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.error('Error creating user profile:', error)
           }
           
-          // Auto-redirect to marketplace after successful sign in (only if verified)
+          // Auto-redirect to dashboard after successful sign in (only if verified)
           if (typeof window !== 'undefined' && window.location.pathname === '/auth') {
-            console.log('Auto-redirecting to marketplace after sign in')
+            console.log('Auto-redirecting to dashboard after sign in')
             setTimeout(() => {
-              window.location.href = '/marketplace'
+              window.location.href = '/dashboard'
             }, 100) // Small delay to ensure state is updated
           }
         } else {

@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const next = requestUrl.searchParams.get('next') || '/marketplace'
+  const next = requestUrl.searchParams.get('next') || '/dashboard'
 
   if (code) {
     const supabase = createClient(
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
       if (data.user) {
         console.log('Email verification successful for user:', data.user.email)
-        // Redirect to marketplace after successful email verification
+        // Redirect to dashboard after successful email verification
         return NextResponse.redirect(`${requestUrl.origin}${next}`)
       }
     } catch (error) {
