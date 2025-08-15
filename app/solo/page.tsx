@@ -424,6 +424,8 @@ export default function SoloPage() {
               verification_type: 'photo'
             }}
             userId="demo-user"
+            isOpen={showApplicationModal}
+            onOpenChange={setShowApplicationModal}
             onSuccess={() => {
               setShowApplicationModal(false)
               setSelectedTask(null)

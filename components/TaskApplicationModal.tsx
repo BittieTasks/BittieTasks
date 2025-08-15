@@ -28,11 +28,15 @@ interface Task {
 interface TaskApplicationModalProps {
   task: Task
   userId: string
+  isOpen?: boolean
+  onOpenChange?: (open: boolean) => void
   onSuccess?: () => void
 }
 
-export default function TaskApplicationModal({ task, userId, onSuccess }: TaskApplicationModalProps) {
-  const [isOpen, setIsOpen] = useState(false)
+export default function TaskApplicationModal({ task, userId, isOpen: externalIsOpen, onOpenChange, onSuccess }: TaskApplicationModalProps) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false)
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen
+  const setIsOpen = onOpenChange || setInternalIsOpen
   const [step, setStep] = useState<'apply' | 'verify'>('apply')
   const [loading, setLoading] = useState(false)
   const [applied, setApplied] = useState(false)
@@ -240,14 +244,6 @@ export default function TaskApplicationModal({ task, userId, onSuccess }: TaskAp
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button 
-          className="w-full bg-teal-600 hover:bg-teal-700 text-white"
-          data-testid={`button-apply-${task.id}`}
-        >
-          {task.platform_funded ? 'Complete Task & Earn $2' : 'Apply Now'}
-        </Button>
-      </DialogTrigger>
       <DialogContent className="max-w-md mx-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
