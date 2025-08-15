@@ -16,11 +16,6 @@
       "static/chunks/main-app.js",
       "static/chunks/app/loading.js"
     ],
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
-    ],
     "/solo/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

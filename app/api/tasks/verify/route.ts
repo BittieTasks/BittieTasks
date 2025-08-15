@@ -48,16 +48,38 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create Stripe payment intent for $2 payout
+    // Get the correct task pricing from the task ID
+    const taskPricing: Record<string, number> = {
+      'platform-001': 20, // Laundry Day
+      'platform-002': 15, // Kitchen Clean-Up
+      'platform-003': 12, // Pilates Session
+      'platform-004': 25, // Grocery Run
+      'platform-005': 30, // Room Organization
+      'platform-006': 18, // Deep Clean Bathroom
+      'platform-007': 10, // Morning Yoga Flow
+      'platform-008': 35, // Meal Prep Session
+      'platform-009': 28, // Closet Deep Clean
+      'platform-010': 22, // Vehicle Exterior Wash
+      'platform-011': 8,  // Meditation & Journaling
+      'platform-012': 14, // Garden/Plant Care
+      'platform-013': 11, // Digital Detox Walk
+      'platform-014': 16, // Home Office Organization
+      'platform-015': 13  // Self-Care Spa Hour
+    }
+
+    const taskPayout = taskPricing[taskId] || 2 // fallback to $2 for unknown tasks
+    
+    // Create Stripe payment intent for fair market payout
     const stripe = getStripe()
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 200, // $2.00 in cents
+      amount: taskPayout * 100, // Convert dollars to cents
       currency: 'usd',
       description: `BittieTasks platform payment for task completion: ${taskId}`,
       metadata: {
         taskId,
         userId,
-        platform_funded: 'true'
+        platform_funded: 'true',
+        amount: taskPayout
       }
     })
 
@@ -144,7 +166,7 @@ export async function POST(request: NextRequest) {
           detectedObjects: verification.detectedObjects || []
         },
         payment: {
-          amount: 2.00,
+          amount: taskPayout,
           currency: 'USD',
           status: 'completed',
           paymentIntentId: paymentIntent.id
@@ -165,7 +187,7 @@ export async function POST(request: NextRequest) {
           requiresReview: true
         },
         payment: {
-          amount: 2.00,
+          amount: taskPayout,
           currency: 'USD',
           status: 'pending',
           paymentIntentId: paymentIntent.id
