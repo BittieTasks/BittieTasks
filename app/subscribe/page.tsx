@@ -115,6 +115,7 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
 
 export default function Subscribe() {
   const [selectedPlan, setSelectedPlan] = useState<'pro' | 'premium' | null>(null);
+  const { toast } = useToast();
   const router = useRouter();
 
   if (selectedPlan) {
