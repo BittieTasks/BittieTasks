@@ -36,12 +36,6 @@ export default function HomePage() {
             
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
-              <button className="text-gray-700 hover:text-teal-600 font-medium">
-                About
-              </button>
-              <button className="text-gray-700 hover:text-teal-600 font-medium">
-                How It Works
-              </button>
               <button 
                 onClick={() => router.push('/earnings')}
                 className="text-gray-700 hover:text-teal-600 font-medium"
@@ -52,16 +46,13 @@ export default function HomePage() {
                 onClick={() => router.push('/subscribe')}
                 className="text-gray-700 hover:text-teal-600 font-medium"
               >
-                Pricing
+                Subscription
               </button>
               <button 
                 onClick={() => router.push('/sponsors')}
                 className="text-gray-700 hover:text-teal-600 font-medium"
               >
                 Sponsors
-              </button>
-              <button className="text-gray-700 hover:text-teal-600 font-medium">
-                Contact
               </button>
             </div>
           </div>
