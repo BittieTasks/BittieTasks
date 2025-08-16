@@ -185,9 +185,12 @@ export class SimpleEmailVerification {
       
     } catch (error) {
       console.error('Email verification error:', error)
+      // Provide more specific error information for debugging
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      console.error('Detailed error:', errorMessage)
       return {
         success: false,
-        message: 'Verification failed due to a system error. Please try again.'
+        message: `Verification failed due to a system error: ${errorMessage}. Please try again.`
       }
     }
   }
