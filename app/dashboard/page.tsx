@@ -29,7 +29,7 @@ interface UserStats {
 interface TaskActivity {
   id: string
   title: string
-  status: 'applied' | 'accepted' | 'completed' | 'verified'
+  status: 'applied' | 'accepted' | 'completed' | 'verified' | 'joined'
   payout: number
   location: string
   applied_at: string
@@ -253,6 +253,70 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Pending Tasks Section */}
+          {taskApplications.filter((app: TaskActivity) => app.status === 'joined').length > 0 && (
+            <Card className="bg-orange-50 border-orange-200 shadow-sm mb-6">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-orange-600" />
+                  Tasks Awaiting Completion ({taskApplications.filter((app: TaskActivity) => app.status === 'joined').length})
+                </CardTitle>
+                <p className="text-sm text-orange-700">
+                  Complete these tasks to earn your rewards
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {taskApplications
+                  .filter((app: TaskActivity) => app.status === 'joined')
+                  .map((task: TaskActivity) => (
+                    <div key={task.id} className="bg-white border border-orange-200 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 mb-1">{task.title}</h3>
+                          <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+                            <span className="flex items-center gap-1">
+                              <Coins className="h-4 w-4 text-green-600" />
+                              ${task.payout}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-4 w-4" />
+                              {task.location}
+                            </span>
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                              {task.task_type}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            Applied {new Date(task.applied_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
+                          onClick={() => {
+                            // For solo tasks, open the task application modal to complete verification
+                            if (task.task_type === 'solo') {
+                              router.push(`/solo?complete=${task.id}`)
+                            } else {
+                              router.push(`/task/${task.id}`)
+                            }
+                          }}
+                          data-testid={`button-complete-${task.id}`}
+                        >
+                          Complete Task
+                        </Button>
+                      </div>
+                      <div className="bg-orange-100 border border-orange-300 rounded-md p-3">
+                        <p className="text-sm text-orange-800">
+                          📸 Ready to complete? Upload verification photos to receive your ${task.payout} payment!
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Recent Applications */}
           <Card className="bg-white shadow-sm mb-6">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -250,6 +250,21 @@ export default function SoloPage() {
   const [showApplicationModal, setShowApplicationModal] = useState(false)
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
+  
+  // Check for completion parameter from dashboard
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const completeTaskId = urlParams.get('complete')
+    
+    if (completeTaskId && isAuthenticated) {
+      // Find the task to complete
+      const taskToComplete = soloTasks.find(task => task.id === completeTaskId)
+      if (taskToComplete) {
+        setSelectedTask(taskToComplete)
+        setShowApplicationModal(true)
+      }
+    }
+  }, [isAuthenticated])
 
   const handleApplyClick = (task: SoloTask) => {
     if (!isAuthenticated) {
