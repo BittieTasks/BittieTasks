@@ -13,14 +13,17 @@ export async function POST(request: NextRequest) {
     console.log('Task apply auth check:', {
       hasUser: !!user,
       userEmail: user?.email,
+      userId: user?.id,
       authError: authError?.message,
       hasAuthHeader: !!request.headers.get('authorization'),
-      hasCookies: !!request.headers.get('cookie')
+      hasCookies: !!request.headers.get('cookie'),
+      requestHeaders: Object.fromEntries(request.headers.entries())
     })
 
     if (authError || !user) {
+      console.error('Auth failed in task apply:', { authError, hasUser: !!user })
       return NextResponse.json(
-        { error: 'Authentication required' },
+        { error: 'Authentication required. Please sign in first.' },
         { status: 401 }
       )
     }

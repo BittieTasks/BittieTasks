@@ -132,27 +132,36 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
     try {
       // Get the current session token from Supabase
       const { supabase } = await import('@/lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      }
+      console.log('Session check in modal:', {
+        hasSession: !!session,
+        sessionError: sessionError?.message,
+        hasAccessToken: !!session?.access_token,
+        userId: session?.user?.id
+      })
       
-      // Include auth token if available
-      if (session?.access_token) {
-        headers['Authorization'] = `Bearer ${session.access_token}`
+      if (!session?.access_token || sessionError) {
+        throw new Error('Please sign in to apply for tasks')
       }
       
       const response = await fetch('/api/tasks/apply', {
         method: 'POST',
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          // Also include cookie for server-side auth
+          'Cookie': document.cookie
+        },
+        credentials: 'include', // Important for auth cookies
         body: JSON.stringify({
           taskId: task.id,
-          userId: userId
+          userId: session.user.id // Use session user ID instead of prop
         })
       })
 
       const data = await response.json()
+      console.log('Apply response:', { status: response.status, data })
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to apply for task')
@@ -165,6 +174,7 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
         description: "You can now complete the task and submit verification.",
       })
     } catch (error) {
+      console.error('Apply error:', error)
       toast({
         title: "Application Failed",
         description: error instanceof Error ? error.message : "Failed to apply for task",
