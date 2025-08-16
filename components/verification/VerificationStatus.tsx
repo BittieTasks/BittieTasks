@@ -217,7 +217,7 @@ export function VerificationStatus({
           </div>
         )}
 
-        {verification.ai_details?.positiveAspects?.length > 0 && (
+        {verification.ai_details?.positiveAspects && verification.ai_details.positiveAspects.length > 0 && (
           <div className="space-y-2">
             <span className="font-medium text-green-700">What Was Done Well:</span>
             <ul className="text-sm text-green-600 space-y-1">
@@ -231,7 +231,7 @@ export function VerificationStatus({
           </div>
         )}
 
-        {verification.ai_details?.issuesFound?.length > 0 && (
+        {verification.ai_details?.issuesFound && verification.ai_details.issuesFound.length > 0 && (
           <div className="space-y-2">
             <span className="font-medium text-red-700">Issues Found:</span>
             <ul className="text-sm text-red-600 space-y-1">
