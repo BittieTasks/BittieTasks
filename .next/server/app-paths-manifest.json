@@ -1,1 +1,5 @@
-{}
+{
+  "/api/auth/signup/route": "app/api/auth/signup/route.js",
+  "/api/auth/all-users/route": "app/api/auth/all-users/route.js",
+  "/api/auth/manual-verify/route": "app/api/auth/manual-verify/route.js"
+}
