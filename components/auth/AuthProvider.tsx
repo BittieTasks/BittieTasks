@@ -205,12 +205,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-    
-    // Redirect to home page after successful sign out
-    if (typeof window !== 'undefined') {
-      window.location.href = '/'
+    try {
+      console.log('SignOut initiated...')
+      
+      // Clear local state first
+      setUser(null)
+      setSession(null)
+      
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error('SignOut error:', error)
+        throw error
+      }
+      
+      console.log('SignOut successful')
+      
+      // Clear any cached data
+      if (typeof window !== 'undefined') {
+        // Clear localStorage
+        localStorage.clear()
+        
+        // Redirect to home page after successful sign out
+        window.location.href = '/'
+      }
+    } catch (error: any) {
+      console.error('SignOut failed:', error)
+      // Even if there's an error, try to clear local state and redirect
+      setUser(null)
+      setSession(null)
+      if (typeof window !== 'undefined') {
+        localStorage.clear()
+        window.location.href = '/'
+      }
+      throw error
     }
   }
 

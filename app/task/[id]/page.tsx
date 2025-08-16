@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import CleanNavigation from '@/components/CleanNavigation'
 import CleanLayout from '@/components/CleanLayout'
+import TaskMessaging from '@/components/messaging/TaskMessaging'
 import { 
   Clock, Users, MapPin, Coins, Star, Upload, 
   CheckCircle, ArrowLeft, AlertCircle, Camera, MessageSquare 
@@ -265,6 +266,14 @@ export default function TaskDetailPage() {
                   </Button>
                 </CardContent>
               </Card>
+            )}
+
+            {/* Real-Time Messaging - Phase 4A */}
+            {(currentStep === 'submitted' || isAuthenticated) && (
+              <TaskMessaging 
+                taskId={id as string}
+                taskTitle={task.title}
+              />
             )}
           </div>
 
