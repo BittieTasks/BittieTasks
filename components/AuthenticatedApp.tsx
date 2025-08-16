@@ -12,6 +12,7 @@ import {
   Menu, X, ChevronRight, Loader2
 } from 'lucide-react'
 import DashboardSection from '@/components/sections/DashboardSection'
+import SoloTasksSection from '@/components/sections/SoloTasksSection'
 import TaskApplicationModal from '@/components/TaskApplicationModal'
 
 type AppSection = 'dashboard' | 'solo' | 'community' | 'corporate' | 'barter' | 'profile' | 'settings'
@@ -223,12 +224,7 @@ export default function AuthenticatedApp({ initialSection = 'dashboard' }: Authe
         {/* Dynamic content area */}
         <div className="p-4 lg:p-6">
           {currentSection === 'dashboard' && <DashboardSection />}
-          {currentSection === 'solo' && (
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Solo Tasks</h2>
-              <p className="text-gray-600 mb-6">Loading solo tasks within this unified interface...</p>
-            </div>
-          )}
+          {currentSection === 'solo' && <SoloTasksSection />}
           {currentSection === 'community' && (
             <div className="text-center py-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Community Tasks</h2>
