@@ -70,6 +70,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(false)
 
       if (event === 'SIGNED_IN' && session?.user) {
+        // Handle redirect after successful sign in
+        const redirectPath = localStorage.getItem('redirectAfterAuth')
+        const pendingTaskId = localStorage.getItem('pendingTaskId')
+        
+        if (redirectPath && typeof window !== 'undefined') {
+          localStorage.removeItem('redirectAfterAuth')
+          if (pendingTaskId) {
+            localStorage.removeItem('pendingTaskId')
+            // Redirect to the page with task selection
+            setTimeout(() => {
+              window.location.href = `${redirectPath}?selectTask=${pendingTaskId}`
+            }, 1000)
+          } else {
+            setTimeout(() => {
+              window.location.href = redirectPath
+            }, 1000)
+          }
+        }
+        
         // Only create profile for verified users to avoid conflicts with email verification
         if (session.user.email_confirmed_at) {
           try {

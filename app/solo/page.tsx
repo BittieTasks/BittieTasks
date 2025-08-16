@@ -58,10 +58,11 @@ export default function SoloPage() {
   // Fetch live solo tasks from database
   const { data: soloTasks = [], isLoading, error } = useSoloTasks()
   
-  // Check for completion parameter from dashboard
+  // Check for completion parameter from dashboard or post-auth task selection
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
     const completeTaskId = urlParams.get('complete')
+    const selectTaskId = urlParams.get('selectTask')
     
     if (completeTaskId && isAuthenticated && soloTasks.length > 0) {
       // Find the task to complete
@@ -71,12 +72,25 @@ export default function SoloPage() {
         setShowApplicationModal(true)
       }
     }
+    
+    // Handle post-authentication task selection
+    if (selectTaskId && isAuthenticated && soloTasks.length > 0) {
+      const taskToSelect = soloTasks.find((task: SoloTask) => task.id === selectTaskId)
+      if (taskToSelect) {
+        setSelectedTask(taskToSelect)
+        setShowApplicationModal(true)
+        // Clean up URL
+        window.history.replaceState({}, document.title, '/solo')
+      }
+    }
   }, [isAuthenticated, soloTasks])
 
   const handleApplyClick = (task: SoloTask) => {
     if (!isAuthenticated) {
-      // Guide unauthenticated users to sign in
-      router.push('/auth?message=Please sign in to apply for tasks')
+      // Store the current page and task info for redirect after auth
+      localStorage.setItem('redirectAfterAuth', '/solo')
+      localStorage.setItem('pendingTaskId', task.id)
+      router.push('/auth?message=Please sign in to apply for tasks&redirect=solo')
       return
     }
     setSelectedTask(task)

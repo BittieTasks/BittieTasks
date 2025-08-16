@@ -104,8 +104,16 @@ export default function AuthPage() {
         title: 'Success!',
         description: 'You have been signed in successfully.',
       })
-      // Let AuthProvider handle the redirect to marketplace
-      // No manual redirect needed here
+      
+      // Check for redirect after sign in
+      const redirectPath = localStorage.getItem('redirectAfterAuth')
+      if (!redirectPath) {
+        // Default redirect to dashboard if no specific redirect
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 1000)
+      }
+      // Otherwise let AuthProvider handle the specific redirect
     } catch (error: any) {
       clearTimeout(timeoutId)
       console.error('handleSignIn error:', error)
