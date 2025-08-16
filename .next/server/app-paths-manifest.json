@@ -1,1 +1,6 @@
-{}
+{
+  "/api/auth/unconfirmed-users/route": "app/api/auth/unconfirmed-users/route.js",
+  "/api/auth/send-verification/route": "app/api/auth/send-verification/route.js",
+  "/api/auth/verify-email/route": "app/api/auth/verify-email/route.js",
+  "/verify-email/page": "app/verify-email/page.js"
+}
