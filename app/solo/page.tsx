@@ -261,6 +261,13 @@ export default function SoloPage() {
     setShowApplicationModal(true)
   }
 
+  const handleApplicationSuccess = () => {
+    // Close modal and redirect to dashboard after successful verification and payment
+    setShowApplicationModal(false)
+    setSelectedTask(null)
+    router.push('/dashboard?message=Task completed and payment processed!')
+  }
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Easy': return 'bg-green-100 text-green-800 border-green-200'
@@ -441,10 +448,7 @@ export default function SoloPage() {
             userId={user?.id || ''}
             isOpen={showApplicationModal}
             onOpenChange={setShowApplicationModal}
-            onSuccess={() => {
-              setShowApplicationModal(false)
-              setSelectedTask(null)
-            }}
+            onSuccess={handleApplicationSuccess}
           />
         )}
       </div>

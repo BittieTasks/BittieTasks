@@ -242,8 +242,12 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
         throw new Error(data.error || 'Verification failed')
       }
 
+      // Call the success callback if provided
+      if (onSuccess) {
+        onSuccess()
+      }
+      
       setIsOpen(false)
-      onSuccess?.()
     } catch (error) {
       toast({
         title: "Verification Failed",
