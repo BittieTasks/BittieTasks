@@ -146,10 +146,15 @@ export const taskParticipants = pgTable("task_participants", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   taskId: varchar("task_id").references(() => tasks.id).notNull(),
   userId: varchar("user_id").references(() => users.id).notNull(),
-  status: varchar("status").default('joined'), // joined, completed, cancelled
+  status: varchar("status").default('joined'), // joined, completed, cancelled, expired
   earnedAmount: decimal("earned_amount", { precision: 8, scale: 2 }),
   joinedAt: timestamp("joined_at").defaultNow(),
   completedAt: timestamp("completed_at"),
+  // Time limit fields
+  deadline: timestamp("deadline"),
+  reminderSent: boolean("reminder_sent").default(false),
+  deadlineExtended: boolean("deadline_extended").default(false),
+  extensionRequestedAt: timestamp("extension_requested_at"),
 });
 
 // Task verification requirements

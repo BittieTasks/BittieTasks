@@ -59,13 +59,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Calculate deadline (24 hours for solo tasks, 48 hours for others)
+    const now = new Date()
+    const hoursToAdd = taskId.startsWith('platform-') ? 24 : 48 // Solo tasks vs others
+    const deadline = new Date(now.getTime() + (hoursToAdd * 60 * 60 * 1000))
+
     // Create new application in database
     const [newApplication] = await db
       .insert(taskParticipants)
       .values({
         taskId: taskId,
         userId: user.id,
-        status: 'joined'
+        status: 'joined',
+        deadline: deadline
       })
       .returning()
 

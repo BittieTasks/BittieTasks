@@ -13,8 +13,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useQuery } from '@tanstack/react-query'
 import { 
   Coins, Award, Clock, Star, Plus, ChevronDown, Users, Calendar, MapPin, 
-  TrendingUp, CheckCircle, AlertCircle, Loader2 
+  TrendingUp, CheckCircle, AlertCircle, Loader2, Timer 
 } from 'lucide-react'
+import TaskDeadlineTimer from '@/components/TaskDeadlineTimer'
 
 interface UserStats {
   total_earnings: number
@@ -29,11 +30,13 @@ interface UserStats {
 interface TaskActivity {
   id: string
   title: string
-  status: 'applied' | 'accepted' | 'completed' | 'verified' | 'joined'
+  status: 'applied' | 'accepted' | 'completed' | 'verified' | 'joined' | 'expired'
   payout: number
   location: string
   applied_at: string
   task_type: 'shared' | 'solo' | 'sponsored'
+  deadline?: string | null
+  deadline_extended?: boolean
 }
 
 export default function Dashboard() {
@@ -287,30 +290,94 @@ export default function Dashboard() {
                               {task.task_type}
                             </Badge>
                           </div>
-                          <p className="text-xs text-gray-500">
-                            Applied {new Date(task.applied_at).toLocaleDateString()}
-                          </p>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs text-gray-500">
+                              Applied {new Date(task.applied_at).toLocaleDateString()}
+                            </p>
+                            {task.deadline && (
+                              <TaskDeadlineTimer 
+                                deadline={task.deadline} 
+                                isExtended={task.deadline_extended}
+                                className="text-xs"
+                              />
+                            )}
+                          </div>
                         </div>
-                        <Button 
-                          size="sm" 
-                          className="bg-orange-600 hover:bg-orange-700 text-white"
-                          onClick={() => {
-                            // For solo tasks, open the task application modal to complete verification
-                            if (task.task_type === 'solo') {
-                              router.push(`/solo?complete=${task.id}`)
-                            } else {
-                              router.push(`/task/${task.id}`)
-                            }
-                          }}
-                          data-testid={`button-complete-${task.id}`}
-                        >
-                          Complete Task
-                        </Button>
+                        <div className="flex gap-2">
+                          {task.deadline && !task.deadline_extended && new Date(task.deadline) > new Date() && (
+                            <Button 
+                              size="sm"
+                              variant="outline"
+                              className="text-orange-600 border-orange-300 hover:bg-orange-50"
+                              onClick={async () => {
+                                try {
+                                  const { supabase } = await import('@/lib/supabase')
+                                  const { data: { session } } = await supabase.auth.getSession()
+                                  
+                                  const response = await fetch('/api/tasks/extend-deadline', {
+                                    method: 'POST',
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                      'Authorization': `Bearer ${session?.access_token}`
+                                    },
+                                    body: JSON.stringify({ taskId: task.id })
+                                  })
+                                  
+                                  if (response.ok) {
+                                    toast({
+                                      title: "Deadline Extended",
+                                      description: "You have 12 more hours to complete this task.",
+                                    })
+                                    window.location.reload()
+                                  } else {
+                                    const data = await response.json()
+                                    toast({
+                                      title: "Extension Failed",
+                                      description: data.error || "Could not extend deadline.",
+                                      variant: "destructive",
+                                    })
+                                  }
+                                } catch (error) {
+                                  toast({
+                                    title: "Extension Failed",
+                                    description: "Network error occurred.",
+                                    variant: "destructive",
+                                  })
+                                }
+                              }}
+                              data-testid={`button-extend-${task.id}`}
+                            >
+                              +12h
+                            </Button>
+                          )}
+                          <Button 
+                            size="sm" 
+                            className="bg-orange-600 hover:bg-orange-700 text-white"
+                            onClick={() => {
+                              // For solo tasks, open the task application modal to complete verification
+                              if (task.task_type === 'solo') {
+                                router.push(`/solo?complete=${task.id}`)
+                              } else {
+                                router.push(`/task/${task.id}`)
+                              }
+                            }}
+                            data-testid={`button-complete-${task.id}`}
+                          >
+                            Complete Task
+                          </Button>
+                        </div>
                       </div>
                       <div className="bg-orange-100 border border-orange-300 rounded-md p-3">
-                        <p className="text-sm text-orange-800">
-                          📸 Ready to complete? Upload verification photos to receive your ${task.payout} payment!
-                        </p>
+                        <div className="flex items-start justify-between">
+                          <p className="text-sm text-orange-800 flex-1">
+                            📸 Ready to complete? Upload verification photos to receive your ${task.payout} payment!
+                          </p>
+                          {task.deadline && !task.deadline_extended && (
+                            <p className="text-xs text-orange-600 ml-2 text-right">
+                              ⏰ Auto-forfeit if not completed by deadline
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}

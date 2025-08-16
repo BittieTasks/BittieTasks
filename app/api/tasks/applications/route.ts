@@ -32,6 +32,8 @@ export async function GET(request: NextRequest) {
         location: tasks.location,
         applied_at: taskParticipants.joinedAt,
         task_type: tasks.type,
+        deadline: taskParticipants.deadline,
+        deadline_extended: taskParticipants.deadlineExtended,
       })
       .from(taskParticipants)
       .innerJoin(tasks, eq(taskParticipants.taskId, tasks.id))
@@ -42,11 +44,13 @@ export async function GET(request: NextRequest) {
     const formattedApplications = userApplications.map((app: any) => ({
       id: app.id,
       title: app.title,
-      status: app.status as 'applied' | 'accepted' | 'completed' | 'verified',
+      status: app.status as 'applied' | 'accepted' | 'completed' | 'verified' | 'joined' | 'expired',
       payout: Number(app.payout || 0),
       location: app.location || 'Location TBD',
       applied_at: app.applied_at?.toISOString() || new Date().toISOString(),
       task_type: app.task_type as 'shared' | 'solo' | 'sponsored',
+      deadline: app.deadline?.toISOString() || null,
+      deadline_extended: app.deadline_extended || false,
     }))
     
     return NextResponse.json(formattedApplications)
