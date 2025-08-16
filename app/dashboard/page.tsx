@@ -44,6 +44,9 @@ export default function Dashboard() {
   const { toast } = useToast()
   const router = useRouter()
 
+  // This component can now be embedded in the unified app
+  const isEmbedded = typeof window !== 'undefined' && window.location.pathname === '/dashboard'
+
   // Fetch user's task applications
   const { data: taskApplications = [], isLoading: applicationsLoading, error: applicationsError } = useQuery({
     queryKey: ['/api/tasks/applications'],
