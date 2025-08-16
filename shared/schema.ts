@@ -299,6 +299,34 @@ export const messages = pgTable("messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Advanced AI-powered task verifications for Phase 3B
+export const taskVerifications = pgTable('task_verifications', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  taskId: varchar('task_id').references(() => tasks.id).notNull(),
+  userId: varchar('user_id').references(() => users.id).notNull(),
+  verificationType: varchar('verification_type', { 
+    enum: ['ai_photo', 'manual', 'admin'] 
+  }).notNull().default('ai_photo'),
+  status: varchar('status', { 
+    enum: ['pending', 'approved', 'rejected', 'pending_review'] 
+  }).notNull().default('pending'),
+  aiConfidence: integer('ai_confidence'), // 0-100
+  aiReasoning: text('ai_reasoning'),
+  aiDetails: jsonb('ai_details').$type<{
+    taskCompleted: boolean
+    qualityScore: number
+    issuesFound: string[]
+    positiveAspects: string[]
+  }>(),
+  beforePhotoUrl: varchar('before_photo_url'),
+  afterPhotoUrl: varchar('after_photo_url'),
+  verificationNotes: text('verification_notes'),
+  adminNotes: text('admin_notes'),
+  reviewedBy: varchar('reviewed_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  reviewedAt: timestamp('reviewed_at'),
+});
+
 // Corporate sponsors
 export const sponsors = pgTable("sponsors", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -385,6 +413,7 @@ export type TaskVerificationRequirement = typeof taskVerificationRequirements.$i
 export type TaskCompletionSubmission = typeof taskCompletionSubmissions.$inferSelect;
 export type UserVerificationHistory = typeof userVerificationHistory.$inferSelect;
 export type CorporateVerificationSettings = typeof corporateVerificationSettings.$inferSelect;
+export type TaskVerification = typeof taskVerifications.$inferSelect;
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -420,6 +449,12 @@ export const insertTaskCompletionSubmissionSchema = createInsertSchema(taskCompl
   id: true,
   createdAt: true,
   updatedAt: true,
+});
+
+export const insertTaskVerificationSchema = createInsertSchema(taskVerifications).omit({
+  id: true,
+  createdAt: true,
+  reviewedAt: true,
 });
 
 export const insertTaskVerificationRequirementSchema = createInsertSchema(taskVerificationRequirements).omit({

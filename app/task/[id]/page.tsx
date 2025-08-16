@@ -348,9 +348,19 @@ export default function TaskDetailPage() {
                     </p>
                     <Button 
                       onClick={handleApply}
-                      className="w-full button-clean"
+                      className="w-full button-clean mb-2"
                     >
                       Apply Now
+                    </Button>
+                    
+                    {/* AI Verification Demo */}
+                    <Button 
+                      variant="outline"
+                      onClick={() => router.push(`/task/${id}/verification`)}
+                      className="w-full button-outline"
+                    >
+                      <Camera className="h-4 w-4 mr-2" />
+                      Submit Verification
                     </Button>
                   </div>
                 )}
