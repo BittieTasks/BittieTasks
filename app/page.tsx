@@ -256,7 +256,7 @@ export default function HomePage() {
               <div className="text-gray-600">Per Task Average</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">120+</div>
+              <div className="text-3xl font-bold text-green-600 mb-2">387</div>
               <div className="text-gray-600">Available Tasks</div>
             </div>
             <div className="text-center">

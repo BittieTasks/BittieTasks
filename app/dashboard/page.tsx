@@ -66,15 +66,15 @@ export default function Dashboard() {
     }
   })
 
-  // Calculate user stats from applications
+  // Calculate user stats from live applications data
   const userStats: UserStats = {
     total_earnings: taskApplications.filter((app: TaskActivity) => app.status === 'verified').reduce((sum: number, app: TaskActivity) => sum + app.payout, 0),
     tasks_completed: taskApplications.filter((app: TaskActivity) => app.status === 'completed' || app.status === 'verified').length,
     active_tasks: taskApplications.filter((app: TaskActivity) => app.status === 'applied' || app.status === 'accepted').length,
-    rating: 4.8, // Default rating
-    achievements: ['First Task', 'Community Helper'],
-    monthly_goal: 500,
-    subscription_tier: 'free'
+    rating: user?.app_metadata?.rating || 5.0, // User's actual rating from metadata
+    achievements: user?.app_metadata?.achievements || [],
+    monthly_goal: user?.app_metadata?.monthly_goal || 250, // User-set goal
+    subscription_tier: user?.app_metadata?.subscription_tier || 'free' // Actual tier
   }
 
   if (authLoading) {

@@ -45,23 +45,34 @@ export default function PaymentSuccessPage() {
       return
     }
 
-    // In a real implementation, you'd fetch payment details from your API
-    // For now, we'll simulate success
-    setTimeout(() => {
-      setPaymentDetails({
-        taskId: taskId || 'demo-task',
-        taskTitle: 'Walk My Dog for 30 Minutes',
-        taskType: 'community',
-        amount: 25.00,
-        netAmount: 22.85,
-        platformFee: 1.75,
-        processingFee: 0.40,
-        paymentIntentId: paymentIntentId || 'pi_demo',
-        status: 'succeeded',
-        completedAt: new Date().toLocaleString()
-      })
-      setLoading(false)
-    }, 1500)
+    // Fetch actual payment details from API
+    const fetchPaymentDetails = async () => {
+      try {
+        const { supabase } = await import('@/lib/supabase')
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        const response = await fetch(`/api/payments/${paymentIntentId}`, {
+          headers: {
+            'Authorization': `Bearer ${session?.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch payment details')
+        }
+
+        const data = await response.json()
+        setPaymentDetails(data)
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching payment details:', error)
+        setError('Unable to load payment details. Please contact support.')
+        setLoading(false)
+      }
+    }
+
+    fetchPaymentDetails()
   }, [isAuthenticated, paymentIntentId, taskId, router])
 
   if (loading) {

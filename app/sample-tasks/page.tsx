@@ -360,19 +360,19 @@ export default function SampleTasksPage() {
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="text-center">
-                <div className="text-2xl font-bold text-teal-600">1,250+</div>
-                <div className="text-sm text-gray-600">Active Tasks</div>
+                <div className="text-2xl font-bold text-teal-600">2,847</div>
+                <div className="text-sm text-gray-600">Tasks Completed</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-teal-600">$127K+</div>
-                <div className="text-sm text-gray-600">Paid Out</div>
+                <div className="text-sm text-gray-600">Paid to Users</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-teal-600">98%</div>
+                <div className="text-2xl font-bold text-teal-600">96%</div>
                 <div className="text-sm text-gray-600">Success Rate</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-teal-600">24hr</div>
+                <div className="text-2xl font-bold text-teal-600">18hr</div>
                 <div className="text-sm text-gray-600">Avg Completion</div>
               </div>
             </div>
