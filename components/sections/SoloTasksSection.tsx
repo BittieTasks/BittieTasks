@@ -178,7 +178,7 @@ export default function SoloTasksSection() {
         </Badge>
       </div>
 
-      {/* Info Banner */}
+      {/* Live Production Banner */}
       <Card className="bg-teal-50 border-teal-200">
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
@@ -186,10 +186,10 @@ export default function SoloTasksSection() {
               <Coins className="w-6 h-6 text-teal-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-teal-900">3% Platform Fee - Transparent Pricing!</h3>
+              <h3 className="font-semibold text-teal-900">LIVE Platform - Real Money Transactions!</h3>
               <p className="text-teal-700 text-sm">
-                Clear fee structure: You see gross amount, our 3% fee, and your net payout upfront. 
-                Complete tasks, submit photos, get paid instantly after verification.
+                3% transparent fee structure: Complete tasks, submit verification photos, earn real money instantly. 
+                Live Stripe payments - no demo data, all transactions are authentic.
               </p>
             </div>
           </div>
@@ -198,7 +198,7 @@ export default function SoloTasksSection() {
 
       {/* Tasks Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {availableTasks.map((task) => (
+        {availableTasks.map((task: Task) => (
           <Card key={task.id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -233,7 +233,7 @@ export default function SoloTasksSection() {
               <div className="space-y-2">
                 <p className="text-sm font-medium text-gray-700">Requirements:</p>
                 <div className="flex flex-wrap gap-1">
-                  {task.requirements.slice(0, 2).map((req, index) => (
+                  {task.requirements.slice(0, 2).map((req: string, index: number) => (
                     <Badge key={index} variant="outline" className="text-xs">
                       {req}
                     </Badge>

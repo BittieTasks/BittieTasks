@@ -110,7 +110,7 @@ export default function DashboardSection() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Welcome back!</h1>
-        <p className="text-gray-600">Here's what's happening with your tasks today.</p>
+        <p className="text-gray-600">Your live earnings and task activity - real money, authentic data.</p>
       </div>
 
       {/* Stats Cards */}
