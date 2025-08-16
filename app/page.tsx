@@ -117,8 +117,9 @@ export default function HomePage() {
                   <ArrowRight size={20} className="ml-2" />
                 </button>
                 <button 
-                  onClick={() => router.push('/solo')}
+                  onClick={() => router.push('/sample-tasks')}
                   className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
+                  data-testid="button-view-tasks-auth"
                 >
                   View Tasks
                 </button>
@@ -133,11 +134,12 @@ export default function HomePage() {
                   <ArrowRight size={20} className="ml-2" />
                 </button>
                 <button 
-                  onClick={() => router.push('/earnings')}
+                  onClick={() => router.push('/sample-tasks')}
                   className="inline-flex items-center justify-center px-8 py-4 border border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-semibold rounded-lg transition-colors"
+                  data-testid="button-view-tasks"
                 >
                   <TrendingUp size={20} className="mr-2" />
-                  Our Growth Journey
+                  View Tasks
                 </button>
               </>
             )}
