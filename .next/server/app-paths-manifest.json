@@ -1,3 +1,5 @@
 {
-  "/api/auth/search-user/route": "app/api/auth/search-user/route.js"
+  "/api/auth/search-user/route": "app/api/auth/search-user/route.js",
+  "/api/auth/unconfirmed-users/route": "app/api/auth/unconfirmed-users/route.js",
+  "/api/auth/manual-signup/route": "app/api/auth/manual-signup/route.js"
 }
