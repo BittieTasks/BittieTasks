@@ -40,7 +40,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     timeoutId = setTimeout(() => {
       console.log('Auth timeout reached, setting loading to false')
       setLoading(false)
-    }, 10000) // 10 second timeout
+    }, 5000) // Reduced to 5 second timeout
     
     // Get initial session
     supabase.auth.getSession().then(({ data: { session }, error }) => {
@@ -97,12 +97,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.error('Error creating user profile:', error)
           }
           
-          // Auto-redirect to dashboard after successful sign in (only if verified)
-          if (typeof window !== 'undefined' && window.location.pathname === '/auth') {
+          // Auto-redirect to dashboard after successful sign in (only if verified and no other redirect)
+          if (typeof window !== 'undefined' && window.location.pathname === '/auth' && !redirectPath) {
             console.log('Auto-redirecting to dashboard after sign in')
             setTimeout(() => {
               window.location.href = '/dashboard'
-            }, 100) // Small delay to ensure state is updated
+            }, 500) // Increased delay to ensure state is updated
           }
         } else {
           console.log('User not verified yet, skipping profile creation and redirect')
