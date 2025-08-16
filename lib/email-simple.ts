@@ -109,10 +109,8 @@ export class SimpleEmailVerification {
         return { success: false, error: 'Failed to store verification token' }
       }
 
-      // Create verification URL
-      const baseUrl = process.env.NODE_ENV === 'development' 
-        ? 'http://localhost:5000' 
-        : 'https://www.bittietasks.com'
+      // Create verification URL - always use localhost in development
+      const baseUrl = 'http://localhost:5000'
       const verificationUrl = `${baseUrl}/verify-email?token=${token}`
       
       // Send email via SendGrid
