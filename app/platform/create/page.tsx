@@ -32,6 +32,23 @@ export default function CreateTask() {
   const { user, loading: authLoading, isAuthenticated } = useAuth()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
+  const [categories, setCategories] = useState<Array<{id: string, name: string}>>([])
+  const [formData, setFormData] = useState<CreateTaskForm>({
+    title: '',
+    description: '',
+    category_id: '',
+    task_type: 'shared',
+    payout: '',
+    max_participants: '1',
+    location: '',
+    time_commitment: '',
+    deadline: '',
+    requirements: ''
+  })
+
+  useEffect(() => {
+    loadCategories()
+  }, [])
   
   // Redirect to auth if not authenticated
   if (!authLoading && !isAuthenticated) {
@@ -50,23 +67,6 @@ export default function CreateTask() {
       </div>
     )
   }
-  const [categories, setCategories] = useState<Array<{id: string, name: string}>>([])
-  const [formData, setFormData] = useState<CreateTaskForm>({
-    title: '',
-    description: '',
-    category_id: '',
-    task_type: 'shared',
-    payout: '',
-    max_participants: '1',
-    location: '',
-    time_commitment: '',
-    deadline: '',
-    requirements: ''
-  })
-
-  useEffect(() => {
-    loadCategories()
-  }, [])
 
   const loadCategories = async () => {
     try {
