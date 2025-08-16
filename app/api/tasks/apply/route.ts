@@ -8,7 +8,29 @@ export async function POST(request: NextRequest) {
   try {
     // Create Supabase client with proper cookie handling
     const supabase = createServerClient(request)
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    // Try to get user from token first, then from session
+    let user = null
+    let authError = null
+    
+    // Check for Authorization header first
+    const authHeader = request.headers.get('authorization')
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.replace('Bearer ', '')
+      const { data: { user: tokenUser }, error: tokenError } = await supabase.auth.getUser(token)
+      if (tokenUser && !tokenError) {
+        user = tokenUser
+      } else {
+        console.log('Token auth failed:', tokenError?.message)
+      }
+    }
+    
+    // Fallback to session-based auth
+    if (!user) {
+      const { data: { user: sessionUser }, error: sessionError } = await supabase.auth.getUser()
+      user = sessionUser
+      authError = sessionError
+    }
 
     console.log('Task apply auth check:', {
       hasUser: !!user,
@@ -16,7 +38,8 @@ export async function POST(request: NextRequest) {
       userId: user?.id,
       authError: authError?.message,
       hasAuthHeader: !!request.headers.get('authorization'),
-      hasCookies: !!request.headers.get('cookie')
+      hasCookies: !!request.headers.get('cookie'),
+      authMethod: authHeader ? 'token' : 'session'
     })
 
     if (authError || !user) {

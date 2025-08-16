@@ -130,11 +130,28 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
   const handleApply = async () => {
     setLoading(true)
     try {
+      // Get fresh session token
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      }
+      
+      // Add authorization header if we have a token
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+      }
+      
+      console.log('Applying for task with auth:', {
+        hasToken: !!session?.access_token,
+        userId: userId,
+        taskId: task.id
+      })
+      
       const response = await fetch('/api/tasks/apply', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         credentials: 'include', // Include cookies for auth
         body: JSON.stringify({
           taskId: task.id,
@@ -184,11 +201,28 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
 
     setLoading(true)
     try {
+      // Get fresh session token
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      }
+      
+      // Add authorization header if we have a token
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+      }
+      
+      console.log('Verifying task with auth:', {
+        hasToken: !!session?.access_token,
+        userId: userId,
+        taskId: task.id
+      })
+      
       const response = await fetch('/api/tasks/verify', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         credentials: 'include',
         body: JSON.stringify({
           taskId: task.id,
