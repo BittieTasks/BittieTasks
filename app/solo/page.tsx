@@ -52,10 +52,17 @@ function useSoloTasks() {
 export default function SoloPage() {
   const [selectedTask, setSelectedTask] = useState<SoloTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, loading: authLoading } = useAuth()
   const router = useRouter()
   
-  // Fetch live solo tasks from database
+  // Redirect unauthenticated users immediately
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/auth?message=Please sign in to view solo tasks&redirect=solo')
+    }
+  }, [authLoading, isAuthenticated, router])
+  
+  // Fetch live solo tasks from database - only if authenticated
   const { data: soloTasks = [], isLoading, error } = useSoloTasks()
   
   // Check for completion parameter from dashboard or post-auth task selection
@@ -86,11 +93,11 @@ export default function SoloPage() {
   }, [isAuthenticated, soloTasks])
 
   const handleApplyClick = (task: SoloTask) => {
+    // Since this page is auth-protected, this should not happen
+    // but keeping as safety check
     if (!isAuthenticated) {
-      // Store the current page and task info for redirect after auth
-      localStorage.setItem('redirectAfterAuth', '/solo')
-      localStorage.setItem('pendingTaskId', task.id)
-      router.push('/auth?message=Please sign in to apply for tasks&redirect=solo')
+      console.error('Unauthenticated user reached handleApplyClick - this should not happen')
+      router.push('/auth?message=Session expired. Please sign in again&redirect=solo')
       return
     }
     setSelectedTask(task)
@@ -113,7 +120,21 @@ export default function SoloPage() {
     }
   }
 
-  // Loading state
+  // Show loading while checking authentication or loading tasks
+  if (authLoading || (!isAuthenticated && !authLoading)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-green-600 mx-auto mb-4" />
+          <p className="text-gray-600">
+            {authLoading ? 'Checking authentication...' : 'Redirecting to sign in...'}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // Loading tasks for authenticated users
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
