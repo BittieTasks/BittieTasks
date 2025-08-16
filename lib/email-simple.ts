@@ -28,7 +28,7 @@ async function sendVerificationEmail(to: string, verificationUrl: string): Promi
     
     const msg = {
       to,
-      from: 'noreply@em9217.wwwbittietasks.com', // Use verified SendGrid domain
+      from: 'noreply@bittietasks.com', // Use verified SendGrid sender
       subject: 'Verify Your BittieTasks Account',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
