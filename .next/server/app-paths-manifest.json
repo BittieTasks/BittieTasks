@@ -1,3 +1,6 @@
 {
-  "/page": "app/page.js"
+  "/api/solo-tasks/route": "app/api/solo-tasks/route.js",
+  "/api/auth/status/route": "app/api/auth/status/route.js",
+  "/api/tasks/apply/route": "app/api/tasks/apply/route.js",
+  "/solo/page": "app/solo/page.js"
 }
