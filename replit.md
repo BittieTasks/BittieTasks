@@ -6,6 +6,7 @@ BittieTasks is a LIVE, ACTIVE production platform that functions as a mobile-fir
 
 Preferred communication style: Simple, everyday language.
 Platform Status: LIVE and ACTIVE for real users - no demo or mock data allowed.
+UI/UX Preference: Unified app interface over traditional multi-page navigation - all authenticated user actions in one cohesive section.
 
 # System Architecture
 
@@ -16,7 +17,8 @@ Platform Status: LIVE and ACTIVE for real users - no demo or mock data allowed.
 - **Authentication**: Phone-first verification using Supabase Auth.
 - **Responsive Design**: Mobile-first approach utilizing Tailwind's responsive utilities.
 - **User Onboarding**: A 3-step phone verification process (phone number entry → SMS code verification → profile creation).
-- **UI/UX Decisions**: Clean, mobile-optimized design with intuitive navigation and color schemes for clarity and engagement.
+- **UI/UX Architecture**: Unified app interface with sidebar navigation - all authenticated actions happen in one cohesive container without page reloads.
+- **Navigation System**: AuthenticatedApp component with smooth section switching, unified task application flow, and persistent user state.
 
 ## Backend Architecture
 - **API Layer**: Next.js API routes implemented as serverless functions.
