@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { emailVerification } from '@/lib/email-verification'
+import { simpleEmailVerification } from '@/lib/email-simple'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const result = await emailVerification.sendVerificationEmail(userId, email)
+    const result = await simpleEmailVerification.sendVerificationEmail(userId, email)
 
     if (result.success) {
       return NextResponse.json({

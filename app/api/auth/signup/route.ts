@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { emailVerification } from '@/lib/email-verification'
+import { simpleEmailVerification } from '@/lib/email-simple'
 
 // Add CORS headers for better browser compatibility
 function addCorsHeaders(response: NextResponse) {
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
     // Send custom verification email via SendGrid
     if (data.user && data.user.id) {
       console.log('Sending custom verification email for user:', data.user.id)
-      const emailResult = await emailVerification.sendVerificationEmail(data.user.id, email)
+      const emailResult = await simpleEmailVerification.sendVerificationEmail(data.user.id, email)
       
       if (!emailResult.success) {
         console.error('Failed to send verification email:', emailResult.error)
