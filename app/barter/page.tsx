@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { MapPin, Clock, ArrowLeftRight, User, Heart, Handshake, ArrowLeft, Menu, Plus, Search, Filter, MessageCircle } from 'lucide-react'
+import { MapPin, Clock, ArrowLeftRight, User, Heart, Handshake, ArrowLeft, Menu, Plus, Search, Filter, MessageCircle, Loader2 } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,8 +31,15 @@ interface BarterTask extends Task {
 export default function BarterPage() {
   const [selectedTask, setSelectedTask] = useState<BarterTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, loading: authLoading } = useAuth()
   const router = useRouter()
+  
+  // Redirect unauthenticated users immediately
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/auth?message=Please sign in to view barter exchange&redirect=barter')
+    }
+  }, [authLoading, isAuthenticated, router])
   
   // Filtering state
   const [searchTerm, setSearchTerm] = useState('')
@@ -56,8 +63,10 @@ export default function BarterPage() {
   })
 
   const handleApplyClick = (task: BarterTask) => {
+    // Since this page is auth-protected, this should not happen
     if (!isAuthenticated) {
-      router.push('/auth?message=Please sign in to apply for barter tasks')
+      console.error('Unauthenticated user reached handleApplyClick - this should not happen')
+      router.push('/auth?message=Session expired. Please sign in again&redirect=barter')
       return
     }
     setSelectedTask(task)
@@ -97,6 +106,32 @@ export default function BarterPage() {
       default: return 0
     }
   })
+
+  // Show loading while checking authentication
+  if (authLoading || (!isAuthenticated && !authLoading)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-orange-600 mx-auto mb-4" />
+          <p className="text-gray-600">
+            {authLoading ? 'Checking authentication...' : 'Redirecting to sign in...'}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // Loading tasks for authenticated users
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-orange-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading barter exchange...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">

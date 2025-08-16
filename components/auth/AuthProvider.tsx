@@ -242,8 +242,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       // Clear any cached data
       if (typeof window !== 'undefined') {
-        // Clear localStorage
-        localStorage.clear()
+        // Clear specific auth-related localStorage items
+        localStorage.removeItem('redirectAfterAuth')
+        localStorage.removeItem('pendingTaskId')
         
         // Redirect to home page after successful sign out
         window.location.href = '/'
@@ -254,7 +255,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(null)
       setSession(null)
       if (typeof window !== 'undefined') {
-        localStorage.clear()
+        localStorage.removeItem('redirectAfterAuth')
+        localStorage.removeItem('pendingTaskId')
         window.location.href = '/'
       }
       throw error

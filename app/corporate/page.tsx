@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Clock, DollarSign, Building2, Award, Users } from 'lucide-react'
+import { MapPin, Clock, DollarSign, Building2, Award, Users, Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import TaskApplicationModal from '@/components/TaskApplicationModal'
 
 interface CorporateTask {
@@ -126,10 +128,39 @@ const corporateTasks: CorporateTask[] = [
 export default function CorporatePage() {
   const [selectedTask, setSelectedTask] = useState<CorporateTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
+  const { user, isAuthenticated, loading: authLoading } = useAuth()
+  const router = useRouter()
+  
+  // Redirect unauthenticated users immediately
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/auth?message=Please sign in to view corporate tasks&redirect=corporate')
+    }
+  }, [authLoading, isAuthenticated, router])
 
   const handleApplyClick = (task: CorporateTask) => {
+    // Since this page is auth-protected, this should not happen
+    if (!isAuthenticated) {
+      console.error('Unauthenticated user reached handleApplyClick - this should not happen')
+      router.push('/auth?message=Session expired. Please sign in again&redirect=corporate')
+      return
+    }
     setSelectedTask(task)
     setShowApplicationModal(true)
+  }
+
+  // Show loading while checking authentication
+  if (authLoading || (!isAuthenticated && !authLoading)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">
+            {authLoading ? 'Checking authentication...' : 'Redirecting to sign in...'}
+          </p>
+        </div>
+      </div>
+    )
   }
 
   const getDifficultyColor = (difficulty: string) => {

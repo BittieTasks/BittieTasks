@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { MessageCircle, Users, MapPin, Clock, DollarSign, ArrowLeft, Menu, Plus, Search, Filter } from 'lucide-react'
+import { MessageCircle, Users, MapPin, Clock, DollarSign, ArrowLeft, Menu, Plus, Search, Filter, Loader2 } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,7 +33,14 @@ interface CommunityTask extends Task {
 
 export default function CommunityPage() {
   const router = useRouter()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, loading: authLoading } = useAuth()
+  
+  // Redirect unauthenticated users immediately
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/auth?message=Please sign in to view community tasks&redirect=community')
+    }
+  }, [authLoading, isAuthenticated, router])
   const [selectedTask, setSelectedTask] = useState<CommunityTask | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
   const [selectedTaskForChat, setSelectedTaskForChat] = useState<CommunityTask | null>(null)
@@ -62,8 +69,10 @@ export default function CommunityPage() {
   })
 
   const handleApplyClick = (task: CommunityTask) => {
+    // Since this page is auth-protected, this should not happen
     if (!isAuthenticated) {
-      router.push('/auth?message=Please sign in to apply for tasks')
+      console.error('Unauthenticated user reached handleApplyClick - this should not happen')
+      router.push('/auth?message=Session expired. Please sign in again&redirect=community')
       return
     }
     setSelectedTask(task)
@@ -104,6 +113,32 @@ export default function CommunityPage() {
       default: return 0
     }
   })
+
+  // Show loading while checking authentication
+  if (authLoading || (!isAuthenticated && !authLoading)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">
+            {authLoading ? 'Checking authentication...' : 'Redirecting to sign in...'}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // Loading tasks for authenticated users
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading community tasks...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
