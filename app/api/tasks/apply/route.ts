@@ -6,7 +6,7 @@ import { eq, and } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user from Supabase with request context
+    // Create Supabase client with proper cookie handling
     const supabase = createServerClient(request)
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -16,8 +16,7 @@ export async function POST(request: NextRequest) {
       userId: user?.id,
       authError: authError?.message,
       hasAuthHeader: !!request.headers.get('authorization'),
-      hasCookies: !!request.headers.get('cookie'),
-      requestHeaders: Object.fromEntries(request.headers.entries())
+      hasCookies: !!request.headers.get('cookie')
     })
 
     if (authError || !user) {

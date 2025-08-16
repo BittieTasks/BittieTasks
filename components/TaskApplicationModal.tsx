@@ -130,33 +130,15 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
   const handleApply = async () => {
     setLoading(true)
     try {
-      // Get the current session token from Supabase
-      const { supabase } = await import('@/lib/supabase')
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      
-      console.log('Session check in modal:', {
-        hasSession: !!session,
-        sessionError: sessionError?.message,
-        hasAccessToken: !!session?.access_token,
-        userId: session?.user?.id
-      })
-      
-      if (!session?.access_token || sessionError) {
-        throw new Error('Please sign in to apply for tasks')
-      }
-      
       const response = await fetch('/api/tasks/apply', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-          // Also include cookie for server-side auth
-          'Cookie': document.cookie
         },
-        credentials: 'include', // Important for auth cookies
+        credentials: 'include', // Include cookies for auth
         body: JSON.stringify({
           taskId: task.id,
-          userId: session.user.id // Use session user ID instead of prop
+          userId: userId
         })
       })
 
@@ -164,6 +146,11 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
       console.log('Apply response:', { status: response.status, data })
 
       if (!response.ok) {
+        if (response.status === 401) {
+          // Redirect to auth if not authenticated
+          window.location.href = '/auth'
+          return
+        }
         throw new Error(data.error || 'Failed to apply for task')
       }
 
@@ -197,22 +184,12 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
 
     setLoading(true)
     try {
-      // Get the current session token from Supabase
-      const { supabase } = await import('@/lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      }
-      
-      // Include auth token if available
-      if (session?.access_token) {
-        headers['Authorization'] = `Bearer ${session.access_token}`
-      }
-      
       const response = await fetch('/api/tasks/verify', {
         method: 'POST',
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
         body: JSON.stringify({
           taskId: task.id,
           userId: userId,
