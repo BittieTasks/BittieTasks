@@ -156,9 +156,9 @@ export default function Subscribe() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
             Lower platform fees, higher earning potential, and exclusive access to premium opportunities
           </p>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto">
-            <p className="text-green-800 font-medium">
-              💡 Solo tasks are always FREE - BittieTasks pays you directly!
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+            <p className="text-blue-800 font-medium">
+              💡 Solo tasks have a low 3% platform fee - transparent pricing!
             </p>
           </div>
         </div>
