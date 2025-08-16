@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase-server'
-import { db } from '../../db'
-import { taskParticipants } from '@/shared/schema'
+import { createServerClient } from '@/lib/supabase'
+import { db } from '../../../../server/db'
+import { taskParticipants } from '@shared/schema'
 import { eq, and } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
