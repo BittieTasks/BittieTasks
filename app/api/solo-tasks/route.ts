@@ -124,7 +124,7 @@ export async function GET(request: NextRequest) {
       .limit(20)
 
     // Transform for frontend compatibility
-    const formattedTasks = soloTasks.map(task => ({
+    const formattedTasks = soloTasks.map((task: any) => ({
       id: task.id,
       title: task.title,
       description: task.description,
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
       timeEstimate: task.timeEstimate || '1 hour',
       category: task.category || 'General',
       difficulty: (task.difficulty as 'Easy' | 'Medium' | 'Hard') || 'Easy',
-      requiredSkills: task.requirements ? task.requirements.split(',').map(s => s.trim()) : ['Photo verification'],
+      requiredSkills: task.requirements ? task.requirements.split(',').map((s: string) => s.trim()) : ['Photo verification'],
       rating: 4.8, // Default rating
       completedCount: 0, // TODO: Calculate from actual completions
       maxUsers: task.maxUsers || 2,
