@@ -28,7 +28,7 @@ const SUBSCRIPTION_PLANS: Record<string, PlanFeatures> = {
     fee: '10%',
     taskLimit: 10,
     features: [
-      'Access to Solo tasks (BittieTasks-funded)',
+      'Access to Solo tasks (3% platform fee)',
       '10 Community tasks per month',
       '10% platform fee on Community tasks', 
       'Basic task categories',
@@ -285,9 +285,9 @@ export default function Subscribe() {
             <h3 className="text-lg font-semibold text-blue-900 mb-4">Platform Fee Breakdown</h3>
             <div className="grid md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">0%</div>
+                <div className="text-2xl font-bold text-green-600">3%</div>
                 <div className="text-sm text-gray-600">Solo Tasks</div>
-                <div className="text-xs text-gray-500">BittieTasks pays you</div>
+                <div className="text-xs text-gray-500">Platform fee</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-gray-600">10%</div>
