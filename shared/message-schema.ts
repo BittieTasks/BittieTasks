@@ -23,6 +23,12 @@ export const userPresence = pgTable('user_presence', {
   currentTaskId: varchar('current_task_id'),
 })
 
+// TypeScript Types
+export type TaskMessage = typeof taskMessages.$inferSelect
+export type InsertTaskMessage = typeof taskMessages.$inferInsert
+export type UserPresence = typeof userPresence.$inferSelect
+export type InsertUserPresence = typeof userPresence.$inferInsert
+
 // Zod Schemas for Validation
 export const insertMessageSchema = createInsertSchema(taskMessages).omit({
   id: true,
@@ -32,12 +38,6 @@ export const insertMessageSchema = createInsertSchema(taskMessages).omit({
 export const insertPresenceSchema = createInsertSchema(userPresence).omit({
   lastSeen: true,
 })
-
-// TypeScript Types
-export type TaskMessage = typeof taskMessages.$inferSelect
-export type InsertTaskMessage = z.infer<typeof insertMessageSchema>
-export type UserPresence = typeof userPresence.$inferSelect
-export type InsertUserPresence = z.infer<typeof insertPresenceSchema>
 
 // WebSocket Event Types
 export interface WebSocketMessage {
