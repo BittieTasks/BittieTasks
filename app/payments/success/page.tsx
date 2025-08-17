@@ -30,11 +30,20 @@ export default function PaymentSuccessPage() {
   const [loading, setLoading] = useState(true)
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null)
   const [error, setError] = useState('')
+  const [isClient, setIsClient] = useState(false)
   
-  const paymentIntentId = searchParams.get('payment_intent')
-  const taskId = searchParams.get('task_id')
+  const paymentIntentId = searchParams?.get('payment_intent') ?? null
+  const taskId = searchParams?.get('task_id') ?? null
+
+  // Ensure client-side rendering
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
+    // Ensure we're running on client side only
+    if (typeof window === 'undefined') return
+    
     if (!isAuthenticated) {
       router.push('/auth')
       return
@@ -50,6 +59,12 @@ export default function PaymentSuccessPage() {
       try {
         const { supabase } = await import('@/lib/supabase')
         const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!session) {
+          setError('Authentication required')
+          setLoading(false)
+          return
+        }
         
         const response = await fetch(`/api/payments/${paymentIntentId}`, {
           headers: {
@@ -75,7 +90,7 @@ export default function PaymentSuccessPage() {
     fetchPaymentDetails()
   }, [isAuthenticated, paymentIntentId, taskId, router])
 
-  if (loading) {
+  if (!isClient || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-emerald-100 p-4 flex items-center justify-center">
         <div className="text-center space-y-4">
