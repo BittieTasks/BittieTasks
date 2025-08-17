@@ -36,23 +36,29 @@ export default function SoloTasksSection() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
 
-  // Fetch available solo tasks
+  // Fetch available solo tasks from real database
   const { data: tasks = [], isLoading, error } = useQuery({
     queryKey: ['/api/tasks', 'solo'],
     enabled: isAuthenticated && !!user,
     queryFn: async () => {
-      const response = await fetch('/api/tasks?type=solo')
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      const headers: Record<string, string> = {}
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+      }
+      
+      const response = await fetch('/api/tasks?type=solo', { headers })
       if (!response.ok) {
-        throw new Error('Failed to fetch tasks')
+        throw new Error('Failed to fetch solo tasks')
       }
       return response.json()
     }
   })
 
-
-
-  // Mock solo tasks data for testing the flow
-  const mockSoloTasks: Task[] = [
+  // Fallback solo tasks for initial experience (when no database tasks exist yet)
+  const fallbackSoloTasks: Task[] = [
     {
       id: 'platform-001',
       title: 'Complete Laundry Cycle',
@@ -135,7 +141,8 @@ export default function SoloTasksSection() {
     }
   ]
 
-  const availableTasks = tasks.length > 0 ? tasks : mockSoloTasks
+  // Use real database tasks if available, otherwise use fallback for initial experience
+  const availableTasks = tasks.length > 0 ? tasks : fallbackSoloTasks
 
   const handleApplyToTask = (task: Task) => {
     console.log('Solo task application - Auth check:', {

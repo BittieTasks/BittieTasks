@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { useToast } from '@/hooks/use-toast'
+import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -49,8 +50,49 @@ export default function CorporateTasksSection() {
     experience_level: 'Entry Level'
   })
 
-  // Sample corporate tasks
-  const sampleTasks: CorporateTask[] = [
+  // Load real corporate tasks from database with authentication
+  const { data: dbTasks = [], isLoading, refetch } = useQuery({
+    queryKey: ['/api/tasks', 'corporate'],
+    enabled: !!user,
+    queryFn: async () => {
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      const headers: Record<string, string> = {}
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+      }
+      
+      const response = await fetch('/api/tasks?type=corporate', { headers })
+      if (!response.ok) throw new Error('Failed to fetch corporate tasks')
+      return response.json()
+    }
+  })
+
+  // Transform database tasks to match interface
+  const transformDbTask = (task: any): CorporateTask => ({
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    category: task.category || 'Business',
+    type: 'corporate',
+    payout: parseFloat(task.earning_potential || task.earningPotential || '0'),
+    location: task.location || 'Remote',
+    time_commitment: task.duration || 'Flexible',
+    requirements: typeof task.requirements === 'string' ? [task.requirements] : (task.requirements || []),
+    company: 'Corporate Partner',
+    deadline: '1 week',
+    positions_available: task.max_participants || task.maxParticipants || 1,
+    current_applicants: task.current_participants || task.currentParticipants || 0,
+    experience_level: 'Entry Level',
+    verification_required: true
+  })
+
+  // Use real database tasks if available, otherwise use fallback
+  const corporateTasks = dbTasks.length > 0 ? dbTasks.map(transformDbTask) : fallbackTasks
+
+  // Fallback corporate tasks for initial experience
+  const fallbackTasks: CorporateTask[] = [
     {
       id: 'corp-001',
       title: 'Market Research Data Collection',
@@ -288,7 +330,7 @@ export default function CorporateTasksSection() {
 
       {/* Available Tasks */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sampleTasks.map((task) => (
+        {corporateTasks.map((task) => (
           <Card key={task.id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-center justify-between">

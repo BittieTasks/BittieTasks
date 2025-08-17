@@ -66,12 +66,21 @@ export default function CommunityTasksSection() {
     requirements: ''
   })
 
-  // Load real tasks from database
+  // Load real tasks from database with authentication
   const { data: dbTasks = [], isLoading, refetch } = useQuery({
     queryKey: ['/api/tasks', 'shared'],
+    enabled: !!user,
     queryFn: async () => {
-      const response = await fetch('/api/tasks?type=shared')
-      if (!response.ok) throw new Error('Failed to fetch tasks')
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      const headers: Record<string, string> = {}
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+      }
+      
+      const response = await fetch('/api/tasks?type=shared', { headers })
+      if (!response.ok) throw new Error('Failed to fetch community tasks')
       return response.json()
     }
   })

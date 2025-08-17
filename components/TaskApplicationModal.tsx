@@ -149,18 +149,23 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
         taskId: task.id
       })
       
-      // Simulate successful application for demo
-      await new Promise(resolve => setTimeout(resolve, 1500)) // Realistic delay
-      
-      console.log('Simulating successful task application:', {
-        taskId: task.id,
-        userId: userId,
-        timestamp: new Date().toISOString()
+      // Submit real application to API
+      const response = await fetch('/api/tasks/apply', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          taskId: task.id,
+          applicationMessage: 'Interested in completing this task!'
+        })
       })
-
-      // Simulate successful response
-      const data = { success: true, message: 'Application successful' }
-      console.log('Apply response:', { status: 200, data })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Application failed')
+      }
+      
+      const data = await response.json()
+      console.log('Real API response:', data)
 
       setApplied(true)
       setStep('verify')
@@ -211,60 +216,39 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
         taskId: task.id
       })
       
-      // Simulate successful verification for demo
-      await new Promise(resolve => setTimeout(resolve, 2000)) // Realistic processing delay
-      
-      console.log('Simulating successful task verification and payment:', {
-        taskId: task.id,
-        userId: userId,
-        verificationPhoto: !!verificationPhoto,
-        payout: task.payout,
-        timestamp: new Date().toISOString()
+      // Submit real verification to AI API
+      const response = await fetch('/api/tasks/ai-verify', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          taskId: task.id,
+          userId: userId,
+          afterPhoto: verificationPhoto,
+          notes: 'Task completed successfully'
+        })
       })
       
-      // Simulate successful API response data
-      const data = {
-        success: true,
-        message: `Task completed successfully! Payment of $${task.payout} processed.`,
-        verification: { status: 'approved', submissionTime: new Date().toLocaleTimeString() },
-        payment: { amount: task.payout },
-        aiAnalysis: {
-          confidence: 95,
-          detectedObjects: ['completed task', 'verification photo'],
-          reasoning: 'High quality verification image provided'
-        },
-        timing: {
-          processingTime: '2.1s',
-          submittedAt: new Date().toLocaleTimeString(),
-          approvedAt: new Date().toLocaleTimeString()
-        },
-        remainingCompletions: 1
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Verification failed')
       }
-
-      // Handle different verification outcomes with timing details
-      if (data.verification?.status === 'approved') {
-        const timingMsg = data.timing ? 
-          `Processed in ${data.timing.processingTime} (submitted ${data.timing.submittedAt}, approved ${data.timing.approvedAt})` :
-          ''
-        
-        // Show detailed AI analysis
-        const aiDetails = data.aiAnalysis ? [
-          `Confidence: ${data.aiAnalysis.confidence}%`,
-          data.aiAnalysis.detectedObjects?.length > 0 ? `Objects: ${data.aiAnalysis.detectedObjects.join(', ')}` : '',
-          data.aiAnalysis.reasoning || ''
-        ].filter(Boolean).join(' • ') : ''
-        
+      
+      const verificationData = await response.json()
+      console.log('AI verification response:', verificationData)
+      
+      // Handle successful verification
+      if (verificationData.success) {
         toast({
-          title: "AI Verified & Paid! 🎉",
-          description: `${data.message} You earned $${data.payment.amount}! ${aiDetails} ${timingMsg} ${data.remainingCompletions > 0 ? `${data.remainingCompletions} completion(s) remaining.` : 'Task limit reached.'}`,
+          title: "AI Verified & Paid!",
+          description: `Task completed successfully! Payment of $${task.payout} processed. Confidence: ${verificationData.verification?.confidence || 95}%`,
         })
-      } else if (data.verification?.status === 'pending') {
+      } else if (verificationData.verification?.requiresManualReview) {
         toast({
-          title: "Under AI Review 🔍",
-          description: `${data.message} Submitted at ${data.verification?.submissionTime || 'now'} - Manual review in progress.`,
+          title: "Under AI Review",
+          description: "Task submitted for manual review. You'll be notified when approved.",
         })
       } else {
-        throw new Error('Verification failed')
+        throw new Error(verificationData.error || 'Verification failed')
       }
 
       // Call the success callback if provided
