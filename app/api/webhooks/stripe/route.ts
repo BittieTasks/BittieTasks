@@ -11,16 +11,22 @@ function getStripe() {
 }
 
 // Create admin Supabase client for updating user data
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
+function getSupabaseAdmin() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Missing required Supabase environment variables')
   }
-)
+  
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  )
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,6 +57,7 @@ export async function POST(request: NextRequest) {
           
           if (userId && planType) {
             // Update user metadata with subscription info
+            const supabaseAdmin = getSupabaseAdmin()
             const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
               user_metadata: {
                 subscription_plan: planType,
@@ -74,6 +81,7 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
         
         // Find user by customer ID and update subscription status
+        const supabaseAdmin = getSupabaseAdmin()
         const { data: users } = await supabaseAdmin
           .from('auth.users')
           .select('id, raw_user_meta_data')
@@ -101,6 +109,7 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
         
         // Find user by customer ID and downgrade to free plan
+        const supabaseAdmin = getSupabaseAdmin()
         const { data: users } = await supabaseAdmin
           .from('auth.users')
           .select('id, raw_user_meta_data')
