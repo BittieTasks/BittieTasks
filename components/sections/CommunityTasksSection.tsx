@@ -9,9 +9,10 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
   Plus, Users, MessageCircle, MapPin, Coins, Clock, 
-  TrendingUp, Star, Shield, CheckCircle
+  TrendingUp, Star, Shield, CheckCircle, Filter, Search
 } from 'lucide-react'
 import TaskMessaging from '@/components/messaging/TaskMessaging'
 
@@ -23,31 +24,45 @@ interface CommunityTask {
   type: string
   payout: number
   location: string
+  city: string
+  state: string
+  zipCode: string
+  coordinates?: { lat: number, lng: number }
+  radius_miles: number
   time_commitment: string
   requirements: string[]
   organizer: string
   participants_needed: number
   current_participants: number
   deadline: string
+  distance_from_user?: number
 }
 
 export default function CommunityTasksSection() {
   const { user } = useAuth()
   const { toast } = useToast()
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [locationFilter, setLocationFilter] = useState('25') // Default 25 mile radius
+  const [cityFilter, setCityFilter] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('all')
   const [newTask, setNewTask] = useState({
     title: '',
     description: '',
     category: 'Household',
     payout: '',
     location: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    radius_miles: '5',
     time_commitment: '',
     participants_needed: '',
     requirements: ''
   })
 
-  // Sample community tasks
-  const sampleTasks: CommunityTask[] = [
+  // Sample community tasks with realistic geographic distribution
+  const allCommunityTasks: CommunityTask[] = [
     {
       id: 'community-001',
       title: 'Neighborhood Spring Cleanup',
@@ -56,12 +71,18 @@ export default function CommunityTasksSection() {
       type: 'community',
       payout: 50,
       location: 'Pine Street Park',
+      city: 'San Francisco',
+      state: 'CA',
+      zipCode: '94102',
+      coordinates: { lat: 37.7749, lng: -122.4194 },
+      radius_miles: 5,
       time_commitment: '3-4 hours',
       requirements: ['Gloves', 'Cleanup bags', 'Group coordination'],
       organizer: 'Sarah M.',
       participants_needed: 8,
       current_participants: 3,
-      deadline: '3 days'
+      deadline: '3 days',
+      distance_from_user: 2.3
     },
     {
       id: 'community-002',
@@ -71,14 +92,74 @@ export default function CommunityTasksSection() {
       type: 'community',
       payout: 75,
       location: 'Maple Avenue',
+      city: 'San Francisco',
+      state: 'CA',
+      zipCode: '94103',
+      coordinates: { lat: 37.7849, lng: -122.4094 },
+      radius_miles: 3,
       time_commitment: '5-6 hours',
       requirements: ['Event setup', 'Coordination skills', 'Physical work'],
       organizer: 'Mike R.',
       participants_needed: 6,
       current_participants: 2,
-      deadline: '1 week'
+      deadline: '1 week',
+      distance_from_user: 4.1
+    },
+    {
+      id: 'community-003',
+      title: 'Community Garden Maintenance',
+      description: 'Weekly maintenance of shared community garden space',
+      category: 'Outdoor Work',
+      type: 'community',
+      payout: 40,
+      location: 'Sunset Community Garden',
+      city: 'Oakland',
+      state: 'CA',
+      zipCode: '94601',
+      coordinates: { lat: 37.8044, lng: -122.2712 },
+      radius_miles: 10,
+      time_commitment: '2-3 hours',
+      requirements: ['Gardening tools', 'Physical work', 'Weekend availability'],
+      organizer: 'Jennifer L.',
+      participants_needed: 4,
+      current_participants: 1,
+      deadline: '2 days',
+      distance_from_user: 8.7
+    },
+    {
+      id: 'community-004',
+      title: 'Senior Center Technology Help',
+      description: 'Help seniors learn to use smartphones and tablets',
+      category: 'Education',
+      type: 'community',
+      payout: 60,
+      location: 'Golden Years Senior Center',
+      city: 'Berkeley',
+      state: 'CA',
+      zipCode: '94704',
+      coordinates: { lat: 37.8715, lng: -122.2730 },
+      radius_miles: 15,
+      time_commitment: '4 hours',
+      requirements: ['Tech knowledge', 'Patience', 'Communication skills'],
+      organizer: 'Robert K.',
+      participants_needed: 3,
+      current_participants: 0,
+      deadline: '5 days',
+      distance_from_user: 12.4
     }
   ]
+
+  // Filter tasks based on location and search criteria
+  const filteredTasks = allCommunityTasks.filter(task => {
+    const matchesRadius = task.distance_from_user! <= parseInt(locationFilter)
+    const matchesCity = !cityFilter || task.city.toLowerCase().includes(cityFilter.toLowerCase())
+    const matchesSearch = !searchTerm || 
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.description.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = categoryFilter === 'all' || task.category === categoryFilter
+    
+    return matchesRadius && matchesCity && matchesSearch && matchesCategory
+  })
 
   const handleCreateTask = async () => {
     if (!newTask.title || !newTask.description || !newTask.payout) {
@@ -99,7 +180,9 @@ export default function CommunityTasksSection() {
         id: `community-${Date.now()}`,
         creator: user?.email,
         created_at: new Date().toISOString(),
-        status: 'active'
+        status: 'active',
+        coordinates: { lat: 37.7749, lng: -122.4194 }, // Would be geocoded from address
+        distance_from_user: 0
       })
 
       toast({
@@ -113,6 +196,10 @@ export default function CommunityTasksSection() {
         category: 'Household',
         payout: '',
         location: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        radius_miles: '5',
         time_commitment: '',
         participants_needed: '',
         requirements: ''
@@ -164,6 +251,77 @@ export default function CommunityTasksSection() {
           Create Task
         </Button>
       </div>
+
+      {/* Location and Search Filters */}
+      <Card className="bg-white shadow-sm">
+        <CardContent className="p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <Label htmlFor="search-tasks" className="text-sm font-medium">Search Tasks</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  id="search-tasks"
+                  placeholder="Search by title or description..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            
+            <div className="w-full md:w-48">
+              <Label htmlFor="location-radius" className="text-sm font-medium">Radius (miles)</Label>
+              <Select value={locationFilter} onValueChange={setLocationFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select radius" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">Within 5 miles</SelectItem>
+                  <SelectItem value="10">Within 10 miles</SelectItem>
+                  <SelectItem value="25">Within 25 miles</SelectItem>
+                  <SelectItem value="50">Within 50 miles</SelectItem>
+                  <SelectItem value="100">Within 100 miles</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="w-full md:w-48">
+              <Label htmlFor="city-filter" className="text-sm font-medium">City</Label>
+              <Input
+                id="city-filter"
+                placeholder="Filter by city..."
+                value={cityFilter}
+                onChange={(e) => setCityFilter(e.target.value)}
+              />
+            </div>
+
+            <div className="w-full md:w-48">
+              <Label htmlFor="category-filter" className="text-sm font-medium">Category</Label>
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="Community Service">Community Service</SelectItem>
+                  <SelectItem value="Event Planning">Event Planning</SelectItem>
+                  <SelectItem value="Outdoor Work">Outdoor Work</SelectItem>
+                  <SelectItem value="Education">Education</SelectItem>
+                  <SelectItem value="Household">Household</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+            <Filter className="w-4 h-4" />
+            <span>Showing {filteredTasks.length} tasks within {locationFilter} miles</span>
+            {cityFilter && <span>• City: {cityFilter}</span>}
+            {categoryFilter !== 'all' && <span>• Category: {categoryFilter}</span>}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Live Platform Banner */}
       <Card className="bg-blue-50 border-blue-200">
@@ -282,7 +440,24 @@ export default function CommunityTasksSection() {
 
       {/* Available Tasks */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sampleTasks.map((task) => (
+        {filteredTasks.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <MapPin className="w-16 h-16 mx-auto" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No tasks found in your area</h3>
+            <p className="text-gray-600 mb-4">
+              Try expanding your search radius or be the first to create a task in your neighborhood!
+            </p>
+            <Button
+              onClick={() => setShowCreateForm(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Create First Task
+            </Button>
+          </div>
+        ) : (
+          filteredTasks.map((task) => (
           <Card key={task.id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -306,7 +481,12 @@ export default function CommunityTasksSection() {
                 </div>
                 <div className="flex items-center text-gray-600">
                   <MapPin className="w-4 h-4 mr-2" />
-                  <span>{task.location}</span>
+                  <span>{task.location}, {task.city}, {task.state}</span>
+                </div>
+                <div className="flex items-center text-sm text-blue-600">
+                  <span className="font-medium">{task.distance_from_user} miles away</span>
+                  <span className="mx-2">•</span>
+                  <span>Up to {task.radius_miles} mile radius</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <Users className="w-4 h-4 mr-2" />
@@ -342,7 +522,8 @@ export default function CommunityTasksSection() {
               </div>
             </CardContent>
           </Card>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Benefits Section */}

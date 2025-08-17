@@ -11,8 +11,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { 
   Plus, Repeat, MessageCircle, Clock, MapPin, 
-  Heart, Handshake, Star, Zap, ArrowLeftRight
+  Heart, Handshake, Star, Zap, ArrowLeftRight, Filter, Search
 } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import TaskMessaging from '@/components/messaging/TaskMessaging'
 
 interface BarterTask {
@@ -24,16 +25,26 @@ interface BarterTask {
   offering: string
   seeking: string
   location: string
+  city: string
+  state: string
+  zipCode: string
+  coordinates?: { lat: number, lng: number }
+  radius_miles: number
   time_commitment: string
   poster: string
   posted_date: string
   responses: number
+  distance_from_user?: number
 }
 
 export default function BarterTasksSection() {
   const { user } = useAuth()
   const { toast } = useToast()
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [locationFilter, setLocationFilter] = useState('25') // Default 25 mile radius
+  const [cityFilter, setCityFilter] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('all')
   const [newBarter, setNewBarter] = useState({
     title: '',
     description: '',
@@ -41,11 +52,15 @@ export default function BarterTasksSection() {
     offering: '',
     seeking: '',
     location: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    radius_miles: '10',
     time_commitment: ''
   })
 
-  // Sample barter exchanges
-  const sampleBarters: BarterTask[] = [
+  // Sample barter exchanges with realistic geographic distribution
+  const allBarterExchanges: BarterTask[] = [
     {
       id: 'barter-001',
       title: 'Graphic Design for Tutoring',
@@ -54,11 +69,17 @@ export default function BarterTasksSection() {
       type: 'barter',
       offering: 'Graphic Design (3 hours)',
       seeking: 'Math Tutoring (3 hours)',
-      location: 'Downtown Area',
+      location: 'Downtown Design Studio',
+      city: 'San Francisco',
+      state: 'CA',
+      zipCode: '94105',
+      coordinates: { lat: 37.7849, lng: -122.3973 },
+      radius_miles: 15,
       time_commitment: 'Flexible scheduling',
       poster: 'Alex K.',
       posted_date: '2 days ago',
-      responses: 4
+      responses: 4,
+      distance_from_user: 3.2
     },
     {
       id: 'barter-002',
@@ -68,11 +89,17 @@ export default function BarterTasksSection() {
       type: 'barter',
       offering: 'Organic Vegetables (weekly)',
       seeking: 'Pet Sitting (weekends)',
-      location: 'Suburban Area',
+      location: 'Sunset District Home',
+      city: 'San Francisco',
+      state: 'CA',
+      zipCode: '94122',
+      coordinates: { lat: 37.7594, lng: -122.4896 },
+      radius_miles: 8,
       time_commitment: 'Weekly exchange',
       poster: 'Maria S.',
       posted_date: '1 day ago',
-      responses: 7
+      responses: 7,
+      distance_from_user: 5.8
     },
     {
       id: 'barter-003',
@@ -82,13 +109,73 @@ export default function BarterTasksSection() {
       type: 'barter',
       offering: 'Home Repairs (5 hours)',
       seeking: 'Cooking Lessons (5 sessions)',
-      location: 'Northside',
+      location: 'Northside Workshop',
+      city: 'Oakland',
+      state: 'CA',
+      zipCode: '94609',
+      coordinates: { lat: 37.8270, lng: -122.2555 },
+      radius_miles: 12,
       time_commitment: 'Evenings/weekends',
       poster: 'David L.',
       posted_date: '3 days ago',
-      responses: 2
+      responses: 2,
+      distance_from_user: 9.1
+    },
+    {
+      id: 'barter-004',
+      title: 'Language Exchange: Spanish for English',
+      description: 'Native Spanish speaker looking to practice English conversation skills in exchange for Spanish lessons',
+      category: 'Education',
+      type: 'barter',
+      offering: 'Spanish Lessons (2 hrs/week)',
+      seeking: 'English Conversation (2 hrs/week)',
+      location: 'Mission Bay Community Center',
+      city: 'San Francisco',
+      state: 'CA',
+      zipCode: '94158',
+      coordinates: { lat: 37.7706, lng: -122.3896 },
+      radius_miles: 20,
+      time_commitment: '2 hours weekly',
+      poster: 'Carlos M.',
+      posted_date: '4 days ago',
+      responses: 12,
+      distance_from_user: 6.7
+    },
+    {
+      id: 'barter-005',
+      title: 'Web Development for Photography',
+      description: 'Frontend developer offering website creation in exchange for professional headshot photography session',
+      category: 'Professional Services',
+      type: 'barter',
+      offering: 'Website Development',
+      seeking: 'Photography Session',
+      location: 'Berkeley Tech Hub',
+      city: 'Berkeley',
+      state: 'CA',
+      zipCode: '94704',
+      coordinates: { lat: 37.8715, lng: -122.2730 },
+      radius_miles: 25,
+      time_commitment: 'One-time exchange',
+      poster: 'Sarah L.',
+      posted_date: '1 week ago',
+      responses: 3,
+      distance_from_user: 11.8
     }
   ]
+
+  // Filter barter exchanges based on location and search criteria
+  const filteredBarters = allBarterExchanges.filter(barter => {
+    const matchesRadius = barter.distance_from_user! <= parseInt(locationFilter)
+    const matchesCity = !cityFilter || barter.city.toLowerCase().includes(cityFilter.toLowerCase())
+    const matchesSearch = !searchTerm || 
+      barter.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      barter.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      barter.offering.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      barter.seeking.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = categoryFilter === 'all' || barter.category === categoryFilter
+    
+    return matchesRadius && matchesCity && matchesSearch && matchesCategory
+  })
 
   const handleCreateBarter = async () => {
     if (!newBarter.title || !newBarter.offering || !newBarter.seeking) {
@@ -110,7 +197,9 @@ export default function BarterTasksSection() {
         creator: user?.email,
         created_at: new Date().toISOString(),
         status: 'active',
-        responses: 0
+        responses: 0,
+        coordinates: { lat: 37.7749, lng: -122.4194 }, // Would be geocoded from address
+        distance_from_user: 0
       })
 
       toast({
@@ -125,6 +214,10 @@ export default function BarterTasksSection() {
         offering: '',
         seeking: '',
         location: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        radius_miles: '10',
         time_commitment: ''
       })
       setShowCreateForm(false)
@@ -162,6 +255,77 @@ export default function BarterTasksSection() {
           Create Exchange
         </Button>
       </div>
+
+      {/* Location and Search Filters */}
+      <Card className="bg-white shadow-sm">
+        <CardContent className="p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <Label htmlFor="search-barters" className="text-sm font-medium">Search Exchanges</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  id="search-barters"
+                  placeholder="Search by title, offering, or seeking..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            
+            <div className="w-full md:w-48">
+              <Label htmlFor="barter-radius" className="text-sm font-medium">Radius (miles)</Label>
+              <Select value={locationFilter} onValueChange={setLocationFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select radius" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">Within 5 miles</SelectItem>
+                  <SelectItem value="10">Within 10 miles</SelectItem>
+                  <SelectItem value="25">Within 25 miles</SelectItem>
+                  <SelectItem value="50">Within 50 miles</SelectItem>
+                  <SelectItem value="100">Within 100 miles</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="w-full md:w-48">
+              <Label htmlFor="barter-city-filter" className="text-sm font-medium">City</Label>
+              <Input
+                id="barter-city-filter"
+                placeholder="Filter by city..."
+                value={cityFilter}
+                onChange={(e) => setCityFilter(e.target.value)}
+              />
+            </div>
+
+            <div className="w-full md:w-48">
+              <Label htmlFor="barter-category-filter" className="text-sm font-medium">Category</Label>
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="Services">Services</SelectItem>
+                  <SelectItem value="Goods & Services">Goods & Services</SelectItem>
+                  <SelectItem value="Skills Exchange">Skills Exchange</SelectItem>
+                  <SelectItem value="Education">Education</SelectItem>
+                  <SelectItem value="Professional Services">Professional Services</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+            <Filter className="w-4 h-4" />
+            <span>Showing {filteredBarters.length} exchanges within {locationFilter} miles</span>
+            {cityFilter && <span>• City: {cityFilter}</span>}
+            {categoryFilter !== 'all' && <span>• Category: {categoryFilter}</span>}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Zero Fees Banner */}
       <Card className="bg-orange-50 border-orange-200">
@@ -279,7 +443,24 @@ export default function BarterTasksSection() {
 
       {/* Available Exchanges */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sampleBarters.map((barter) => (
+        {filteredBarters.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <MapPin className="w-16 h-16 mx-auto" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No exchanges found in your area</h3>
+            <p className="text-gray-600 mb-4">
+              Try expanding your search radius or be the first to create an exchange in your neighborhood!
+            </p>
+            <Button
+              onClick={() => setShowCreateForm(true)}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              Create First Exchange
+            </Button>
+          </div>
+        ) : (
+          filteredBarters.map((barter) => (
           <Card key={barter.id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -325,7 +506,12 @@ export default function BarterTasksSection() {
                 </div>
                 <div className="flex items-center text-gray-600">
                   <MapPin className="w-4 h-4 mr-2" />
-                  <span>{barter.location}</span>
+                  <span>{barter.location}, {barter.city}, {barter.state}</span>
+                </div>
+                <div className="flex items-center text-sm text-orange-600">
+                  <span className="font-medium">{barter.distance_from_user} miles away</span>
+                  <span className="mx-2">•</span>
+                  <span>Up to {barter.radius_miles} mile radius</span>
                 </div>
               </div>
 
@@ -347,7 +533,8 @@ export default function BarterTasksSection() {
               </Button>
             </CardContent>
           </Card>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Benefits Section */}
