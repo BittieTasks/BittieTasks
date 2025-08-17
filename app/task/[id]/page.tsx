@@ -273,6 +273,8 @@ export default function TaskDetailPage() {
               <TaskMessaging 
                 taskId={id as string}
                 taskTitle={task.title}
+                isOpen={true}
+                onOpenChange={() => {}}
               />
             )}
           </div>
