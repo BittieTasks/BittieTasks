@@ -8,6 +8,7 @@ import { useToast } from '../../hooks/use-toast';
 import { Check, Coins, Crown, Zap, Calculator, TrendingUp, Star, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { supabase } from '@/lib/supabase';
 
 // Live subscription system with transparent pricing
 
@@ -89,11 +90,18 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
     setIsProcessing(true);
     
     try {
+      // Get the auth token from Supabase
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.access_token) {
+        throw new Error('No authentication token')
+      }
+
       // Create Stripe checkout session
       const response = await fetch('/api/create-subscription', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({
           planType,

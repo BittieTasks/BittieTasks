@@ -1,12 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 
-if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
-  throw new Error('Missing required Stripe secrets')
+if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error('Missing required Stripe secrets or Supabase service role key')
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+
+// Create admin Supabase client for updating user data
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  }
+)
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,10 +47,8 @@ export async function POST(request: NextRequest) {
           const planType = session.metadata?.plan_type
           
           if (userId && planType) {
-            // Create admin client to update user metadata
-            const supabase = createServerClient(request)
-            
-            await supabase.auth.admin.updateUserById(userId, {
+            // Update user metadata with subscription info
+            const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
               user_metadata: {
                 subscription_plan: planType,
                 stripe_customer_id: session.customer,
@@ -47,7 +57,11 @@ export async function POST(request: NextRequest) {
               }
             })
             
-            console.log(`Updated subscription for user ${userId} to ${planType} plan`)
+            if (error) {
+              console.error(`Failed to update user ${userId} subscription:`, error)
+            } else {
+              console.log(`Updated subscription for user ${userId} to ${planType} plan`)
+            }
           }
         }
         break
@@ -57,23 +71,25 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
         
         // Find user by customer ID and update subscription status
-        const supabase = createServerClient(request)
-        
-        const { data: users } = await supabase
+        const { data: users } = await supabaseAdmin
           .from('auth.users')
           .select('id, raw_user_meta_data')
           .eq('raw_user_meta_data->stripe_customer_id', subscription.customer)
         
         if (users && users.length > 0) {
           const user = users[0]
-          await supabase.auth.admin.updateUserById(user.id, {
+          const { error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
             user_metadata: {
               ...user.raw_user_meta_data,
               subscription_status: subscription.status
             }
           })
           
-          console.log(`Updated subscription status for user ${user.id} to ${subscription.status}`)
+          if (error) {
+            console.error(`Failed to update user ${user.id} subscription status:`, error)
+          } else {
+            console.log(`Updated subscription status for user ${user.id} to ${subscription.status}`)
+          }
         }
         break
       }
@@ -82,16 +98,14 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
         
         // Find user by customer ID and downgrade to free plan
-        const supabase = createServerClient(request)
-        
-        const { data: users } = await supabase
+        const { data: users } = await supabaseAdmin
           .from('auth.users')
           .select('id, raw_user_meta_data')
           .eq('raw_user_meta_data->stripe_customer_id', subscription.customer)
         
         if (users && users.length > 0) {
           const user = users[0]
-          await supabase.auth.admin.updateUserById(user.id, {
+          const { error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
             user_metadata: {
               ...user.raw_user_meta_data,
               subscription_plan: 'free',
@@ -99,7 +113,11 @@ export async function POST(request: NextRequest) {
             }
           })
           
-          console.log(`Downgraded user ${user.id} to free plan`)
+          if (error) {
+            console.error(`Failed to downgrade user ${user.id}:`, error)
+          } else {
+            console.log(`Downgraded user ${user.id} to free plan`)
+          }
         }
         break
       }

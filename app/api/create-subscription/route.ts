@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -8,14 +8,39 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
+// Create server client with proper auth handling
+function createServerClient(request: NextRequest) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    },
+    global: {
+      headers: {
+        Authorization: request.headers.get('Authorization') || ''
+      }
+    }
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
+    // Check for Authorization header
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Authentication required - missing token' }, { status: 401 })
+    }
+
     const supabase = createServerClient(request)
     
-    // Get authenticated user
+    // Get authenticated user using the token
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      console.error('Auth error:', authError)
+      return NextResponse.json({ error: 'Authentication required - invalid token' }, { status: 401 })
     }
 
     const { planType, price } = await request.json()
@@ -42,6 +67,9 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Get the base URL for redirects
+    const origin = request.headers.get('origin') || request.headers.get('referer')?.split('?')[0] || 'https://bittietasks.com'
+    
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -63,8 +91,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'subscription',
-      success_url: `${request.headers.get('origin')}/dashboard?subscription=success&plan=${planType}`,
-      cancel_url: `${request.headers.get('origin')}/subscribe?canceled=true`,
+      success_url: `${origin}/dashboard?subscription=success&plan=${planType}`,
+      cancel_url: `${origin}/subscribe?canceled=true`,
       metadata: {
         user_id: user.id,
         plan_type: planType,
