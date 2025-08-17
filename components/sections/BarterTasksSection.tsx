@@ -17,6 +17,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import TaskMessaging from '@/components/messaging/TaskMessaging'
 import { supabase } from '@/lib/supabase'
+import { processLocationData, calculateDistanceFromUser } from '@/lib/geocoding'
 
 interface BarterTask {
   id: string
@@ -81,16 +82,21 @@ export default function BarterTasksSection() {
     offering: task.offering || 'Service',
     seeking: task.seeking || 'Service',
     location: task.location || 'Location TBD',
-    city: 'San Francisco', // Extract from location if available
-    state: 'CA',
-    zipCode: '94102',
-    coordinates: { lat: 37.7749, lng: -122.4194 },
-    radius_miles: 25,
+    city: task.city || 'San Francisco', // Use real city from database
+    state: task.state || 'CA',
+    zipCode: task.zip_code || task.zipCode || '94102',
+    coordinates: task.coordinates ? 
+      (() => {
+        const [lat, lng] = task.coordinates.split(',').map(Number)
+        return { lat, lng }
+      })() : 
+      { lat: 37.7749, lng: -122.4194 },
+    radius_miles: task.radius_miles || task.radiusMiles || 25,
     time_commitment: task.duration || 'Flexible',
     poster: 'Community Member',
-    posted_date: new Date(task.createdAt || Date.now()).toLocaleDateString(),
+    posted_date: new Date(task.createdAt || task.created_at || Date.now()).toLocaleDateString(),
     responses: 0, // Calculate from participantCount if available
-    distance_from_user: Math.random() * 20 // Calculate real distance later
+    distance_from_user: task.coordinates ? calculateDistanceFromUser(task.coordinates) : 999
   })
 
   // Use only real barter tasks from database
@@ -130,10 +136,14 @@ export default function BarterTasksSection() {
     }
 
     try {
-      // Calculate actual location from city/state/zip
-      const fullLocation = [newBarter.location, newBarter.city, newBarter.state, newBarter.zipCode]
-        .filter(Boolean)
-        .join(', ')
+      // Process location data with proper geocoding
+      const locationData = processLocationData(
+        newBarter.location,
+        newBarter.city,
+        newBarter.state,
+        newBarter.zipCode,
+        parseInt(newBarter.radius_miles) || 25
+      )
 
       // Get the session token for authentication
       const { data: { session } } = await supabase.auth.getSession()
@@ -146,7 +156,7 @@ export default function BarterTasksSection() {
         return
       }
 
-      // Save barter task to database via API
+      // Save barter task to database via API with proper location fields
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
@@ -159,7 +169,12 @@ export default function BarterTasksSection() {
           offering: newBarter.offering,
           seeking: newBarter.seeking,
           earningPotential: 0, // Barter tasks have no monetary value
-          location: fullLocation,
+          location: locationData.location,
+          zipCode: locationData.zipCode,
+          city: locationData.city,
+          state: locationData.state,
+          coordinates: locationData.coordinates,
+          radiusMiles: locationData.radiusMiles,
           maxParticipants: 1, // Barter is typically 1:1
           duration: newBarter.time_commitment,
           type: 'barter', // Barter type for 0% fees

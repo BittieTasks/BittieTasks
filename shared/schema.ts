@@ -136,6 +136,12 @@ export const tasks = pgTable("tasks", {
   currentParticipants: integer("current_participants").default(0),
   duration: varchar("duration"),
   location: varchar("location"),
+  // Proper location tracking fields
+  zipCode: varchar("zip_code"),
+  city: varchar("city"),
+  state: varchar("state"),
+  coordinates: varchar("coordinates"), // "lat,lng" format for distance calculations
+  radiusMiles: integer("radius_miles").default(25), // Task visible within this radius
   difficulty: varchar("difficulty", { enum: ["easy", "medium", "hard"] }).default("medium"),
   requirements: text("requirements"),
   sponsorId: varchar("sponsor_id"),

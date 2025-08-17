@@ -19,6 +19,7 @@ import TaskMessaging from '@/components/messaging/TaskMessaging'
 import { TaskApplicationButton } from '@/components/TaskApplicationButton'
 import { TaskSubmissionButton } from '@/components/TaskSubmissionButton'
 import { supabase } from '@/lib/supabase'
+import { processLocationData, calculateDistanceFromUser } from '@/lib/geocoding'
 
 interface CommunityTask {
   id: string
@@ -82,20 +83,25 @@ export default function CommunityTasksSection() {
     description: task.description,
     category: 'Community', // Map from categoryId if needed
     type: 'community',
-    payout: parseFloat(task.earningPotential || '0'),
+    payout: parseFloat(task.earning_potential || task.earningPotential || '0'),
     location: task.location || 'Location TBD',
-    city: 'San Francisco', // Extract from location if available
-    state: 'CA',
-    zipCode: '94102',
-    coordinates: { lat: 37.7749, lng: -122.4194 },
-    radius_miles: 25,
+    city: task.city || 'San Francisco', // Use real city from database
+    state: task.state || 'CA',
+    zipCode: task.zip_code || task.zipCode || '94102',
+    coordinates: task.coordinates ? 
+      (() => {
+        const [lat, lng] = task.coordinates.split(',').map(Number)
+        return { lat, lng }
+      })() : 
+      { lat: 37.7749, lng: -122.4194 },
+    radius_miles: task.radius_miles || task.radiusMiles || 25,
     time_commitment: task.duration || 'TBD',
     requirements: typeof task.requirements === 'string' ? [task.requirements] : (task.requirements || []),
     organizer: 'Community Member',
-    participants_needed: task.maxParticipants || 1,
-    current_participants: task.currentParticipants || 0,
+    participants_needed: task.max_participants || task.maxParticipants || 1,
+    current_participants: task.current_participants || task.currentParticipants || 0,
     deadline: '7 days', // Calculate from createdAt if needed
-    distance_from_user: Math.random() * 20 // Calculate real distance later
+    distance_from_user: task.coordinates ? calculateDistanceFromUser(task.coordinates) : 999
   })
 
   // Use only real tasks from database
@@ -133,10 +139,14 @@ export default function CommunityTasksSection() {
     }
 
     try {
-      // Calculate actual location from city/state/zip for geocoding  
-      const fullLocation = [newTask.location, newTask.city, newTask.state, newTask.zipCode]
-        .filter(Boolean)
-        .join(', ')
+      // Process location data with proper geocoding
+      const locationData = processLocationData(
+        newTask.location,
+        newTask.city,
+        newTask.state,
+        newTask.zipCode,
+        parseInt(newTask.radius_miles) || 25
+      )
 
       // Get the session token for authentication
       const { data: { session } } = await supabase.auth.getSession()
@@ -149,7 +159,7 @@ export default function CommunityTasksSection() {
         return
       }
 
-      // Save task to database via API
+      // Save task to database via API with proper location fields
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
@@ -160,7 +170,12 @@ export default function CommunityTasksSection() {
           title: newTask.title,
           description: newTask.description,
           earningPotential: parseFloat(newTask.payout),
-          location: fullLocation,
+          location: locationData.location,
+          zipCode: locationData.zipCode,
+          city: locationData.city,
+          state: locationData.state,
+          coordinates: locationData.coordinates,
+          radiusMiles: locationData.radiusMiles,
           maxParticipants: parseInt(newTask.participants_needed) || 1,
           duration: newTask.time_commitment,
           requirements: newTask.requirements,

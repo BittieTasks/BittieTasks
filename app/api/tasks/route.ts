@@ -64,12 +64,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     console.log('API: Creating task with data:', body)
     
-    // Validate the task data
+    // Validate the task data with proper location fields
     const taskData = {
       ...body,
       creatorId: user.id, // Ensure creator is current user
+      creator_id: user.id, // Supabase field name
       status: 'open',
-      currentParticipants: 0
+      currentParticipants: 0,
+      current_participants: 0,
+      // Ensure location fields are properly mapped
+      earning_potential: body.earningPotential || 0,
+      max_participants: body.maxParticipants || 1,
+      zip_code: body.zipCode,
+      radius_miles: body.radiusMiles || 25,
     }
 
     // Use task data as is for now (schema validation will be added later)
