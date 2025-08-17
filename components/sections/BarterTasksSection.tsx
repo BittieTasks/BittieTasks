@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import TaskMessaging from '@/components/messaging/TaskMessaging'
+import { supabase } from '@/lib/supabase'
 
 interface BarterTask {
   id: string
@@ -134,11 +135,23 @@ export default function BarterTasksSection() {
         .filter(Boolean)
         .join(', ')
 
+      // Get the session token for authentication
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        toast({
+          title: "Session Expired",
+          description: "Please sign in again to create barter exchanges.",
+          variant: "destructive"
+        })
+        return
+      }
+
       // Save barter task to database via API
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           title: newBarter.title,
@@ -157,7 +170,9 @@ export default function BarterTasksSection() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to create barter exchange')
+        const errorData = await response.json()
+        console.error('API error response:', errorData)
+        throw new Error(`Failed to create barter exchange: ${errorData.error || 'Unknown error'}`)
       }
 
       const savedBarter = await response.json()

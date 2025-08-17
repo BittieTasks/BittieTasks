@@ -47,13 +47,22 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createServerClient(request)
     
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    // Get the authorization header
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Authorization header required' }, { status: 401 })
+    }
+    
+    // Set the session from the token
+    const token = authHeader.split(' ')[1]
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
     if (authError || !user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      console.error('Auth error:', authError)
+      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 })
     }
 
     const body = await request.json()
+    console.log('API: Creating task with data:', body)
     
     // Validate the task data
     const taskData = {
@@ -65,6 +74,7 @@ export async function POST(request: NextRequest) {
 
     // Use task data as is for now (schema validation will be added later)
     const validatedData = taskData
+    console.log('API: Final task data for insertion:', validatedData)
 
     // Insert the task
     const { data: newTask, error } = await supabase
@@ -79,7 +89,12 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error creating task:', error)
-      return NextResponse.json({ error: 'Failed to create task' }, { status: 500 })
+      console.error('Task data that failed:', validatedData)
+      return NextResponse.json({ 
+        error: 'Failed to create task', 
+        details: error.message,
+        data: validatedData 
+      }, { status: 500 })
     }
 
     return NextResponse.json(newTask, { status: 201 })
