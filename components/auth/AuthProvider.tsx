@@ -26,7 +26,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -34,13 +34,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [])
 
   useEffect(() => {
+    if (!mounted) return
+    
     let timeoutId: NodeJS.Timeout
     
-    // Set a very short fallback timeout to prevent infinite loading
+    console.log('Starting auth initialization...')
+    
+    // Set timeout to stop loading quickly
     timeoutId = setTimeout(() => {
-      console.log('Auth timeout reached, setting loading to false and showing content')
+      console.log('Auth timeout reached, setting loading to false')
       setLoading(false)
-    }, 1000) // Further reduced to 1 second for immediate content display
+    }, 500) // Very quick timeout for immediate content display
     
     // Get initial session with enhanced debugging
     supabase.auth.getSession().then(({ data: { session }, error }) => {
