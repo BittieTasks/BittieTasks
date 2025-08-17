@@ -37,7 +37,7 @@ export default function SoloTasksSection() {
   const [showApplicationModal, setShowApplicationModal] = useState(false)
 
   // Fetch available solo tasks from real database
-  const { data: tasks = [], isLoading, error } = useQuery({
+  const { data: dbTasks = [], isLoading, error } = useQuery({
     queryKey: ['/api/tasks', 'solo'],
     enabled: isAuthenticated && !!user,
     queryFn: async () => {
@@ -55,6 +55,24 @@ export default function SoloTasksSection() {
       }
       return response.json()
     }
+  })
+
+  // Transform database tasks to match component interface
+  const transformDbTask = (dbTask: any): Task => ({
+    id: dbTask.id,
+    title: dbTask.title,
+    description: dbTask.description,
+    category: dbTask.category?.name || 'General',
+    type: dbTask.type,
+    payout: dbTask.payout,
+    location: dbTask.location || dbTask.city + ', ' + dbTask.state,
+    time_commitment: dbTask.time_commitment || 'As needed',
+    requirements: Array.isArray(dbTask.requirements) ? dbTask.requirements : [dbTask.requirements].filter(Boolean),
+    platform_funded: true,
+    completion_limit: dbTask.max_participants || 1,
+    verification_type: 'photo',
+    current_participants: dbTask.current_participants || 0,
+    max_participants: dbTask.max_participants || 1
   })
 
   // Fallback solo tasks for initial experience (when no database tasks exist yet)
@@ -142,7 +160,7 @@ export default function SoloTasksSection() {
   ]
 
   // Use real database tasks if available, otherwise use fallback for initial experience
-  const availableTasks = tasks.length > 0 ? tasks : fallbackSoloTasks
+  const availableTasks = dbTasks.length > 0 ? dbTasks.map(transformDbTask) : fallbackSoloTasks
 
   const handleApplyToTask = (task: Task) => {
     console.log('Solo task application - Auth check:', {

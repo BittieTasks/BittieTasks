@@ -9,6 +9,7 @@ import { Check, Coins, Crown, Zap, Calculator, TrendingUp, Star, Loader2 } from 
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/lib/supabase';
+import { redirectToAuthWithIntent } from '@/lib/auth-redirect';
 
 // Live subscription system with transparent pricing
 
@@ -162,7 +163,7 @@ export default function Subscribe() {
   const router = useRouter();
   const { user, isAuthenticated, loading } = useAuth();
 
-  // Redirect unauthenticated users to auth page
+  // Redirect unauthenticated users to auth page with intent to return
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       toast({
@@ -170,7 +171,7 @@ export default function Subscribe() {
         description: "Please sign in to subscribe to a plan.",
         variant: "default",
       });
-      router.push('/auth');
+      redirectToAuthWithIntent('/subscribe');
     }
   }, [loading, isAuthenticated, router, toast]);
 

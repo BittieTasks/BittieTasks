@@ -20,8 +20,17 @@ export async function GET(request: NextRequest) {
       if (data.user && data.session) {
         console.log('Email verification successful for user:', data.user.email)
         
+        // Check for intended destination or use default redirect
+        const intendedUrl = request.cookies.get('intended_url')?.value
+        const destination = intendedUrl || next || '/dashboard'
+        
         // Create a response that will set the session cookies
-        const response = NextResponse.redirect(`${requestUrl.origin}${next}`)
+        const response = NextResponse.redirect(`${requestUrl.origin}${destination}`)
+        
+        // Clear the intended URL cookie if it exists
+        if (intendedUrl) {
+          response.cookies.delete('intended_url')
+        }
         
         // Set session cookies manually for better persistence
         response.cookies.set('sb-access-token', data.session.access_token, {
