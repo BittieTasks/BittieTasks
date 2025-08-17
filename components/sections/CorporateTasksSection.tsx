@@ -88,9 +88,6 @@ export default function CorporateTasksSection() {
     verification_required: true
   })
 
-  // Use real database tasks if available, otherwise use fallback
-  const corporateTasks = dbTasks.length > 0 ? dbTasks.map(transformDbTask) : fallbackTasks
-
   // Fallback corporate tasks for initial experience
   const fallbackTasks: CorporateTask[] = [
     {
@@ -145,6 +142,9 @@ export default function CorporateTasksSection() {
       verification_required: false
     }
   ]
+
+  // Use real database tasks if available, otherwise use fallback
+  const corporateTasks = dbTasks.length > 0 ? dbTasks.map(transformDbTask) : fallbackTasks
 
   const handleCreateTask = () => {
     if (!newTask.title || !newTask.description || !newTask.payout) {
@@ -330,7 +330,7 @@ export default function CorporateTasksSection() {
 
       {/* Available Tasks */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {corporateTasks.map((task) => (
+        {corporateTasks.map((task: CorporateTask) => (
           <Card key={task.id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-center justify-between">
