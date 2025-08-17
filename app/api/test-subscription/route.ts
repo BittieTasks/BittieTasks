@@ -5,14 +5,18 @@ import Stripe from 'stripe'
 // Test endpoint to verify subscription flow works
 // This endpoint simulates the subscription creation with a test user
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY')
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY')
+  }
+  
+  return new Stripe(process.env.STRIPE_SECRET_KEY)
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 export async function GET(request: NextRequest) {
   try {
+    const stripe = getStripe()
+    
     // Test 1: Verify Stripe connection
     console.log('Testing Stripe connection...')
     const balance = await stripe.balance.retrieve()

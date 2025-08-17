@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY')
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY')
+  }
+  
+  return new Stripe(process.env.STRIPE_SECRET_KEY)
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 // Create server client with proper auth handling
 function createServerClient(request: NextRequest) {
@@ -53,6 +55,7 @@ export async function POST(request: NextRequest) {
     let customerId = user.user_metadata?.stripe_customer_id
 
     if (!customerId) {
+      const stripe = getStripe()
       const customer = await stripe.customers.create({
         email: user.email!,
         metadata: {
@@ -71,6 +74,7 @@ export async function POST(request: NextRequest) {
     const origin = request.headers.get('origin') || request.headers.get('referer')?.split('?')[0] || 'https://bittietasks.com'
     
     // Create Stripe checkout session
+    const stripe = getStripe()
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],

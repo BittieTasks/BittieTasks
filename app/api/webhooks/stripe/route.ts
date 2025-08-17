@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 
-if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  throw new Error('Missing required Stripe secrets or Supabase service role key')
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Missing required Stripe secrets or Supabase service role key')
+  }
+  
+  return new Stripe(process.env.STRIPE_SECRET_KEY)
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 // Create admin Supabase client for updating user data
 const supabaseAdmin = createClient(
@@ -30,6 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify webhook signature
+    const stripe = getStripe()
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
