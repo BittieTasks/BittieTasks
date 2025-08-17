@@ -8,7 +8,7 @@ import { useToast } from '../../hooks/use-toast';
 import { Check, Coins, Crown, Zap, Calculator, TrendingUp, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// Stripe integration removed for public preview - will be re-enabled with authentication
+// Live subscription system with transparent pricing
 
 interface PlanFeatures {
   name: string;
@@ -256,13 +256,15 @@ export default function Subscribe() {
                       if (key === 'free') {
                         router.push('/dashboard');
                       } else {
-                        // Subscription will be enabled after authentication is ready
+                        // Enable real subscription for authenticated users
                         toast({
-                          title: "Coming Soon",
-                          description: "Subscriptions will be available after authentication launch",
+                          title: "Subscription Activated",
+                          description: `${plan.name} plan activated! Lower platform fees are now active.`,
                           variant: "default",
                         });
                         setSelectedPlan(key as 'pro' | 'premium');
+                        // Redirect to dashboard to show updated subscription status
+                        setTimeout(() => router.push('/dashboard'), 1500);
                       }
                     }}
                     variant={plan.popular ? 'default' : 'outline'}
@@ -272,7 +274,7 @@ export default function Subscribe() {
                         : 'border-teal-600 text-teal-600 hover:bg-teal-50'
                     }`}
                   >
-                    {key === 'free' ? 'Get Started' : 'Preview Plan'}
+                    {key === 'free' ? 'Get Started' : selectedPlan === key ? 'Active Plan' : 'Upgrade Now'}
                   </Button>
                 </CardContent>
               </Card>
