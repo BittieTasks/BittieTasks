@@ -26,7 +26,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -36,20 +36,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (!mounted) return
     
-    let timeoutId: NodeJS.Timeout
-    
     console.log('Starting auth initialization...')
     
-    // Set timeout to stop loading quickly
-    timeoutId = setTimeout(() => {
-      console.log('Auth timeout reached, setting loading to false')
-      setLoading(false)
-    }, 500) // Very quick timeout for immediate content display
-    
-    // Get initial session with enhanced debugging
+    // Get initial session
     supabase.auth.getSession().then(({ data: { session }, error }) => {
-      clearTimeout(timeoutId)
-      
       if (error) {
         console.error('Error getting session:', error)
         setLoading(false)
@@ -60,93 +50,67 @@ export function AuthProvider({ children }: AuthProviderProps) {
         hasSession: !!session,
         userEmail: session?.user?.email,
         isConfirmed: !!session?.user?.email_confirmed_at,
-        expiresAt: session?.expires_at
       })
       
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
     }).catch((error) => {
-      clearTimeout(timeoutId)
       console.error('Session fetch failed:', error)
       setLoading(false)
     })
 
-    // Listen for auth changes with enhanced handling
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', {
-        event,
-        userEmail: session?.user?.email || 'No user',
-        isConfirmed: !!session?.user?.email_confirmed_at,
-        currentPath: typeof window !== 'undefined' ? window.location.pathname : 'unknown'
-      })
-      
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-
-      if (event === 'SIGNED_IN' && session?.user) {
-        // Handle redirect after successful sign in
-        const redirectPath = localStorage.getItem('redirectAfterAuth')
-        const pendingTaskId = localStorage.getItem('pendingTaskId')
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state change:', {
+          event,
+          hasSession: !!session,
+          userEmail: session?.user?.email,
+          isConfirmed: !!session?.user?.email_confirmed_at
+        })
         
-        if (redirectPath && typeof window !== 'undefined') {
-          localStorage.removeItem('redirectAfterAuth')
-          if (pendingTaskId) {
-            localStorage.removeItem('pendingTaskId')
-            // Redirect to the page with task selection
-            setTimeout(() => {
-              window.location.href = `${redirectPath}?selectTask=${pendingTaskId}`
-            }, 1000)
-          } else {
-            setTimeout(() => {
-              window.location.href = redirectPath
-            }, 1000)
-          }
-        }
+        setSession(session)
+        setUser(session?.user ?? null)
+        setLoading(false)
         
-        // Only create profile for verified users to avoid conflicts with email verification
-        if (session.user.email_confirmed_at) {
+        // Handle successful sign in
+        if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
+          console.log('User successfully signed in and verified, redirecting to dashboard')
+          
+          // Create user profile if needed
           try {
             await createUserProfile(session.user)
           } catch (error) {
             console.error('Error creating user profile:', error)
           }
           
-          // Auto-redirect to dashboard after successful sign in (only if verified and no other redirect)
-          if (typeof window !== 'undefined' && (window.location.pathname === '/auth' || window.location.pathname === '/') && !redirectPath) {
-            console.log('Auto-redirecting to dashboard after sign in')
-            setTimeout(() => {
-              window.location.href = '/dashboard'
-            }, 1500) // Longer delay to ensure session is fully established
-          }
-        } else {
-          console.log('User not verified yet, skipping profile creation and redirect')
+          // Force redirect to dashboard
+          setTimeout(() => {
+            window.location.href = '/dashboard'
+          }, 1000)
+        }
+        
+        // Handle sign out
+        if (event === 'SIGNED_OUT') {
+          console.log('User signed out')
+          setUser(null)
+          setSession(null)
         }
       }
-      
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out, clearing state')
-        setSession(null)
-        setUser(null)
-      }
-    })
-
+    )
+    
     return () => {
-      clearTimeout(timeoutId)
       subscription.unsubscribe()
     }
-  }, [])
+  }, [mounted])
 
   const createUserProfile = async (authUser: User) => {
     try {
-      // Get fresh session to ensure valid token
       const { data: { session: currentSession } } = await supabase.auth.getSession()
       
       if (!currentSession?.access_token) {
-        console.log('No valid session token for profile creation, skipping...')
+        console.log('No valid session token for profile creation')
         return
       }
 
@@ -177,18 +141,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     console.log('AuthProvider signIn called with:', email)
     
     try {
-      // First attempt normal sign in
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
       
-      console.log('Sign in result:', { data, error })
+      console.log('Sign in result:', { hasUser: !!data.user, error })
       
       if (error) {
         console.error('Sign in error details:', error)
         
-        // Handle email not confirmed error specifically
         if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
           throw new Error('Please verify your email before signing in. Check your email for the verification link.')
         }
@@ -196,12 +158,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error(error.message)
       }
       
-      // Success - the onAuthStateChange listener will handle the redirect
       console.log('Sign in successful, user:', data.user?.email)
       
     } catch (error: any) {
       console.error('Sign in failed:', error)
-      // Re-throw to be caught by the component
       throw new Error(error.message || 'Sign in failed. Please try again.')
     }
   }
@@ -210,7 +170,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     console.log('AuthProvider signUp called with:', email, userData)
     
     try {
-      // Use our custom signup API instead of Supabase directly
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -224,97 +183,78 @@ export function AuthProvider({ children }: AuthProviderProps) {
       })
 
       const result = await response.json()
-
+      
       if (!response.ok) {
-        throw new Error(result.error || 'Signup failed')
+        console.error('Signup failed:', result)
+        throw new Error(result.message || result.error || 'Signup failed')
       }
-
-      if (result.success) {
-        console.log('Custom signup successful:', result.message)
-        return result
-      } else {
-        throw new Error(result.error || 'Signup failed')
-      }
+      
+      console.log('Signup successful:', result)
+      
     } catch (error: any) {
-      console.error('Custom signup failed:', error)
+      console.error('Signup error:', error)
       throw new Error(error.message || 'Signup failed. Please try again.')
     }
   }
 
   const signOut = async () => {
+    console.log('AuthProvider signOut called')
+    
     try {
-      console.log('SignOut initiated...')
-      
-      // Clear local state first
-      setUser(null)
-      setSession(null)
-      
-      // Sign out from Supabase
       const { error } = await supabase.auth.signOut()
+      
       if (error) {
-        console.error('SignOut error:', error)
-        throw error
+        console.error('Sign out error:', error)
+        throw new Error(error.message)
       }
       
-      console.log('SignOut successful')
+      console.log('Sign out successful')
       
-      // Clear any cached data
-      if (typeof window !== 'undefined') {
-        // Clear specific auth-related localStorage items
-        localStorage.removeItem('redirectAfterAuth')
-        localStorage.removeItem('pendingTaskId')
-        
-        // Redirect to home page after successful sign out
-        window.location.href = '/'
-      }
+      // Force redirect to home page
+      window.location.href = '/'
+      
     } catch (error: any) {
-      console.error('SignOut failed:', error)
-      // Even if there's an error, try to clear local state and redirect
-      setUser(null)
-      setSession(null)
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('redirectAfterAuth')
-        localStorage.removeItem('pendingTaskId')
-        window.location.href = '/'
-      }
-      throw error
+      console.error('Sign out failed:', error)
+      throw new Error(error.message || 'Sign out failed')
     }
   }
 
   const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
-    })
+    console.log('AuthProvider resetPassword called with:', email)
     
-    if (error) throw error
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`
+      })
+      
+      if (error) {
+        console.error('Reset password error:', error)
+        throw new Error(error.message)
+      }
+      
+      console.log('Reset password email sent successfully')
+      
+    } catch (error: any) {
+      console.error('Reset password failed:', error)
+      throw new Error(error.message || 'Reset password failed')
+    }
   }
 
-  const value: AuthContextType = {
-    user,
-    session,
-    loading: loading || !mounted,
-    isAuthenticated: mounted && !!user && !!session,
-    isVerified: mounted && !!(user?.email_confirmed_at),
-    signIn,
-    signUp,
-    signOut,
-    resetPassword,
-  }
-
-  // Show loading state properly
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 bg-teal-600 rounded-lg mx-auto mb-4 animate-pulse"></div>
-          <p className="text-gray-600">Loading BittieTasks...</p>
-        </div>
-      </div>
-    )
-  }
+  const isAuthenticated = !!user && !!session
+  const isVerified = !!user?.email_confirmed_at
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{
+      user,
+      session,
+      loading,
+      isAuthenticated,
+      isVerified,
+      signIn,
+      signUp,
+      signOut,
+      resetPassword,
+    }}>
       {children}
     </AuthContext.Provider>
   )
