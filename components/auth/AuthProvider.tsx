@@ -36,11 +36,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     let timeoutId: NodeJS.Timeout
     
-    // Set a fallback timeout to prevent infinite loading
+    // Set a much shorter fallback timeout to prevent infinite loading
     timeoutId = setTimeout(() => {
       console.log('Auth timeout reached, setting loading to false')
       setLoading(false)
-    }, 5000) // Reduced to 5 second timeout
+    }, 2000) // Reduced to 2 second timeout for faster loading
     
     // Get initial session
     supabase.auth.getSession().then(({ data: { session }, error }) => {
@@ -48,16 +48,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       if (error) {
         console.error('Error getting session:', error)
+        setLoading(false) // Stop loading even on error
+        return
       }
       
-      console.log('Initial session loaded:', session?.user?.email || 'No user')
+      console.log('Initial session loaded:', session?.user?.email || 'No user - showing landing page')
       setSession(session)
       setUser(session?.user ?? null)
-      setLoading(false)
+      setLoading(false) // Always stop loading after session check
     }).catch((error) => {
       clearTimeout(timeoutId)
       console.error('Session fetch failed:', error)
-      setLoading(false)
+      setLoading(false) // Always stop loading on error
     })
 
     // Listen for auth changes
