@@ -49,6 +49,24 @@ export default function SoloTasksSection() {
     }
   })
 
+  // Show authentication prompt if not logged in
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-12">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Solo Tasks</h1>
+          <p className="text-gray-600 mb-6">Please sign in to view and apply for solo tasks</p>
+          <Button 
+            onClick={() => window.location.href = '/auth'}
+            className="bg-teal-600 hover:bg-teal-700 text-white"
+          >
+            Sign In to Continue
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   // Mock solo tasks data for testing the flow
   const mockSoloTasks: Task[] = [
     {
@@ -136,6 +154,27 @@ export default function SoloTasksSection() {
   const availableTasks = tasks.length > 0 ? tasks : mockSoloTasks
 
   const handleApplyToTask = (task: Task) => {
+    // Check authentication first
+    if (!isAuthenticated || !user?.id) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to apply for tasks. Redirecting to login...",
+        variant: "destructive",
+      })
+      // Redirect to auth page
+      setTimeout(() => {
+        window.location.href = '/auth'
+      }, 1500)
+      return
+    }
+    
+    console.log('Solo task application - Auth check:', {
+      isAuthenticated,
+      userId: user?.id,
+      userEmail: user?.email,
+      taskId: task.id
+    })
+    
     setSelectedTask(task)
     setShowApplicationModal(true)
   }
@@ -259,10 +298,10 @@ export default function SoloTasksSection() {
       </div>
 
       {/* Task Application Modal */}
-      {selectedTask && (
+      {selectedTask && user?.id && (
         <TaskApplicationModal
           task={selectedTask}
-          userId={user?.id || ''}
+          userId={user.id}
           isOpen={showApplicationModal}
           onOpenChange={setShowApplicationModal}
           onSuccess={handleApplicationSuccess}
