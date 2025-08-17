@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -22,7 +22,7 @@ interface PaymentDetails {
   completedAt: string
 }
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { user, isAuthenticated } = useAuth()
@@ -30,20 +30,11 @@ export default function PaymentSuccessPage() {
   const [loading, setLoading] = useState(true)
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null)
   const [error, setError] = useState('')
-  const [isClient, setIsClient] = useState(false)
   
   const paymentIntentId = searchParams?.get('payment_intent') ?? null
   const taskId = searchParams?.get('task_id') ?? null
 
-  // Ensure client-side rendering
   useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  useEffect(() => {
-    // Ensure we're running on client side only
-    if (typeof window === 'undefined') return
-    
     if (!isAuthenticated) {
       router.push('/auth')
       return
@@ -90,7 +81,7 @@ export default function PaymentSuccessPage() {
     fetchPaymentDetails()
   }, [isAuthenticated, paymentIntentId, taskId, router])
 
-  if (!isClient || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-emerald-100 p-4 flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -259,5 +250,20 @@ export default function PaymentSuccessPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-emerald-100 p-4 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 bg-teal-600 rounded-full mx-auto animate-pulse"></div>
+          <p className="text-gray-600">Loading payment details...</p>
+        </div>
+      </div>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
   )
 }
