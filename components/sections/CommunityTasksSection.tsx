@@ -18,6 +18,7 @@ import {
 import TaskMessaging from '@/components/messaging/TaskMessaging'
 import { TaskApplicationButton } from '@/components/TaskApplicationButton'
 import { TaskSubmissionButton } from '@/components/TaskSubmissionButton'
+import { supabase } from '@/lib/supabase'
 
 interface CommunityTask {
   id: string
@@ -101,7 +102,7 @@ export default function CommunityTasksSection() {
   const allCommunityTasks = dbTasks.map(transformDbTask)
 
   // Filter tasks based on location and search criteria
-  const filteredTasks = allCommunityTasks.filter(task => {
+  const filteredTasks = allCommunityTasks.filter((task: CommunityTask) => {
     const matchesRadius = task.distance_from_user! <= parseInt(locationFilter)
     const matchesCity = !cityFilter || task.city.toLowerCase().includes(cityFilter.toLowerCase())
     const matchesSearch = !searchTerm || 
@@ -137,11 +138,23 @@ export default function CommunityTasksSection() {
         .filter(Boolean)
         .join(', ')
 
+      // Get the session token for authentication
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        toast({
+          title: "Session Expired",
+          description: "Please sign in again to create tasks.",
+          variant: "destructive"
+        })
+        return
+      }
+
       // Save task to database via API
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           title: newTask.title,
@@ -159,7 +172,9 @@ export default function CommunityTasksSection() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to create task')
+        const errorData = await response.json()
+        console.error('API error response:', errorData)
+        throw new Error(`Failed to create task: ${errorData.error || 'Unknown error'}`)
       }
 
       const savedTask = await response.json()
@@ -441,7 +456,7 @@ export default function CommunityTasksSection() {
             </Button>
           </div>
         ) : (
-          filteredTasks.map((task) => (
+          filteredTasks.map((task: CommunityTask) => (
           <Card key={task.id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-center justify-between">
