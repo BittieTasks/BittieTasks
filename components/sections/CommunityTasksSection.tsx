@@ -179,7 +179,7 @@ export default function CommunityTasksSection() {
           maxParticipants: parseInt(newTask.participants_needed) || 1,
           duration: newTask.time_commitment,
           requirements: newTask.requirements,
-          type: 'shared', // Community tasks are 'shared' type
+          type: 'community', // Community tasks type
           creatorId: user.id,
           categoryId: null, // Will be assigned based on category mapping
           status: 'open',

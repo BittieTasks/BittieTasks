@@ -62,6 +62,28 @@ export default function DashboardSection() {
     }
   })
 
+  // Fetch user's created tasks
+  const { data: createdTasks = [], isLoading: createdTasksLoading, error: createdTasksError } = useQuery({
+    queryKey: ['/api/tasks/created'],
+    enabled: isAuthenticated && !!user,
+    retry: 1,
+    queryFn: async () => {
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      const headers: Record<string, string> = {}
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+      }
+      
+      const response = await fetch('/api/tasks/created', { headers })
+      if (!response.ok) {
+        throw new Error('Failed to fetch created tasks')
+      }
+      return response.json()
+    }
+  })
+
   // Calculate user stats from live applications data
   const userStats: UserStats = {
     total_earnings: taskApplications.filter((app: TaskActivity) => app.status === 'verified').reduce((sum: number, app: TaskActivity) => sum + app.payout, 0),
@@ -94,7 +116,7 @@ export default function DashboardSection() {
     })
   }
 
-  if (applicationsLoading) {
+  if (applicationsLoading || createdTasksLoading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
@@ -172,13 +194,63 @@ export default function DashboardSection() {
         </Card>
       </div>
 
-      {/* Recent Task Activity */}
+      {/* Created Tasks Section */}
       <Card className="bg-white shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Recent Task Activity</span>
+            <span>Tasks You Created</span>
+            <Badge className="bg-green-100 text-green-800">
+              {createdTasks.length} Created
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {createdTasks.length === 0 ? (
+            <div className="text-center py-8">
+              <Plus className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600 mb-4">No tasks created yet</p>
+              <p className="text-sm text-gray-500">Start by creating Community or Barter tasks from the sidebar</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {createdTasks.slice(0, 5).map((task: any) => (
+                <div key={task.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-shrink-0">
+                      <Badge className="bg-teal-100 text-teal-800 border-teal-200" variant="outline">
+                        {task.type || 'Community'}
+                      </Badge>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900">{task.title}</h4>
+                      <div className="flex items-center text-sm text-gray-600 mt-1">
+                        <MapPin className="w-4 h-4 mr-1" />
+                        <span className="mr-4">{task.location || task.city || 'Location TBD'}</span>
+                        <Calendar className="w-4 h-4 mr-1" />
+                        <span>{formatDate(task.created_at)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-semibold text-teal-600">
+                      {task.type === 'barter' ? 'FREE' : `$${task.earning_potential || task.earningPotential || 0}`}
+                    </div>
+                    <div className="text-xs text-gray-500 capitalize">{task.status || 'Open'}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Recent Task Applications */}
+      <Card className="bg-white shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Tasks You Applied To</span>
             <Badge className="bg-blue-100 text-blue-800">
-              {taskApplications.length} Total Applications
+              {taskApplications.length} Applications
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -186,8 +258,8 @@ export default function DashboardSection() {
           {taskApplications.length === 0 ? (
             <div className="text-center py-8">
               <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 mb-4">No task activity yet</p>
-              <p className="text-sm text-gray-500">Start by browsing available tasks in the sidebar</p>
+              <p className="text-gray-600 mb-4">No task applications yet</p>
+              <p className="text-sm text-gray-500">Start by browsing available Solo, Community, or Corporate tasks</p>
             </div>
           ) : (
             <div className="space-y-4">
