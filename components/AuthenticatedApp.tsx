@@ -13,6 +13,9 @@ import {
 } from 'lucide-react'
 import DashboardSection from '@/components/sections/DashboardSection'
 import SoloTasksSection from '@/components/sections/SoloTasksSection'
+import CommunityTasksSection from '@/components/sections/CommunityTasksSection'
+import BarterTasksSection from '@/components/sections/BarterTasksSection'
+import CorporateTasksSection from '@/components/sections/CorporateTasksSection'
 import TaskApplicationModal from '@/components/TaskApplicationModal'
 
 type AppSection = 'dashboard' | 'solo' | 'community' | 'corporate' | 'barter' | 'profile' | 'settings'
@@ -225,24 +228,9 @@ export default function AuthenticatedApp({ initialSection = 'dashboard' }: Authe
         <div className="p-4 lg:p-6">
           {currentSection === 'dashboard' && <DashboardSection />}
           {currentSection === 'solo' && <SoloTasksSection />}
-          {currentSection === 'community' && (
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Community Tasks</h2>
-              <p className="text-gray-600 mb-6">Community collaboration features coming soon...</p>
-            </div>
-          )}
-          {currentSection === 'corporate' && (
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Corporate Tasks</h2>
-              <p className="text-gray-600 mb-6">Business partnership opportunities loading...</p>
-            </div>
-          )}
-          {currentSection === 'barter' && (
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Barter Exchange</h2>
-              <p className="text-gray-600 mb-6">Service trading platform coming soon...</p>
-            </div>
-          )}
+          {currentSection === 'community' && <CommunityTasksSection />}
+          {currentSection === 'corporate' && <CorporateTasksSection />}
+          {currentSection === 'barter' && <BarterTasksSection />}
         </div>
       </div>
 
