@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '../../hooks/use-toast';
-import { Check, Coins, Crown, Zap, Calculator, TrendingUp, Star } from 'lucide-react';
+import { Check, Coins, Crown, Zap, Calculator, TrendingUp, Star, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 // Live subscription system with transparent pricing
 
@@ -79,20 +80,46 @@ const SUBSCRIPTION_PLANS: Record<string, PlanFeatures> = {
   }
 };
 
-// SubscribeForm removed - will be re-implemented when authentication is ready
-
 function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
   const { toast } = useToast();
   const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleSignUpRequired = () => {
-    toast({
-      title: "Sign Up Required",
-      description: "Please create an account to subscribe to this plan.",
-      variant: "default",
-    });
-    // In the future, redirect to auth page
-    // router.push('/auth');
+  const handleSubscribe = async () => {
+    setIsProcessing(true);
+    
+    try {
+      // Create Stripe checkout session
+      const response = await fetch('/api/create-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planType,
+          price: SUBSCRIPTION_PLANS[planType].price
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create subscription');
+      }
+
+      const { sessionUrl } = await response.json();
+      
+      // Redirect to Stripe checkout
+      window.location.href = sessionUrl;
+      
+    } catch (error) {
+      console.error('Subscription error:', error);
+      toast({
+        title: "Subscription Failed",
+        description: "Could not start subscription. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -101,13 +128,21 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
         Ready to upgrade to {SUBSCRIPTION_PLANS[planType].name}?
       </p>
       <Button 
-        onClick={handleSignUpRequired}
+        onClick={handleSubscribe}
+        disabled={isProcessing}
         className="w-full bg-teal-600 hover:bg-teal-700 text-white"
       >
-        Sign Up to Subscribe
+        {isProcessing ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+            Processing...
+          </>
+        ) : (
+          `Subscribe for $${SUBSCRIPTION_PLANS[planType].price}/month`
+        )}
       </Button>
       <p className="text-sm text-gray-500">
-        Authentication system will be activated soon. Stay tuned!
+        Secure payment processing via Stripe • Cancel anytime
       </p>
     </div>
   );
@@ -117,6 +152,36 @@ export default function Subscribe() {
   const [selectedPlan, setSelectedPlan] = useState<'pro' | 'premium' | null>(null);
   const { toast } = useToast();
   const router = useRouter();
+  const { user, isAuthenticated, loading } = useAuth();
+
+  // Redirect unauthenticated users to auth page
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to subscribe to a plan.",
+        variant: "default",
+      });
+      router.push('/auth');
+    }
+  }, [loading, isAuthenticated, router, toast]);
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-emerald-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-teal-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading subscription options...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Only show subscription page to authenticated users
+  if (!isAuthenticated) {
+    return null;
+  }
 
   if (selectedPlan) {
     return (
