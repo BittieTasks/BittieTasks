@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
@@ -7,10 +7,7 @@ export async function GET(request: NextRequest) {
   const next = requestUrl.searchParams.get('next') || '/dashboard'
 
   if (code) {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    const supabase = createServerClient(request)
 
     try {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code)
@@ -20,10 +17,29 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(`${requestUrl.origin}/auth?error=verification_failed`)
       }
 
-      if (data.user) {
+      if (data.user && data.session) {
         console.log('Email verification successful for user:', data.user.email)
-        // Redirect to dashboard after successful email verification
-        return NextResponse.redirect(`${requestUrl.origin}${next}`)
+        
+        // Create a response that will set the session cookies
+        const response = NextResponse.redirect(`${requestUrl.origin}${next}`)
+        
+        // Set session cookies manually for better persistence
+        response.cookies.set('sb-access-token', data.session.access_token, {
+          path: '/',
+          maxAge: data.session.expires_in,
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production',
+        })
+        
+        response.cookies.set('sb-refresh-token', data.session.refresh_token, {
+          path: '/',
+          maxAge: 30 * 24 * 60 * 60, // 30 days
+          sameSite: 'lax', 
+          secure: process.env.NODE_ENV === 'production',
+        })
+
+        console.log('Set session cookies for user:', data.user.email)
+        return response
       }
     } catch (error) {
       console.error('Email verification callback error:', error)

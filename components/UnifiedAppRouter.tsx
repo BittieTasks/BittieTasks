@@ -31,12 +31,16 @@ export default function UnifiedAppRouter() {
     setInitialSection(section)
   }, [pathname, isAuthenticated, authLoading])
 
-  // Redirect unauthenticated users
+  // Redirect unauthenticated users (but allow time for auth to resolve)
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       const currentPath = pathname
       if (currentPath !== '/auth' && currentPath !== '/') {
-        router.push(`/auth?redirect=${encodeURIComponent(currentPath)}`)
+        // Add a delay to allow authentication to complete but not too long
+        const timer = setTimeout(() => {
+          router.push(`/auth?redirect=${encodeURIComponent(currentPath)}`)
+        }, 2000) // Slightly longer delay to ensure auth has time to resolve
+        return () => clearTimeout(timer)
       }
     }
   }, [authLoading, isAuthenticated, pathname, router])

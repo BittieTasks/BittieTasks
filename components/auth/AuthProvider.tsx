@@ -36,37 +36,49 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     let timeoutId: NodeJS.Timeout
     
-    // Set a much shorter fallback timeout to prevent infinite loading
+    // Set a very short fallback timeout to prevent infinite loading
     timeoutId = setTimeout(() => {
-      console.log('Auth timeout reached, setting loading to false')
+      console.log('Auth timeout reached, setting loading to false and showing content')
       setLoading(false)
-    }, 2000) // Reduced to 2 second timeout for faster loading
+    }, 1000) // Further reduced to 1 second for immediate content display
     
-    // Get initial session
+    // Get initial session with enhanced debugging
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       clearTimeout(timeoutId)
       
       if (error) {
         console.error('Error getting session:', error)
-        setLoading(false) // Stop loading even on error
+        setLoading(false)
         return
       }
       
-      console.log('Initial session loaded:', session?.user?.email || 'No user - showing landing page')
+      console.log('Initial session check:', {
+        hasSession: !!session,
+        userEmail: session?.user?.email,
+        isConfirmed: !!session?.user?.email_confirmed_at,
+        expiresAt: session?.expires_at
+      })
+      
       setSession(session)
       setUser(session?.user ?? null)
-      setLoading(false) // Always stop loading after session check
+      setLoading(false)
     }).catch((error) => {
       clearTimeout(timeoutId)
       console.error('Session fetch failed:', error)
-      setLoading(false) // Always stop loading on error
+      setLoading(false)
     })
 
-    // Listen for auth changes
+    // Listen for auth changes with enhanced handling
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event, session?.user?.email || 'No user')
+      console.log('Auth state change:', {
+        event,
+        userEmail: session?.user?.email || 'No user',
+        isConfirmed: !!session?.user?.email_confirmed_at,
+        currentPath: typeof window !== 'undefined' ? window.location.pathname : 'unknown'
+      })
+      
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
@@ -100,11 +112,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           }
           
           // Auto-redirect to dashboard after successful sign in (only if verified and no other redirect)
-          if (typeof window !== 'undefined' && window.location.pathname === '/auth' && !redirectPath) {
+          if (typeof window !== 'undefined' && (window.location.pathname === '/auth' || window.location.pathname === '/') && !redirectPath) {
             console.log('Auto-redirecting to dashboard after sign in')
             setTimeout(() => {
               window.location.href = '/dashboard'
-            }, 500) // Increased delay to ensure state is updated
+            }, 1500) // Longer delay to ensure session is fully established
           }
         } else {
           console.log('User not verified yet, skipping profile creation and redirect')

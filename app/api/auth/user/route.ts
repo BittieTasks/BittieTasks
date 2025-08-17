@@ -5,15 +5,32 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = createServerClient(request)
     
-    // Get user from session
-    const { data: { user }, error } = await supabase.auth.getUser()
+    // Try multiple approaches to get the user
+    let user = null
+    let session = null
     
-    if (error) {
-      console.log('Auth error:', error.message)
-      return NextResponse.json(null, { status: 401 })
+    // First try to get the session
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+    if (!sessionError && sessionData.session) {
+      user = sessionData.session.user
+      session = sessionData.session
+      console.log('User found via session:', user.email)
+    }
+    
+    // If no session, try to get user directly
+    if (!user) {
+      const { data: userData, error: userError } = await supabase.auth.getUser()
+      if (!userError && userData.user) {
+        user = userData.user
+        console.log('User found via getUser:', user.email)
+      } else if (userError) {
+        console.log('Auth error:', userError.message)
+        return NextResponse.json(null, { status: 401 })
+      }
     }
 
     if (!user) {
+      console.log('No user found in session or auth')
       return NextResponse.json(null, { status: 401 })
     }
 

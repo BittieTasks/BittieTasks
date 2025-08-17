@@ -38,7 +38,19 @@ export const createServerClient = (request?: Request) => {
   return createSSRClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
+        if (typeof window !== 'undefined') {
+          // Client-side: use document.cookie
+          const cookieString = document.cookie || ''
+          const cookies = cookieString.split(';').reduce((acc: Record<string, string>, cookie) => {
+            const [key, value] = cookie.trim().split('=')
+            if (key && value) acc[key] = decodeURIComponent(value)
+            return acc
+          }, {})
+          return cookies[name]
+        }
+        
         if (!request) return undefined
+        // Server-side: use request headers
         const cookieString = request.headers.get('cookie') || ''
         const cookies = cookieString.split(';').reduce((acc: Record<string, string>, cookie) => {
           const [key, value] = cookie.trim().split('=')
@@ -47,11 +59,29 @@ export const createServerClient = (request?: Request) => {
         }, {})
         return cookies[name]
       },
-      set() {
-        // Do nothing for server-side
+      set(name: string, value: string, options: any) {
+        if (typeof window !== 'undefined') {
+          // Client-side: set document cookie
+          let cookieString = `${name}=${encodeURIComponent(value)}`
+          if (options.maxAge) cookieString += `; max-age=${options.maxAge}`
+          if (options.path) cookieString += `; path=${options.path}`
+          if (options.domain) cookieString += `; domain=${options.domain}`
+          if (options.secure) cookieString += '; secure'
+          if (options.httpOnly) cookieString += '; httponly'
+          if (options.sameSite) cookieString += `; samesite=${options.sameSite}`
+          document.cookie = cookieString
+        }
+        // Server-side: do nothing (handled by response)
       },
-      remove() {
-        // Do nothing for server-side  
+      remove(name: string, options: any) {
+        if (typeof window !== 'undefined') {
+          // Client-side: expire the cookie
+          let cookieString = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+          if (options.path) cookieString += `; path=${options.path}`
+          if (options.domain) cookieString += `; domain=${options.domain}`
+          document.cookie = cookieString
+        }
+        // Server-side: do nothing
       },
     },
   })
