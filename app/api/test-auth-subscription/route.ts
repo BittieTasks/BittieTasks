@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import type { User, Session } from '@supabase/supabase-js'
 
 // Test endpoint that creates a valid auth token for testing subscription flow
 
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to create test user', details: signUpError }, { status: 400 })
       }
       
-      authData = signUpData
+      authData = signUpData as { user: User; session: Session }
     }
     
     if (!authData.session?.access_token) {
