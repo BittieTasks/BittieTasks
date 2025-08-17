@@ -16,8 +16,6 @@ import {
 } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import TaskMessaging from '@/components/messaging/TaskMessaging'
-import { TaskApplicationButton } from '@/components/TaskApplicationButton'
-import { TaskSubmissionButton } from '@/components/TaskSubmissionButton'
 
 interface BarterTask {
   id: string
@@ -596,20 +594,14 @@ export default function BarterTasksSection() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <TaskApplicationButton
-                  taskId={barter.id}
-                  taskTitle={barter.title}
-                  taskType="barter"
-                  payout={0}
-                />
-                <TaskSubmissionButton
-                  taskId={barter.id}
-                  taskTitle={barter.title}
-                  taskType="barter"
-                  payout={0}
-                />
-              </div>
+              <Button
+                onClick={() => handleContactPoster(barter)}
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                data-testid={`button-contact-${barter.id}`}
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Message for Exchange
+              </Button>
             </CardContent>
           </Card>
           ))
