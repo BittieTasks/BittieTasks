@@ -97,56 +97,8 @@ export default function CommunityTasksSection() {
     distance_from_user: Math.random() * 20 // Calculate real distance later
   })
 
-  // Combine real tasks with sample data for demo
-  const realTasks = dbTasks.map(transformDbTask)
-  
-  // Sample community tasks for demonstration
-  const sampleTasks: CommunityTask[] = [
-    {
-      id: 'community-001',
-      title: 'Neighborhood Spring Cleanup',
-      description: 'Organize community volunteers to clean up local park and streets',
-      category: 'Community Service',
-      type: 'community',
-      payout: 50,
-      location: 'Pine Street Park',
-      city: 'San Francisco',
-      state: 'CA',
-      zipCode: '94102',
-      coordinates: { lat: 37.7749, lng: -122.4194 },
-      radius_miles: 5,
-      time_commitment: '3-4 hours',
-      requirements: ['Gloves', 'Cleanup bags', 'Group coordination'],
-      organizer: 'Sarah M.',
-      participants_needed: 8,
-      current_participants: 3,
-      deadline: '3 days',
-      distance_from_user: 2.3
-    },
-    {
-      id: 'community-002',
-      title: 'Block Party Setup',
-      description: 'Help organize and set up annual neighborhood block party',
-      category: 'Event Planning',
-      type: 'community',
-      payout: 75,
-      location: 'Maple Avenue',
-      city: 'San Francisco',
-      state: 'CA',
-      zipCode: '94103',
-      coordinates: { lat: 37.7849, lng: -122.4094 },
-      radius_miles: 3,
-      time_commitment: '5-6 hours',
-      requirements: ['Event setup', 'Coordination skills', 'Physical work'],
-      organizer: 'Mike R.',
-      participants_needed: 6,
-      current_participants: 2,
-      deadline: '1 week',
-      distance_from_user: 4.1
-    }
-  ]
-
-  const allCommunityTasks = [...realTasks, ...sampleTasks]
+  // Use only real tasks from database
+  const allCommunityTasks = dbTasks.map(transformDbTask)
 
   // Filter tasks based on location and search criteria
   const filteredTasks = allCommunityTasks.filter(task => {
