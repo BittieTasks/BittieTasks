@@ -33,6 +33,11 @@ export default function AuthenticatedApp({ initialSection = 'dashboard' }: Authe
   const [selectedTask, setSelectedTask] = useState<any>(null)
   const [showTaskModal, setShowTaskModal] = useState(false)
 
+  // Update current section when initialSection changes (e.g., on page refresh)
+  useEffect(() => {
+    setCurrentSection(initialSection)
+  }, [initialSection])
+
   // Navigation sections with enhanced metadata
   const sections = [
     { 

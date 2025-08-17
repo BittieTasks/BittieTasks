@@ -13,10 +13,8 @@ export default function UnifiedAppRouter() {
   const router = useRouter()
   const [initialSection, setInitialSection] = useState<AppSection>('dashboard')
 
-  // Map paths to sections
+  // Map paths to sections - always update regardless of auth state to preserve navigation
   useEffect(() => {
-    if (!isAuthenticated || authLoading) return
-
     const pathToSection: Record<string, AppSection> = {
       '/dashboard': 'dashboard',
       '/solo': 'solo', 
@@ -29,17 +27,21 @@ export default function UnifiedAppRouter() {
 
     const section = pathToSection[pathname] || 'dashboard'
     setInitialSection(section)
-  }, [pathname, isAuthenticated, authLoading])
+    
+    // Debug logging for navigation state
+    console.log('UnifiedAppRouter: pathname changed to', pathname, '-> section:', section)
+  }, [pathname])
 
   // Redirect unauthenticated users (but allow time for auth to resolve)
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       const currentPath = pathname
-      if (currentPath !== '/auth' && currentPath !== '/') {
+      if (currentPath !== '/auth' && currentPath !== '/' && currentPath !== '/sample-tasks') {
+        console.log('UnifiedAppRouter: redirecting unauthenticated user from', currentPath, 'to auth')
         // Add a delay to allow authentication to complete but not too long
         const timer = setTimeout(() => {
           router.push(`/auth?redirect=${encodeURIComponent(currentPath)}`)
-        }, 2000) // Slightly longer delay to ensure auth has time to resolve
+        }, 1500) // Slightly shorter delay to be more responsive
         return () => clearTimeout(timer)
       }
     }
