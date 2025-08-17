@@ -13,6 +13,7 @@ import {
   Plus, Building2, Clock, MapPin, Coins, Users, 
   TrendingUp, Shield, Star, Award, Briefcase, CheckCircle
 } from 'lucide-react'
+import TaskMessaging from '@/components/messaging/TaskMessaging'
 
 interface CorporateTask {
   id: string
@@ -132,11 +133,19 @@ export default function CorporateTasksSection() {
     setShowCreateForm(false)
   }
 
+  const [selectedTaskForMessaging, setSelectedTaskForMessaging] = useState<CorporateTask | null>(null)
+  const [showMessaging, setShowMessaging] = useState(false)
+
   const handleApplyToTask = (task: CorporateTask) => {
     toast({
       title: "Application Submitted!",
       description: `Your application for "${task.title}" has been submitted to ${task.company}.`,
     })
+  }
+
+  const handleOpenMessaging = (task: CorporateTask) => {
+    setSelectedTaskForMessaging(task)
+    setShowMessaging(true)
   }
 
   const calculateNetPayout = (grossPayout: number) => {
@@ -393,6 +402,16 @@ export default function CorporateTasksSection() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Task Messaging Modal */}
+      {showMessaging && selectedTaskForMessaging && user && (
+        <TaskMessaging
+          taskId={selectedTaskForMessaging.id}
+          taskTitle={selectedTaskForMessaging.title}
+          isOpen={showMessaging}
+          onOpenChange={setShowMessaging}
+        />
+      )}
     </div>
   )
 }

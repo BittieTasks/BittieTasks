@@ -32,9 +32,11 @@ interface TaskMessage {
 interface TaskMessagingProps {
   taskId: string
   taskTitle: string
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export default function TaskMessaging({ taskId, taskTitle }: TaskMessagingProps) {
+export default function TaskMessaging({ taskId, taskTitle, isOpen, onOpenChange }: TaskMessagingProps) {
   const { user } = useAuth()
   const { toast } = useToast()
   const queryClient = useQueryClient()
@@ -171,19 +173,31 @@ export default function TaskMessaging({ taskId, taskTitle }: TaskMessagingProps)
     )
   }
 
+  if (!isOpen) return null
+
   return (
-    <Card className="bg-white shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold flex items-center gap-2">
-          <MessageCircle className="w-5 h-5 text-blue-600" />
-          Task Messages
-        </CardTitle>
-        <p className="text-sm text-gray-600">{taskTitle}</p>
-      </CardHeader>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <Card className="w-full max-w-md h-[600px] flex flex-col bg-white shadow-sm">
+        <CardHeader className="pb-3 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-blue-600" />
+              <CardTitle className="text-lg font-semibold">Task Messages</CardTitle>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onOpenChange(false)}
+            >
+              ✕
+            </Button>
+          </div>
+          <p className="text-sm text-gray-600 truncate">{taskTitle}</p>
+        </CardHeader>
       
-      <CardContent className="p-0">
-        {/* Messages Area */}
-        <ScrollArea className="h-96 px-6">
+        <CardContent className="flex-1 flex flex-col p-0">
+          {/* Messages Area */}
+          <ScrollArea className="flex-1 px-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full"></div>
@@ -249,12 +263,12 @@ export default function TaskMessaging({ taskId, taskTitle }: TaskMessagingProps)
               <div ref={messagesEndRef} />
             </div>
           )}
-        </ScrollArea>
+          </ScrollArea>
 
-        <Separator />
+          <Separator />
 
-        {/* Message Input */}
-        <div className="p-4">
+          {/* Message Input */}
+          <div className="p-4 flex-shrink-0">
           <div className="flex gap-2">
             <Input
               ref={inputRef}
@@ -277,8 +291,9 @@ export default function TaskMessaging({ taskId, taskTitle }: TaskMessagingProps)
               )}
             </Button>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

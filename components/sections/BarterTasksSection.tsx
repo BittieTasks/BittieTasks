@@ -13,6 +13,7 @@ import {
   Plus, Repeat, MessageCircle, Clock, MapPin, 
   Heart, Handshake, Star, Zap, ArrowLeftRight
 } from 'lucide-react'
+import TaskMessaging from '@/components/messaging/TaskMessaging'
 
 interface BarterTask {
   id: string
@@ -116,11 +117,12 @@ export default function BarterTasksSection() {
     setShowCreateForm(false)
   }
 
+  const [selectedTaskForMessaging, setSelectedTaskForMessaging] = useState<BarterTask | null>(null)
+  const [showMessaging, setShowMessaging] = useState(false)
+
   const handleContactPoster = (barter: BarterTask) => {
-    toast({
-      title: "Message Sent!",
-      description: `You've contacted ${barter.poster} about their barter exchange.`,
-    })
+    setSelectedTaskForMessaging(barter)
+    setShowMessaging(true)
   }
 
   return (
@@ -360,6 +362,16 @@ export default function BarterTasksSection() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Task Messaging Modal */}
+      {showMessaging && selectedTaskForMessaging && user && (
+        <TaskMessaging
+          taskId={selectedTaskForMessaging.id}
+          taskTitle={selectedTaskForMessaging.title}
+          isOpen={showMessaging}
+          onOpenChange={setShowMessaging}
+        />
+      )}
     </div>
   )
 }

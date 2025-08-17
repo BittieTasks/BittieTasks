@@ -13,6 +13,7 @@ import {
   Plus, Users, MessageCircle, MapPin, Coins, Clock, 
   TrendingUp, Star, Shield, CheckCircle
 } from 'lucide-react'
+import TaskMessaging from '@/components/messaging/TaskMessaging'
 
 interface CommunityTask {
   id: string
@@ -107,11 +108,19 @@ export default function CommunityTasksSection() {
     setShowCreateForm(false)
   }
 
+  const [selectedTaskForMessaging, setSelectedTaskForMessaging] = useState<CommunityTask | null>(null)
+  const [showMessaging, setShowMessaging] = useState(false)
+
   const handleJoinTask = (task: CommunityTask) => {
     toast({
       title: "Joined Community Task!",
       description: `You've joined "${task.title}". Check messages for coordination details.`,
     })
+  }
+
+  const handleOpenMessaging = (task: CommunityTask) => {
+    setSelectedTaskForMessaging(task)
+    setShowMessaging(true)
   }
 
   const calculateNetPayout = (grossPayout: number) => {
@@ -304,6 +313,7 @@ export default function CommunityTasksSection() {
                 </Button>
                 <Button
                   variant="outline"
+                  onClick={() => handleOpenMessaging(task)}
                   className="w-full text-blue-600 border-blue-200 hover:bg-blue-50"
                   data-testid={`button-message-${task.id}`}
                 >
@@ -348,6 +358,16 @@ export default function CommunityTasksSection() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Task Messaging Modal */}
+      {showMessaging && selectedTaskForMessaging && user && (
+        <TaskMessaging
+          taskId={selectedTaskForMessaging.id}
+          taskTitle={selectedTaskForMessaging.title}
+          isOpen={showMessaging}
+          onOpenChange={setShowMessaging}
+        />
+      )}
     </div>
   )
 }
