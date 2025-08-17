@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { useToast } from '@/hooks/use-toast'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,6 +16,8 @@ import {
   TrendingUp, Star, Shield, CheckCircle, Filter, Search
 } from 'lucide-react'
 import TaskMessaging from '@/components/messaging/TaskMessaging'
+import { TaskApplicationButton } from '@/components/TaskApplicationButton'
+import { TaskSubmissionButton } from '@/components/TaskSubmissionButton'
 
 interface CommunityTask {
   id: string
@@ -61,8 +64,44 @@ export default function CommunityTasksSection() {
     requirements: ''
   })
 
-  // Sample community tasks with realistic geographic distribution
-  const allCommunityTasks: CommunityTask[] = [
+  // Load real tasks from database
+  const { data: dbTasks = [], isLoading, refetch } = useQuery({
+    queryKey: ['/api/tasks', 'shared'],
+    queryFn: async () => {
+      const response = await fetch('/api/tasks?type=shared')
+      if (!response.ok) throw new Error('Failed to fetch tasks')
+      return response.json()
+    }
+  })
+
+  // Transform database tasks to match interface
+  const transformDbTask = (task: any): CommunityTask => ({
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    category: 'Community', // Map from categoryId if needed
+    type: 'community',
+    payout: parseFloat(task.earningPotential || '0'),
+    location: task.location || 'Location TBD',
+    city: 'San Francisco', // Extract from location if available
+    state: 'CA',
+    zipCode: '94102',
+    coordinates: { lat: 37.7749, lng: -122.4194 },
+    radius_miles: 25,
+    time_commitment: task.duration || 'TBD',
+    requirements: typeof task.requirements === 'string' ? [task.requirements] : (task.requirements || []),
+    organizer: 'Community Member',
+    participants_needed: task.maxParticipants || 1,
+    current_participants: task.currentParticipants || 0,
+    deadline: '7 days', // Calculate from createdAt if needed
+    distance_from_user: Math.random() * 20 // Calculate real distance later
+  })
+
+  // Combine real tasks with sample data for demo
+  const realTasks = dbTasks.map(transformDbTask)
+  
+  // Sample community tasks for demonstration
+  const sampleTasks: CommunityTask[] = [
     {
       id: 'community-001',
       title: 'Neighborhood Spring Cleanup',
@@ -104,50 +143,10 @@ export default function CommunityTasksSection() {
       current_participants: 2,
       deadline: '1 week',
       distance_from_user: 4.1
-    },
-    {
-      id: 'community-003',
-      title: 'Community Garden Maintenance',
-      description: 'Weekly maintenance of shared community garden space',
-      category: 'Outdoor Work',
-      type: 'community',
-      payout: 40,
-      location: 'Sunset Community Garden',
-      city: 'Oakland',
-      state: 'CA',
-      zipCode: '94601',
-      coordinates: { lat: 37.8044, lng: -122.2712 },
-      radius_miles: 10,
-      time_commitment: '2-3 hours',
-      requirements: ['Gardening tools', 'Physical work', 'Weekend availability'],
-      organizer: 'Jennifer L.',
-      participants_needed: 4,
-      current_participants: 1,
-      deadline: '2 days',
-      distance_from_user: 8.7
-    },
-    {
-      id: 'community-004',
-      title: 'Senior Center Technology Help',
-      description: 'Help seniors learn to use smartphones and tablets',
-      category: 'Education',
-      type: 'community',
-      payout: 60,
-      location: 'Golden Years Senior Center',
-      city: 'Berkeley',
-      state: 'CA',
-      zipCode: '94704',
-      coordinates: { lat: 37.8715, lng: -122.2730 },
-      radius_miles: 15,
-      time_commitment: '4 hours',
-      requirements: ['Tech knowledge', 'Patience', 'Communication skills'],
-      organizer: 'Robert K.',
-      participants_needed: 3,
-      current_participants: 0,
-      deadline: '5 days',
-      distance_from_user: 12.4
     }
   ]
+
+  const allCommunityTasks = [...realTasks, ...sampleTasks]
 
   // Filter tasks based on location and search criteria
   const filteredTasks = allCommunityTasks.filter(task => {
@@ -171,25 +170,54 @@ export default function CommunityTasksSection() {
       return
     }
 
-    try {
-      // Simulate saving to backend with realistic delay
-      await new Promise(resolve => setTimeout(resolve, 1200))
-      
-      console.log('Community task created and saved:', {
-        ...newTask,
-        id: `community-${Date.now()}`,
-        creator: user?.email,
-        created_at: new Date().toISOString(),
-        status: 'active',
-        coordinates: { lat: 37.7749, lng: -122.4194 }, // Would be geocoded from address
-        distance_from_user: 0
+    if (!user?.id) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to create tasks.",
+        variant: "destructive"
       })
+      return
+    }
+
+    try {
+      // Calculate actual location from city/state/zip for geocoding  
+      const fullLocation = [newTask.location, newTask.city, newTask.state, newTask.zipCode]
+        .filter(Boolean)
+        .join(', ')
+
+      // Save task to database via API
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: newTask.title,
+          description: newTask.description,
+          earningPotential: parseFloat(newTask.payout),
+          location: fullLocation,
+          maxParticipants: parseInt(newTask.participants_needed) || 1,
+          duration: newTask.time_commitment,
+          requirements: newTask.requirements,
+          type: 'shared', // Community tasks are 'shared' type
+          creatorId: user.id,
+          categoryId: null, // Will be assigned based on category mapping
+          status: 'open',
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create task')
+      }
+
+      const savedTask = await response.json()
 
       toast({
         title: "Community Task Created & Saved!",
-        description: "Your task is now live and neighbors can join. Real task with 7% platform fee.",
+        description: `Task "${newTask.title}" is now live with ID: ${savedTask.id}. Neighbors can apply and earn!`,
       })
 
+      // Reset form
       setNewTask({
         title: '',
         description: '',
@@ -205,7 +233,11 @@ export default function CommunityTasksSection() {
         requirements: ''
       })
       setShowCreateForm(false)
+
+      // Refresh tasks list to show new task
+      refetch()
     } catch (error) {
+      console.error('Error creating community task:', error)
       toast({
         title: "Save Failed",
         description: "Could not save your task. Please try again.",
@@ -502,14 +534,18 @@ export default function CommunityTasksSection() {
               </div>
 
               <div className="space-y-2">
-                <Button
-                  onClick={() => handleJoinTask(task)}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  data-testid={`button-join-${task.id}`}
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Join Task
-                </Button>
+                <TaskApplicationButton
+                  taskId={task.id}
+                  taskTitle={task.title}
+                  taskType="shared"
+                  payout={calculateNetPayout(task.payout)}
+                />
+                <TaskSubmissionButton
+                  taskId={task.id}
+                  taskTitle={task.title}
+                  taskType="shared"
+                  payout={task.payout}
+                />
                 <Button
                   variant="outline"
                   onClick={() => handleOpenMessaging(task)}

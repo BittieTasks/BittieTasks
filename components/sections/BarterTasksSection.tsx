@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { useToast } from '@/hooks/use-toast'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,6 +16,8 @@ import {
 } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import TaskMessaging from '@/components/messaging/TaskMessaging'
+import { TaskApplicationButton } from '@/components/TaskApplicationButton'
+import { TaskSubmissionButton } from '@/components/TaskSubmissionButton'
 
 interface BarterTask {
   id: string
@@ -59,8 +62,43 @@ export default function BarterTasksSection() {
     time_commitment: ''
   })
 
-  // Sample barter exchanges with realistic geographic distribution
-  const allBarterExchanges: BarterTask[] = [
+  // Load real barter tasks from database
+  const { data: dbBarterTasks = [], isLoading, refetch } = useQuery({
+    queryKey: ['/api/tasks', 'barter'],
+    queryFn: async () => {
+      const response = await fetch('/api/tasks?type=barter')
+      if (!response.ok) throw new Error('Failed to fetch barter tasks')
+      return response.json()
+    }
+  })
+
+  // Transform database tasks to match interface
+  const transformDbBarterTask = (task: any): BarterTask => ({
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    category: 'Skills Exchange', // Map from categoryId if needed
+    type: 'barter',
+    offering: task.offering || 'Service',
+    seeking: task.seeking || 'Service',
+    location: task.location || 'Location TBD',
+    city: 'San Francisco', // Extract from location if available
+    state: 'CA',
+    zipCode: '94102',
+    coordinates: { lat: 37.7749, lng: -122.4194 },
+    radius_miles: 25,
+    time_commitment: task.duration || 'Flexible',
+    poster: 'Community Member',
+    posted_date: new Date(task.createdAt || Date.now()).toLocaleDateString(),
+    responses: 0, // Calculate from participantCount if available
+    distance_from_user: Math.random() * 20 // Calculate real distance later
+  })
+
+  // Combine real tasks with sample data for demo
+  const realBarterTasks = dbBarterTasks.map(transformDbBarterTask)
+  
+  // Sample barter exchanges for demonstration
+  const sampleBarterTasks: BarterTask[] = [
     {
       id: 'barter-001',
       title: 'Graphic Design for Tutoring',
@@ -163,6 +201,8 @@ export default function BarterTasksSection() {
     }
   ]
 
+  const allBarterExchanges = [...realBarterTasks, ...sampleBarterTasks]
+
   // Filter barter exchanges based on location and search criteria
   const filteredBarters = allBarterExchanges.filter(barter => {
     const matchesRadius = barter.distance_from_user! <= parseInt(locationFilter)
@@ -187,26 +227,55 @@ export default function BarterTasksSection() {
       return
     }
 
-    try {
-      // Simulate saving to backend with realistic delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      console.log('Barter exchange created and saved:', {
-        ...newBarter,
-        id: `barter-${Date.now()}`,
-        creator: user?.email,
-        created_at: new Date().toISOString(),
-        status: 'active',
-        responses: 0,
-        coordinates: { lat: 37.7749, lng: -122.4194 }, // Would be geocoded from address
-        distance_from_user: 0
+    if (!user?.id) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to create barter exchanges.",
+        variant: "destructive"
       })
+      return
+    }
+
+    try {
+      // Calculate actual location from city/state/zip
+      const fullLocation = [newBarter.location, newBarter.city, newBarter.state, newBarter.zipCode]
+        .filter(Boolean)
+        .join(', ')
+
+      // Save barter task to database via API
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: newBarter.title,
+          description: newBarter.description,
+          offering: newBarter.offering,
+          seeking: newBarter.seeking,
+          earningPotential: 0, // Barter tasks have no monetary value
+          location: fullLocation,
+          maxParticipants: 1, // Barter is typically 1:1
+          duration: newBarter.time_commitment,
+          type: 'barter', // Barter type for 0% fees
+          creatorId: user.id,
+          categoryId: null,
+          status: 'open',
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create barter exchange')
+      }
+
+      const savedBarter = await response.json()
 
       toast({
         title: "Barter Exchange Posted & Saved!",
-        description: "Your offer is now live with 0% fees. Neighbors can contact you directly.",
+        description: `Exchange "${newBarter.title}" is now live with ID: ${savedBarter.id}. 0% fees!`,
       })
 
+      // Reset form
       setNewBarter({
         title: '',
         description: '',
@@ -221,7 +290,11 @@ export default function BarterTasksSection() {
         time_commitment: ''
       })
       setShowCreateForm(false)
+
+      // Refresh barter list to show new exchange
+      refetch()
     } catch (error) {
+      console.error('Error creating barter exchange:', error)
       toast({
         title: "Save Failed", 
         description: "Could not save your barter exchange. Please try again.",
@@ -523,14 +596,20 @@ export default function BarterTasksSection() {
                 </div>
               </div>
 
-              <Button
-                onClick={() => handleContactPoster(barter)}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white"
-                data-testid={`button-contact-${barter.id}`}
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Contact for Exchange
-              </Button>
+              <div className="space-y-2">
+                <TaskApplicationButton
+                  taskId={barter.id}
+                  taskTitle={barter.title}
+                  taskType="barter"
+                  payout={0}
+                />
+                <TaskSubmissionButton
+                  taskId={barter.id}
+                  taskTitle={barter.title}
+                  taskType="barter"
+                  payout={0}
+                />
+              </div>
             </CardContent>
           </Card>
           ))
