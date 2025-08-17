@@ -103,7 +103,7 @@ export default function BarterTasksSection() {
   const allBarterExchanges = dbBarterTasks.map(transformDbBarterTask)
 
   // Filter barter exchanges based on location and search criteria
-  const filteredBarters = allBarterExchanges.filter(barter => {
+  const filteredBarters = allBarterExchanges.filter((barter: BarterTask) => {
     const matchesRadius = barter.distance_from_user! <= parseInt(locationFilter)
     const matchesCity = !cityFilter || barter.city.toLowerCase().includes(cityFilter.toLowerCase())
     const matchesSearch = !searchTerm || 
@@ -455,7 +455,7 @@ export default function BarterTasksSection() {
             </Button>
           </div>
         ) : (
-          filteredBarters.map((barter) => (
+          filteredBarters.map((barter: BarterTask) => (
           <Card key={barter.id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-center justify-between">
