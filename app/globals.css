@@ -149,7 +149,7 @@
   }
   
   .card-clean {
-    @apply bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-border;
+    @apply bg-card bg-opacity-80 backdrop-blur-sm border border-border border-opacity-50 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-border;
   }
   
   .card-premium {

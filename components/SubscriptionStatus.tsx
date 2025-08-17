@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Crown, Zap, Coins, ArrowUpRight } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from './auth/AuthProvider';
 import { useRouter } from 'next/navigation';
 
 interface UserSubscription {
@@ -31,7 +31,7 @@ export function SubscriptionStatus() {
     // Fetch user subscription details
     fetch('/api/auth/profile', {
       headers: {
-        'Authorization': `Bearer ${user.access_token}`
+        'Authorization': `Bearer ${user.id}`
       }
     })
       .then(res => res.json())

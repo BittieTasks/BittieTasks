@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast'
 import { ArrowLeft, Users, DollarSign, MapPin, Clock, AlertCircle } from 'lucide-react'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { apiRequest } from '@/lib/lib/queryClient'
+import { apiRequest } from '@/lib/queryClient'
 import { useAuth } from '../../components/auth/AuthProvider'
 import Navigation from '@/components/shared/Navigation'
 
