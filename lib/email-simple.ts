@@ -94,9 +94,9 @@ export class SimpleEmailVerification {
       
       const supabase = createSupabaseAdmin()
       
-      // Store token in the existing verification_tokens table  
+      // Store token in the existing email_verification_tokens table  
       const { error: dbError } = await supabase
-        .from('verification_tokens')
+        .from('email_verification_tokens')
         .upsert({
           user_id: userId,
           email: email,
@@ -136,9 +136,9 @@ export class SimpleEmailVerification {
     try {
       const supabase = createSupabaseAdmin()
       
-      // Find valid token
+      // Find valid token - use correct table name
       const { data: tokenData, error: tokenError } = await supabase
-        .from('verification_tokens')
+        .from('email_verification_tokens')
         .select('*')
         .eq('token', token)
         .gt('expires_at', new Date().toISOString())
@@ -173,7 +173,7 @@ export class SimpleEmailVerification {
 
       // Delete used token
       await supabase
-        .from('verification_tokens')
+        .from('email_verification_tokens')
         .delete()
         .eq('token', token)
 
