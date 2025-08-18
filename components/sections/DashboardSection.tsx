@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { useQuery } from '@tanstack/react-query'
 import { 
   Coins, Award, Clock, Star, Plus, ChevronDown, Users, Calendar, MapPin, 
-  TrendingUp, CheckCircle, AlertCircle, Loader2, Timer 
+  TrendingUp, CheckCircle, AlertCircle, Loader2, Timer, Crown, Zap, X
 } from 'lucide-react'
 import TaskDeadlineTimer from '@/components/TaskDeadlineTimer'
 
@@ -39,6 +39,7 @@ interface TaskActivity {
 export default function DashboardSection() {
   const { user, isAuthenticated } = useAuth()
   const { toast } = useToast()
+  const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(true)
 
   // Fetch user's task applications
   const { data: taskApplications = [], isLoading: applicationsLoading, error: applicationsError } = useQuery({
@@ -124,6 +125,45 @@ export default function DashboardSection() {
         <h1 className="text-2xl font-bold text-gray-900">Welcome back!</h1>
         <p className="text-gray-600">Your live earnings and task activity - real money, authentic data.</p>
       </div>
+
+      {/* Subscription Upgrade Prompt */}
+      {showSubscriptionPrompt && (
+        <Card className="bg-gradient-to-r from-teal-50 to-purple-50 border-teal-200 mb-6">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-teal-100 rounded-lg">
+                  <Crown className="w-8 h-8 text-teal-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Unlock Higher Earnings</h3>
+                  <p className="text-gray-600">Upgrade to Pro or Premium to reduce platform fees and access more tasks</p>
+                  <div className="flex items-center space-x-4 mt-2">
+                    <Badge className="bg-teal-100 text-teal-800">Pro: 7% fee</Badge>
+                    <Badge className="bg-purple-100 text-purple-800">Premium: 5% fee</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Button 
+                  onClick={() => window.location.href = '/subscribe'}
+                  className="bg-teal-600 hover:bg-teal-700 text-white"
+                >
+                  <Zap className="w-4 h-4 mr-2" />
+                  Upgrade Now
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setShowSubscriptionPrompt(false)}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

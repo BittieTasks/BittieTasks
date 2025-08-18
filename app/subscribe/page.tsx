@@ -174,17 +174,15 @@ export default function Subscribe() {
   const router = useRouter();
   const { user, isAuthenticated, loading } = useAuth();
 
-  // Redirect unauthenticated users to auth page with intent to return
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to subscribe to a plan.",
-        variant: "default",
-      });
-      redirectToAuthWithIntent('/subscribe');
-    }
-  }, [loading, isAuthenticated, router, toast]);
+  // Allow unauthenticated users to view pricing, redirect only when they try to subscribe
+  const handleAuthRequired = () => {
+    toast({
+      title: "Sign Up to Subscribe",
+      description: "Create your account to start earning with reduced fees.",
+      variant: "default",
+    });
+    redirectToAuthWithIntent('/subscribe');
+  };
 
   // Show loading while checking authentication
   if (loading) {
@@ -198,10 +196,7 @@ export default function Subscribe() {
     );
   }
 
-  // Only show subscription page to authenticated users
-  if (!isAuthenticated) {
-    return null;
-  }
+  // Show subscription page to all users - authentication happens during checkout
 
   if (selectedPlan) {
     return (
@@ -339,10 +334,17 @@ export default function Subscribe() {
                   <Button
                     onClick={() => {
                       if (key === 'free') {
-                        router.push('/dashboard');
+                        if (isAuthenticated) {
+                          router.push('/dashboard');
+                        } else {
+                          handleAuthRequired();
+                        }
                       } else {
-                        // Trigger subscription flow
-                        setSelectedPlan(key as 'pro' | 'premium');
+                        if (isAuthenticated) {
+                          setSelectedPlan(key as 'pro' | 'premium');
+                        } else {
+                          handleAuthRequired();
+                        }
                       }
                     }}
                     variant={plan.popular ? 'default' : 'outline'}
