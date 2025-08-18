@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Token Debug Test</title>
+</head>
+<body>
+    <h2>BittieTasks Auth Debug</h2>
+    <div id="results"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://ttgbotlcbzmmyqawnjpj.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0Z2JvdGxjYnptbXlxYXduanBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ3MzY0ODQsImV4cCI6MjA1MDMxMjQ4NH0.bxBmlCdvGjhvKxH7b5lWqp77tJWyPdddTbRR9Nt1Uvc'
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        
+        async function testAuth() {
+            const resultsDiv = document.getElementById('results')
+            
+            try {
+                // Test 1: Get current session
+                const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+                
+                resultsDiv.innerHTML += `
+                    <h3>Session Test:</h3>
+                    <p>Has Session: ${!!sessionData.session}</p>
+                    <p>Has User: ${!!sessionData.session?.user}</p>
+                    <p>Has Token: ${!!sessionData.session?.access_token}</p>
+                    <p>User Email: ${sessionData.session?.user?.email || 'None'}</p>
+                    <p>Session Error: ${sessionError?.message || 'None'}</p>
+                    <hr>
+                `
+                
+                // Test 2: Try API call with auth
+                const headers = {'Content-Type': 'application/json'}
+                if (sessionData.session?.access_token) {
+                    headers['Authorization'] = `Bearer ${sessionData.session.access_token}`
+                }
+                
+                const response = await fetch('/api/auth/user', { headers })
+                const apiResult = await response.text()
+                
+                resultsDiv.innerHTML += `
+                    <h3>API Test:</h3>
+                    <p>Status: ${response.status}</p>
+                    <p>Response: ${apiResult}</p>
+                    <hr>
+                `
+                
+                // Test 3: Try subscription API
+                if (sessionData.session?.access_token) {
+                    const subResponse = await fetch('/api/create-subscription', {
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify({ planType: 'pro', price: 9.99 })
+                    })
+                    const subResult = await subResponse.text()
+                    
+                    resultsDiv.innerHTML += `
+                        <h3>Subscription API Test:</h3>
+                        <p>Status: ${subResponse.status}</p>
+                        <p>Response: ${subResult}</p>
+                    `
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML += `<p style="color: red">Error: ${error.message}</p>`
+            }
+        }
+        
+        // Run test when page loads
+        testAuth()
+    </script>
+</body>
+</html>

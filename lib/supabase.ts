@@ -34,27 +34,17 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 // Server-side Supabase instance for API routes  
 export const createServerClient = (request: NextRequest | Request) => {
-  const { createServerClient: createSSRClient } = require('@supabase/ssr')
-  
-  return createSSRClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      get(name: string) {
-        // Server-side: get from request headers
-        const cookieHeader = request.headers.get('cookie') || ''
-        const cookies = cookieHeader.split(';').reduce((acc: Record<string, string>, cookie: string) => {
-          const [key, value] = cookie.trim().split('=')
-          if (key && value) acc[key] = decodeURIComponent(value)
-          return acc
-        }, {})
-        return cookies[name]
-      },
-      set() {
-        // Server-side: cookie setting handled by response
-      },
-      remove() {
-        // Server-side: cookie removal handled by response
-      },
+  // Use direct client for server-side with proper auth handling
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
     },
+    global: {
+      headers: {
+        Authorization: request.headers.get('Authorization') || ''
+      }
+    }
   })
 }
 
