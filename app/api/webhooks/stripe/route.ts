@@ -47,6 +47,51 @@ export async function POST(request: NextRequest) {
 
     // Handle different webhook events
     switch (event.type) {
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent
+        
+        // Check if this is for a subscription (has invoice metadata)
+        if (paymentIntent.invoice) {
+          console.log('Payment succeeded for subscription:', paymentIntent.id)
+          // Handle subscription payment success
+          const stripe = getStripe()
+          const invoice = await stripe.invoices.retrieve(paymentIntent.invoice as string)
+          
+          if (invoice.subscription) {
+            const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string)
+            const customer = await stripe.customers.retrieve(subscription.customer as string)
+            
+            if (typeof customer !== 'string' && customer.metadata?.supabase_user_id) {
+              const userId = customer.metadata.supabase_user_id
+              const supabaseAdmin = getSupabaseAdmin()
+              
+              const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+                user_metadata: {
+                  subscription_plan: subscription.metadata?.plan_type || 'pro',
+                  stripe_customer_id: customer.id,
+                  subscription_status: 'active',
+                  subscription_id: subscription.id
+                }
+              })
+              
+              if (error) {
+                console.error(`Failed to update user ${userId} subscription:`, error)
+              } else {
+                console.log(`Updated subscription for user ${userId} via payment_intent.succeeded`)
+              }
+            }
+          }
+        }
+        break
+      }
+      
+      case 'payment_intent.payment_failed': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent
+        console.log('Payment failed:', paymentIntent.id)
+        // Could handle failed subscription payments here
+        break
+      }
+      
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         
