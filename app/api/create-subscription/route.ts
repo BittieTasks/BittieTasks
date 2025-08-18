@@ -53,25 +53,40 @@ export async function POST(request: NextRequest) {
 
     // Create or get Stripe customer
     let customerId = user.user_metadata?.stripe_customer_id
-
+    
     if (!customerId) {
       const stripe = getStripe()
+      console.log('Creating new Stripe customer for user:', user.id)
+      
+      if (!user.email) {
+        throw new Error('User email is required for Stripe customer creation')
+      }
+      
       const customer = await stripe.customers.create({
-        email: user.email!,
+        email: user.email,
         metadata: {
           supabase_user_id: user.id,
         },
       })
       customerId = customer.id
+      console.log('Created Stripe customer:', customerId)
 
       // Update user metadata with customer ID
-      await supabase.auth.updateUser({
+      const { error: updateError } = await supabase.auth.updateUser({
         data: { stripe_customer_id: customerId }
       })
+      
+      if (updateError) {
+        console.error('Failed to update user metadata:', updateError)
+        // Continue anyway - we have the customer ID
+      }
+    } else {
+      console.log('Using existing Stripe customer:', customerId)
     }
 
     // Get the base URL for redirects
     const origin = request.headers.get('origin') || request.headers.get('referer')?.split('?')[0] || 'https://bittietasks.com'
+    console.log('Creating checkout session with origin:', origin)
     
     // Create Stripe checkout session
     const stripe = getStripe()
