@@ -92,65 +92,10 @@ export default function CorporateTasksSection() {
     verification_required: true
   })
 
-  // Fallback corporate tasks for initial experience
-  const fallbackTasks: CorporateTask[] = [
-    {
-      id: 'corp-001',
-      title: 'Market Research Data Collection',
-      description: 'Conduct phone surveys and collect market research data for local businesses',
-      category: 'Research',
-      type: 'corporate',
-      payout: 120,
-      location: 'Remote/Phone',
-      time_commitment: '4-6 hours',
-      requirements: ['Phone access', 'Clear communication', 'Data entry skills'],
-      company: 'LocalBiz Research Co.',
-      deadline: '1 week',
-      positions_available: 5,
-      current_applicants: 12,
-      experience_level: 'Entry Level',
-      verification_required: true
-    },
-    {
-      id: 'corp-002',
-      title: 'Event Setup and Management',
-      description: 'Help set up and manage corporate events, conferences, and trade shows',
-      category: 'Event Services',
-      type: 'corporate',
-      payout: 200,
-      location: 'Convention Center',
-      time_commitment: '8-10 hours',
-      requirements: ['Physical work capability', 'Professional appearance', 'Event experience'],
-      company: 'Premier Events LLC',
-      deadline: '3 days',
-      positions_available: 8,
-      current_applicants: 6,
-      experience_level: 'Intermediate',
-      verification_required: true
-    },
-    {
-      id: 'corp-003',
-      title: 'Content Moderation and Review',
-      description: 'Review and moderate user-generated content for social media platforms',
-      category: 'Digital Services',
-      type: 'corporate',
-      payout: 150,
-      location: 'Remote',
-      time_commitment: '6-8 hours',
-      requirements: ['Computer access', 'Attention to detail', 'Content guidelines knowledge'],
-      company: 'Digital Content Solutions',
-      deadline: '5 days',
-      positions_available: 10,
-      current_applicants: 18,
-      experience_level: 'Entry Level',
-      verification_required: false
-    }
-  ]
 
-  // Use database tasks if authenticated, otherwise show platform corporate tasks  
-  const corporateTasks = (!!user && dbTasks && dbTasks.length > 0)
-    ? dbTasks.map(transformDbTask)
-    : fallbackTasks
+
+  // Use only real database tasks - no fallback/demo data
+  const corporateTasks = dbTasks.map(transformDbTask)
 
   const handleCreateTask = () => {
     if (!newTask.title || !newTask.description || !newTask.payout) {

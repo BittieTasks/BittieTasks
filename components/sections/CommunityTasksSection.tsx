@@ -117,13 +117,8 @@ export default function CommunityTasksSection() {
     distance_from_user: task.coordinates ? calculateDistanceFromUser(task.coordinates) : 999
   })
 
-  // Import fallback community tasks for preview
-  const { fallbackCommunityTasks } = require('./CommunityTasksFallback')
-  
-  // Use database tasks if authenticated, otherwise show platform community tasks
-  const allCommunityTasks = (!!user && dbTasks && dbTasks.length > 0)
-    ? dbTasks.map(transformDbTask)
-    : fallbackCommunityTasks
+  // Use only real database tasks - no fallback/demo data
+  const allCommunityTasks = dbTasks.map(transformDbTask)
 
   // Filter tasks based on location and search criteria
   const filteredTasks = allCommunityTasks.filter((task: CommunityTask) => {

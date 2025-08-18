@@ -79,94 +79,10 @@ export default function SoloTasksSection() {
     max_participants: dbTask.max_participants || 1
   })
 
-  // Fallback solo tasks for initial experience (when no database tasks exist yet)
-  const fallbackSoloTasks: Task[] = [
-    {
-      id: 'platform-001',
-      title: 'Complete Laundry Cycle',
-      description: 'Sort, wash, dry, and fold a full load of laundry',
-      category: 'Household',
-      type: 'solo',
-      payout: 20,
-      location: 'Your Home',
-      time_commitment: '2-3 hours',
-      requirements: ['Access to washer/dryer', 'Laundry supplies', 'Photo verification'],
-      platform_funded: true,
-      completion_limit: 2,
-      verification_type: 'photo',
-      current_participants: 0,
-      max_participants: 1
-    },
-    {
-      id: 'platform-002',
-      title: 'Kitchen Deep Clean',
-      description: 'Clean all surfaces, appliances, sink, and organize cabinets',
-      category: 'Household',
-      type: 'solo',
-      payout: 15,
-      location: 'Your Home',
-      time_commitment: '1-2 hours',
-      requirements: ['Cleaning supplies', 'Before/after photos'],
-      platform_funded: true,
-      completion_limit: 2,
-      verification_type: 'photo',
-      current_participants: 0,
-      max_participants: 1
-    },
-    {
-      id: 'platform-003',
-      title: 'Pilates Session',
-      description: 'Complete a 30-minute Pilates workout with proper form',
-      category: 'Self-Care',
-      type: 'solo',
-      payout: 12,
-      location: 'Your Home',
-      time_commitment: '30-45 minutes',
-      requirements: ['Yoga mat', 'Workout video/app', 'Exercise photos'],
-      platform_funded: true,
-      completion_limit: 2,
-      verification_type: 'photo',
-      current_participants: 0,
-      max_participants: 1
-    },
-    {
-      id: 'platform-004',
-      title: 'Grocery Shopping Trip',
-      description: 'Complete grocery shopping with receipt and item photos',
-      category: 'Errands',
-      type: 'solo',
-      payout: 25,
-      location: 'Local Store',
-      time_commitment: '1-2 hours',
-      requirements: ['Shopping list', 'Receipt photo', 'Grocery bag photos'],
-      platform_funded: true,
-      completion_limit: 2,
-      verification_type: 'photo',
-      current_participants: 0,
-      max_participants: 1
-    },
-    {
-      id: 'platform-005',
-      title: 'Room Organization',
-      description: 'Organize and tidy a bedroom, living room, or office space',
-      category: 'Household',
-      type: 'solo',
-      payout: 30,
-      location: 'Your Home',
-      time_commitment: '2-3 hours',
-      requirements: ['Before/after photos', 'Organization supplies'],
-      platform_funded: true,
-      completion_limit: 2,
-      verification_type: 'photo',
-      current_participants: 0,
-      max_participants: 1
-    }
-  ]
 
-  // Use database tasks if user is authenticated and has data, otherwise show platform tasks
-  const availableTasks = (isAuthenticated && dbTasks && dbTasks.length > 0) 
-    ? dbTasks.map(transformDbTask) 
-    : fallbackSoloTasks
+
+  // Use only real database tasks - no fallback/demo data
+  const availableTasks = dbTasks.map(transformDbTask)
 
   const handleApplyToTask = (task: Task) => {
     console.log('Solo task application - Auth check:', {
