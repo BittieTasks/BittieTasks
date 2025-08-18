@@ -31,7 +31,8 @@ BittieTasks is a LIVE, ACTIVE production platform that functions as a mobile-fir
 Preferred communication style: Simple, everyday language.
 Platform Status: LIVE and ACTIVE for real users - no demo or mock data allowed.
 UI/UX Preference: Unified app interface over traditional multi-page navigation - all authenticated user actions in one cohesive section.
-Work Style: Continue working at comprehensive level - thorough independent problem-solving, complete solutions, up to 1-hour deep focus sessions without interruption.
+Work Style: Build things RIGHT THE FIRST TIME - avoid debugging cycles, test thoroughly before implementing, deliver complete working solutions without back-and-forth iterations.
+Development Approach: User has no web development background - deliver polished, production-ready features that work immediately upon deployment.
 
 # System Architecture
 
