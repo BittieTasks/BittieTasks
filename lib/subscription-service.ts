@@ -15,21 +15,31 @@ interface SubscriptionPlan {
 }
 
 export class SubscriptionService {
-  private stripe: Stripe
+  private stripe: Stripe | null = null
   private supabase
 
   constructor() {
-    if (!process.env.STRIPE_SECRET_KEY) {
-      throw new Error('STRIPE_SECRET_KEY environment variable required')
+    // Initialize Stripe only when needed (at runtime)
+    if (process.env.STRIPE_SECRET_KEY) {
+      this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
     }
-    
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
     
     // Use service role for database operations
     this.supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
+  }
+
+  private getStripe(): Stripe {
+    if (!this.stripe) {
+      const secretKey = process.env.STRIPE_SECRET_KEY
+      if (!secretKey) {
+        throw new Error('STRIPE_SECRET_KEY environment variable required')
+      }
+      this.stripe = new Stripe(secretKey)
+    }
+    return this.stripe
   }
 
   // Get subscription plans with Stripe price IDs
@@ -57,7 +67,7 @@ export class SubscriptionService {
       if (customerId) {
         // Verify customer exists in Stripe
         try {
-          await this.stripe.customers.retrieve(customerId)
+          await this.getStripe().customers.retrieve(customerId)
           return { success: true, customerId }
         } catch {
           // Customer doesn't exist, create new one
@@ -67,7 +77,7 @@ export class SubscriptionService {
       
       if (!customerId) {
         // Create new Stripe customer
-        const customer = await this.stripe.customers.create({
+        const customer = await this.getStripe().customers.create({
           email: user.email,
           metadata: { supabase_user_id: user.id }
         })
@@ -110,7 +120,7 @@ export class SubscriptionService {
       }
 
       // Create checkout session
-      const session = await this.stripe.checkout.sessions.create({
+      const session = await this.getStripe().checkout.sessions.create({
         customer: customerResult.customerId,
         payment_method_types: ['card'],
         line_items: [{
