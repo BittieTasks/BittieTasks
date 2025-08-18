@@ -10,16 +10,20 @@ function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY)
 }
 
-// Create server client with proper auth handling
-function createServerClient(request: NextRequest) {
+// Create client for JWT validation
+function createUserClient(jwt: string) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   
-  // Use service role key for server-side operations
-  return createClient(supabaseUrl, supabaseServiceKey, {
+  return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
+    },
+    global: {
+      headers: {
+        Authorization: `Bearer ${jwt}`
+      }
     }
   })
 }
@@ -41,17 +45,17 @@ export async function POST(request: NextRequest) {
       jwtLength: jwt.length
     })
     
-    const supabase = createServerClient(request)
+    // Create client with user's JWT token
+    const supabase = createUserClient(jwt)
     
     // Get authenticated user using the JWT token
-    const { data: { user }, error: authError } = await supabase.auth.getUser(jwt)
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
       console.error('Auth error details:', {
         error: authError,
         errorMessage: authError?.message,
         errorCode: authError?.status,
-        hasUser: !!user,
-        jwtFirstChars: jwt.substring(0, 10)
+        hasUser: !!user
       })
       return NextResponse.json({ 
         error: 'Authentication required - invalid token',
@@ -87,14 +91,15 @@ export async function POST(request: NextRequest) {
       customerId = customer.id
       console.log('Created Stripe customer:', customerId)
 
-      // Update user metadata with customer ID
-      const { error: updateError } = await supabase.auth.updateUser({
-        data: { stripe_customer_id: customerId }
-      })
-      
-      if (updateError) {
+      // Store customer ID in user metadata (best effort)
+      try {
+        await supabase.auth.updateUser({
+          data: { stripe_customer_id: customerId }
+        })
+        console.log('Updated user metadata with customer ID')
+      } catch (updateError) {
         console.error('Failed to update user metadata:', updateError)
-        // Continue anyway - we have the customer ID
+        // Continue anyway - we have the customer ID for this session
       }
     } else {
       console.log('Using existing Stripe customer:', customerId)

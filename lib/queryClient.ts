@@ -13,41 +13,45 @@ export const queryClient = new QueryClient({
 
 // API request helper function with authentication
 export async function apiRequest(method: string, url: string, data?: any) {
-  // Get current session token
-  const { supabase } = await import('@/lib/supabase')
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-  
-  console.log('API Request auth state:', {
-    hasSession: !!session,
-    hasToken: !!session?.access_token,
-    tokenLength: session?.access_token?.length,
-    sessionError: sessionError?.message,
-    url,
-    method
-  })
-  
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  }
-  
-  // Add Authorization header if user is authenticated
-  if (session?.access_token) {
-    headers['Authorization'] = `Bearer ${session.access_token}`
+  try {
+    // Get current session token
+    const { supabase } = await import('@/lib/supabase')
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    
+    console.log('API Request auth state:', {
+      hasSession: !!session,
+      hasToken: !!session?.access_token,
+      tokenLength: session?.access_token?.length,
+      sessionError: sessionError?.message,
+      url,
+      method
+    })
+    
+    if (sessionError) {
+      throw new Error(`Session error: ${sessionError.message}`)
+    }
+    
+    if (!session?.access_token) {
+      throw new Error('No authentication token available - please sign in')
+    }
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`
+    }
+    
     console.log('Added auth header with token length:', session.access_token.length)
-  } else {
-    console.warn('No access token available for API request')
-  }
 
-  const options: RequestInit = {
-    method,
-    headers,
-  }
+    const options: RequestInit = {
+      method,
+      headers,
+    }
 
-  if (data) {
-    options.body = JSON.stringify(data)
-  }
+    if (data) {
+      options.body = JSON.stringify(data)
+    }
 
-  const response = await fetch(url, options)
+    const response = await fetch(url, options)
   
   if (!response.ok) {
     let errorMessage
@@ -70,4 +74,8 @@ export async function apiRequest(method: string, url: string, data?: any) {
   }
 
   return response
+  } catch (error: any) {
+    console.error('API Request failed with error:', error)
+    throw error
+  }
 }
