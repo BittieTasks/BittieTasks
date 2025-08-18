@@ -21,6 +21,7 @@ export async function POST(
     })
     
     if (authError || !user) {
+      console.error('POST /api/tasks/[id]/apply auth error:', authError?.message)
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 

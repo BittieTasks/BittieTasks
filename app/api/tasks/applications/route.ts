@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      console.error('GET /api/tasks/applications auth error:', authError?.message)
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }

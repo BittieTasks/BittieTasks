@@ -5,9 +5,10 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createServerClient(request)
     
-    // Get current user
+    // Get current user using fixed authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
+      console.error('POST /api/tasks/apply auth error:', authError?.message)
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 

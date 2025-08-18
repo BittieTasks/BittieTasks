@@ -8,9 +8,10 @@ export async function GET(request: NextRequest) {
     
     const supabase = createServerClient(request)
     
-    // Get current user
+    // Get current user using the fixed token validation
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError) {
+    if (authError || !user) {
+      console.error('GET /api/tasks auth error:', authError?.message)
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
@@ -47,18 +48,11 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createServerClient(request)
     
-    // Get the authorization header
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Authorization header required' }, { status: 401 })
-    }
-    
-    // Set the session from the token
-    const token = authHeader.split(' ')[1]
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    // Use the fixed authentication system
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-      console.error('Auth error:', authError)
-      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 })
+      console.error('POST /api/tasks auth error:', authError?.message)
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
     const body = await request.json()
