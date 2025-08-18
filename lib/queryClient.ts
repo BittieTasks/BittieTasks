@@ -38,8 +38,23 @@ export async function apiRequest(method: string, url: string, data?: any) {
   const response = await fetch(url, options)
   
   if (!response.ok) {
-    const error = await response.text()
-    throw new Error(`${response.status}: ${error}`)
+    let errorMessage
+    try {
+      const errorText = await response.text()
+      errorMessage = errorText || response.statusText
+    } catch {
+      errorMessage = response.statusText
+    }
+    
+    console.error('API Request failed:', {
+      url,
+      method,
+      status: response.status,
+      error: errorMessage,
+      headers: Object.fromEntries(response.headers)
+    })
+    
+    throw new Error(`${response.status}: ${errorMessage}`)
   }
 
   return response

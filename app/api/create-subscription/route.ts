@@ -104,10 +104,29 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ sessionUrl: session.url })
-  } catch (error) {
-    console.error('Error creating subscription:', error)
+  } catch (error: any) {
+    console.error('Error creating subscription:', {
+      message: error.message,
+      stack: error.stack,
+      type: error.constructor.name,
+      details: error
+    })
+    
+    // Return more specific error information
+    let errorMessage = 'Failed to create subscription session'
+    if (error.message?.includes('customer')) {
+      errorMessage = 'Failed to create customer account'
+    } else if (error.message?.includes('session')) {
+      errorMessage = 'Failed to create payment session'
+    } else if (error.message?.includes('auth')) {
+      errorMessage = 'Authentication error during subscription'
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to create subscription session' },
+      { 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
       { status: 500 }
     )
   }

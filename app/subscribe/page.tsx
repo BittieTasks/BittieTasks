@@ -93,19 +93,29 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
     try {
       // Debug authentication state
       const { supabase } = await import('@/lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       
       console.log('Subscription attempt:', {
         hasSession: !!session,
         hasToken: !!session?.access_token,
         userEmail: session?.user?.email,
-        tokenStart: session?.access_token?.substring(0, 20),
+        userConfirmed: !!session?.user?.email_confirmed_at,
+        sessionError: sessionError?.message,
+        tokenLength: session?.access_token?.length,
         planType,
         price: SUBSCRIPTION_PLANS[planType].price
       })
       
+      if (sessionError) {
+        throw new Error(`Session error: ${sessionError.message}`)
+      }
+      
       if (!session?.access_token) {
-        throw new Error('No authentication token available')
+        throw new Error('No authentication token available - please sign in')
+      }
+      
+      if (!session?.user?.email_confirmed_at) {
+        throw new Error('Please verify your email before subscribing')
       }
       
       // Use the improved API request function with authentication
@@ -123,14 +133,24 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
       window.location.href = sessionUrl;
       
     } catch (error: any) {
-      console.error('Subscription error details:', error);
+      console.error('Subscription error details:', {
+        message: error.message,
+        stack: error.stack,
+        response: error.response,
+        status: error.status
+      });
       
       let errorMessage = "Could not start subscription. Please try again."
       
-      if (error.message?.includes('401')) {
+      if (error.message?.includes('401') || error.message?.includes('Authentication')) {
         errorMessage = "Please sign in again to subscribe."
-      } else if (error.message?.includes('Authentication')) {
-        errorMessage = "Authentication expired. Please refresh and try again."
+      } else if (error.message?.includes('500')) {
+        errorMessage = "Server error. Please try again in a moment."
+      } else if (error.message?.includes('400')) {
+        errorMessage = "Invalid request. Please refresh the page and try again."
+      } else {
+        // Include the actual error message for debugging
+        errorMessage = `Subscription failed: ${error.message || 'Unknown error'}`
       }
       
       toast({
