@@ -118,8 +118,19 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
         throw new Error('Please verify your email before subscribing')
       }
       
-      // Use the improved API request function with authentication
+      // First test with debug endpoint
       const { apiRequest } = await import('@/lib/queryClient')
+      console.log('Testing debug endpoint first...')
+      
+      try {
+        const debugResponse = await apiRequest('POST', '/api/debug-subscription', {})
+        const debugResult = await debugResponse.json()
+        console.log('Debug endpoint result:', debugResult)
+      } catch (debugError: any) {
+        console.error('Debug endpoint failed:', debugError)
+      }
+      
+      // Now try actual subscription
       const response = await apiRequest('POST', '/api/create-subscription', {
         planType,
         price: SUBSCRIPTION_PLANS[planType].price
