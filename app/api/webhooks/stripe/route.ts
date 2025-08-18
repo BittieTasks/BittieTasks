@@ -1,164 +1,109 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
+import { SubscriptionService } from '@/lib/subscription-service'
 
-function getStripe() {
-  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Missing required Stripe secrets or Supabase service role key')
-  }
-  
-  return new Stripe(process.env.STRIPE_SECRET_KEY)
-}
-
-// Create admin Supabase client for updating user data
-function getSupabaseAdmin() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Missing required Supabase environment variables')
-  }
-  
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    }
-  )
-}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 export async function POST(request: NextRequest) {
+  const subscriptionService = new SubscriptionService()
+  
   try {
     const body = await request.text()
-    const signature = request.headers.get('stripe-signature')
+    const signature = request.headers.get('stripe-signature')!
 
-    if (!signature) {
-      return NextResponse.json({ error: 'No signature provided' }, { status: 400 })
-    }
+    console.log('=== Stripe Webhook Received ===')
 
     // Verify webhook signature
-    const stripe = getStripe()
-    const event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    )
+    const event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+    console.log('Webhook event type:', event.type)
 
-    // Handle different webhook events
     switch (event.type) {
-      case 'payment_intent.succeeded': {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent
-        
-        // Log payment success - subscription activation handled by checkout.session.completed
-        console.log('Payment succeeded:', paymentIntent.id)
-        
-        // For subscriptions, we rely on checkout.session.completed event
-        // This ensures we capture the subscription metadata properly
-        break
-      }
-      
-      case 'payment_intent.payment_failed': {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent
-        console.log('Payment failed:', paymentIntent.id)
-        // Could handle failed subscription payments here
-        break
-      }
-      
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
-        
-        if (session.mode === 'subscription') {
-          // Update user subscription status in Supabase
-          const userId = session.metadata?.user_id
-          const planType = session.metadata?.plan_type
+        console.log('Checkout completed:', {
+          sessionId: session.id,
+          customerId: session.customer,
+          subscriptionId: session.subscription
+        })
+
+        if (session.mode === 'subscription' && session.subscription) {
+          const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
+          const planType = session.metadata?.plan_type || 'pro'
           
-          if (userId && planType) {
-            // Update user metadata with subscription info
-            const supabaseAdmin = getSupabaseAdmin()
-            const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
-              user_metadata: {
-                subscription_plan: planType,
-                stripe_customer_id: session.customer,
-                subscription_status: 'active',
-                subscription_id: session.subscription
-              }
-            })
-            
-            if (error) {
-              console.error(`Failed to update user ${userId} subscription:`, error)
-            } else {
-              console.log(`Updated subscription for user ${userId} to ${planType} plan`)
-            }
+          const result = await subscriptionService.handleSubscriptionSuccess(
+            session.customer as string,
+            subscription.id,
+            planType
+          )
+
+          if (!result.success) {
+            console.error('Failed to handle subscription success:', result.error)
+            return NextResponse.json({ error: result.error }, { status: 500 })
           }
+
+          console.log('Subscription activated successfully')
         }
         break
       }
-      
+
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription
+        console.log('Subscription updated:', subscription.id, subscription.status)
         
-        // Find user by customer ID and update subscription status
-        const supabaseAdmin = getSupabaseAdmin()
-        const { data: users } = await supabaseAdmin
-          .from('auth.users')
-          .select('id, raw_user_meta_data')
-          .eq('raw_user_meta_data->stripe_customer_id', subscription.customer)
-        
-        if (users && users.length > 0) {
-          const user = users[0]
-          const { error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
-            user_metadata: {
-              ...user.raw_user_meta_data,
-              subscription_status: subscription.status
-            }
-          })
-          
-          if (error) {
-            console.error(`Failed to update user ${user.id} subscription status:`, error)
-          } else {
-            console.log(`Updated subscription status for user ${user.id} to ${subscription.status}`)
-          }
+        // Handle subscription status changes (active, canceled, etc.)
+        if (subscription.status === 'canceled') {
+          const result = await subscriptionService.handleSubscriptionSuccess(
+            subscription.customer as string,
+            subscription.id,
+            'canceled'
+          )
+          console.log('Subscription cancellation handled:', result.success)
         }
         break
       }
-      
+
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription
+        console.log('Subscription deleted:', subscription.id)
         
-        // Find user by customer ID and downgrade to free plan
-        const supabaseAdmin = getSupabaseAdmin()
-        const { data: users } = await supabaseAdmin
-          .from('auth.users')
-          .select('id, raw_user_meta_data')
-          .eq('raw_user_meta_data->stripe_customer_id', subscription.customer)
-        
-        if (users && users.length > 0) {
-          const user = users[0]
-          const { error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
-            user_metadata: {
-              ...user.raw_user_meta_data,
-              subscription_plan: 'free',
-              subscription_status: 'canceled'
-            }
-          })
-          
-          if (error) {
-            console.error(`Failed to downgrade user ${user.id}:`, error)
-          } else {
-            console.log(`Downgraded user ${user.id} to free plan`)
-          }
-        }
+        const result = await subscriptionService.handleSubscriptionSuccess(
+          subscription.customer as string,
+          subscription.id,
+          'canceled'
+        )
+        console.log('Subscription deletion handled:', result.success)
         break
       }
+
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent
+        console.log('Payment succeeded:', paymentIntent.id)
+        break
+      }
+
+      case 'payment_intent.payment_failed': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent
+        console.error('Payment failed:', paymentIntent.id, paymentIntent.last_payment_error?.message)
+        break
+      }
+
+      default:
+        console.log('Unhandled webhook event:', event.type)
     }
 
     return NextResponse.json({ received: true })
-  } catch (error) {
-    console.error('Stripe webhook error:', error)
-    return NextResponse.json(
-      { error: 'Webhook handler failed' },
-      { status: 400 }
-    )
+
+  } catch (error: any) {
+    console.error('Webhook error:', {
+      message: error.message,
+      type: error.type,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    })
+    
+    return NextResponse.json({ 
+      error: 'Webhook processing failed',
+      details: error.message 
+    }, { status: 400 })
   }
 }
