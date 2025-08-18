@@ -91,6 +91,22 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
     setIsProcessing(true);
     
     try {
+      // Debug authentication state
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      console.log('Subscription attempt:', {
+        hasSession: !!session,
+        hasToken: !!session?.access_token,
+        userEmail: session?.user?.email,
+        planType,
+        price: SUBSCRIPTION_PLANS[planType].price
+      })
+      
+      if (!session?.access_token) {
+        throw new Error('No authentication token available')
+      }
+      
       // Use the improved API request function with authentication
       const { apiRequest } = await import('@/lib/queryClient')
       const response = await apiRequest('POST', '/api/create-subscription', {
@@ -100,14 +116,25 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
 
       const { sessionUrl } = await response.json();
       
+      console.log('Subscription session created:', { sessionUrl })
+      
       // Redirect to Stripe checkout
       window.location.href = sessionUrl;
       
-    } catch (error) {
-      console.error('Subscription error:', error);
+    } catch (error: any) {
+      console.error('Subscription error details:', error);
+      
+      let errorMessage = "Could not start subscription. Please try again."
+      
+      if (error.message?.includes('401')) {
+        errorMessage = "Please sign in again to subscribe."
+      } else if (error.message?.includes('Authentication')) {
+        errorMessage = "Authentication expired. Please refresh and try again."
+      }
+      
       toast({
-        title: "Subscription Failed",
-        description: "Could not start subscription. Please try again.",
+        title: "Subscription Failed", 
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -314,15 +341,8 @@ export default function Subscribe() {
                       if (key === 'free') {
                         router.push('/dashboard');
                       } else {
-                        // Enable real subscription for authenticated users
-                        toast({
-                          title: "Subscription Activated",
-                          description: `${plan.name} plan activated! Lower platform fees are now active.`,
-                          variant: "default",
-                        });
+                        // Trigger subscription flow
                         setSelectedPlan(key as 'pro' | 'premium');
-                        // Redirect to dashboard to show updated subscription status
-                        setTimeout(() => router.push('/dashboard'), 1500);
                       }
                     }}
                     variant={plan.popular ? 'default' : 'outline'}
