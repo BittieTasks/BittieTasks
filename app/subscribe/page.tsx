@@ -150,7 +150,7 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
         errorMessage = "Invalid request. Please refresh the page and try again."
       } else {
         // Include the actual error message for debugging
-        errorMessage = `Subscription failed: ${error.message || 'Unknown error'}`
+        errorMessage = `Subscription failed: ${error.message || 'Unknown error'}. Check console for details.`
       }
       
       toast({
