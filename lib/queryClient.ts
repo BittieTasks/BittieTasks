@@ -11,13 +11,24 @@ export const queryClient = new QueryClient({
   },
 })
 
-// API request helper function
+// API request helper function with authentication
 export async function apiRequest(method: string, url: string, data?: any) {
+  // Get current session token
+  const { supabase } = await import('@/lib/supabase')
+  const { data: { session } } = await supabase.auth.getSession()
+  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  
+  // Add Authorization header if user is authenticated
+  if (session?.access_token) {
+    headers['Authorization'] = `Bearer ${session.access_token}`
+  }
+
   const options: RequestInit = {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers,
   }
 
   if (data) {

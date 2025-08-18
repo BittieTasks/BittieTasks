@@ -67,16 +67,8 @@ export default function BarterTasksSection() {
     queryKey: ['/api/tasks', 'barter'],
     enabled: !!user,
     queryFn: async () => {
-      const { supabase } = await import('@/lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      const headers: Record<string, string> = {}
-      if (session?.access_token) {
-        headers['Authorization'] = `Bearer ${session.access_token}`
-      }
-      
-      const response = await fetch('/api/tasks?type=barter', { headers })
-      if (!response.ok) throw new Error('Failed to fetch barter tasks')
+      const { apiRequest } = await import('@/lib/queryClient')
+      const response = await apiRequest('GET', '/api/tasks?type=barter')
       return response.json()
     }
   })

@@ -41,15 +41,8 @@ export default function SoloTasksSection() {
     queryKey: ['/api/tasks', 'solo'],
     enabled: isAuthenticated && !!user,
     queryFn: async () => {
-      const { supabase } = await import('@/lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      const headers: Record<string, string> = {}
-      if (session?.access_token) {
-        headers['Authorization'] = `Bearer ${session.access_token}`
-      }
-      
-      const response = await fetch('/api/tasks?type=solo', { headers })
+      const { apiRequest } = await import('@/lib/queryClient')
+      const response = await apiRequest('GET', '/api/tasks?type=solo')
       if (!response.ok) {
         throw new Error('Failed to fetch solo tasks')
       }

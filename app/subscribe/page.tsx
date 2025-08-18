@@ -91,28 +91,12 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
     setIsProcessing(true);
     
     try {
-      // Get the auth token from Supabase
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.access_token) {
-        throw new Error('No authentication token')
-      }
-
-      // Create Stripe checkout session
-      const response = await fetch('/api/create-subscription', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({
-          planType,
-          price: SUBSCRIPTION_PLANS[planType].price
-        })
+      // Use the improved API request function with authentication
+      const { apiRequest } = await import('@/lib/queryClient')
+      const response = await apiRequest('POST', '/api/create-subscription', {
+        planType,
+        price: SUBSCRIPTION_PLANS[planType].price
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create subscription');
-      }
 
       const { sessionUrl } = await response.json();
       
