@@ -163,8 +163,10 @@ export default function SoloTasksSection() {
     }
   ]
 
-  // Use real database tasks if available, otherwise use fallback for initial experience
-  const availableTasks = dbTasks.length > 0 ? dbTasks.map(transformDbTask) : fallbackSoloTasks
+  // Use database tasks if user is authenticated and has data, otherwise show platform tasks
+  const availableTasks = (isAuthenticated && dbTasks && dbTasks.length > 0) 
+    ? dbTasks.map(transformDbTask) 
+    : fallbackSoloTasks
 
   const handleApplyToTask = (task: Task) => {
     console.log('Solo task application - Auth check:', {

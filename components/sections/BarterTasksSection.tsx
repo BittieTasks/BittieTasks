@@ -112,8 +112,13 @@ export default function BarterTasksSection() {
     distance_from_user: task.coordinates ? calculateDistanceFromUser(task.coordinates) : 999
   })
 
-  // Use only real barter tasks from database
-  const allBarterExchanges = dbBarterTasks.map(transformDbBarterTask)
+  // Import fallback barter tasks for preview
+  const { fallbackBarterTasks } = require('./BarterTasksFallback')
+  
+  // Use database tasks if authenticated, otherwise show platform barter tasks
+  const allBarterExchanges = (!!user && dbBarterTasks && dbBarterTasks.length > 0)
+    ? dbBarterTasks.map(transformDbBarterTask)
+    : fallbackBarterTasks
 
   // Filter barter exchanges based on location and search criteria
   const filteredBarters = allBarterExchanges.filter((barter: BarterTask) => {

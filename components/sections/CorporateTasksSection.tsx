@@ -147,8 +147,10 @@ export default function CorporateTasksSection() {
     }
   ]
 
-  // Use real database tasks if available, otherwise use fallback
-  const corporateTasks = dbTasks.length > 0 ? dbTasks.map(transformDbTask) : fallbackTasks
+  // Use database tasks if authenticated, otherwise show platform corporate tasks  
+  const corporateTasks = (!!user && dbTasks && dbTasks.length > 0)
+    ? dbTasks.map(transformDbTask)
+    : fallbackTasks
 
   const handleCreateTask = () => {
     if (!newTask.title || !newTask.description || !newTask.payout) {
