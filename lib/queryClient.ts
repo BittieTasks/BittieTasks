@@ -52,28 +52,28 @@ export async function apiRequest(method: string, url: string, data?: any) {
     }
 
     const response = await fetch(url, options)
-  
-  if (!response.ok) {
-    let errorMessage
-    try {
-      const errorText = await response.text()
-      errorMessage = errorText || response.statusText
-    } catch {
-      errorMessage = response.statusText
+    
+    if (!response.ok) {
+      let errorMessage
+      try {
+        const errorText = await response.text()
+        errorMessage = errorText || response.statusText
+      } catch {
+        errorMessage = response.statusText
+      }
+      
+      console.error('API Request failed:', {
+        url,
+        method,
+        status: response.status,
+        error: errorMessage,
+        headers: Object.fromEntries(response.headers)
+      })
+      
+      throw new Error(`${response.status}: ${errorMessage}`)
     }
-    
-    console.error('API Request failed:', {
-      url,
-      method,
-      status: response.status,
-      error: errorMessage,
-      headers: Object.fromEntries(response.headers)
-    })
-    
-    throw new Error(`${response.status}: ${errorMessage}`)
-  }
 
-  return response
+    return response
   } catch (error: any) {
     console.error('API Request failed with error:', error)
     throw error
