@@ -44,9 +44,20 @@ export default function SoloTasksSection() {
       const { apiRequest } = await import('@/lib/queryClient')
       const response = await apiRequest('GET', '/api/tasks?type=solo')
       if (!response.ok) {
+        // Handle authentication errors gracefully
+        if (response.status === 401) {
+          throw new Error('Authentication required - please sign in')
+        }
         throw new Error('Failed to fetch solo tasks')
       }
       return response.json()
+    },
+    retry: (failureCount, error) => {
+      // Don't retry auth errors
+      if (error.message.includes('Authentication required')) {
+        return false
+      }
+      return failureCount < 3
     }
   })
 

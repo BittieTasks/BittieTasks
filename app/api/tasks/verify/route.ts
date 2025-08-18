@@ -100,16 +100,16 @@ export async function POST(request: NextRequest) {
       }
 
       // Create payment record for non-barter tasks
-      if (participation.task.type !== 'barter' && participation.task.earningPotential > 0) {
+      if (participation.task && participation.task.type !== 'barter' && participation.task.earningPotential > 0) {
         let feeRate = 0
-        switch (participation.task.type) {
+        switch (participation.task?.type) {
           case 'solo': feeRate = 0.03; break // 3%
           case 'shared': feeRate = 0.07; break // 7%
           case 'corporate_sponsored': feeRate = 0.15; break // 15%
           default: feeRate = 0.03
         }
 
-        const grossAmount = parseFloat(participation.task.earningPotential)
+        const grossAmount = parseFloat(participation.task?.earningPotential || '0')
         const platformFee = grossAmount * feeRate
         const netAmount = grossAmount - platformFee
 
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
             platformFee: platformFee.toFixed(2),
             processingFee: '0.00',
             netAmount: netAmount.toFixed(2),
-            taskType: participation.task.type,
+            taskType: participation.task?.type || 'unknown',
             status: 'completed',
             feeBreakdown: {
               grossAmount,

@@ -73,7 +73,19 @@ export default function CommunityTasksSection() {
     queryFn: async () => {
       const { apiRequest } = await import('@/lib/queryClient')
       const response = await apiRequest('GET', '/api/tasks?type=shared')
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required - please sign in')
+        }
+        throw new Error('Failed to fetch community tasks')
+      }
       return response.json()
+    },
+    retry: (failureCount, error) => {
+      if (error.message.includes('Authentication required')) {
+        return false
+      }
+      return failureCount < 3
     }
   })
 
