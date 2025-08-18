@@ -15,7 +15,16 @@ export const queryClient = new QueryClient({
 export async function apiRequest(method: string, url: string, data?: any) {
   // Get current session token
   const { supabase } = await import('@/lib/supabase')
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+  
+  console.log('API Request auth state:', {
+    hasSession: !!session,
+    hasToken: !!session?.access_token,
+    tokenLength: session?.access_token?.length,
+    sessionError: sessionError?.message,
+    url,
+    method
+  })
   
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -24,6 +33,9 @@ export async function apiRequest(method: string, url: string, data?: any) {
   // Add Authorization header if user is authenticated
   if (session?.access_token) {
     headers['Authorization'] = `Bearer ${session.access_token}`
+    console.log('Added auth header with token length:', session.access_token.length)
+  } else {
+    console.warn('No access token available for API request')
   }
 
   const options: RequestInit = {

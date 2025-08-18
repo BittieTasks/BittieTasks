@@ -13,17 +13,13 @@ function getStripe() {
 // Create server client with proper auth handling
 function createServerClient(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
   
-  return createClient(supabaseUrl, supabaseAnonKey, {
+  // Use service role key for server-side operations
+  return createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
-    },
-    global: {
-      headers: {
-        Authorization: request.headers.get('Authorization') || ''
-      }
     }
   })
 }
@@ -36,14 +32,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required - missing token' }, { status: 401 })
     }
 
+    // Extract JWT token from Bearer header
+    const jwt = authHeader.replace('Bearer ', '')
+    
+    console.log('Server auth check:', {
+      authHeader: authHeader.substring(0, 20) + '...',
+      headerLength: authHeader.length,
+      jwtLength: jwt.length
+    })
+    
     const supabase = createServerClient(request)
     
-    // Get authenticated user using the token
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    // Get authenticated user using the JWT token
+    const { data: { user }, error: authError } = await supabase.auth.getUser(jwt)
     if (authError || !user) {
-      console.error('Auth error:', authError)
-      return NextResponse.json({ error: 'Authentication required - invalid token' }, { status: 401 })
+      console.error('Auth error details:', {
+        error: authError,
+        errorMessage: authError?.message,
+        errorCode: authError?.status,
+        hasUser: !!user,
+        jwtFirstChars: jwt.substring(0, 10)
+      })
+      return NextResponse.json({ 
+        error: 'Authentication required - invalid token',
+        details: process.env.NODE_ENV === 'development' ? authError?.message : undefined
+      }, { status: 401 })
     }
+    
+    console.log('Authentication successful for user:', user.id)
 
     const { planType, price } = await request.json()
 
