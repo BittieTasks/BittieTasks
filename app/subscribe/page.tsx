@@ -99,6 +99,7 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
         hasSession: !!session,
         hasToken: !!session?.access_token,
         userEmail: session?.user?.email,
+        tokenStart: session?.access_token?.substring(0, 20),
         planType,
         price: SUBSCRIPTION_PLANS[planType].price
       })
@@ -107,16 +108,32 @@ function CheckoutWrapper({ planType }: { planType: 'pro' | 'premium' }) {
         throw new Error('No authentication token available')
       }
       
-      // Use the improved API request function with authentication
-      const { apiRequest } = await import('@/lib/queryClient')
-      const response = await apiRequest('POST', '/api/create-subscription', {
-        planType,
-        price: SUBSCRIPTION_PLANS[planType].price
+      // Direct fetch with proper error handling
+      const response = await fetch('/api/create-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          planType,
+          price: SUBSCRIPTION_PLANS[planType].price
+        })
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error:', { status: response.status, error: errorText });
+        throw new Error(`API Error: ${response.status} - ${errorText}`);
+      }
 
       const { sessionUrl } = await response.json();
       
       console.log('Subscription session created:', { sessionUrl })
+      
+      if (!sessionUrl) {
+        throw new Error('No session URL returned from Stripe');
+      }
       
       // Redirect to Stripe checkout
       window.location.href = sessionUrl;

@@ -10,20 +10,15 @@ function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY)
 }
 
-// Create server client with proper auth handling
-function createServerClient(request: NextRequest) {
+// Create server client with service role for user management
+function createServerClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
   
-  return createClient(supabaseUrl, supabaseAnonKey, {
+  return createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
-    },
-    global: {
-      headers: {
-        Authorization: request.headers.get('Authorization') || ''
-      }
     }
   })
 }
@@ -36,14 +31,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required - missing token' }, { status: 401 })
     }
 
-    const supabase = createServerClient(request)
+    // Extract the JWT token
+    const jwt = authHeader.replace('Bearer ', '')
     
-    // Get authenticated user using the token
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    // Create Supabase client for user verification
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    
+    const authClient = createClient(supabaseUrl, supabaseAnonKey)
+    
+    // Verify the JWT token and get user
+    const { data: { user }, error: authError } = await authClient.auth.getUser(jwt)
     if (authError || !user) {
       console.error('Auth error:', authError)
       return NextResponse.json({ error: 'Authentication required - invalid token' }, { status: 401 })
     }
+
+    // Create admin client for user metadata updates
+    const supabase = createServerClient()
 
     const { planType, price } = await request.json()
 
@@ -64,9 +69,9 @@ export async function POST(request: NextRequest) {
       })
       customerId = customer.id
 
-      // Update user metadata with customer ID
-      await supabase.auth.updateUser({
-        data: { stripe_customer_id: customerId }
+      // Update user metadata with customer ID using admin client
+      await supabase.auth.admin.updateUserById(user.id, {
+        user_metadata: { stripe_customer_id: customerId }
       })
     }
 
