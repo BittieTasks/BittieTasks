@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { AuthService } from '@/lib/auth-service'
+import { useAuth } from '@/components/auth/AuthProvider'
 import { useToast } from '@/hooks/use-toast'
 
 interface SubscriptionButtonProps {
@@ -15,7 +15,7 @@ interface SubscriptionButtonProps {
 export function SubscriptionButton({ planType, planName, price, className }: SubscriptionButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
-  const authService = new AuthService()
+  const { user, session, isAuthenticated, isVerified } = useAuth()
 
   const handleSubscribe = async () => {
     setIsLoading(true)
@@ -23,22 +23,17 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
     try {
       console.log(`=== Starting ${planName} subscription ===`)
       
-      // 1. Get current session from the global Supabase client (used by dashboard)
-      const { supabase } = await import('@/lib/supabase')
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      
       console.log('=== SUBSCRIPTION DEBUG ===', {
+        isAuthenticated,
+        isVerified,
+        hasUser: !!user,
         hasSession: !!session,
         hasAccessToken: !!session?.access_token,
-        hasUser: !!session?.user,
-        userEmail: session?.user?.email,
-        emailConfirmed: !!session?.user?.email_confirmed_at,
-        sessionError: sessionError?.message,
+        userEmail: user?.email,
         tokenPreview: session?.access_token?.substring(0, 20)
       })
       
-      if (sessionError || !session?.access_token) {
-        console.error('Session error:', sessionError?.message)
+      if (!isAuthenticated || !session?.access_token) {
         toast({
           title: "Authentication Required",
           description: "Please sign in to subscribe.",
@@ -47,7 +42,7 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
         return
       }
 
-      if (!session.user?.email_confirmed_at) {
+      if (!isVerified) {
         toast({
           title: "Email Verification Required", 
           description: "Please verify your email before subscribing.",

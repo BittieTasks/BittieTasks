@@ -45,15 +45,7 @@ export default function SubscribePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Sign In Notice */}
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-8 text-center">
-          <p className="text-yellow-800 dark:text-yellow-200">
-            <strong>Please sign in first</strong> to subscribe to a plan. 
-            <a href="/signin" className="ml-2 underline hover:no-underline">
-              Go to Sign In →
-            </a>
-          </p>
-        </div>
+        {/* Removed sign-in notice - now using proper AuthProvider context */}
 
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
