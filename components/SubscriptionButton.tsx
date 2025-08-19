@@ -23,15 +23,47 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
     try {
       console.log(`=== Starting ${planName} subscription ===`)
       
-      // 1. Create subscription with simplified auth
-      console.log('Creating subscription with browser session...')
+      // 1. Verify user authentication and get token
+      console.log('Getting current user session...')
+      const authResult = await authService.getCurrentUser()
+      console.log('Auth result:', {
+        success: authResult.success,
+        hasUser: !!authResult.user,
+        hasToken: !!authResult.token,
+        tokenLength: authResult.token?.length,
+        tokenStart: authResult.token?.substring(0, 20),
+        error: authResult.error
+      })
+      
+      if (!authResult.success) {
+        console.error('Authentication failed:', authResult.error)
+        
+        if (authResult.error?.includes('email')) {
+          toast({
+            title: "Email Verification Required",
+            description: "Please verify your email before subscribing.",
+            variant: "destructive",
+          })
+        } else {
+          toast({
+            title: "Authentication Required",
+            description: "Please sign in to subscribe.",
+            variant: "destructive",
+          })
+        }
+        return
+      }
+
+      console.log('User authenticated, creating subscription...')
+
+      // 2. Create subscription with Authorization header (same as other API calls)
       const response = await fetch('/api/subscription/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authResult.token}`
         },
-        body: JSON.stringify({ planType }),
-        credentials: 'include' // Include session cookies
+        body: JSON.stringify({ planType })
       })
 
       const result = await response.json()

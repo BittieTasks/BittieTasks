@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SubscriptionService } from '@/lib/subscription-service'
-import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   const subscriptionService = new SubscriptionService()
@@ -8,33 +8,14 @@ export async function POST(request: NextRequest) {
   try {
     console.log('=== New Subscription Request ===')
     
-    // 1. Get user from Supabase session (using cookies)
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
+    // 1. Use the same authentication pattern as other working API routes
+    const supabase = createServerClient(request)
     
-    // Extract session from cookies
-    const cookies = request.headers.get('cookie') || ''
-    const sessionMatch = cookies.match(/sb-[^=]+-auth-token=([^;]+)/)
-    
-    if (!sessionMatch) {
-      console.error('No session cookie found')
-      return NextResponse.json({ 
-        error: 'Authentication required - please sign in',
-        details: 'No active session' 
-      }, { status: 401 })
-    }
-
-    // Get user from session
-    const { data: { user }, error: userError } = await supabase.auth.getUser(sessionMatch[1])
-    
-    if (userError || !user) {
-      console.error('Session validation failed:', userError?.message)
-      return NextResponse.json({ 
-        error: 'Invalid session - please sign in again',
-        details: userError?.message 
-      }, { status: 401 })
+    // Get current user using the same method as /api/tasks
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      console.error('POST /api/subscription/create auth error:', authError?.message)
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
     
     if (!user.email_confirmed_at) {
