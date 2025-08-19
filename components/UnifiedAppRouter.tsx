@@ -32,28 +32,38 @@ export default function UnifiedAppRouter() {
     console.log('UnifiedAppRouter: pathname changed to', pathname, '-> section:', section)
   }, [pathname])
 
-  // Redirect unauthenticated users (but allow time for auth to resolve)
+  // Redirect unauthenticated users immediately
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       const currentPath = pathname
       if (currentPath !== '/auth' && currentPath !== '/' && currentPath !== '/sample-tasks') {
         console.log('UnifiedAppRouter: redirecting unauthenticated user from', currentPath, 'to auth')
-        // Add a delay to allow authentication to complete but not too long
-        const timer = setTimeout(() => {
-          router.push(`/auth?redirect=${encodeURIComponent(currentPath)}`)
-        }, 1500) // Slightly shorter delay to be more responsive
-        return () => clearTimeout(timer)
+        router.replace(`/auth?redirect=${encodeURIComponent(currentPath)}`)
       }
     }
   }, [authLoading, isAuthenticated, pathname, router])
 
-  // Show loading or redirect while checking auth
+  // Show loading while checking auth
   if (authLoading) {
-    return null // AuthenticatedApp will show its own loading
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    )
   }
 
   if (!isAuthenticated) {
-    return null // Will redirect to auth
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Redirecting to sign in...</p>
+        </div>
+      </div>
+    )
   }
 
   return <AuthenticatedApp initialSection={initialSection} />

@@ -103,10 +103,10 @@ function SuccessPageContent() {
 
           <div className="space-y-3">
             <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
-              <Link href="/app">Start Exploring Tasks</Link>
+              <Link href="/dashboard">Start Exploring Tasks</Link>
             </Button>
             <Button asChild variant="outline" className="w-full">
-              <Link href="/app/profile">Manage Subscription</Link>
+              <Link href="/dashboard">Go to Dashboard</Link>
             </Button>
           </div>
 
