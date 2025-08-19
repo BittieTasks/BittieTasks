@@ -32,7 +32,7 @@ export const soloTasks: TaskData[] = [
     description: 'Create a digital portfolio of your child\'s artwork throughout the year. Sort, photograph, and create a beautiful memory book. Parents pay to learn your organization system.',
     type: 'solo',
     category: 'Home Organization',
-    payout: 35,
+    payout: 65, // 3 hours @ $22/hour market rate
     max_participants: 1,
     current_participants: 0,
     creator_id: 'system',
@@ -52,7 +52,7 @@ export const soloTasks: TaskData[] = [
     description: 'Develop and document a weekly meal prep routine that saves 30+ minutes every morning. Include shopping lists, prep schedules, and kid-friendly options.',
     type: 'solo',
     category: 'Meal Planning',
-    payout: 42,
+    payout: 110, // 5 hours @ $22/hour market rate
     max_participants: 1,
     current_participants: 0,
     creator_id: 'system',
@@ -72,7 +72,7 @@ export const soloTasks: TaskData[] = [
     description: 'Plan and execute a memorable birthday party for under $50. Document decorations, activities, and food ideas that other parents can replicate.',
     type: 'solo',
     category: 'Event Planning',
-    payout: 55,
+    payout: 175, // 8 hours @ $22/hour market rate
     max_participants: 1,
     current_participants: 0,
     creator_id: 'system',
@@ -135,7 +135,7 @@ export const soloTasks: TaskData[] = [
     description: 'Create 20 hands-on STEM experiments using common household items. Document each activity with clear instructions and learning objectives.',
     type: 'solo',
     category: 'Education',
-    payout: 75,
+    payout: 220, // 10 hours @ $22/hour market rate
     max_participants: 1,
     current_participants: 0,
     creator_id: 'system',
