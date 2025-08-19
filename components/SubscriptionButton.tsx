@@ -30,7 +30,9 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
           hasSession: !!session,
           hasAccessToken: !!session?.access_token,
           userEmail: user?.email,
-          tokenPreview: session?.access_token?.substring(0, 20)
+          tokenPreview: session?.access_token?.substring(0, 30),
+          tokenLength: session?.access_token?.length,
+          tokenSegments: session?.access_token?.split('.').length
         })
       }
       

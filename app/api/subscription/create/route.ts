@@ -6,29 +6,45 @@ export async function POST(request: NextRequest) {
   const subscriptionService = new SubscriptionService()
   
   try {
-    console.log('=== New Subscription Request ===')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('=== New Subscription Request ===')
+    }
     
-    // Debug incoming request
-    const authHeader = request.headers.get('Authorization')
-    console.log('=== REQUEST DEBUG ===', {
-      hasAuthHeader: !!authHeader,
-      authHeaderPreview: authHeader?.substring(0, 30),
-      contentType: request.headers.get('Content-Type'),
-      userAgent: request.headers.get('User-Agent')?.substring(0, 50)
-    })
+    // Debug incoming request - check both cases for auth header
+    const authHeader = request.headers.get('Authorization') || request.headers.get('authorization')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('=== REQUEST DEBUG ===', {
+        hasAuthHeader: !!authHeader,
+        authHeaderPreview: authHeader?.substring(0, 30),
+        contentType: request.headers.get('Content-Type')
+      })
+    }
     
-    // Use the exact same authentication pattern as working API routes
+    // Use the exact same authentication pattern as profile route
     const supabase = createServerClient(request)
     
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    // Extract the JWT token from Authorization header
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ 
+        error: 'Authentication required',
+        debug: { message: 'Missing or invalid Authorization header' }
+      }, { status: 401 })
+    }
+
+    const token = authHeader.replace('Bearer ', '')
     
-    console.log('=== AUTH RESULT DEBUG ===', {
-      hasUser: !!user,
-      userEmail: user?.email,
-      userConfirmed: !!user?.email_confirmed_at,
-      authError: authError?.message,
-      userId: user?.id
-    })
+    // Get user using the extracted token
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('=== AUTH RESULT DEBUG ===', {
+        hasUser: !!user,
+        userEmail: user?.email,
+        userConfirmed: !!user?.email_confirmed_at,
+        authError: authError?.message,
+        userId: user?.id
+      })
+    }
     
     if (authError || !user) {
       console.error('POST /api/subscription/create auth error:', authError?.message)
@@ -36,7 +52,7 @@ export async function POST(request: NextRequest) {
         error: 'Authentication required',
         debug: {
           authError: authError?.message,
-          hasAuthHeader: !!authHeader
+          tokenPreview: token?.substring(0, 20)
         }
       }, { status: 401 })
     }
