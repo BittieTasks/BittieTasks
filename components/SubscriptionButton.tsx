@@ -22,20 +22,7 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
     setIsLoading(true)
     
     try {
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`=== Starting ${planName} subscription ===`)
-        console.log('=== SUBSCRIPTION DEBUG ===', {
-          isAuthenticated,
-          isVerified,
-          hasUser: !!user,
-          hasSession: !!session,
-          hasAccessToken: !!session?.access_token,
-          userEmail: user?.email,
-          tokenPreview: session?.access_token?.substring(0, 30),
-          tokenLength: session?.access_token?.length,
-          tokenSegments: session?.access_token?.split('.').length
-        })
-      }
+
       
       if (!isAuthenticated || !session?.access_token) {
         toast({
@@ -55,7 +42,7 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
         return
       }
 
-      console.log('User authenticated, creating subscription...')
+
 
       // 2. Get fresh token and create subscription
       const { data: { session: freshSession }, error: sessionError } = await supabase.auth.getSession()
@@ -64,14 +51,7 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
         throw new Error('Unable to get fresh authentication token')
       }
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log('=== FRESH TOKEN DEBUG ===', {
-          freshTokenLength: freshSession.access_token.length,
-          freshTokenSegments: freshSession.access_token.split('.').length,
-          freshTokenPreview: freshSession.access_token.substring(0, 30),
-          originalTokenMatch: session.access_token === freshSession.access_token
-        })
-      }
+
 
       const response = await fetch('/api/subscription/create', {
         method: 'POST',

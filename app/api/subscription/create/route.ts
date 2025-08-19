@@ -6,19 +6,8 @@ export async function POST(request: NextRequest) {
   const subscriptionService = new SubscriptionService()
   
   try {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('=== New Subscription Request ===')
-    }
-    
-    // Debug incoming request - check both cases for auth header
+    // Get authorization header
     const authHeader = request.headers.get('Authorization') || request.headers.get('authorization')
-    if (process.env.NODE_ENV === 'development') {
-      console.log('=== REQUEST DEBUG ===', {
-        hasAuthHeader: !!authHeader,
-        authHeaderPreview: authHeader?.substring(0, 30),
-        contentType: request.headers.get('Content-Type')
-      })
-    }
     
     // Use the exact same authentication pattern as profile route
     const supabase = createServerClient(request)
@@ -33,49 +22,10 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '')
     
-    // Debug token format
-    if (process.env.NODE_ENV === 'development') {
-      console.log('=== TOKEN DEBUG ===', {
-        tokenLength: token.length,
-        tokenSegments: token.split('.').length,
-        tokenStart: token.substring(0, 20),
-        isValidJWT: token.split('.').length === 3
-      })
-    }
+    // Get user using the extracted token
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
     
-    // Get user using the extracted token - try both methods
-    let user, authError
-    
-    // Method 1: Direct token validation (like profile route)
-    const result1 = await supabase.auth.getUser(token)
-    if (result1.data.user && !result1.error) {
-      user = result1.data.user
-      authError = null
-    } else {
-      // Method 2: Let Supabase handle token from headers (like other routes)
-      const result2 = await supabase.auth.getUser()
-      user = result2.data.user
-      authError = result2.error
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log('=== AUTH METHOD COMPARISON ===', {
-          method1Error: result1.error?.message,
-          method2Error: result2.error?.message,
-          method1HasUser: !!result1.data.user,
-          method2HasUser: !!result2.data.user
-        })
-      }
-    }
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log('=== AUTH RESULT DEBUG ===', {
-        hasUser: !!user,
-        userEmail: user?.email,
-        userConfirmed: !!user?.email_confirmed_at,
-        authError: authError?.message,
-        userId: user?.id
-      })
-    }
+
     
     if (authError || !user) {
       console.error('POST /api/subscription/create auth error:', authError?.message)
