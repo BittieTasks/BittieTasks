@@ -85,6 +85,15 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
         ok: response.ok,
         result: result
       })
+      
+      // Log the full error details for debugging
+      if (!response.ok) {
+        console.error('=== FULL ERROR DETAILS ===')
+        console.error('Status:', response.status)
+        console.error('Error:', result.error)
+        console.error('Details:', result.details)
+        console.error('Full result object:', JSON.stringify(result, null, 2))
+      }
 
       if (!response.ok) {
         console.error('Subscription API failed:', {
