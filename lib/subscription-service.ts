@@ -44,16 +44,26 @@ export class SubscriptionService {
 
   // Get subscription plans with Stripe price IDs
   getSubscriptionPlans(): Record<string, SubscriptionPlan> {
+    const proPriceId = process.env.STRIPE_PRO_PRICE_ID
+    const premiumPriceId = process.env.STRIPE_PREMIUM_PRICE_ID
+    
+    if (!proPriceId || !premiumPriceId) {
+      console.error('Missing Stripe price IDs:', { 
+        proPriceId: proPriceId ? 'set' : 'missing',
+        premiumPriceId: premiumPriceId ? 'set' : 'missing'
+      })
+    }
+    
     return {
       pro: {
         planType: 'pro',
         price: 9.99,
-        priceId: process.env.STRIPE_PRO_PRICE_ID || 'price_1234567890' // Set in env
+        priceId: proPriceId || 'price_1Rxbut2ZO7WvKXeTgo1nNSIE' // Fallback to known price ID
       },
       premium: {
         planType: 'premium', 
         price: 19.99,
-        priceId: process.env.STRIPE_PREMIUM_PRICE_ID || 'price_0987654321' // Set in env
+        priceId: premiumPriceId || 'price_1Rxbxh2ZO7WvKXeTC6IoCqXD' // Fallback to known price ID
       }
     }
   }
@@ -109,6 +119,13 @@ export class SubscriptionService {
       const plans = this.getSubscriptionPlans()
       const plan = plans[planType]
       
+      console.log('Creating checkout session:', {
+        planType,
+        priceId: plan.priceId,
+        userEmail: user.email,
+        userId: user.id
+      })
+      
       if (!plan) {
         return { success: false, error: 'Invalid subscription plan' }
       }
@@ -116,28 +133,44 @@ export class SubscriptionService {
       // Get or create Stripe customer
       const customerResult = await this.getOrCreateCustomer(user)
       if (!customerResult.success) {
+        console.error('Customer creation failed:', customerResult.error)
         return { success: false, error: customerResult.error }
       }
 
-      // Create checkout session
-      const session = await this.getStripe().checkout.sessions.create({
+      console.log('Stripe customer ready:', customerResult.customerId)
+
+      // Create checkout session with enhanced error handling
+      const sessionData = {
         customer: customerResult.customerId,
         payment_method_types: ['card'],
         line_items: [{
           price: plan.priceId,
           quantity: 1,
         }],
-        mode: 'subscription',
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://bittietasks.com'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://bittietasks.com'}/subscribe?cancelled=true`,
+        mode: 'subscription' as const,
+        success_url: `https://bittietasks.com/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `https://bittietasks.com/subscribe?cancelled=true`,
         metadata: {
           user_id: user.id,
-          plan_type: planType
-        }
+          plan_type: planType,
+          user_email: user.email
+        },
+        allow_promotion_codes: true,
+        billing_address_collection: 'required' as 'auto' | 'required'
+      }
+
+      console.log('Creating Stripe session with data:', sessionData)
+
+      const session = await this.getStripe().checkout.sessions.create(sessionData)
+
+      console.log('Stripe session created:', {
+        sessionId: session.id,
+        url: session.url,
+        status: session.status
       })
 
       if (!session.url) {
-        return { success: false, error: 'Failed to create checkout session' }
+        return { success: false, error: 'Failed to create checkout session - no URL returned' }
       }
 
       return { 
@@ -146,10 +179,21 @@ export class SubscriptionService {
         details: { sessionId: session.id, customerId: customerResult.customerId }
       }
     } catch (error: any) {
+      console.error('Stripe session creation error:', {
+        message: error.message,
+        type: error.type,
+        code: error.code,
+        statusCode: error.statusCode
+      })
+      
       return { 
         success: false, 
         error: `Checkout session creation failed: ${error.message}`,
-        details: { originalError: error }
+        details: { 
+          originalError: error,
+          stripeErrorType: error.type,
+          stripeErrorCode: error.code 
+        }
       }
     }
   }
