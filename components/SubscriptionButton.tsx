@@ -24,7 +24,14 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
       console.log(`=== Starting ${planName} subscription ===`)
       
       // 1. Verify user authentication
+      console.log('Getting current user session...')
       const authResult = await authService.getCurrentUser()
+      console.log('Auth result:', {
+        success: authResult.success,
+        hasUser: !!authResult.user,
+        hasToken: !!authResult.token,
+        error: authResult.error
+      })
       
       if (!authResult.success) {
         console.error('Authentication failed:', authResult.error)

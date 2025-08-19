@@ -20,7 +20,16 @@ export class AuthService {
   // Client-side: Get current user session and token
   async getCurrentUser(): Promise<AuthResult> {
     try {
+      console.log('AuthService: Getting session...')
       const { data: { session }, error: sessionError } = await this.supabase.auth.getSession()
+      
+      console.log('AuthService session check:', {
+        hasSession: !!session,
+        hasAccessToken: !!session?.access_token,
+        userEmail: session?.user?.email,
+        emailConfirmed: !!session?.user?.email_confirmed_at,
+        sessionError: sessionError?.message
+      })
       
       if (sessionError) {
         return { success: false, error: `Session error: ${sessionError.message}` }
