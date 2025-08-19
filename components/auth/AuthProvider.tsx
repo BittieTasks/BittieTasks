@@ -76,7 +76,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         
         // Handle successful sign in
         if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
-          console.log('User successfully signed in and verified, redirecting to dashboard')
+          console.log('User successfully signed in and verified')
           
           // Create user profile if needed
           try {
@@ -85,10 +85,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.error('Error creating user profile:', error)
           }
           
-          // Force redirect to dashboard
-          setTimeout(() => {
-            window.location.href = '/dashboard'
-          }, 1000)
+          // Only redirect to dashboard if not on subscription-related pages
+          const currentPath = window.location.pathname
+          if (!currentPath.startsWith('/subscribe') && !currentPath.startsWith('/subscription/')) {
+            console.log('Redirecting to dashboard from:', currentPath)
+            setTimeout(() => {
+              window.location.href = '/dashboard'
+            }, 1000)
+          } else {
+            console.log('Staying on subscription page, not redirecting to dashboard')
+          }
         }
         
         // Handle sign out
