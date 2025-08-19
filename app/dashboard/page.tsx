@@ -1,18 +1,6 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-
-// Dynamically import the unified app component
-const UnifiedAppRouter = dynamic(() => import('@/components/UnifiedAppRouter'), {
-  loading: () => (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading your dashboard...</p>
-      </div>
-    </div>
-  )
-})
+import UnifiedAppRouter from '@/components/UnifiedAppRouter'
 
 export default function Dashboard() {
   return <UnifiedAppRouter />
