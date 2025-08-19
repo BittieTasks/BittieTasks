@@ -1,38 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { AuthService } from '@/lib/auth-service'
 import { SubscriptionService } from '@/lib/subscription-service'
+import { createClient } from '@supabase/supabase-js'
 
 export async function POST(request: NextRequest) {
-  const authService = new AuthService()
   const subscriptionService = new SubscriptionService()
   
   try {
     console.log('=== New Subscription Request ===')
     
-    // 1. Extract and validate auth token
-    const authHeader = request.headers.get('Authorization')
-    const tokenResult = authService.extractTokenFromHeader(authHeader)
+    // 1. Get user from Supabase session (using cookies)
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
     
-    if (!tokenResult.success) {
-      console.error('Auth header validation failed:', tokenResult.error)
+    // Extract session from cookies
+    const cookies = request.headers.get('cookie') || ''
+    const sessionMatch = cookies.match(/sb-[^=]+-auth-token=([^;]+)/)
+    
+    if (!sessionMatch) {
+      console.error('No session cookie found')
       return NextResponse.json({ 
-        error: 'Authentication required',
-        details: tokenResult.error 
+        error: 'Authentication required - please sign in',
+        details: 'No active session' 
       }, { status: 401 })
     }
 
-    // 2. Validate user token
-    const authResult = await authService.validateToken(tokenResult.token!)
+    // Get user from session
+    const { data: { user }, error: userError } = await supabase.auth.getUser(sessionMatch[1])
     
-    if (!authResult.success) {
-      console.error('Token validation failed:', authResult.error)
+    if (userError || !user) {
+      console.error('Session validation failed:', userError?.message)
       return NextResponse.json({ 
-        error: 'Invalid authentication',
-        details: authResult.error 
+        error: 'Invalid session - please sign in again',
+        details: userError?.message 
       }, { status: 401 })
     }
+    
+    if (!user.email_confirmed_at) {
+      console.error('Email not verified for user:', user.id)
+      return NextResponse.json({ 
+        error: 'Email verification required',
+        details: 'Please verify your email before subscribing' 
+      }, { status: 400 })
+    }
 
-    console.log('User authenticated successfully:', authResult.user.id)
+    console.log('User authenticated successfully:', user.id)
 
     // 3. Parse request body
     const { planType } = await request.json()
@@ -48,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     // 4. Create subscription checkout session
     const subscriptionResult = await subscriptionService.createCheckoutSession(
-      authResult.user,
+      user,
       planType
     )
 
