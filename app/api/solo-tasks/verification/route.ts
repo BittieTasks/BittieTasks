@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
         completion_notes,
         verification_photos,
         ai_verification_score: aiVerificationScore,
-        ai_analysis,
+        ai_analysis: aiAnalysis,
         status: verificationStatus,
         verified_at: isAutoApproved ? new Date().toISOString() : null,
         verified_by: isAutoApproved ? 'system_ai' : null
@@ -161,8 +161,10 @@ export async function POST(request: NextRequest) {
     let paymentResult = null
     if (isAutoApproved) {
       try {
-        // Calculate payment details
-        const grossAmount = participant.payout || 50 // Default fallback
+        // Get task details for payment calculation from everyday tasks
+        const { everydayTasks } = await import('@/lib/everydayTasks')
+        const taskData = everydayTasks.find((t: any) => t.id === task_id)
+        const grossAmount = taskData?.payout || 50 // Get actual task payout
         const platformFee = Math.round(grossAmount * 0.03) // 3% for solo tasks
         const netAmount = grossAmount - platformFee
 
@@ -177,23 +179,29 @@ export async function POST(request: NextRequest) {
             fee_amount: platformFee,
             gross_amount: grossAmount,
             status: 'completed',
-            processed_at: new Date().toISOString()
+            processed_at: new Date().toISOString(),
+            description: `Solo task completion: ${taskData?.title || 'Task'}`
           })
           .select()
           .single()
 
         if (!transactionError) {
-          // Update user earnings
-          await supabase.rpc('update_user_earnings', {
-            user_id: user.id,
-            amount: netAmount
-          })
+          // Update user total earnings using SQL increment
+          const { error: earningsError } = await supabase
+            .rpc('increment_user_stats', {
+              target_user_id: user.id,
+              earnings_increment: netAmount,
+              tasks_increment: 1
+            })
 
-          paymentResult = {
-            transaction_id: transaction.id,
-            net_amount: netAmount,
-            platform_fee: platformFee,
-            gross_amount: grossAmount
+          if (!earningsError) {
+            paymentResult = {
+              transaction_id: transaction.id,
+              net_amount: netAmount,
+              platform_fee: platformFee,
+              gross_amount: grossAmount,
+              task_title: taskData?.title
+            }
           }
         }
       } catch (paymentError) {
