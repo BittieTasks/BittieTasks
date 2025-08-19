@@ -55,9 +55,11 @@ export const createServerClient = (request: NextRequest | Request) => {
 // Service role client for admin operations (separate function)
 export const createServiceClient = () => {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-  const serverUrl = process.env.SUPABASE_URL || supabaseUrl
+  // Use fallback URL for production compatibility
+  const serverUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || supabaseUrl
   
   if (!serviceRoleKey) {
+    console.error('SUPABASE_SERVICE_ROLE_KEY missing. Available keys:', Object.keys(process.env).filter(k => k.includes('SUPABASE')))
     throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable')
   }
   

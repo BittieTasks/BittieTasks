@@ -12,6 +12,12 @@ export async function GET() {
     stripeWebhook: process.env.STRIPE_WEBHOOK_SECRET ? 'loaded' : 'missing',
     sendgridKey: process.env.SENDGRID_API_KEY ? 'loaded' : 'missing',
     buildId: process.env.BUILD_ID || 'none',
-    vercelUrl: process.env.VERCEL_URL || 'none'
+    vercelUrl: process.env.VERCEL_URL || 'none',
+    // Debug information
+    availableEnvKeys: Object.keys(process.env).filter(k => 
+      k.includes('SUPABASE') || k.includes('STRIPE') || k.includes('SENDGRID')
+    ).sort(),
+    // Fallback check
+    serverUrlFallback: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL ? 'available' : 'missing'
   })
 }
