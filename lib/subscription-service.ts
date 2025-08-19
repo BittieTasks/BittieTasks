@@ -142,7 +142,7 @@ export class SubscriptionService {
       // Create checkout session with enhanced error handling
       const sessionData = {
         customer: customerResult.customerId,
-        payment_method_types: ['card'] as const,
+        payment_method_types: ['card'],
         line_items: [{
           price: plan.priceId,
           quantity: 1,
