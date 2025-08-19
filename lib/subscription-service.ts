@@ -44,9 +44,22 @@ export class SubscriptionService {
       if (!secretKey) {
         throw new Error('STRIPE_SECRET_KEY environment variable required')
       }
-      console.log('Creating Stripe instance with key format:', secretKey.substring(0, 7) + '...')
+      
+      console.log('=== STRIPE KEY DEBUG ===')
+      console.log('Key format:', secretKey.substring(0, 15) + '...')
+      console.log('Starts with sk_:', secretKey.startsWith('sk_'))
+      console.log('Is test key:', secretKey.startsWith('sk_test_'))
+      console.log('Is live key:', secretKey.startsWith('sk_live_'))
+      console.log('Key length:', secretKey.length)
+      
+      // Validate it's actually a secret key, not publishable key
+      if (!secretKey.startsWith('sk_')) {
+        throw new Error(`Invalid secret key format. Expected sk_test_ or sk_live_, got: ${secretKey.substring(0, 10)}... - Please check your STRIPE_SECRET_KEY environment variable in Vercel.`)
+      }
+      
       try {
         this.stripe = new Stripe(secretKey)
+        console.log('Stripe instance created successfully')
       } catch (error: any) {
         console.error('Stripe initialization error:', error.message)
         throw new Error(`Stripe initialization failed: ${error.message}`)
