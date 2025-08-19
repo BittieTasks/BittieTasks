@@ -199,6 +199,8 @@ export class SubscriptionService {
       console.log('Stripe customer ready:', customerResult.customerId)
 
       // Create checkout session with enhanced error handling
+      console.log('Using price ID:', plan.priceId)
+      
       const sessionData = {
         customer: customerResult.customerId,
         payment_method_types: ['card'] as any,
@@ -214,7 +216,13 @@ export class SubscriptionService {
           plan_type: planType,
           user_email: user.email
         },
-        allow_promotion_codes: true
+        allow_promotion_codes: true,
+        subscription_data: {
+          metadata: {
+            user_id: user.id,
+            plan_type: planType
+          }
+        }
       }
 
       console.log('Creating Stripe session with data:', sessionData)
