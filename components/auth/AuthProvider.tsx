@@ -38,29 +38,45 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     console.log('Starting auth initialization...')
     
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('Error getting session:', error)
+    // Get initial session with timeout for production
+    const initializeAuth = async () => {
+      try {
+        // Add timeout for production reliability
+        const sessionPromise = supabase.auth.getSession()
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session timeout')), 10000)
+        )
+        
+        const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]) as any
+        
+        if (error) {
+          console.error('Error getting session:', error)
+          setLoading(false)
+          return
+        }
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Initial session check:', {
+            hasSession: !!session,
+            userEmail: session?.user?.email,
+            isConfirmed: !!session?.user?.email_confirmed_at,
+          })
+        }
+        
+        setSession(session)
+        setUser(session?.user ?? null)
         setLoading(false)
-        return
+        
+      } catch (error) {
+        console.error('Session initialization failed:', error)
+        // In production, fail gracefully
+        setSession(null)
+        setUser(null)
+        setLoading(false)
       }
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Initial session check:', {
-          hasSession: !!session,
-          userEmail: session?.user?.email,
-          isConfirmed: !!session?.user?.email_confirmed_at,
-        })
-      }
-      
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    }).catch((error) => {
-      console.error('Session fetch failed:', error)
-      setLoading(false)
-    })
+    }
+    
+    initializeAuth()
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

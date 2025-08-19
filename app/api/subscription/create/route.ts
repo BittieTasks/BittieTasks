@@ -6,8 +6,21 @@ export async function POST(request: NextRequest) {
   const subscriptionService = new SubscriptionService()
   
   try {
-    // Get authorization header
-    const authHeader = request.headers.get('Authorization') || request.headers.get('authorization')
+    // Production-safe environment check
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production'
+    
+    // Get authorization header with multiple fallbacks for production
+    const authHeader = request.headers.get('Authorization') || 
+                      request.headers.get('authorization') ||
+                      request.headers.get('Bearer')
+    
+    if (isProduction) {
+      console.log('Production subscription request:', {
+        hasAuthHeader: !!authHeader,
+        headerKeys: Array.from(request.headers.keys()),
+        url: request.url
+      })
+    }
     
     // Use the exact same authentication pattern as profile route
     const supabase = createServerClient(request)

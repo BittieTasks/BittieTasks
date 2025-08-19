@@ -48,19 +48,35 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
       const { data: { session: freshSession }, error: sessionError } = await supabase.auth.getSession()
       
       if (sessionError || !freshSession?.access_token) {
+        console.error('Token error:', sessionError)
         throw new Error('Unable to get fresh authentication token')
       }
 
-
-
-      const response = await fetch('/api/subscription/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${freshSession.access_token}`
-        },
-        body: JSON.stringify({ planType })
-      })
+      // Production-safe request with timeout
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+      
+      let response
+      try {
+        response = await fetch('/api/subscription/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${freshSession.access_token}`,
+            'X-Requested-With': 'XMLHttpRequest' // Help with CORS in production
+          },
+          body: JSON.stringify({ planType }),
+          signal: controller.signal
+        })
+        
+        clearTimeout(timeoutId)
+      } catch (fetchError: any) {
+        clearTimeout(timeoutId)
+        if (fetchError.name === 'AbortError') {
+          throw new Error('Request timeout - please try again')
+        }
+        throw fetchError
+      }
 
       const result = await response.json()
       
