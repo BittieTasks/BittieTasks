@@ -21,7 +21,14 @@ export class SubscriptionService {
   constructor() {
     // Initialize Stripe only when needed (at runtime)
     if (process.env.STRIPE_SECRET_KEY) {
-      this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+      try {
+        this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+        console.log('Stripe initialized with key:', process.env.STRIPE_SECRET_KEY.substring(0, 7) + '...')
+      } catch (error: any) {
+        console.error('Stripe initialization failed:', error.message)
+      }
+    } else {
+      console.error('STRIPE_SECRET_KEY not found in environment')
     }
     
     // Use service role for database operations
@@ -37,7 +44,13 @@ export class SubscriptionService {
       if (!secretKey) {
         throw new Error('STRIPE_SECRET_KEY environment variable required')
       }
-      this.stripe = new Stripe(secretKey)
+      console.log('Creating Stripe instance with key format:', secretKey.substring(0, 7) + '...')
+      try {
+        this.stripe = new Stripe(secretKey)
+      } catch (error: any) {
+        console.error('Stripe initialization error:', error.message)
+        throw new Error(`Stripe initialization failed: ${error.message}`)
+      }
     }
     return this.stripe
   }
@@ -142,7 +155,7 @@ export class SubscriptionService {
       // Create checkout session with enhanced error handling
       const sessionData = {
         customer: customerResult.customerId,
-        payment_method_types: ['card'],
+        payment_method_types: ['card'] as any,
         line_items: [{
           price: plan.priceId,
           quantity: 1,
