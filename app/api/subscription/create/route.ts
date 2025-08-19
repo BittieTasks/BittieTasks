@@ -8,10 +8,9 @@ export async function POST(request: NextRequest) {
   try {
     console.log('=== New Subscription Request ===')
     
-    // 1. Use the same authentication pattern as other working API routes
+    // Use the exact same authentication pattern as working API routes
     const supabase = createServerClient(request)
     
-    // Get current user using the same method as /api/tasks
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
       console.error('POST /api/subscription/create auth error:', authError?.message)

@@ -23,45 +23,37 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
     try {
       console.log(`=== Starting ${planName} subscription ===`)
       
-      // 1. Verify user authentication and get token
-      console.log('Getting current user session...')
-      const authResult = await authService.getCurrentUser()
-      console.log('Auth result:', {
-        success: authResult.success,
-        hasUser: !!authResult.user,
-        hasToken: !!authResult.token,
-        tokenLength: authResult.token?.length,
-        tokenStart: authResult.token?.substring(0, 20),
-        error: authResult.error
-      })
+      // 1. Get current session from the global Supabase client (used by dashboard)
+      const { supabase } = await import('@/lib/supabase')
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       
-      if (!authResult.success) {
-        console.error('Authentication failed:', authResult.error)
-        
-        if (authResult.error?.includes('email')) {
-          toast({
-            title: "Email Verification Required",
-            description: "Please verify your email before subscribing.",
-            variant: "destructive",
-          })
-        } else {
-          toast({
-            title: "Authentication Required",
-            description: "Please sign in to subscribe.",
-            variant: "destructive",
-          })
-        }
+      if (sessionError || !session?.access_token) {
+        console.error('Session error:', sessionError?.message)
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to subscribe.",
+          variant: "destructive",
+        })
+        return
+      }
+
+      if (!session.user?.email_confirmed_at) {
+        toast({
+          title: "Email Verification Required", 
+          description: "Please verify your email before subscribing.",
+          variant: "destructive",
+        })
         return
       }
 
       console.log('User authenticated, creating subscription...')
 
-      // 2. Create subscription with Authorization header (same as other API calls)
+      // 2. Create subscription with proper Authorization header
       const response = await fetch('/api/subscription/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authResult.token}`
+          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({ planType })
       })
