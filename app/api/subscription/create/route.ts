@@ -33,8 +33,39 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '')
     
-    // Get user using the extracted token
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    // Debug token format
+    if (process.env.NODE_ENV === 'development') {
+      console.log('=== TOKEN DEBUG ===', {
+        tokenLength: token.length,
+        tokenSegments: token.split('.').length,
+        tokenStart: token.substring(0, 20),
+        isValidJWT: token.split('.').length === 3
+      })
+    }
+    
+    // Get user using the extracted token - try both methods
+    let user, authError
+    
+    // Method 1: Direct token validation (like profile route)
+    const result1 = await supabase.auth.getUser(token)
+    if (result1.data.user && !result1.error) {
+      user = result1.data.user
+      authError = null
+    } else {
+      // Method 2: Let Supabase handle token from headers (like other routes)
+      const result2 = await supabase.auth.getUser()
+      user = result2.data.user
+      authError = result2.error
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('=== AUTH METHOD COMPARISON ===', {
+          method1Error: result1.error?.message,
+          method2Error: result2.error?.message,
+          method1HasUser: !!result1.data.user,
+          method2HasUser: !!result2.data.user
+        })
+      }
+    }
     
     if (process.env.NODE_ENV === 'development') {
       console.log('=== AUTH RESULT DEBUG ===', {

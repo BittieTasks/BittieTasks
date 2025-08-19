@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { useToast } from '@/hooks/use-toast'
+import { supabase } from '@/lib/supabase'
 
 interface SubscriptionButtonProps {
   planType: 'pro' | 'premium'
@@ -56,12 +57,27 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
 
       console.log('User authenticated, creating subscription...')
 
-      // 2. Create subscription with proper Authorization header
+      // 2. Get fresh token and create subscription
+      const { data: { session: freshSession }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !freshSession?.access_token) {
+        throw new Error('Unable to get fresh authentication token')
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log('=== FRESH TOKEN DEBUG ===', {
+          freshTokenLength: freshSession.access_token.length,
+          freshTokenSegments: freshSession.access_token.split('.').length,
+          freshTokenPreview: freshSession.access_token.substring(0, 30),
+          originalTokenMatch: session.access_token === freshSession.access_token
+        })
+      }
+
       const response = await fetch('/api/subscription/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${freshSession.access_token}`
         },
         body: JSON.stringify({ planType })
       })
