@@ -21,17 +21,18 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
     setIsLoading(true)
     
     try {
-      console.log(`=== Starting ${planName} subscription ===`)
-      
-      console.log('=== SUBSCRIPTION DEBUG ===', {
-        isAuthenticated,
-        isVerified,
-        hasUser: !!user,
-        hasSession: !!session,
-        hasAccessToken: !!session?.access_token,
-        userEmail: user?.email,
-        tokenPreview: session?.access_token?.substring(0, 20)
-      })
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`=== Starting ${planName} subscription ===`)
+        console.log('=== SUBSCRIPTION DEBUG ===', {
+          isAuthenticated,
+          isVerified,
+          hasUser: !!user,
+          hasSession: !!session,
+          hasAccessToken: !!session?.access_token,
+          userEmail: user?.email,
+          tokenPreview: session?.access_token?.substring(0, 20)
+        })
+      }
       
       if (!isAuthenticated || !session?.access_token) {
         toast({

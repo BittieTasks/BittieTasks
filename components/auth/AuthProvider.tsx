@@ -46,11 +46,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return
       }
       
-      console.log('Initial session check:', {
-        hasSession: !!session,
-        userEmail: session?.user?.email,
-        isConfirmed: !!session?.user?.email_confirmed_at,
-      })
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Initial session check:', {
+          hasSession: !!session,
+          userEmail: session?.user?.email,
+          isConfirmed: !!session?.user?.email_confirmed_at,
+        })
+      }
       
       setSession(session)
       setUser(session?.user ?? null)
@@ -63,12 +65,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state change:', {
-          event,
-          hasSession: !!session,
-          userEmail: session?.user?.email,
-          isConfirmed: !!session?.user?.email_confirmed_at
-        })
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Auth state change:', {
+            event,
+            hasSession: !!session,
+            userEmail: session?.user?.email,
+            isConfirmed: !!session?.user?.email_confirmed_at
+          })
+        }
         
         setSession(session)
         setUser(session?.user ?? null)
