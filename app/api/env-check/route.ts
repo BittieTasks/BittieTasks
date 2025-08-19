@@ -18,6 +18,13 @@ export async function GET() {
       k.includes('SUPABASE') || k.includes('STRIPE') || k.includes('SENDGRID')
     ).sort(),
     // Fallback check
-    serverUrlFallback: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL ? 'available' : 'missing'
+    serverUrlFallback: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL ? 'available' : 'missing',
+    // Project identification
+    projectIdentification: {
+      vercelUrl: process.env.VERCEL_URL,
+      vercelEnv: process.env.VERCEL_ENV,
+      vercelGitCommitSha: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7),
+      deploymentUrl: `${process.env.VERCEL_URL || 'unknown'}`
+    }
   })
 }
