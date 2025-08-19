@@ -1,3 +1,6 @@
 {
-  "/page": "app/page.js"
+  "/api/subscription/create/route": "app/api/subscription/create/route.js",
+  "/page": "app/page.js",
+  "/subscribe/page": "app/subscribe/page.js",
+  "/auth/page": "app/auth/page.js"
 }
