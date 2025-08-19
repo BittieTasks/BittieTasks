@@ -8,13 +8,37 @@ export async function POST(request: NextRequest) {
   try {
     console.log('=== New Subscription Request ===')
     
+    // Debug incoming request
+    const authHeader = request.headers.get('Authorization')
+    console.log('=== REQUEST DEBUG ===', {
+      hasAuthHeader: !!authHeader,
+      authHeaderPreview: authHeader?.substring(0, 30),
+      contentType: request.headers.get('Content-Type'),
+      userAgent: request.headers.get('User-Agent')?.substring(0, 50)
+    })
+    
     // Use the exact same authentication pattern as working API routes
     const supabase = createServerClient(request)
     
     const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    console.log('=== AUTH RESULT DEBUG ===', {
+      hasUser: !!user,
+      userEmail: user?.email,
+      userConfirmed: !!user?.email_confirmed_at,
+      authError: authError?.message,
+      userId: user?.id
+    })
+    
     if (authError || !user) {
       console.error('POST /api/subscription/create auth error:', authError?.message)
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      return NextResponse.json({ 
+        error: 'Authentication required',
+        debug: {
+          authError: authError?.message,
+          hasAuthHeader: !!authHeader
+        }
+      }, { status: 401 })
     }
     
     if (!user.email_confirmed_at) {

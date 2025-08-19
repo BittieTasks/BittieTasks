@@ -27,6 +27,16 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
       const { supabase } = await import('@/lib/supabase')
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       
+      console.log('=== SUBSCRIPTION DEBUG ===', {
+        hasSession: !!session,
+        hasAccessToken: !!session?.access_token,
+        hasUser: !!session?.user,
+        userEmail: session?.user?.email,
+        emailConfirmed: !!session?.user?.email_confirmed_at,
+        sessionError: sessionError?.message,
+        tokenPreview: session?.access_token?.substring(0, 20)
+      })
+      
       if (sessionError || !session?.access_token) {
         console.error('Session error:', sessionError?.message)
         toast({
@@ -59,8 +69,19 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
       })
 
       const result = await response.json()
+      
+      console.log('=== SUBSCRIPTION API RESPONSE ===', {
+        status: response.status,
+        ok: response.ok,
+        result: result
+      })
 
       if (!response.ok) {
+        console.error('Subscription API failed:', {
+          status: response.status,
+          error: result.error,
+          details: result.details
+        })
         throw new Error(result.details || result.error || 'Subscription failed')
       }
 
