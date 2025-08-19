@@ -99,22 +99,55 @@ export class SubscriptionService {
       }
       
       if (!customerId) {
-        // Create new Stripe customer
-        const customer = await this.getStripe().customers.create({
-          email: user.email,
-          metadata: { supabase_user_id: user.id }
-        })
-        
-        customerId = customer.id
-        
-        // Update user record with customer ID
-        await this.supabase
-          .from('users')
-          .update({ 
-            stripeCustomerId: customerId,
-            updatedAt: new Date().toISOString()
+        console.log('Creating new Stripe customer for email:', user.email)
+        try {
+          // Create new Stripe customer with detailed logging
+          const customer = await this.getStripe().customers.create({
+            email: user.email,
+            metadata: { 
+              supabase_user_id: user.id,
+              created_from: 'bittietasks_subscription'
+            }
           })
-          .eq('id', user.id)
+          
+          console.log('Stripe customer created successfully:', customer.id)
+          customerId = customer.id
+          
+          // Update user record with customer ID
+          const updateResult = await this.supabase
+            .from('users')
+            .update({ 
+              stripeCustomerId: customerId,
+              updatedAt: new Date().toISOString()
+            })
+            .eq('id', user.id)
+            
+          if (updateResult.error) {
+            console.error('Failed to update user with customer ID:', updateResult.error)
+          } else {
+            console.log('User updated with customer ID successfully')
+          }
+          
+        } catch (stripeError: any) {
+          console.error('Stripe customer creation failed:', {
+            message: stripeError.message,
+            type: stripeError.type,
+            code: stripeError.code,
+            statusCode: stripeError.statusCode,
+            requestId: stripeError.requestId
+          })
+          
+          // Check for specific Stripe error types
+          if (stripeError.code === 'account_invalid' || stripeError.message?.includes('account')) {
+            throw new Error('Stripe account not fully activated. Please complete account setup at https://dashboard.stripe.com/settings/account')
+          } else if (stripeError.code === 'api_key_invalid') {
+            throw new Error('Invalid Stripe API key. Please verify your secret key at https://dashboard.stripe.com/apikeys')
+          } else if (stripeError.message?.includes('restricted') || stripeError.message?.includes('permission')) {
+            throw new Error('API key permission error. Please use an unrestricted key from https://dashboard.stripe.com/apikeys')
+          }
+          
+          throw stripeError
+        }
       }
       
       return { success: true, customerId }
