@@ -23,7 +23,10 @@ export const everydayTasks: TaskData[] = [
     difficulty: 'easy',
     time_estimate: '30 minutes',
     location_type: 'home',
-    materials_needed: ['Dish soap', 'Sponge/dishcloth', 'Towel']
+    materials_needed: ['Dish soap', 'Sponge/dishcloth', 'Towel'],
+    daily_limit: 5,
+    completion_time_hours: 24, // 24 hours to complete
+    daily_completed: 0
   },
   {
     id: 'solo-002',
@@ -43,7 +46,10 @@ export const everydayTasks: TaskData[] = [
     difficulty: 'easy',
     time_estimate: '45 minutes',
     location_type: 'home',
-    materials_needed: ['Laundry detergent', 'Access to washer/dryer']
+    materials_needed: ['Laundry detergent', 'Access to washer/dryer'],
+    daily_limit: 5,
+    completion_time_hours: 24,
+    daily_completed: 0
   },
   {
     id: 'solo-003',
@@ -63,7 +69,10 @@ export const everydayTasks: TaskData[] = [
     difficulty: 'easy',
     time_estimate: '30 minutes',
     location_type: 'home',
-    materials_needed: ['Vacuum cleaner']
+    materials_needed: ['Vacuum cleaner'],
+    daily_limit: 5,
+    completion_time_hours: 24,
+    daily_completed: 0
   },
   {
     id: 'solo-004',

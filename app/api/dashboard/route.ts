@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     // Get active task participants (tasks user applied to but haven't completed)
     const { data: activeParticipants, error: activeError } = await supabase
       .from('task_participants')
-      .select('id, task_id, status, joined_at, application_message')
+      .select('id, task_id, status, joined_at, deadline, application_message')
       .eq('user_id', user.id)
       .in('status', ['auto_approved', 'pending_verification'])
       .order('joined_at', { ascending: false })

@@ -21,6 +21,10 @@ export interface TaskData {
   location_type: 'home' | 'local' | 'online'
   age_group?: string
   materials_needed?: string[]
+  // Solo task limits for cost control
+  daily_limit?: number
+  completion_time_hours?: number
+  daily_completed?: number
 }
 
 // Import everyday adult tasks

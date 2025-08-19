@@ -98,19 +98,61 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Task not found' }, { status: 404 })
     }
 
+    // Check daily limit availability
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    const { data: completedToday, error: availabilityError } = await supabase
+      .from('task_participants')
+      .select('id')
+      .eq('task_id', task_id)
+      .eq('status', 'completed')
+      .gte('completed_at', today.toISOString())
+      .lt('completed_at', tomorrow.toISOString())
+
+    if (availabilityError) {
+      console.error('Error checking task availability:', availabilityError)
+      return NextResponse.json({ 
+        error: 'Failed to check task availability',
+        details: availabilityError.message 
+      }, { status: 500 })
+    }
+
+    const dailyCompleted = completedToday?.length || 0
+    const dailyLimit = task.daily_limit || 5
+
+    if (dailyCompleted >= dailyLimit) {
+      return NextResponse.json({ 
+        error: 'Daily limit reached',
+        details: `This task has reached its daily limit of ${dailyLimit} completions. Try again tomorrow!`,
+        daily_limit: dailyLimit,
+        reset_time: tomorrow.toISOString()
+      }, { status: 429 })
+    }
+
     // Check if user already applied
     const { data: existingApplication } = await supabase
       .from('task_participants')
-      .select('id')
+      .select('id, status, joined_at')
       .eq('task_id', task_id)
       .eq('user_id', user.id)
       .single()
 
     if (existingApplication) {
-      return NextResponse.json({ error: 'Already applied to this task' }, { status: 400 })
+      return NextResponse.json({ 
+        error: 'Already applied to this task',
+        details: 'You have already started this task. Check your dashboard to complete it.',
+        application_status: existingApplication.status
+      }, { status: 400 })
     }
 
-    // Create task application
+    // Calculate completion deadline
+    const completionDeadline = new Date()
+    completionDeadline.setHours(completionDeadline.getHours() + (task.completion_time_hours || 24))
+
+    // Create task application with deadline
     const { data: application, error: applicationError } = await supabase
       .from('task_participants')
       .insert({
@@ -119,7 +161,8 @@ export async function POST(request: NextRequest) {
         status: 'auto_approved', // Solo tasks are auto-approved
         application_message: application_message || 'Solo task application',
         approved_at: new Date().toISOString(),
-        approved_by: 'system'
+        approved_by: 'system',
+        deadline: completionDeadline.toISOString()
       })
       .select()
       .single()
@@ -140,6 +183,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       application,
+      availability: {
+        daily_completed: dailyCompleted,
+        daily_limit: dailyLimit,
+        remaining_slots: dailyLimit - dailyCompleted - 1, // -1 for current application
+        completion_deadline: completionDeadline.toISOString(),
+        completion_time_hours: task.completion_time_hours || 24
+      },
       task: {
         ...task,
         gross_payout: grossPayout,

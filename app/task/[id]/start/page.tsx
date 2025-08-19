@@ -21,6 +21,8 @@ export default function StartTaskPage() {
   const [applying, setApplying] = useState(false)
   const [showVerification, setShowVerification] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [availability, setAvailability] = useState<any>(null)
+  const [deadline, setDeadline] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -38,8 +40,19 @@ export default function StartTaskPage() {
     }
 
     setTask(foundTask)
+    checkTaskAvailability(taskId)
     setLoading(false)
   }, [params.id, isAuthenticated, router])
+
+  const checkTaskAvailability = async (taskId: string) => {
+    try {
+      const response = await fetch(`/api/solo-tasks/availability?task_id=${taskId}`)
+      const data = await response.json()
+      setAvailability(data)
+    } catch (error) {
+      console.error('Error checking task availability:', error)
+    }
+  }
 
   const handleApply = async () => {
     if (!task || !user) return
@@ -65,18 +78,30 @@ export default function StartTaskPage() {
       }
 
       setApplied(true)
+      setDeadline(result.availability?.completion_deadline)
+      setAvailability(result.availability)
       toast({
         title: "Task Started!",
-        description: "You can now begin working on this task. Complete it and submit for verification.",
+        description: `Complete this task within ${result.availability?.completion_time_hours || 24} hours.`,
       })
 
     } catch (error: any) {
       console.error('Application error:', error)
-      toast({
-        title: "Application Failed",
-        description: error.message || "Failed to start task. Please try again.",
-        variant: "destructive",
-      })
+      const errorData = await response?.json?.()
+      
+      if (response?.status === 429) {
+        toast({
+          title: "Daily Limit Reached",
+          description: errorData.details || "This task has reached its daily limit. Try again tomorrow!",
+          variant: "destructive",
+        })
+      } else {
+        toast({
+          title: "Application Failed",
+          description: errorData?.details || error.message || "Failed to start task. Please try again.",
+          variant: "destructive",
+        })
+      }
     } finally {
       setApplying(false)
     }
@@ -293,13 +318,31 @@ export default function StartTaskPage() {
               </CardContent>
             </Card>
 
+            {/* Availability Info */}
+            {availability && (
+              <Card className="border-orange-200 bg-orange-50">
+                <CardContent className="p-4">
+                  <h3 className="font-medium text-orange-900 mb-2">Daily Limit Info</h3>
+                  <div className="text-sm text-orange-800 space-y-1">
+                    <p>
+                      <strong>{availability.remaining_slots || 0}</strong> spots remaining today 
+                      ({availability.daily_completed || 0}/{availability.daily_limit || 5} completed)
+                    </p>
+                    <p className="text-xs">
+                      Resets at midnight • Complete within 24 hours of starting
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Action Buttons */}
             <Card>
               <CardContent className="p-4 space-y-3">
                 {!applied ? (
                   <Button 
                     onClick={handleApply}
-                    disabled={applying}
+                    disabled={applying || (availability && !availability.available)}
                     className="w-full"
                     size="lg"
                     data-testid="start-task-button"
@@ -308,6 +351,10 @@ export default function StartTaskPage() {
                       <>
                         <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />
                         Starting...
+                      </>
+                    ) : availability && !availability.available ? (
+                      <>
+                        <span>Daily Limit Reached</span>
                       </>
                     ) : (
                       <>
@@ -323,6 +370,12 @@ export default function StartTaskPage() {
                         <CheckCircle className="h-4 w-4" />
                         <span>Task started! Ready to work.</span>
                       </div>
+                      {deadline && (
+                        <div className="text-xs text-green-700 mt-1">
+                          <Clock className="h-3 w-3 inline mr-1" />
+                          Complete by {new Date(deadline).toLocaleString()}
+                        </div>
+                      )}
                     </div>
                     
                     <Button 

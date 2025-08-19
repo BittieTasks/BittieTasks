@@ -16,6 +16,7 @@ interface TaskParticipant {
   status: string
   joined_at: string
   completed_at?: string
+  deadline?: string
   task: {
     id: string
     title: string
@@ -265,8 +266,14 @@ export default function DashboardPage() {
                         )}
                       </div>
 
-                      <div className="text-xs text-gray-500">
-                        Started: {new Date(participant.joined_at).toLocaleDateString()}
+                      <div className="text-xs text-gray-500 space-y-1">
+                        <div>Started: {new Date(participant.joined_at).toLocaleDateString()}</div>
+                        {participant.deadline && (
+                          <div className="text-orange-600">
+                            <Clock className="h-3 w-3 inline mr-1" />
+                            Due: {new Date(participant.deadline).toLocaleString()}
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
