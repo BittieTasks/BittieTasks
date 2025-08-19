@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { useRouter } from 'next/navigation'
-import { soloTasks } from '@/lib/taskData'
+import { everydayTasks as soloTasks } from '@/lib/everydayTasks'
 
 interface SoloTask {
   id: string

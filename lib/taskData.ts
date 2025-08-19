@@ -23,16 +23,22 @@ export interface TaskData {
   materials_needed?: string[]
 }
 
-// 50+ Solo Tasks - Individual earning opportunities
-export const soloTasks: TaskData[] = [
-  // Home & Organization (15 tasks)
+// Import everyday adult tasks
+import { everydayTasks } from './everydayTasks'
+
+// 25 Solo Tasks - Everyday adult activities that anyone can do
+export const soloTasks: TaskData[] = everydayTasks
+
+// Legacy complex tasks moved to community/barter categories for specialized users
+export const legacyTasks: TaskData[] = [
+  // Daily Household Tasks (8 tasks)
   {
     id: 'solo-001',
-    title: 'Organize and Photograph Kids\' Artwork Portfolio',
-    description: 'Create a digital portfolio of your child\'s artwork throughout the year. Sort, photograph, and create a beautiful memory book. Parents pay to learn your organization system.',
+    title: 'Wash Dishes and Clean Kitchen',
+    description: 'Wash all dishes, clean counters, and tidy kitchen. Take before/after photos showing your sparkling clean kitchen space.',
     type: 'solo',
-    category: 'Home Organization',
-    payout: 65, // 3 hours @ $22/hour market rate
+    category: 'Household',
+    payout: 8,
     max_participants: 1,
     current_participants: 0,
     creator_id: 'system',
@@ -42,58 +48,17 @@ export const soloTasks: TaskData[] = [
     is_sponsored: false,
     sponsor_name: null,
     difficulty: 'easy',
-    time_estimate: '2-3 hours',
+    time_estimate: '30 minutes',
     location_type: 'home',
-    materials_needed: ['Phone/camera', 'Storage folders', 'Labeling supplies']
+    materials_needed: ['Dish soap', 'Sponge/dishcloth', 'Towel']
   },
   {
     id: 'solo-002',
-    title: 'Create Meal Prep System for Busy School Mornings',
-    description: 'Develop and document a weekly meal prep routine that saves 30+ minutes every morning. Include shopping lists, prep schedules, and kid-friendly options.',
+    title: 'Do a Load of Laundry - Wash, Dry, Fold',
+    description: 'Complete laundry cycle from start to finish. Sort, wash, dry, and fold clothes. Show organized final result.',
     type: 'solo',
-    category: 'Meal Planning',
-    payout: 110, // 5 hours @ $22/hour market rate
-    max_participants: 1,
-    current_participants: 0,
-    creator_id: 'system',
-    status: 'active',
-    created_at: new Date().toISOString(),
-    deadline: null,
-    is_sponsored: true,
-    sponsor_name: 'HealthyKids Nutrition',
-    difficulty: 'medium',
-    time_estimate: '4-5 hours',
-    location_type: 'home',
-    materials_needed: ['Meal containers', 'Planning notebook', 'Kitchen supplies']
-  },
-  {
-    id: 'solo-003',
-    title: 'Design Budget-Friendly Birthday Party at Home',
-    description: 'Plan and execute a memorable birthday party for under $50. Document decorations, activities, and food ideas that other parents can replicate.',
-    type: 'solo',
-    category: 'Event Planning',
-    payout: 175, // 8 hours @ $22/hour market rate
-    max_participants: 1,
-    current_participants: 0,
-    creator_id: 'system',
-    status: 'active',
-    created_at: new Date().toISOString(),
-    deadline: null,
-    is_sponsored: false,
-    sponsor_name: null,
-    difficulty: 'medium',
-    time_estimate: '6-8 hours',
-    location_type: 'home',
-    age_group: 'All ages',
-    materials_needed: ['Craft supplies', 'Basic party supplies', 'Camera for documentation']
-  },
-  {
-    id: 'solo-004',
-    title: 'Organize Kids\' Clothing Swap System',
-    description: 'Create a systematic approach to organizing, storing, and cycling through kids\' clothes by size and season. Perfect for growing families.',
-    type: 'solo',
-    category: 'Home Organization',
-    payout: 28,
+    category: 'Household',
+    payout: 12,
     max_participants: 1,
     current_participants: 0,
     creator_id: 'system',
@@ -103,52 +68,89 @@ export const soloTasks: TaskData[] = [
     is_sponsored: false,
     sponsor_name: null,
     difficulty: 'easy',
-    time_estimate: '3-4 hours',
+    time_estimate: '45 minutes',
     location_type: 'home',
-    materials_needed: ['Storage bins', 'Labels', 'Measuring tape']
+    materials_needed: ['Laundry detergent', 'Access to washer/dryer']
+  },
+  {
+    id: 'solo-003',
+    title: 'Vacuum Living Areas',
+    description: 'Vacuum all carpets and rugs in main living spaces. Move furniture as needed and get corners and edges clean.',
+    type: 'solo',
+    category: 'Household',
+    payout: 10,
+    max_participants: 1,
+    current_participants: 0,
+    creator_id: 'system',
+    status: 'active',
+    created_at: new Date().toISOString(),
+    deadline: null,
+    is_sponsored: false,
+    sponsor_name: null,
+    difficulty: 'easy',
+    time_estimate: '30 minutes',
+    location_type: 'home',
+    materials_needed: ['Vacuum cleaner']
+  },
+  {
+    id: 'solo-004',
+    title: 'Make Beds and Tidy Bedrooms',
+    description: 'Make all beds in the house and do quick bedroom tidying. Put away clothes, clear surfaces, and fluff pillows.',
+    type: 'solo',
+    category: 'Household',
+    payout: 6,
+    max_participants: 1,
+    current_participants: 0,
+    creator_id: 'system',
+    status: 'active',
+    created_at: new Date().toISOString(),
+    deadline: null,
+    is_sponsored: false,
+    sponsor_name: null,
+    difficulty: 'easy',
+    time_estimate: '15 minutes',
+    location_type: 'home',
+    materials_needed: ['Fresh linens if needed']
   },
   {
     id: 'solo-005',
-    title: 'Create Emergency Preparedness Kit for Families',
-    description: 'Assemble and document a comprehensive emergency kit specifically designed for families with children. Include age-appropriate supplies and instructions.',
+    title: 'Take Out Trash and Recycling',
+    description: 'Empty all trash cans in the house, take out garbage and recycling to bins. Replace trash bags and tidy up around bins.',
     type: 'solo',
-    category: 'Safety & Preparedness',
-    payout: 65,
+    category: 'Household',
+    payout: 5,
     max_participants: 1,
     current_participants: 0,
     creator_id: 'system',
     status: 'active',
     created_at: new Date().toISOString(),
     deadline: null,
-    is_sponsored: true,
-    sponsor_name: 'SafetyFirst Family',
-    difficulty: 'medium',
-    time_estimate: '4-6 hours',
+    is_sponsored: false,
+    sponsor_name: null,
+    difficulty: 'easy',
+    time_estimate: '10 minutes',
     location_type: 'home',
-    materials_needed: ['Emergency supplies', 'Storage container', 'Documentation materials']
+    materials_needed: ['Trash bags']
   },
-
-  // Educational & Learning (10 tasks)
   {
     id: 'solo-006',
-    title: 'Develop STEM Learning Activities with Household Items',
-    description: 'Create 20 hands-on STEM experiments using common household items. Document each activity with clear instructions and learning objectives.',
+    title: 'Wipe Down Bathrooms',
+    description: 'Clean and wipe down bathroom surfaces - sink, counter, mirror, toilet. Quick but thorough bathroom refresh.',
     type: 'solo',
-    category: 'Education',
-    payout: 220, // 10 hours @ $22/hour market rate
+    category: 'Household',
+    payout: 8,
     max_participants: 1,
     current_participants: 0,
     creator_id: 'system',
     status: 'active',
     created_at: new Date().toISOString(),
     deadline: null,
-    is_sponsored: true,
-    sponsor_name: 'EduTech Solutions',
-    difficulty: 'hard',
-    time_estimate: '8-10 hours',
+    is_sponsored: false,
+    sponsor_name: null,
+    difficulty: 'easy',
+    time_estimate: '20 minutes',
     location_type: 'home',
-    age_group: '5-12 years',
-    materials_needed: ['Common household items', 'Camera', 'Activity planning sheets']
+    materials_needed: ['Cleaning wipes or spray', 'Paper towels']
   },
   {
     id: 'solo-007',
