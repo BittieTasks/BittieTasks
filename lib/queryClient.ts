@@ -11,11 +11,20 @@ export const queryClient = new QueryClient({
   },
 })
 
-// Simplified API request helper - no manual auth tokens needed
+// API request helper with proper Supabase authentication
 export async function apiRequest(method: string, url: string, data?: any) {
   try {
+    // Get current session for authentication
+    const { supabase } = await import('@/lib/supabase')
+    const { data: { session } } = await supabase.auth.getSession()
+    
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
+    }
+
+    // Add auth header if user is signed in
+    if (session?.access_token) {
+      headers['Authorization'] = `Bearer ${session.access_token}`
     }
 
     const options: RequestInit = {

@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type')
     
-    const supabase = createServerClient()
+    const supabase = createServerClient(request)
     
     // Get current user using Supabase auth
     const { data: { user }, error: authError } = await supabase.auth.getUser()

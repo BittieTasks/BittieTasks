@@ -3,7 +3,7 @@ import { createServerClient, createServiceClient } from '../../../../lib/supabas
 
 export async function POST(request: NextRequest) {
   try {
-    const supabaseClient = createServerClient()
+    const supabaseClient = createServerClient(request)
     
     // Get current user using Supabase auth
     const { data: { user }, error } = await supabaseClient.auth.getUser()
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const supabaseClient = createServerClient()
+    const supabaseClient = createServerClient(request)
     
     // Get current user using Supabase auth
     const { data: { user }, error } = await supabaseClient.auth.getUser()
