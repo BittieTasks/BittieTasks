@@ -41,13 +41,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Get initial session with timeout for production
     const initializeAuth = async () => {
       try {
-        // Add timeout for production reliability
-        const sessionPromise = supabase.auth.getSession()
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session timeout')), 10000)
-        )
-        
-        const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]) as any
+        // First get the Supabase session to get the access token
+        const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
           console.error('Error getting session:', error)
@@ -55,21 +50,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
           return
         }
         
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Initial session check:', {
-            hasSession: !!session,
-            userEmail: session?.user?.email,
-            isConfirmed: !!session?.user?.email_confirmed_at,
-          })
+        // If we have a session, verify it with the API
+        if (session?.access_token) {
+          try {
+            const response = await fetch('/api/auth/user', {
+              headers: {
+                'Authorization': `Bearer ${session.access_token}`,
+              },
+            })
+            
+            if (response.ok) {
+              const userData = await response.json()
+              console.log('API auth successful:', userData?.email)
+              setSession(session)
+              setUser(session.user)
+            } else {
+              console.log('API auth failed, clearing session')
+              setSession(null)
+              setUser(null)
+            }
+          } catch (apiError) {
+            console.error('API auth check failed:', apiError)
+            setSession(null)
+            setUser(null)
+          }
+        } else {
+          console.log('No session found')
+          setSession(null)
+          setUser(null)
         }
         
-        setSession(session)
-        setUser(session?.user ?? null)
         setLoading(false)
         
       } catch (error) {
         console.error('Session initialization failed:', error)
-        // In production, fail gracefully
         setSession(null)
         setUser(null)
         setLoading(false)
@@ -90,8 +104,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
           })
         }
         
-        setSession(session)
-        setUser(session?.user ?? null)
+        // Verify session with API if we have one
+        if (session?.access_token) {
+          try {
+            const response = await fetch('/api/auth/user', {
+              headers: {
+                'Authorization': `Bearer ${session.access_token}`,
+              },
+            })
+            
+            if (response.ok) {
+              setSession(session)
+              setUser(session.user)
+            } else {
+              setSession(null)
+              setUser(null)
+            }
+          } catch (error) {
+            console.error('API verification failed:', error)
+            setSession(null)
+            setUser(null)
+          }
+        } else {
+          setSession(null)
+          setUser(null)
+        }
+        
         setLoading(false)
         
         // Handle successful sign in
