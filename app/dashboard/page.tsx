@@ -69,11 +69,20 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
+      console.log('Dashboard: Fetching data for user:', user?.email)
+      
       // Get access token from Supabase session
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      console.log('Dashboard: Session check:', { 
+        hasSession: !!session, 
+        hasToken: !!session?.access_token,
+        tokenLength: session?.access_token?.length || 0,
+        sessionError: sessionError?.message
+      })
       
       if (!session?.access_token) {
-        throw new Error('No valid session')
+        throw new Error('No valid session - please sign in again')
       }
 
       const response = await fetch('/api/dashboard', {
@@ -81,6 +90,8 @@ export default function DashboardPage() {
           'Authorization': `Bearer ${session.access_token}`
         }
       })
+      
+      console.log('Dashboard: API response status:', response.status)
 
       if (!response.ok) {
         throw new Error('Failed to fetch dashboard data')

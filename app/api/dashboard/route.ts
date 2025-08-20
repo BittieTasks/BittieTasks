@@ -11,16 +11,29 @@ export async function GET(request: NextRequest) {
   try {
     // Get authenticated user
     const authHeader = request.headers.get('Authorization')
+    console.log('Dashboard API: Auth header:', authHeader ? 'Bearer token present' : 'No auth header')
+    
     if (!authHeader?.startsWith('Bearer ')) {
+      console.log('Dashboard API: Missing or invalid Authorization header')
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
     const token = authHeader.split(' ')[1]
+    console.log('Dashboard API: Extracted token length:', token?.length || 0)
+    
+    if (!token || token.length < 20) {
+      console.log('Dashboard API: Token is too short or empty')
+      return NextResponse.json({ error: 'Invalid token format' }, { status: 401 })
+    }
+
     const { data: { user }, error: authError } = await supabase.auth.getUser(token)
     
     if (authError || !user) {
-      return NextResponse.json({ error: 'Invalid authentication' }, { status: 401 })
+      console.log('Dashboard API: Auth error:', authError?.message || 'Unknown auth error')
+      return NextResponse.json({ error: 'Invalid authentication', details: authError?.message }, { status: 401 })
     }
+    
+    console.log('Dashboard API: Successfully authenticated user:', user.email)
 
     // Get user stats
     const { data: userData, error: userError } = await supabase
