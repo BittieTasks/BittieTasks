@@ -313,7 +313,7 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-md mx-auto">
+      <DialogContent className="max-w-md mx-auto bg-white border border-gray-200 shadow-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {step === 'apply' ? 'Apply for Task' : 'Verify Completion'}
