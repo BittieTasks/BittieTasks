@@ -108,6 +108,12 @@ export class ManualAuthManager {
     return !!session && !!session.access_token
   }
   
+  // Get access token for API calls
+  static getAccessToken(): string | null {
+    const session = this.getStoredSession()
+    return session?.access_token || null
+  }
+  
   // Sign out
   static async signOut() {
     try {

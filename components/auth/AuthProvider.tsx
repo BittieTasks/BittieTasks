@@ -55,14 +55,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const storedSession = ManualAuthManager.getStoredSession()
         
         if (storedSession) {
-          console.log('AuthProvider: Manual session found - bypassing Supabase entirely')
-          setSession(null) // Keep session null since we're bypassing Supabase session
+          console.log('AuthProvider: Manual session found - creating unified session object')
+          
+          // Create a unified session object that components expect
+          const unifiedSession = {
+            access_token: storedSession.access_token,
+            refresh_token: storedSession.refresh_token,
+            expires_at: storedSession.expires_at,
+            token_type: 'bearer',
+            user: storedSession.user
+          } as Session
+          
+          setSession(unifiedSession) // Provide the session data that components expect
           setUser(storedSession.user)
           setLoading(false) // Stop loading immediately when manual session found
           
           // Try to refresh if needed
           const refreshedSession = await ManualAuthManager.refreshIfNeeded()
           if (refreshedSession && refreshedSession.user) {
+            const refreshedUnifiedSession = {
+              access_token: refreshedSession.access_token,
+              refresh_token: refreshedSession.refresh_token,
+              expires_at: refreshedSession.expires_at,
+              token_type: 'bearer',
+              user: refreshedSession.user
+            } as Session
+            setSession(refreshedUnifiedSession)
             setUser(refreshedSession.user)
           }
         } else {

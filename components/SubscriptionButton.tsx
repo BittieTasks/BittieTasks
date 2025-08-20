@@ -24,7 +24,7 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
     try {
 
       
-      if (!isAuthenticated || !session?.access_token) {
+      if (!isAuthenticated) {
         toast({
           title: "Authentication Required",
           description: "Please sign in to subscribe.",
@@ -44,12 +44,17 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
 
 
 
-      // 2. Get fresh token and create subscription
-      const { data: { session: freshSession }, error: sessionError } = await supabase.auth.getSession()
+      // 2. Get access token from unified auth system
+      const accessToken = session?.access_token
       
-      if (sessionError || !freshSession?.access_token) {
-        console.error('Token error:', sessionError)
-        throw new Error('Unable to get fresh authentication token')
+      if (!accessToken) {
+        console.error('No access token available')
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in again.",
+          variant: "destructive",
+        })
+        return
       }
 
       // Production-safe request with timeout
@@ -62,7 +67,7 @@ export function SubscriptionButton({ planType, planName, price, className }: Sub
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${freshSession.access_token}`,
+            'Authorization': `Bearer ${accessToken}`,
             'X-Requested-With': 'XMLHttpRequest' // Help with CORS in production
           },
           body: JSON.stringify({ planType }),

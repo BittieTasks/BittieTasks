@@ -130,37 +130,25 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
   const handleApply = async () => {
     setLoading(true)
     try {
-      // Try manual auth first, then Supabase auth as fallback
+      // Use the unified auth system from ManualAuthManager
+      const { ManualAuthManager } = await import('@/lib/manual-auth')
+      const accessToken = ManualAuthManager.getAccessToken()
+      
       let headers: Record<string, string> = {
         'Content-Type': 'application/json',
       }
 
-      // Check manual auth first
-      const manualSession = localStorage.getItem('manual_auth_session')
-      if (manualSession) {
-        try {
-          const session = JSON.parse(manualSession)
-          if (session.isAuthenticated && session.user) {
-            headers['x-manual-session'] = manualSession
-            console.log('Using manual auth session for task application')
-          }
-        } catch (e) {
-          console.log('Failed to parse manual session, trying Supabase auth')
-        }
-      }
-
-      // Fallback to Supabase auth if no manual session
-      if (!headers['x-manual-session']) {
-        try {
-          const { supabase } = await import('@/lib/supabase')
-          const { data: { session } } = await supabase.auth.getSession()
-          if (session?.access_token) {
-            headers['Authorization'] = `Bearer ${session.access_token}`
-            console.log('Using Supabase auth for task application')
-          }
-        } catch (e) {
-          console.error('Failed to get Supabase session:', e)
-        }
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`
+        console.log('Using unified auth system for task application')
+      } else {
+        console.error('No access token available')
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to apply to tasks.",
+          variant: "destructive",
+        })
+        return
       }
       
       console.log('Applying for task:', {
@@ -229,42 +217,29 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
 
     setLoading(true)
     try {
-      // Use same auth pattern as apply function
+      // Use the unified auth system from ManualAuthManager
+      const { ManualAuthManager } = await import('@/lib/manual-auth')
+      const accessToken = ManualAuthManager.getAccessToken()
+      
       let headers: Record<string, string> = {
         'Content-Type': 'application/json',
       }
 
-      // Check manual auth first
-      const manualSession = localStorage.getItem('manual_auth_session')
-      if (manualSession) {
-        try {
-          const session = JSON.parse(manualSession)
-          if (session.isAuthenticated && session.user) {
-            headers['x-manual-session'] = manualSession
-            console.log('Using manual auth session for verification')
-          }
-        } catch (e) {
-          console.log('Failed to parse manual session, trying Supabase auth')
-        }
-      }
-
-      // Fallback to Supabase auth if no manual session
-      if (!headers['x-manual-session']) {
-        try {
-          const { supabase } = await import('@/lib/supabase')
-          const { data: { session } } = await supabase.auth.getSession()
-          if (session?.access_token) {
-            headers['Authorization'] = `Bearer ${session.access_token}`
-            console.log('Using Supabase auth for verification')
-          }
-        } catch (e) {
-          console.error('Failed to get Supabase session:', e)
-        }
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`
+        console.log('Using unified auth system for verification')
+      } else {
+        console.error('No access token available for verification')
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to verify tasks.",
+          variant: "destructive",
+        })
+        return
       }
       
       console.log('Verifying task:', {
-        hasManualAuth: !!headers['x-manual-session'],
-        hasSupabaseAuth: !!headers['Authorization'],
+        hasAuth: !!headers['Authorization'],
         userId: userId,
         taskId: task.id,
         taskType: task.type,
