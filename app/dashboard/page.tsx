@@ -71,50 +71,17 @@ export default function DashboardPage() {
     try {
       console.log('Dashboard: Fetching data for user:', user?.email)
       
-      // First try to refresh session to ensure we have valid token
-      console.log('Dashboard: Refreshing session...')
-      const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
-      
-      let activeSession = refreshedSession
-      
-      if (refreshError) {
-        console.log('Dashboard: Session refresh failed, trying getSession:', refreshError.message)
-        // Fallback to getSession if refresh fails
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-        
-        console.log('Dashboard: Session check fallback:', { 
-          hasSession: !!session, 
-          hasToken: !!session?.access_token,
-          tokenLength: session?.access_token?.length || 0,
-          sessionError: sessionError?.message,
-          tokenStart: session?.access_token?.substring(0, 30) || 'No token',
-          userId: session?.user?.id,
-          userEmail: session?.user?.email
-        })
-        
-        if (!session?.access_token) {
-          throw new Error('No valid session - please sign in again')
-        }
-        
-        activeSession = session
-      } else {
-        console.log('Dashboard: Session refreshed successfully:', {
-          hasSession: !!refreshedSession,
-          hasToken: !!refreshedSession?.access_token,
-          tokenLength: refreshedSession?.access_token?.length || 0,
-          tokenStart: refreshedSession?.access_token?.substring(0, 30) || 'No token',
-          userId: refreshedSession?.user?.id,
-          userEmail: refreshedSession?.user?.email
-        })
+      // Get authentication token from manual auth system
+      const manualSession = JSON.parse(localStorage.getItem('bittie_manual_session') || 'null')
+      if (!manualSession?.access_token) {
+        throw new Error('No valid authentication - please sign in again')
       }
       
-      if (!activeSession?.access_token) {
-        throw new Error('No access token available after session refresh')
-      }
+      console.log('Dashboard: Using manual authentication token')
 
       const response = await fetch('/api/dashboard', {
         headers: {
-          'Authorization': `Bearer ${activeSession.access_token}`
+          'Authorization': `Bearer ${manualSession.access_token}`
         }
       })
       
