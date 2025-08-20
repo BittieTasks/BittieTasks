@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -62,9 +63,16 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
+      // Get access token from Supabase session
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session?.access_token) {
+        throw new Error('No valid session')
+      }
+
       const response = await fetch('/api/dashboard', {
         headers: {
-          'Authorization': `Bearer ${(user as any)?.access_token}`
+          'Authorization': `Bearer ${session.access_token}`
         }
       })
 
