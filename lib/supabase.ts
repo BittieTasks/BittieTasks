@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
   })
 }
 
-// Client-side Supabase instance
+// Client-side Supabase instance  
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,

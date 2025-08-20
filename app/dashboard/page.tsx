@@ -122,7 +122,12 @@ export default function DashboardPage() {
       
       if (!response.ok) {
         const errorText = await response.text()
-        console.log('Dashboard: API error response:', errorText)
+        console.log('Dashboard: API error response:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorText: errorText,
+          headers: Object.fromEntries(response.headers.entries())
+        })
         throw new Error(`API returned ${response.status}: ${errorText}`)
       }
 
@@ -141,11 +146,22 @@ export default function DashboardPage() {
       })
     } catch (error) {
       console.error('Dashboard fetch error:', error)
-      toast({
-        title: "Error Loading Dashboard",
-        description: "Failed to load your dashboard data. Please try again.",
-        variant: "destructive",
-      })
+      
+      // Check if this is an authentication error
+      if (error instanceof Error && error.message.includes('session')) {
+        toast({
+          title: "Session Expired",
+          description: "Please sign in again to continue.",
+          variant: "destructive",
+        })
+        router.push('/auth?redirect=/dashboard')
+      } else {
+        toast({
+          title: "Error Loading Dashboard",
+          description: "Failed to load your dashboard data. Please try again.",
+          variant: "destructive",
+        })
+      }
     } finally {
       setLoading(false)
     }
