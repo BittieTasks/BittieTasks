@@ -56,7 +56,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
           console.log('AuthProvider: Session retrieved:', {
             hasSession: !!session,
             userEmail: session?.user?.email,
-            isConfirmed: !!session?.user?.email_confirmed_at
+            isConfirmed: !!session?.user?.email_confirmed_at,
+            hasAccessToken: !!session?.access_token,
+            tokenLength: session?.access_token?.length || 0
           })
           setSession(session)
           setUser(session?.user ?? null)
@@ -90,7 +92,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
           event,
           hasSession: !!session,
           userEmail: session?.user?.email,
-          isConfirmed: !!session?.user?.email_confirmed_at
+          isConfirmed: !!session?.user?.email_confirmed_at,
+          hasAccessToken: !!session?.access_token,
+          tokenLength: session?.access_token?.length || 0
         })
         
         setSession(session)
