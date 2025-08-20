@@ -11,36 +11,12 @@ export const queryClient = new QueryClient({
   },
 })
 
-// API request helper function with authentication
+// Simplified API request helper - no manual auth tokens needed
 export async function apiRequest(method: string, url: string, data?: any) {
   try {
-    // Get current session token
-    const { supabase } = await import('@/lib/supabase')
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-    
-    console.log('API Request auth state:', {
-      hasSession: !!session,
-      hasToken: !!session?.access_token,
-      tokenLength: session?.access_token?.length,
-      sessionError: sessionError?.message,
-      url,
-      method
-    })
-    
-    if (sessionError) {
-      throw new Error(`Session error: ${sessionError.message}`)
-    }
-    
-    if (!session?.access_token) {
-      throw new Error('No authentication token available - please sign in')
-    }
-    
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`
     }
-    
-    console.log('Added auth header with token length:', session.access_token.length)
 
     const options: RequestInit = {
       method,
@@ -61,14 +37,6 @@ export async function apiRequest(method: string, url: string, data?: any) {
       } catch {
         errorMessage = response.statusText
       }
-      
-      console.error('API Request failed:', {
-        url,
-        method,
-        status: response.status,
-        error: errorMessage,
-        headers: Object.fromEntries(response.headers)
-      })
       
       throw new Error(`${response.status}: ${errorMessage}`)
     }

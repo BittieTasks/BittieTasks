@@ -3,20 +3,12 @@ import { createServerClient, createServiceClient } from '../../../../lib/supabas
 
 export async function POST(request: NextRequest) {
   try {
-    const supabaseClient = createServerClient(request)
+    const supabaseClient = createServerClient()
     
-    // Get the authorization header
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const token = authHeader.replace('Bearer ', '')
-    
-    // Verify the JWT token
-    const { data: { user }, error } = await supabaseClient.auth.getUser(token)
+    // Get current user using Supabase auth
+    const { data: { user }, error } = await supabaseClient.auth.getUser()
     if (error || !user) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
     // Get user data from request
@@ -61,20 +53,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const supabaseClient = createServerClient(request)
+    const supabaseClient = createServerClient()
     
-    // Get the authorization header
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const token = authHeader.replace('Bearer ', '')
-    
-    // Verify the JWT token
-    const { data: { user }, error } = await supabaseClient.auth.getUser(token)
+    // Get current user using Supabase auth
+    const { data: { user }, error } = await supabaseClient.auth.getUser()
     if (error || !user) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
     // Get user profile from Supabase using service client

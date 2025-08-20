@@ -34,20 +34,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 })
 
-// Server-side Supabase instance for API routes  
-export const createServerClient = (request: NextRequest | Request) => {
-  // Get the authorization header - check both cases
-  const authHeader = request.headers.get('authorization') || request.headers.get('Authorization') || ''
-  
+// Server-side Supabase instance for API routes
+// Uses cookies automatically - no manual token handling needed
+export const createServerClient = (request?: NextRequest | Request) => {
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
-    },
-    global: {
-      headers: {
-        Authorization: authHeader
-      }
     }
   })
 }

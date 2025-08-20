@@ -59,18 +59,8 @@ export default function DashboardSection() {
     enabled: isAuthenticated && !!user,
     retry: 1,
     queryFn: async () => {
-      const { supabase } = await import('@/lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      const headers: Record<string, string> = {}
-      if (session?.access_token) {
-        headers['Authorization'] = `Bearer ${session.access_token}`
-      }
-      
-      const response = await fetch('/api/tasks/created', { headers })
-      if (!response.ok) {
-        throw new Error('Failed to fetch created tasks')
-      }
+      const { apiRequest } = await import('@/lib/queryClient')
+      const response = await apiRequest('GET', '/api/tasks/created')
       return response.json()
     }
   })

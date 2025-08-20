@@ -3,9 +3,9 @@ import { createServerClient } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerClient(request)
+    const supabase = createServerClient()
     
-    // Get current user using fixed authentication  
+    // Get current user using Supabase auth
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
       console.error('POST /api/tasks/verify auth error:', authError?.message)
