@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { 
   Home, Users, Building2, ArrowRightLeft, User, Settings, 
-  Menu, X, ChevronRight, Loader2
+  Menu, X, ChevronRight, Loader2, Crown
 } from 'lucide-react'
 import DashboardSection from '@/components/sections/DashboardSection'
 import SoloTasksSection from '@/components/sections/SoloTasksSection'
@@ -202,6 +202,18 @@ export default function AuthenticatedApp({ initialSection = 'dashboard' }: Authe
               </div>
             </div>
           </div>
+          
+          {/* Upgrade Plan Button */}
+          <Button
+            onClick={() => window.location.href = '/subscribe'}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white mb-2"
+            size="sm"
+            data-testid="upgrade-plan-button"
+          >
+            <Crown className="w-4 h-4 mr-2" />
+            Upgrade Plan
+          </Button>
+          
           <Button
             variant="outline"
             onClick={signOut}
