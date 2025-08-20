@@ -71,31 +71,62 @@ export default function DashboardPage() {
     try {
       console.log('Dashboard: Fetching data for user:', user?.email)
       
-      // Get access token from Supabase session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      // First try to refresh session to ensure we have valid token
+      console.log('Dashboard: Refreshing session...')
+      const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
       
-      console.log('Dashboard: Session check:', { 
-        hasSession: !!session, 
-        hasToken: !!session?.access_token,
-        tokenLength: session?.access_token?.length || 0,
-        sessionError: sessionError?.message
-      })
+      let activeSession = refreshedSession
       
-      if (!session?.access_token) {
-        throw new Error('No valid session - please sign in again')
+      if (refreshError) {
+        console.log('Dashboard: Session refresh failed, trying getSession:', refreshError.message)
+        // Fallback to getSession if refresh fails
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        
+        console.log('Dashboard: Session check fallback:', { 
+          hasSession: !!session, 
+          hasToken: !!session?.access_token,
+          tokenLength: session?.access_token?.length || 0,
+          sessionError: sessionError?.message,
+          tokenStart: session?.access_token?.substring(0, 30) || 'No token',
+          userId: session?.user?.id,
+          userEmail: session?.user?.email
+        })
+        
+        if (!session?.access_token) {
+          throw new Error('No valid session - please sign in again')
+        }
+        
+        activeSession = session
+      } else {
+        console.log('Dashboard: Session refreshed successfully:', {
+          hasSession: !!refreshedSession,
+          hasToken: !!refreshedSession?.access_token,
+          tokenLength: refreshedSession?.access_token?.length || 0,
+          tokenStart: refreshedSession?.access_token?.substring(0, 30) || 'No token',
+          userId: refreshedSession?.user?.id,
+          userEmail: refreshedSession?.user?.email
+        })
+      }
+      
+      if (!activeSession?.access_token) {
+        throw new Error('No access token available after session refresh')
       }
 
       const response = await fetch('/api/dashboard', {
         headers: {
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${activeSession.access_token}`
         }
       })
       
       console.log('Dashboard: API response status:', response.status)
-
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch dashboard data')
+        const errorText = await response.text()
+        console.log('Dashboard: API error response:', errorText)
+        throw new Error(`API returned ${response.status}: ${errorText}`)
       }
+
+
 
       const data = await response.json()
       
