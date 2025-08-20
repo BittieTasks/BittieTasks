@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -24,6 +25,14 @@ export default function HomePage() {
   const { user, isAuthenticated, loading } = useAuth()
   
   console.log('HomePage render - loading:', loading, 'user:', !!user, 'isAuthenticated:', isAuthenticated)
+  
+  // Auto-redirect to dashboard when user is authenticated and not loading
+  useEffect(() => {
+    if (!loading && isAuthenticated && user) {
+      console.log('HomePage: Auto-redirecting authenticated user to dashboard')
+      router.push('/dashboard')
+    }
+  }, [loading, isAuthenticated, user, router])
   
   return (
     <div className="min-h-screen bg-gray-50">

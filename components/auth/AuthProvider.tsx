@@ -97,9 +97,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(session?.user ?? null)
         setLoading(false)
         
-        // Handle successful sign in
-        if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
-          console.log('User successfully signed in and verified')
+        // Handle successful sign in - improved timing and reliability
+        if (event === 'SIGNED_IN' && session?.user) {
+          console.log('User successfully signed in:', {
+            email: session.user.email,
+            confirmed: !!session.user.email_confirmed_at,
+            userId: session.user.id
+          })
           
           // Create user profile if needed
           try {
@@ -108,15 +112,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.error('Error creating user profile:', error)
           }
           
-          // Only redirect to dashboard if not on subscription-related pages
+          // Redirect to dashboard regardless of email confirmation status
+          // (email verification is handled separately)
           const currentPath = window.location.pathname
-          if (!currentPath.startsWith('/subscribe') && !currentPath.startsWith('/subscription/')) {
+          if (!currentPath.startsWith('/subscribe') && 
+              !currentPath.startsWith('/subscription/') &&
+              !currentPath.startsWith('/dashboard') &&
+              !currentPath.startsWith('/auth/callback')) {
             console.log('Redirecting to dashboard from:', currentPath)
+            
+            // Use shorter timeout and more reliable redirect
             setTimeout(() => {
+              console.log('Executing redirect to dashboard...')
               window.location.href = '/dashboard'
-            }, 1000)
+            }, 500)
           } else {
-            console.log('Staying on subscription page, not redirecting to dashboard')
+            console.log('Staying on current page:', currentPath)
           }
         }
         
