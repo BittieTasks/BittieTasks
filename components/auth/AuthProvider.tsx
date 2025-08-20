@@ -38,46 +38,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     console.log('Starting auth initialization...')
     
-    // Get initial session with timeout for production
+    // Simplified: Just use Supabase client directly, no API calls
     const initializeAuth = async () => {
       try {
-        // First get the Supabase session to get the access token
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
           console.error('Error getting session:', error)
-          setLoading(false)
-          return
-        }
-        
-        // If we have a session, verify it with the API
-        if (session?.access_token) {
-          try {
-            const response = await fetch('/api/auth/user', {
-              headers: {
-                'Authorization': `Bearer ${session.access_token}`,
-              },
-            })
-            
-            if (response.ok) {
-              const userData = await response.json()
-              console.log('API auth successful:', userData?.email)
-              setSession(session)
-              setUser(session.user)
-            } else {
-              console.log('API auth failed, clearing session')
-              setSession(null)
-              setUser(null)
-            }
-          } catch (apiError) {
-            console.error('API auth check failed:', apiError)
-            setSession(null)
-            setUser(null)
-          }
         } else {
-          console.log('No session found')
-          setSession(null)
-          setUser(null)
+          console.log('Initial session:', {
+            hasSession: !!session,
+            userEmail: session?.user?.email,
+            isConfirmed: !!session?.user?.email_confirmed_at
+          })
+          setSession(session)
+          setUser(session?.user ?? null)
         }
         
         setLoading(false)
@@ -95,41 +70,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Auth state change:', {
-            event,
-            hasSession: !!session,
-            userEmail: session?.user?.email,
-            isConfirmed: !!session?.user?.email_confirmed_at
-          })
-        }
+        console.log('Auth state change:', {
+          event,
+          hasSession: !!session,
+          userEmail: session?.user?.email,
+          isConfirmed: !!session?.user?.email_confirmed_at
+        })
         
-        // Verify session with API if we have one
-        if (session?.access_token) {
-          try {
-            const response = await fetch('/api/auth/user', {
-              headers: {
-                'Authorization': `Bearer ${session.access_token}`,
-              },
-            })
-            
-            if (response.ok) {
-              setSession(session)
-              setUser(session.user)
-            } else {
-              setSession(null)
-              setUser(null)
-            }
-          } catch (error) {
-            console.error('API verification failed:', error)
-            setSession(null)
-            setUser(null)
-          }
-        } else {
-          setSession(null)
-          setUser(null)
-        }
-        
+        setSession(session)
+        setUser(session?.user ?? null)
         setLoading(false)
         
         // Handle successful sign in
