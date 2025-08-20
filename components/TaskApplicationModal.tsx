@@ -149,13 +149,18 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
         taskId: task.id
       })
       
+      // Use different API endpoint based on task type
+      const apiEndpoint = task.type === 'solo' ? '/api/solo-tasks' : '/api/tasks/apply'
+      
       // Submit real application to API
-      const response = await fetch('/api/tasks/apply', {
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers,
         body: JSON.stringify({
           taskId: task.id,
-          applicationMessage: 'Interested in completing this task!'
+          task_id: task.id, // Solo tasks use task_id
+          applicationMessage: 'Interested in completing this task!',
+          application_message: 'Interested in completing this task!'
         })
       })
       
@@ -216,12 +221,16 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
         taskId: task.id
       })
       
+      // Use different verification endpoint based on task type
+      const verifyEndpoint = task.type === 'solo' ? '/api/solo-tasks/verify' : '/api/tasks/ai-verify'
+      
       // Submit real verification to AI API
-      const response = await fetch('/api/tasks/ai-verify', {
+      const response = await fetch(verifyEndpoint, {
         method: 'POST',
         headers,
         body: JSON.stringify({
           taskId: task.id,
+          task_id: task.id, // Solo tasks use task_id
           userId: userId,
           afterPhoto: verificationPhoto,
           notes: 'Task completed successfully'
