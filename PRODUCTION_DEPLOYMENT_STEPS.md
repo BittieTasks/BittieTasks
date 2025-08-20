@@ -1,53 +1,109 @@
-# Step-by-Step Production Deployment Configuration
+# Production Deployment Configuration
 
-## Step 3: Configure Replit Deployment Secrets
+## Current Status ✅
+All environment variables are configured in your Replit workspace. You need to copy them to your production platform.
 
-### **Method 1: Using Replit Secrets Panel**
+## Required Actions by Platform
 
-1. **Open Secrets Panel**:
-   - In your Replit workspace, look for the "Secrets" tab (usually in left sidebar or Tools menu)
-   - Or press the lock icon 🔒
+### 1. VERCEL DEPLOYMENT (Recommended)
 
-2. **Add these exact environment variables**:
+**Step 1: Import from GitHub**
+1. Go to https://vercel.com/new
+2. Import your GitHub repository: `BittieTasks/BittieTasks`
+3. Vercel will detect it's a Next.js app automatically
 
-   **Variable 1:**
-   - Name: `NEXT_PUBLIC_SUPABASE_URL`
-   - Value: `https://ttgbotlcbzmmyqawnjpj.supabase.co`
+**Step 2: Add Environment Variables**
+In Vercel project settings → Environment Variables, add these 9 variables:
 
-   **Variable 2:**
-   - Name: `NEXT_PUBLIC_SUPABASE_ANON_KEY`  
-   - Value: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0Z2JvdGxjYnptbXlxYXduanBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MDA4NzksImV4cCI6MjA3MDE3Njg3OX0.jc_PZay5gUyleINrGC5d5Sd2mCkHjonP56KCLJJNM1k`
+```
+DATABASE_URL=postgresql://postgres:[password]@db.[project].supabase.co:5432/postgres
+NEXT_PUBLIC_SUPABASE_URL=https://[project].supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+STRIPE_SECRET_KEY=sk_live_... (or sk_test_ for testing)
+VITE_STRIPE_PUBLIC_KEY=pk_live_... (or pk_test_ for testing)
+STRIPE_PRO_PRICE_ID=price_...
+STRIPE_PREMIUM_PRICE_ID=price_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
 
-   **Variable 3:**
-   - Name: `SUPABASE_SERVICE_ROLE_KEY`
-   - Value: [Already exists in your secrets - will auto-sync]
+**Step 3: Deploy**
+- Click "Deploy" in Vercel
+- Your app will be live at `https://your-project.vercel.app`
 
-   **Variable 4:**
-   - Name: `SENDGRID_API_KEY`
-   - Value: [Already exists in your secrets - will auto-sync]
+### 2. SUPABASE CONFIGURATION
 
-3. **Click "Add Secret" for each variable**
+**Current Setup: Already Configured ✅**
+Your Supabase database and authentication are already working. No additional setup needed.
 
-### **Step 4: Deploy to Production**
+**After Deployment:**
+1. Update CORS settings if needed:
+   - Go to Supabase Dashboard → Authentication → URL Configuration  
+   - Add your production domain to Redirect URLs
 
-1. **Click the "Deploy" button** in your Replit workspace
-2. **Choose "Autoscale Deployment"**
-3. **Configure deployment**:
-   - Build command: `npm run build`
-   - Run command: `npm run start`
-4. **Click "Deploy"**
+### 3. STRIPE CONFIGURATION
 
-### **Step 5: Configure Custom Domain (if needed)**
+**Current Setup: Test Mode Active**
+Your Stripe integration is configured in test mode. For production:
 
-1. **In Deployment Dashboard**
-2. **Click "Custom Domains"**
-3. **Add domain**: `www.bittietasks.com`
-4. **Follow DNS configuration instructions**
+**Step 1: Switch to Live Mode**
+1. Go to https://dashboard.stripe.com/
+2. Toggle from "Test data" to "Live data" (top right)
+3. Get your Live API keys (replace test keys)
 
-### **Verification After Deployment**
+**Step 2: Update Webhook URL**
+1. Go to https://dashboard.stripe.com/webhooks
+2. Update webhook endpoint URL to: `https://your-domain.com/api/webhooks/stripe`
+3. Keep the same events selected
 
-Test these URLs:
-- https://your-replit-app.replit.app/auth (should load)
-- https://www.bittietasks.com/auth (if custom domain configured)
+**Step 3: Verify Products**
+Ensure your Pro ($9.99) and Premium ($19.99) subscription products exist in Live mode.
 
-The signup flow should now work with proper email verification!
+### 4. REQUIRED STRIPE SETUP (If Not Done)
+
+**Create Subscription Products:**
+1. Go to https://dashboard.stripe.com/products
+2. Create "Pro Plan": $9.99/month recurring
+3. Create "Premium Plan": $19.99/month recurring  
+4. Copy the Price IDs and update your environment variables
+
+## Post-Deployment Checklist
+
+### Test Critical Flows:
+- [ ] User can sign up and verify phone
+- [ ] User can browse available solo tasks  
+- [ ] Daily limits display correctly (5 per task type)
+- [ ] User can start a task and see 24-hour deadline
+- [ ] Task completion and verification works
+- [ ] Stripe subscription flow works (test with test card)
+- [ ] Dashboard shows active tasks and earnings
+
+### Monitor After Launch:
+- [ ] Check Vercel deployment logs for errors
+- [ ] Monitor Stripe dashboard for successful payments
+- [ ] Watch Supabase logs for database issues
+- [ ] Verify webhook deliveries are successful
+
+## Daily Limits System Status
+
+**Cost Control Measures Active:**
+- Maximum 5 completions per task type per day
+- 25 task types = maximum 125 daily completions  
+- 24-hour completion deadlines
+- Automatic midnight reset (UTC)
+- Real-time availability tracking
+
+**Expected Daily Costs (Max Scenario):**
+- 125 tasks × ~$10 average = ~$1,250 gross payments
+- Platform revenue: 3% = ~$37.50/day
+- Net cost to platform: ~$1,212.50/day (during growth phase)
+
+## Security Notes
+
+- All API keys stored as environment variables only
+- Database protected with Row Level Security (RLS)  
+- Webhook signatures verified for authenticity
+- HTTPS enforced for all communications
+- Phone verification required for user accounts
+
+Your platform is production-ready with comprehensive cost controls!
