@@ -313,7 +313,12 @@ export default function DashboardSection() {
                   </div>
                   <div className="text-right">
                     <div className="font-semibold text-green-600">${task.payout}</div>
-                    <div className="text-xs text-gray-500 capitalize">{task.task_type}</div>
+                    <div className="flex flex-col items-end">
+                      <div className="text-xs text-gray-500 capitalize mb-1">{task.task_type}</div>
+                      {task.status === 'applied' && task.task_type === 'solo' && (
+                        <div className="text-xs text-orange-600 font-medium">Ready to Complete</div>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
