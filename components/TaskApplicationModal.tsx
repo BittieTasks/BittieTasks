@@ -130,23 +130,45 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
   const handleApply = async () => {
     setLoading(true)
     try {
-      // Get fresh session token
-      const { supabase } = await import('@/lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      const headers: Record<string, string> = {
+      // Try manual auth first, then Supabase auth as fallback
+      let headers: Record<string, string> = {
         'Content-Type': 'application/json',
       }
-      
-      // Add authorization header if we have a token
-      if (session?.access_token) {
-        headers['Authorization'] = `Bearer ${session.access_token}`
+
+      // Check manual auth first
+      const manualSession = localStorage.getItem('manual_auth_session')
+      if (manualSession) {
+        try {
+          const session = JSON.parse(manualSession)
+          if (session.isAuthenticated && session.user) {
+            headers['x-manual-session'] = manualSession
+            console.log('Using manual auth session for task application')
+          }
+        } catch (e) {
+          console.log('Failed to parse manual session, trying Supabase auth')
+        }
+      }
+
+      // Fallback to Supabase auth if no manual session
+      if (!headers['x-manual-session']) {
+        try {
+          const { supabase } = await import('@/lib/supabase')
+          const { data: { session } } = await supabase.auth.getSession()
+          if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`
+            console.log('Using Supabase auth for task application')
+          }
+        } catch (e) {
+          console.error('Failed to get Supabase session:', e)
+        }
       }
       
-      console.log('Applying for task with auth:', {
-        hasToken: !!session?.access_token,
+      console.log('Applying for task:', {
+        hasManualAuth: !!headers['x-manual-session'],
+        hasSupabaseAuth: !!headers['Authorization'],
         userId: userId,
-        taskId: task.id
+        taskId: task.id,
+        taskType: task.type
       })
       
       // Use different API endpoint based on task type
@@ -165,12 +187,17 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
       })
       
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Application failed')
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Application failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData
+        })
+        throw new Error(errorData.error || `Application failed: ${response.statusText}`)
       }
       
       const data = await response.json()
-      console.log('Real API response:', data)
+      console.log('Application successful:', data)
 
       setApplied(true)
       setStep('verify')
@@ -202,23 +229,46 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
 
     setLoading(true)
     try {
-      // Get fresh session token
-      const { supabase } = await import('@/lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      const headers: Record<string, string> = {
+      // Use same auth pattern as apply function
+      let headers: Record<string, string> = {
         'Content-Type': 'application/json',
       }
-      
-      // Add authorization header if we have a token
-      if (session?.access_token) {
-        headers['Authorization'] = `Bearer ${session.access_token}`
+
+      // Check manual auth first
+      const manualSession = localStorage.getItem('manual_auth_session')
+      if (manualSession) {
+        try {
+          const session = JSON.parse(manualSession)
+          if (session.isAuthenticated && session.user) {
+            headers['x-manual-session'] = manualSession
+            console.log('Using manual auth session for verification')
+          }
+        } catch (e) {
+          console.log('Failed to parse manual session, trying Supabase auth')
+        }
+      }
+
+      // Fallback to Supabase auth if no manual session
+      if (!headers['x-manual-session']) {
+        try {
+          const { supabase } = await import('@/lib/supabase')
+          const { data: { session } } = await supabase.auth.getSession()
+          if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`
+            console.log('Using Supabase auth for verification')
+          }
+        } catch (e) {
+          console.error('Failed to get Supabase session:', e)
+        }
       }
       
-      console.log('Verifying task with auth:', {
-        hasToken: !!session?.access_token,
+      console.log('Verifying task:', {
+        hasManualAuth: !!headers['x-manual-session'],
+        hasSupabaseAuth: !!headers['Authorization'],
         userId: userId,
-        taskId: task.id
+        taskId: task.id,
+        taskType: task.type,
+        hasPhoto: !!photoPreview
       })
       
       // Use different verification endpoint based on task type
