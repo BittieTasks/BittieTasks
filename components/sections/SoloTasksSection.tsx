@@ -36,13 +36,12 @@ export default function SoloTasksSection() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
 
-  // Fetch available solo tasks from real database
-  const { data: dbTasks = [], isLoading, error } = useQuery({
-    queryKey: ['/api/tasks', 'solo'],
+  // Fetch available solo tasks from solo-tasks API
+  const { data: apiResponse, isLoading, error } = useQuery({
+    queryKey: ['/api/solo-tasks'],
     enabled: isAuthenticated && !!user,
     queryFn: async () => {
-      const { apiRequest } = await import('@/lib/queryClient')
-      const response = await apiRequest('GET', '/api/tasks?type=solo')
+      const response = await fetch('/api/solo-tasks')
       if (!response.ok) {
         // Handle authentication errors gracefully
         if (response.status === 401) {
@@ -61,28 +60,26 @@ export default function SoloTasksSection() {
     }
   })
 
-  // Transform database tasks to match component interface
-  const transformDbTask = (dbTask: any): Task => ({
-    id: dbTask.id,
-    title: dbTask.title,
-    description: dbTask.description,
-    category: dbTask.category?.name || 'General',
-    type: dbTask.type,
-    payout: dbTask.payout,
-    location: dbTask.location || dbTask.city + ', ' + dbTask.state,
-    time_commitment: dbTask.time_commitment || 'As needed',
-    requirements: Array.isArray(dbTask.requirements) ? dbTask.requirements : [dbTask.requirements].filter(Boolean),
+  // Transform everyday tasks to match component interface
+  const transformEverydayTask = (task: any): Task => ({
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    category: task.category,
+    type: 'solo',
+    payout: task.net_payout || task.payout,
+    location: task.location_type === 'home' ? 'Your Home' : 'Local Area',
+    time_commitment: task.time_estimate,
+    requirements: task.materials_needed || [],
     platform_funded: true,
-    completion_limit: dbTask.max_participants || 1,
+    completion_limit: task.daily_limit || 5,
     verification_type: 'photo',
-    current_participants: dbTask.current_participants || 0,
-    max_participants: dbTask.max_participants || 1
+    current_participants: task.daily_completed || 0,
+    max_participants: task.daily_limit || 5
   })
 
-
-
-  // Use only real database tasks - no fallback/demo data
-  const availableTasks = dbTasks.map(transformDbTask)
+  // Use solo tasks from API response
+  const availableTasks = apiResponse?.tasks ? apiResponse.tasks.map(transformEverydayTask) : []
 
   const handleApplyToTask = (task: Task) => {
     console.log('Solo task application - Auth check:', {
