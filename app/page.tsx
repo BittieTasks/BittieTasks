@@ -24,7 +24,7 @@ export default function HomePage() {
   const router = useRouter()
   const { user, isAuthenticated, loading } = useAuth()
   
-  console.log('HomePage render - loading:', loading, 'user:', !!user, 'isAuthenticated:', isAuthenticated)
+  console.log('HomePage render - loading:', loading, 'user:', !!user, 'userEmail:', user?.email, 'isAuthenticated:', isAuthenticated)
   
   // Only redirect if user is clearly authenticated and we're not in a loading state
   useEffect(() => {

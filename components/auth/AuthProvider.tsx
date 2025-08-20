@@ -31,7 +31,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [mounted, setMounted] = useState(false)
 
   // Debug render cycles
-  console.log('AuthProvider render:', { loading, hasUser: !!user, mounted })
+  console.log('AuthProvider render:', { 
+    loading, 
+    hasUser: !!user, 
+    userEmail: user?.email,
+    mounted, 
+    isAuthenticated: !!user && !!user.email 
+  })
 
   useEffect(() => {
     console.log('AuthProvider: Setting mounted to true')
@@ -287,8 +293,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  // For manual authentication, we only need the user - no session dependency
-  const isAuthenticated = !!user
+  // For manual authentication, we need both user and email to be present
+  const isAuthenticated = !!user && !!user.email
   const isVerified = !!user?.email_confirmed_at
 
   return (
