@@ -36,17 +36,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (!mounted) return
     
-    console.log('Starting auth initialization...')
+    console.log('AuthProvider: Starting auth initialization...')
     
-    // Simplified: Just use Supabase client directly, no API calls
+    // Simple initialization with proper error handling
     const initializeAuth = async () => {
       try {
+        console.log('AuthProvider: Getting Supabase session...')
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
-          console.error('Error getting session:', error)
+          console.error('AuthProvider: Error getting session:', error)
+          setSession(null)
+          setUser(null)
         } else {
-          console.log('Initial session:', {
+          console.log('AuthProvider: Session retrieved:', {
             hasSession: !!session,
             userEmail: session?.user?.email,
             isConfirmed: !!session?.user?.email_confirmed_at
@@ -55,22 +58,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setUser(session?.user ?? null)
         }
         
+        console.log('AuthProvider: Setting loading to false')
         setLoading(false)
         
       } catch (error) {
-        console.error('Session initialization failed:', error)
+        console.error('AuthProvider: Session initialization failed:', error)
         setSession(null)
         setUser(null)
         setLoading(false)
       }
     }
     
-    initializeAuth()
+    // Add timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      console.log('AuthProvider: Timeout reached, setting loading to false')
+      setLoading(false)
+    }, 5000)
+    
+    initializeAuth().finally(() => {
+      clearTimeout(timeout)
+    })
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state change:', {
+        console.log('AuthProvider: Auth state change:', {
           event,
           hasSession: !!session,
           userEmail: session?.user?.email,
