@@ -5,25 +5,25 @@
 ### 1. STRIPE API KEYS (Most Critical)
 ```bash
 # Get these from https://dashboard.stripe.com/apikeys
-STRIPE_SECRET_KEY=sk_live_xxxxxxxxxxxxxxxxxxxxxxxxx  # Secret key for server-side
-VITE_STRIPE_PUBLIC_KEY=pk_live_xxxxxxxxxxxxxxxxxxxxxxxxx  # Publishable key for frontend
+STRIPE_SECRET_KEY=sk_live_[YOUR_SECRET_KEY_HERE]  # Secret key for server-side
+VITE_STRIPE_PUBLIC_KEY=pk_live_[YOUR_PUBLISHABLE_KEY_HERE]  # Publishable key for frontend
 
 # For testing before going live:
-# STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxxx
-# VITE_STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxxxxxxxxxxxxxxxxxx
+# STRIPE_SECRET_KEY=sk_test_[YOUR_TEST_SECRET_KEY_HERE]
+# VITE_STRIPE_PUBLIC_KEY=pk_test_[YOUR_TEST_PUBLISHABLE_KEY_HERE]
 ```
 
 ### 2. STRIPE PRODUCT PRICE IDs
 ```bash
 # Get these from https://dashboard.stripe.com/products
-STRIPE_PRO_PRICE_ID=price_xxxxxxxxxxxxxxxxx     # Pro plan ($9.99/month) 
-STRIPE_PREMIUM_PRICE_ID=price_xxxxxxxxxxxxxxxxx # Premium plan ($19.99/month)
+STRIPE_PRO_PRICE_ID=price_[YOUR_PRO_PRICE_ID]     # Pro plan ($9.99/month) 
+STRIPE_PREMIUM_PRICE_ID=price_[YOUR_PREMIUM_PRICE_ID] # Premium plan ($19.99/month)
 ```
 
 ### 3. STRIPE WEBHOOK SECRET
 ```bash
 # Get this from https://dashboard.stripe.com/webhooks after creating webhook endpoint
-STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxxx
+STRIPE_WEBHOOK_SECRET=whsec_[YOUR_WEBHOOK_SECRET]
 ```
 
 ## Step-by-Step Stripe Setup
@@ -68,23 +68,23 @@ Add these to your **GitHub repository settings** â†’ **Secrets and variables** â
 
 ```bash
 # Stripe Configuration
-STRIPE_SECRET_KEY=sk_live_xxxxxxxxxxxxxxxxxxxxxxxxx
-VITE_STRIPE_PUBLIC_KEY=pk_live_xxxxxxxxxxxxxxxxxxxxxxxxx
-STRIPE_PRO_PRICE_ID=price_xxxxxxxxxxxxxxxxx
-STRIPE_PREMIUM_PRICE_ID=price_xxxxxxxxxxxxxxxxx
-STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxxx
+STRIPE_SECRET_KEY=[YOUR_STRIPE_SECRET_KEY]
+VITE_STRIPE_PUBLIC_KEY=[YOUR_STRIPE_PUBLISHABLE_KEY]
+STRIPE_PRO_PRICE_ID=[YOUR_PRO_PRICE_ID]
+STRIPE_PREMIUM_PRICE_ID=[YOUR_PREMIUM_PRICE_ID]
+STRIPE_WEBHOOK_SECRET=[YOUR_WEBHOOK_SECRET]
 
 # Database (Supabase)
-NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxxxxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-DATABASE_URL=postgresql://postgres:[password]@db.xxxxxxxxxxxxxxxxx.supabase.co:5432/postgres
+NEXT_PUBLIC_SUPABASE_URL=[YOUR_SUPABASE_URL]
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[YOUR_SUPABASE_ANON_KEY]
+SUPABASE_SERVICE_ROLE_KEY=[YOUR_SUPABASE_SERVICE_KEY]
+DATABASE_URL=[YOUR_DATABASE_URL]
 
 # Optional: Email & SMS (if using)
-SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxxxxxxxxx
-TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxx
-TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxx
-TWILIO_PHONE_NUMBER=+1xxxxxxxxxx
+SENDGRID_API_KEY=[YOUR_SENDGRID_API_KEY]
+TWILIO_ACCOUNT_SID=[YOUR_TWILIO_ACCOUNT_SID]
+TWILIO_AUTH_TOKEN=[YOUR_TWILIO_AUTH_TOKEN]
+TWILIO_PHONE_NUMBER=[YOUR_TWILIO_PHONE_NUMBER]
 ```
 
 ## Deployment Platform Setup (Vercel/Railway/etc.)
