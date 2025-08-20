@@ -9,44 +9,52 @@ export default function DebugSessionPage() {
   const [storageData, setStorageData] = useState<any>({})
 
   const checkEverything = () => {
-    // Check localStorage
-    const storageKeys = []
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)
-      if (key?.includes('supabase') || key?.includes('auth') || key?.includes('sb-')) {
-        const value = localStorage.getItem(key)
-        storageKeys.push({
-          key,
-          value: value ? value.substring(0, 100) + '...' : null, // Truncate for display
-          hasValue: !!value,
-          valueLength: value?.length || 0
-        })
+    try {
+      // Check localStorage
+      const storageKeys = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key?.includes('supabase') || key?.includes('auth') || key?.includes('sb-')) {
+          const value = localStorage.getItem(key)
+          storageKeys.push({
+            key,
+            value: value ? value.substring(0, 100) + '...' : null,
+            hasValue: !!value,
+            valueLength: value?.length || 0
+          })
+        }
       }
-    }
     
     setStorageData({
       totalKeys: localStorage.length,
       authKeys: storageKeys,
-      allKeys: Object.keys(localStorage)
+      allKeys: Array.from({length: localStorage.length}, (_, i) => localStorage.key(i)).filter(Boolean)
     })
 
-    // Check Supabase session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      setSessionData({
-        hasSession: !!session,
-        sessionError: error?.message,
-        user: session?.user ? {
-          id: session.user.id,
-          email: session.user.email,
-          confirmed: !!session.user.email_confirmed_at
-        } : null,
-        token: session?.access_token ? {
-          length: session.access_token.length,
-          start: session.access_token.substring(0, 20),
-          expires: session.expires_at
-        } : null
+      // Check Supabase session
+      supabase.auth.getSession().then(({ data: { session }, error }) => {
+        setSessionData({
+          hasSession: !!session,
+          sessionError: error?.message,
+          user: session?.user ? {
+            id: session.user.id,
+            email: session.user.email,
+            confirmed: !!session.user.email_confirmed_at
+          } : null,
+          token: session?.access_token ? {
+            length: session.access_token.length,
+            start: session.access_token.substring(0, 20),
+            expires: session.expires_at
+          } : null
+        })
+      }).catch((err: any) => {
+        console.error('Session check failed:', err)
+        setSessionData({ error: err.message })
       })
-    })
+    } catch (err: any) {
+      console.error('Storage check failed:', err)
+      setStorageData({ error: err.message })
+    }
   }
 
   const clearStorage = () => {
