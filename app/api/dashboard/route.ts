@@ -35,46 +35,81 @@ export async function GET(request: NextRequest) {
     
     console.log('Dashboard API: Successfully authenticated user:', user.email)
 
-    // Get user stats
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('total_earnings, tasks_completed')
-      .eq('id', user.id)
-      .single()
-
-    // Get active task participants (tasks user applied to but haven't completed)
-    const { data: activeParticipants, error: activeError } = await supabase
-      .from('task_participants')
-      .select('id, task_id, status, joined_at, deadline, application_message')
-      .eq('user_id', user.id)
-      .in('status', ['auto_approved', 'pending_verification'])
-      .order('joined_at', { ascending: false })
-
-    // Get completed task participants
-    const { data: completedParticipants, error: completedError } = await supabase
-      .from('task_participants')
-      .select('id, task_id, status, joined_at, completed_at')
-      .eq('user_id', user.id)
-      .eq('status', 'completed')
-      .order('completed_at', { ascending: false })
-      .limit(20)
-
-    // Get recent transactions
-    const { data: transactions, error: transactionError } = await supabase
-      .from('transactions')
-      .select('id, amount, fee_amount, gross_amount, processed_at, description, status')
-      .eq('user_id', user.id)
-      .eq('type', 'task_completion')
-      .order('processed_at', { ascending: false })
-      .limit(20)
-
-    if (activeError || completedError || userError || transactionError) {
-      console.error('Database query errors:', { activeError, completedError, userError, transactionError })
-      return NextResponse.json({ 
-        error: 'Failed to fetch dashboard data',
-        details: 'Database query error'
-      }, { status: 500 })
+    // Try to get user stats - gracefully handle if table doesn't exist
+    let userData = null
+    let userError = null
+    try {
+      const result = await supabase
+        .from('users')
+        .select('totalEarnings, tasksCompleted')
+        .eq('id', user.id)
+        .single()
+      userData = result.data
+      userError = result.error
+    } catch (error: any) {
+      console.log('Dashboard API: Users table query failed:', error.message)
+      userError = error
     }
+
+    // Try to get active task participants - gracefully handle if table doesn't exist
+    let activeParticipants = []
+    let activeError = null
+    try {
+      const result = await supabase
+        .from('task_participants')
+        .select('id, task_id, status, joined_at, deadline')
+        .eq('user_id', user.id)
+        .in('status', ['auto_approved', 'pending_verification'])
+        .order('joined_at', { ascending: false })
+      activeParticipants = result.data || []
+      activeError = result.error
+    } catch (error: any) {
+      console.log('Dashboard API: Task participants query failed:', error.message)
+      activeError = error
+    }
+
+    // Try to get completed task participants - gracefully handle if table doesn't exist  
+    let completedParticipants = []
+    let completedError = null
+    try {
+      const result = await supabase
+        .from('task_participants')
+        .select('id, task_id, status, joined_at, completed_at')
+        .eq('user_id', user.id)
+        .eq('status', 'completed')
+        .order('completed_at', { ascending: false })
+        .limit(20)
+      completedParticipants = result.data || []
+      completedError = result.error
+    } catch (error: any) {
+      console.log('Dashboard API: Completed participants query failed:', error.message)
+      completedError = error
+    }
+
+    // Try to get recent transactions - gracefully handle if table doesn't exist
+    let transactions = []
+    let transactionError = null
+    try {
+      const result = await supabase
+        .from('transactions')
+        .select('id, amount, fee_amount, gross_amount, processed_at, description, status')
+        .eq('user_id', user.id)
+        .order('processed_at', { ascending: false })
+        .limit(20)
+      transactions = result.data || []
+      transactionError = result.error
+    } catch (error: any) {
+      console.log('Dashboard API: Transactions query failed:', error.message)
+      transactionError = error
+    }
+
+    console.log('Dashboard API: Query results:', {
+      userDataExists: !!userData,
+      activeCount: activeParticipants.length,
+      completedCount: completedParticipants.length,
+      transactionCount: transactions.length,
+      hasErrors: !!(activeError || completedError || userError || transactionError)
+    })
 
     // Enhance participants with task details from everydayTasks
     const enhanceWithTaskData = (participants: any[]) => {
@@ -101,12 +136,12 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    const enhancedActiveTasks = enhanceWithTaskData(activeParticipants || [])
-    const enhancedCompletedTasks = enhanceWithTaskData(completedParticipants || [])
+    const enhancedActiveTasks = enhanceWithTaskData(activeParticipants)
+    const enhancedCompletedTasks = enhanceWithTaskData(completedParticipants)
 
-    // Calculate stats
-    const totalEarnings = userData?.total_earnings || 0
-    const tasksCompleted = userData?.tasks_completed || 0
+    // Calculate stats - handle database field name variations
+    const totalEarnings = userData?.totalEarnings || userData?.total_earnings || 0
+    const tasksCompleted = userData?.tasksCompleted || userData?.tasks_completed || 0
     const activeTasks = enhancedActiveTasks.length
     const avgEarning = tasksCompleted > 0 ? totalEarnings / tasksCompleted : 0
 
