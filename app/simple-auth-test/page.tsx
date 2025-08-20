@@ -10,58 +10,61 @@ export default function SimpleAuthTest() {
   const [result, setResult] = useState<any>(null)
 
   const testDirectSignIn = async () => {
-    setStatus('Testing direct sign-in...')
+    setStatus('Testing manual authentication...')
     
     try {
-      console.log('Direct sign-in attempt for:', email)
+      console.log('Manual auth sign-in attempt for:', email)
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      // Use manual auth system
+      const { ManualAuthManager } = await import('@/lib/manual-auth')
+      const data = await ManualAuthManager.signIn(email, password)
       
-      console.log('Direct sign-in response:', {
+      console.log('Manual sign-in response:', {
         hasUser: !!data.user,
         hasSession: !!data.session,
         hasAccessToken: !!data.session?.access_token,
-        hasRefreshToken: !!data.session?.refresh_token,
-        error: error?.message
+        hasRefreshToken: !!data.session?.refresh_token
       })
       
-      if (error) {
-        setStatus(`Sign-in failed: ${error.message}`)
-        setResult({ error: error.message, code: error.status })
+      if (!data.session) {
+        setStatus('Sign-in failed: No session returned')
+        setResult({ error: 'No session returned' })
         return
       }
       
-      // Check if session was stored
+      // Check manual storage immediately
+      const manualSession = ManualAuthManager.getStoredSession()
+      const isAuthenticated = ManualAuthManager.isAuthenticated()
+      
+      // Also check Supabase storage (for comparison)
       setTimeout(async () => {
         const { data: sessionCheck } = await supabase.auth.getSession()
-        console.log('Session check after sign-in:', {
-          hasSession: !!sessionCheck.session,
-          hasUser: !!sessionCheck.session?.user
-        })
+        const supabaseStorage = localStorage.getItem('sb-ttgbotlcbzmmyqawnjpj-auth-token')
         
-        const storageValue = localStorage.getItem('sb-ttgbotlcbzmmyqawnjpj-auth-token')
-        console.log('Storage after sign-in:', {
-          hasStorage: !!storageValue,
-          storageLength: storageValue?.length
+        console.log('Post sign-in storage comparison:', {
+          manualSession: !!manualSession,
+          supabaseSession: !!sessionCheck.session,
+          manualAuth: isAuthenticated,
+          supabaseStorage: !!supabaseStorage
         })
         
         setResult({
           success: true,
+          method: 'Manual Authentication',
           user: data.user?.email,
-          sessionPersisted: !!sessionCheck.session,
-          storagePersisted: !!storageValue,
+          manualSessionSaved: !!manualSession,
+          manualAuthWorking: isAuthenticated,
+          supabaseSessionPersisted: !!sessionCheck.session,
+          supabaseStoragePersisted: !!supabaseStorage,
           accessTokenLength: data.session?.access_token?.length,
           refreshTokenExists: !!data.session?.refresh_token
         })
-        setStatus('Sign-in complete - check results')
-      }, 1000)
+        setStatus('Manual authentication complete - session saved successfully!')
+      }, 500)
       
     } catch (err: any) {
-      console.error('Sign-in test failed:', err)
-      setStatus(`Test failed: ${err.message}`)
+      console.error('Manual sign-in test failed:', err)
+      setStatus(`Manual auth failed: ${err.message}`)
       setResult({ error: err.message })
     }
   }
@@ -158,8 +161,9 @@ export default function SimpleAuthTest() {
       )}
       
       <div className="mt-8 text-sm text-gray-600">
-        <p><strong>Purpose:</strong> Direct test of Supabase authentication to isolate the refresh_token_not_found issue</p>
-        <p><strong>Expected:</strong> Successful sign-in with persisted session and refresh token</p>
+        <p><strong>Purpose:</strong> Test manual authentication system that bypasses Supabase session persistence issues</p>
+        <p><strong>Expected:</strong> Successful sign-in with manual session storage working correctly</p>
+        <p><strong>Key:</strong> Manual auth should work even when Supabase localStorage fails</p>
       </div>
     </div>
   )

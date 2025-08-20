@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { ManualAuthManager } from '@/lib/manual-auth'
 import type { Session } from '@supabase/supabase-js'
 
 type AuthContextType = {
@@ -40,35 +41,49 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (!mounted) return
     
-    console.log('AuthProvider: Starting auth initialization...')
+    console.log('AuthProvider: Starting manual auth initialization...')
     
-    // Simple initialization with proper error handling
+    // Check manual auth first
     const initializeAuth = async () => {
       try {
-        console.log('AuthProvider: Getting Supabase session...')
-        const { data: { session }, error } = await supabase.auth.getSession()
+        const storedSession = ManualAuthManager.getStoredSession()
         
-        if (error) {
-          console.error('AuthProvider: Error getting session:', error)
-          setSession(null)
-          setUser(null)
+        if (storedSession) {
+          console.log('AuthProvider: Manual session found')
+          setSession(null) // Keep session null since we're bypassing Supabase session
+          setUser(storedSession.user)
+          
+          // Try to refresh if needed
+          const refreshedSession = await ManualAuthManager.refreshIfNeeded()
+          if (refreshedSession && refreshedSession.user) {
+            setUser(refreshedSession.user)
+          }
         } else {
-          console.log('AuthProvider: Session retrieved:', {
-            hasSession: !!session,
-            userEmail: session?.user?.email,
-            isConfirmed: !!session?.user?.email_confirmed_at,
-            hasAccessToken: !!session?.access_token,
-            tokenLength: session?.access_token?.length || 0
-          })
-          setSession(session)
-          setUser(session?.user ?? null)
+          console.log('AuthProvider: No manual session found, checking Supabase...')
+          
+          // Fallback: check Supabase session
+          try {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (session?.user) {
+              console.log('AuthProvider: Found Supabase session, saving manually')
+              ManualAuthManager.saveSession(session)
+              setSession(session)
+              setUser(session.user)
+            } else {
+              console.log('AuthProvider: No Supabase session found')
+              setSession(null)
+              setUser(null)
+            }
+          } catch (error) {
+            console.log('AuthProvider: Supabase session check failed (expected):', error)
+            setSession(null)
+            setUser(null)
+          }
         }
         
-        console.log('AuthProvider: Setting loading to false')
         setLoading(false)
-        
       } catch (error) {
-        console.error('AuthProvider: Session initialization failed:', error)
+        console.error('AuthProvider: Manual auth initialization failed:', error)
         setSession(null)
         setUser(null)
         setLoading(false)
@@ -79,35 +94,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const timeout = setTimeout(() => {
       console.log('AuthProvider: Timeout reached, setting loading to false')
       setLoading(false)
-    }, 3000) // Reduced to 3 seconds
+    }, 3000)
     
     initializeAuth().finally(() => {
       clearTimeout(timeout)
     })
 
-    // Listen for auth changes
+    // Still listen to Supabase events for new sign-ins
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('AuthProvider: Auth state change:', {
           event,
           hasSession: !!session,
-          userEmail: session?.user?.email,
-          isConfirmed: !!session?.user?.email_confirmed_at,
-          hasAccessToken: !!session?.access_token,
-          tokenLength: session?.access_token?.length || 0
+          userEmail: session?.user?.email
         })
         
-        setSession(session)
-        setUser(session?.user ?? null)
-        setLoading(false)
-        
-        // Handle successful sign in - improved timing and reliability
         if (event === 'SIGNED_IN' && session?.user) {
-          console.log('User successfully signed in:', {
-            email: session.user.email,
-            confirmed: !!session.user.email_confirmed_at,
-            userId: session.user.id
-          })
+          console.log('AuthProvider: New sign-in detected, saving manually')
+          ManualAuthManager.saveSession(session)
+          setSession(session)
+          setUser(session.user)
+          setLoading(false)
           
           // Create user profile if needed
           try {
