@@ -39,7 +39,7 @@ interface Transaction {
 }
 
 export default function DashboardPage() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, loading: authLoading } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
   const [activeTasks, setActiveTasks] = useState<TaskParticipant[]>([])
@@ -54,12 +54,18 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    // Wait for auth to load before redirecting
+    if (!authLoading && !isAuthenticated && !user) {
+      console.log('Dashboard: Redirecting unauthenticated user to auth page')
       router.push('/auth?redirect=/dashboard')
       return
     }
-    fetchDashboardData()
-  }, [isAuthenticated, router])
+    
+    // Only fetch data if we have a confirmed authenticated user
+    if (!authLoading && isAuthenticated && user) {
+      fetchDashboardData()
+    }
+  }, [isAuthenticated, user, authLoading, router])
 
   const fetchDashboardData = async () => {
     try {

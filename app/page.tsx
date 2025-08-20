@@ -26,11 +26,15 @@ export default function HomePage() {
   
   console.log('HomePage render - loading:', loading, 'user:', !!user, 'isAuthenticated:', isAuthenticated)
   
-  // Auto-redirect to dashboard when user is authenticated and not loading
+  // Only redirect if user is clearly authenticated and we're not in a loading state
   useEffect(() => {
-    if (!loading && isAuthenticated && user) {
+    // Wait for auth to fully load, then redirect authenticated users
+    if (!loading && isAuthenticated && user && user.email) {
       console.log('HomePage: Auto-redirecting authenticated user to dashboard')
-      router.push('/dashboard')
+      // Small delay to prevent race conditions
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 100)
     }
   }, [loading, isAuthenticated, user, router])
   
