@@ -29,7 +29,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
 
+  // Debug render cycles
+  console.log('AuthProvider render:', { loading, hasUser: !!user, mounted })
+
   useEffect(() => {
+    console.log('AuthProvider: Setting mounted to true')
     setMounted(true)
   }, [])
 
