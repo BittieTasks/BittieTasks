@@ -77,7 +77,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const timeout = setTimeout(() => {
       console.log('AuthProvider: Timeout reached, setting loading to false')
       setLoading(false)
-    }, 5000)
+    }, 3000) // Reduced to 3 seconds
     
     initializeAuth().finally(() => {
       clearTimeout(timeout)
