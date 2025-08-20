@@ -43,15 +43,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     console.log('AuthProvider: Starting manual auth initialization...')
     
-    // Check manual auth first
+    // Check manual auth first - this is our primary authentication system
     const initializeAuth = async () => {
       try {
         const storedSession = ManualAuthManager.getStoredSession()
         
         if (storedSession) {
-          console.log('AuthProvider: Manual session found')
+          console.log('AuthProvider: Manual session found - bypassing Supabase entirely')
           setSession(null) // Keep session null since we're bypassing Supabase session
           setUser(storedSession.user)
+          setLoading(false) // Stop loading immediately when manual session found
           
           // Try to refresh if needed
           const refreshedSession = await ManualAuthManager.refreshIfNeeded()
@@ -59,29 +60,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setUser(refreshedSession.user)
           }
         } else {
-          console.log('AuthProvider: No manual session found, checking Supabase...')
-          
-          // Fallback: check Supabase session
-          try {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (session?.user) {
-              console.log('AuthProvider: Found Supabase session, saving manually')
-              ManualAuthManager.saveSession(session)
-              setSession(session)
-              setUser(session.user)
-            } else {
-              console.log('AuthProvider: No Supabase session found')
-              setSession(null)
-              setUser(null)
-            }
-          } catch (error) {
-            console.log('AuthProvider: Supabase session check failed (expected):', error)
-            setSession(null)
-            setUser(null)
-          }
+          console.log('AuthProvider: No manual session found - user not authenticated')
+          setSession(null)
+          setUser(null)
+          setLoading(false) // Stop loading immediately - no need to check Supabase
         }
-        
-        setLoading(false)
       } catch (error) {
         console.error('AuthProvider: Manual auth initialization failed:', error)
         setSession(null)
@@ -304,7 +287,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  const isAuthenticated = !!user && !!session
+  // For manual authentication, we only need the user - no session dependency
+  const isAuthenticated = !!user
   const isVerified = !!user?.email_confirmed_at
 
   return (
