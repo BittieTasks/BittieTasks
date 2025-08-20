@@ -31,7 +31,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     detectSessionInUrl: true,
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-    debug: process.env.NODE_ENV === 'development',
+    debug: process.env.NODE_ENV === 'development'
   },
 })
 

@@ -190,7 +190,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         password,
       })
       
-      console.log('Sign in result:', { hasUser: !!data.user, error })
+      console.log('Sign in result:', { 
+        hasUser: !!data.user, 
+        hasSession: !!data.session,
+        hasAccessToken: !!data.session?.access_token,
+        hasRefreshToken: !!data.session?.refresh_token,
+        tokenLength: data.session?.access_token?.length || 0,
+        error: error?.message 
+      })
       
       if (error) {
         console.error('Sign in error details:', error)
@@ -200,6 +207,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
         
         throw new Error(error.message)
+      }
+      
+      // Manually save session if it exists but isn't persisting
+      if (data.session && !localStorage.getItem('sb-ttgbotlcbzmmyqawnjpj-auth-token')) {
+        console.log('AuthProvider: Manually persisting session to localStorage')
+        localStorage.setItem('sb-ttgbotlcbzmmyqawnjpj-auth-token', JSON.stringify(data.session))
       }
       
       console.log('Sign in successful, user:', data.user?.email)

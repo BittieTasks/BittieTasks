@@ -13,10 +13,13 @@ export default function DebugSessionPage() {
     const storageKeys = []
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i)
-      if (key?.includes('supabase') || key?.includes('auth')) {
+      if (key?.includes('supabase') || key?.includes('auth') || key?.includes('sb-')) {
+        const value = localStorage.getItem(key)
         storageKeys.push({
           key,
-          value: localStorage.getItem(key)
+          value: value ? value.substring(0, 100) + '...' : null, // Truncate for display
+          hasValue: !!value,
+          valueLength: value?.length || 0
         })
       }
     }
@@ -70,13 +73,24 @@ export default function DebugSessionPage() {
       
       <div className="space-y-4 mb-6">
         <Button onClick={checkEverything}>Refresh Data</Button>
-        <Button onClick={testSignIn} variant="outline">Test Sign In</Button>
+        <Button onClick={testSignIn} variant="outline">Go to Sign In</Button>
         <Button onClick={clearStorage} variant="destructive">Clear Storage</Button>
+        <Button onClick={() => window.location.href = '/dashboard'} variant="secondary">
+          Test Dashboard Access
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-gray-100 p-4 rounded-lg">
           <h2 className="text-lg font-semibold mb-3">Session Data</h2>
+          <div className="mb-2">
+            <strong>Status:</strong> 
+            <span className={`ml-2 px-2 py-1 rounded text-sm ${
+              sessionData.hasSession ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
+            }`}>
+              {sessionData.hasSession ? 'Session Found' : 'No Session'}
+            </span>
+          </div>
           <pre className="text-xs whitespace-pre-wrap overflow-auto">
             {JSON.stringify(sessionData, null, 2)}
           </pre>
@@ -84,6 +98,10 @@ export default function DebugSessionPage() {
 
         <div className="bg-blue-50 p-4 rounded-lg">
           <h2 className="text-lg font-semibold mb-3">Storage Data</h2>
+          <div className="mb-2">
+            <strong>Auth Keys Found:</strong> 
+            <span className="ml-2 font-mono">{storageData.authKeys?.length || 0}</span>
+          </div>
           <pre className="text-xs whitespace-pre-wrap overflow-auto">
             {JSON.stringify(storageData, null, 2)}
           </pre>
