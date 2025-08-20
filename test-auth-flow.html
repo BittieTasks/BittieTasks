@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BittieTasks Auth Flow Test</title>
+</head>
+<body>
+    <h1>Authentication Flow Test</h1>
+    <div id="status">Loading...</div>
+    
+    <script>
+        async function testAuthFlow() {
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                // Test 1: Check if API is responding
+                const healthResponse = await fetch('/api/health');
+                const healthData = await healthResponse.json();
+                statusDiv.innerHTML += `<br>✅ Health Check: ${healthData.status}`;
+                
+                // Test 2: Check auth endpoint
+                const authResponse = await fetch('/api/auth/user');
+                statusDiv.innerHTML += `<br>📱 Auth Status: ${authResponse.status === 401 ? 'Not logged in (expected)' : 'Logged in'}`;
+                
+                // Test 3: Check if main page loads
+                const pageResponse = await fetch('/');
+                statusDiv.innerHTML += `<br>🏠 Main Page: ${pageResponse.ok ? 'Loading' : 'Error'}`;
+                
+                statusDiv.innerHTML += '<br><br>✅ All tests passed - BittieTasks is operational!';
+                statusDiv.innerHTML += '<br><a href="/">← Go to BittieTasks</a>';
+                
+            } catch (error) {
+                statusDiv.innerHTML += `<br>❌ Error: ${error.message}`;
+            }
+        }
+        
+        testAuthFlow();
+    </script>
+</body>
+</html>

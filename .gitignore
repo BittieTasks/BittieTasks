@@ -4,10 +4,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Production build
+# Next.js
 .next/
 out/
-dist/
 build/
 
 # Environment variables
@@ -17,39 +16,35 @@ build/
 .env.test.local
 .env.production.local
 
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
 # Logs
 *.log
+logs/
 
 # Runtime data
-pids
+pids/
 *.pid
 *.seed
 *.pid.lock
 
 # Coverage directory used by tools like istanbul
 coverage/
-*.lcov
-
-# nyc test coverage
-.nyc_output
 
 # Dependency directories
 jspm_packages/
 
-# TypeScript cache
-*.tsbuildinfo
-
 # Optional npm cache directory
 .npm
-
-# Optional eslint cache
-.eslintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
 
 # Optional REPL history
 .node_repl_history
@@ -64,107 +59,33 @@ jspm_packages/
 .cache
 .parcel-cache
 
-# Next.js build output
-.next
-
-# Nuxt.js build / generate output
-.nuxt
-dist
-
-# Storybook build outputs
-.out
-.storybook-out
-
 # Temporary folders
 tmp/
 temp/
 
 # Editor directories and files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.backup
+*.bak
+
+# Drizzle
+drizzle/
 
 # Replit specific
 .replit
-.env
-.vercel
-
-# Deployment markers
-.deployment-trigger
-.vercel-deploy-marker
-deployment-status.txt
-force-deploy.txt
-
-# Documentation files (keep main README)
-APPLICATION_CHECKLIST.md
-AUTHENTICATION_*.md
-COMPREHENSIVE_*.md
-COPY_THESE_VALUES.md
-CREATE_TOKEN_NOW.md
-DATABASE_SETUP_GUIDE.md
-DEBUG_*.md
-DEBUG_*.js
-DEPLOYMENT_*.md
-DEPLOY_*.md
-DESIGN_*.md
-DEVELOPMENT_*.md
-EMAIL_*.md
-ENTER_*.md
-ENVIRONMENT_*.md
-FINAL_*.md
-FIND_*.md
-FIX_*.md
-FORCE_*.md
-GET_*.md
-GITHUB_*.md
-GIT_*.md
-GRANT_*.md
-INTEGRATION_*.md
-MANUAL_*.md
-MOBILE_*.md
-MONETIZATION_*.md
-OPTIMIZATION_*.md
-OPTION_*.md
-PERMANENT_*.md
-PLATFORM_SPONSORED_TASKS.md
-PUSH_*.md
-QUICK_*.md
-RAILWAY_*.md
-SECURITY_*.md
-SENDGRID_*.md
-SIMPLE_*.md
-SUPABASE_*.md
-TASK_*.md
-TEAL_*.md
-TEST_*.md
-VERCEL_*.md
-WOMENSNET_*.md
-
-# Test files
-TEST_*.html
-test-*.html
-
-# Build scripts
-build.sh
-deploy.sh
-
-# Docker
-Dockerfile
-.dockerignore
-
-# Netlify
-netlify.toml
-
-# Attached assets (screenshots, etc)
-attached_assets/
+replit.nix
+.upm/

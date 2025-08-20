@@ -1,0 +1,9 @@
+schemaname,tablename,policyname,permissive,roles,cmd,qual,with_check
+public,tasks,Tasks are publicly viewable,PERMISSIVE,{public},SELECT,true,null
+public,tasks,Users can create tasks as creator,PERMISSIVE,{public},INSERT,null,(( SELECT auth.uid() AS uid) = creator_id)
+public,tasks,Users can delete their own tasks,PERMISSIVE,{public},DELETE,(( SELECT auth.uid() AS uid) = creator_id),null
+public,tasks,Users can update their own tasks,PERMISSIVE,{public},UPDATE,(( SELECT auth.uid() AS uid) = creator_id),null
+public,users,Service role can create user profiles,PERMISSIVE,{service_role},INSERT,null,true
+public,users,Service role can update user profiles,PERMISSIVE,{service_role},UPDATE,true,true
+public,users,Users can update own profile,PERMISSIVE,{public},UPDATE,(( SELECT auth.uid() AS uid) = id),null
+public,users,Users can view own profile,PERMISSIVE,{public},SELECT,(( SELECT auth.uid() AS uid) = id),null
