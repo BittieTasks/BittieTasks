@@ -73,11 +73,18 @@ export default function DashboardPage() {
       
       // Get authentication token from manual auth system
       const manualSession = JSON.parse(localStorage.getItem('bittie_manual_session') || 'null')
+      console.log('Dashboard: Manual session check:', {
+        hasSession: !!manualSession,
+        hasAccessToken: !!manualSession?.access_token,
+        tokenLength: manualSession?.access_token?.length || 0,
+        userEmail: manualSession?.user?.email
+      })
+      
       if (!manualSession?.access_token) {
         throw new Error('No valid authentication - please sign in again')
       }
       
-      console.log('Dashboard: Using manual authentication token')
+      console.log('Dashboard: Using manual authentication token:', manualSession.access_token.substring(0, 30) + '...')
 
       const response = await fetch('/api/dashboard', {
         headers: {
@@ -85,17 +92,22 @@ export default function DashboardPage() {
         }
       })
       
-      console.log('Dashboard: API response status:', response.status)
+      console.log('Dashboard: API response:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
+      })
       
       if (!response.ok) {
         const errorText = await response.text()
-        console.log('Dashboard: API error response:', {
+        console.log('Dashboard: API error details:', {
           status: response.status,
           statusText: response.statusText,
           errorText: errorText,
-          headers: Object.fromEntries(response.headers.entries())
+          url: response.url
         })
-        throw new Error(`API returned ${response.status}: ${errorText}`)
+        throw new Error(`Dashboard API failed (${response.status}): ${errorText}`)
       }
 
 
