@@ -87,18 +87,18 @@ export default function StartTaskPage() {
 
     } catch (error: any) {
       console.error('Application error:', error)
-      const errorData = await response?.json?.()
       
-      if (response?.status === 429) {
+      // Parse error message to check for rate limiting
+      if (error.message?.includes('429') || error.message?.toLowerCase().includes('daily limit')) {
         toast({
           title: "Daily Limit Reached",
-          description: errorData.details || "This task has reached its daily limit. Try again tomorrow!",
+          description: "This task has reached its daily limit. Try again tomorrow!",
           variant: "destructive",
         })
       } else {
         toast({
           title: "Application Failed",
-          description: errorData?.details || error.message || "Failed to start task. Please try again.",
+          description: error.message || "Failed to start task. Please try again.",
           variant: "destructive",
         })
       }
