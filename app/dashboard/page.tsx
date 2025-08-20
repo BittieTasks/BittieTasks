@@ -1,71 +1,27 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/components/auth/AuthProvider'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { CheckCircle, Clock, DollarSign, Calendar, ArrowRight, TrendingUp } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
-
-interface TaskParticipant {
-  id: string
-  task_id: string
-  status: string
-  joined_at: string
-  completed_at?: string
-  deadline?: string
-  task: {
-    id: string
-    title: string
-    category: string
-    payout: number
-    time_estimate: string
-    difficulty: string
-  }
-}
-
-interface Transaction {
-  id: string
-  amount: number
-  fee_amount: number
-  gross_amount: number
-  processed_at: string
-  description: string
-  status: string
-}
 
 export default function DashboardPage() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth()
+  // This page should use the unified app router with sidebar navigation
+  // Redirect to use the proper navigation system
   const router = useRouter()
-  const { toast } = useToast()
-  const [activeTasks, setActiveTasks] = useState<TaskParticipant[]>([])
-  const [completedTasks, setCompletedTasks] = useState<TaskParticipant[]>([])
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [stats, setStats] = useState({
-    totalEarnings: 0,
-    tasksCompleted: 0,
-    activeTasks: 0,
-    avgEarning: 0
-  })
-  const [loading, setLoading] = useState(true)
-
+  
   useEffect(() => {
-    // Wait for auth to load before redirecting
-    if (!authLoading && !isAuthenticated && !user) {
-      console.log('Dashboard: Redirecting unauthenticated user to auth page')
-      router.push('/auth?redirect=/dashboard')
-      return
-    }
-    
-    // Only fetch data if we have a confirmed authenticated user
-    if (!authLoading && isAuthenticated && user) {
-      fetchDashboardData()
-    }
-  }, [isAuthenticated, user, authLoading, router])
+    // Redirect to use the unified app with sidebar navigation
+    router.replace('/dashboard-app')
+  }, [router])
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading dashboard with navigation...</p>
+      </div>
+    </div>
+  )
+}
 
   const fetchDashboardData = async () => {
     try {
