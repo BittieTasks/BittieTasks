@@ -1,4 +1,4 @@
--- BittieTasks Database Setup SQL
+-- BittieTasks Database Setup SQL (FIXED VERSION)
 -- Run these commands in Supabase SQL Editor
 
 -- 1. Create Users table
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 3. Create Task Applications table
+-- 3. Create Task Applications table (without foreign key initially)
 CREATE TABLE IF NOT EXISTS task_applications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   task_id VARCHAR(50), -- Will add foreign key after tasks table exists
@@ -84,14 +84,29 @@ CREATE TABLE IF NOT EXISTS transactions (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 6. Enable Row Level Security (RLS)
+-- 6. Insert everyday tasks BEFORE adding foreign key constraint
+INSERT INTO tasks (id, title, description, category, payout, location, created_at) VALUES
+('platform-001', 'Organize and fold laundry', 'Sort, fold, and organize clean laundry neatly', 'solo', 12.00, 'Nationwide', NOW()),
+('platform-002', 'Wash and organize dishes', 'Clean dishes, utensils, and organize kitchen', 'solo', 8.00, 'Nationwide', NOW()),
+('platform-003', 'Complete 30-minute workout', 'Exercise routine: yoga, walking, or gym workout', 'solo', 15.00, 'Nationwide', NOW()),
+('platform-004', 'Grocery shopping trip', 'Complete grocery shopping with receipt verification', 'solo', 15.00, 'Nationwide', NOW()),
+('platform-005', 'Organize living space', 'Declutter and organize room or living area', 'solo', 10.00, 'Nationwide', NOW())
+ON CONFLICT (id) DO UPDATE SET
+  updated_at = NOW();
+
+-- 7. NOW add the foreign key constraint after tasks exist
+ALTER TABLE task_applications 
+ADD CONSTRAINT task_applications_task_id_fkey 
+FOREIGN KEY (task_id) REFERENCES tasks(id);
+
+-- 8. Enable Row Level Security (RLS)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 
--- 7. Create RLS Policies
+-- 9. Create RLS Policies
 
 -- Users can view and update their own profile
 CREATE POLICY "Users can view own profile" ON users
@@ -141,12 +156,12 @@ CREATE POLICY "Users can view own transactions" ON transactions
 CREATE POLICY "System can create transactions" ON transactions
   FOR INSERT WITH CHECK (true);
 
--- 8. Create Storage Bucket for task photos
+-- 10. Create Storage Bucket for task photos
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('task-photos', 'task-photos', true)
 ON CONFLICT (id) DO NOTHING;
 
--- 9. Create Storage Policy for task photos
+-- 11. Create Storage Policy for task photos
 CREATE POLICY "Anyone can view task photos" ON storage.objects
   FOR SELECT USING (bucket_id = 'task-photos');
 
@@ -156,7 +171,7 @@ CREATE POLICY "Authenticated users can upload task photos" ON storage.objects
     auth.role() = 'authenticated'
   );
 
--- 10. Create indexes for better performance
+-- 12. Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_tasks_category ON tasks(category);
 CREATE INDEX IF NOT EXISTS idx_tasks_location ON tasks(zip_code, city, state);
 CREATE INDEX IF NOT EXISTS idx_task_applications_user ON task_applications(user_id);
@@ -165,17 +180,7 @@ CREATE INDEX IF NOT EXISTS idx_task_applications_status ON task_applications(sta
 CREATE INDEX IF NOT EXISTS idx_transactions_user ON transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status);
 
--- 11. Insert everyday tasks (platform tasks)
-INSERT INTO tasks (id, title, description, category, payout, location, created_at) VALUES
-('platform-001', 'Organize and fold laundry', 'Sort, fold, and organize clean laundry neatly', 'solo', 12.00, 'Nationwide', NOW()),
-('platform-002', 'Wash and organize dishes', 'Clean dishes, utensils, and organize kitchen', 'solo', 8.00, 'Nationwide', NOW()),
-('platform-003', 'Complete 30-minute workout', 'Exercise routine: yoga, walking, or gym workout', 'solo', 15.00, 'Nationwide', NOW()),
-('platform-004', 'Grocery shopping trip', 'Complete grocery shopping with receipt verification', 'solo', 15.00, 'Nationwide', NOW()),
-('platform-005', 'Organize living space', 'Declutter and organize room or living area', 'solo', 10.00, 'Nationwide', NOW())
-ON CONFLICT (id) DO UPDATE SET
-  updated_at = NOW();
-
--- 12. Create function to update updated_at timestamps
+-- 13. Create function to update updated_at timestamps
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -184,7 +189,7 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- 13. Create triggers for updated_at
+-- 14. Create triggers for updated_at
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -193,11 +198,6 @@ CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON tasks
 
 CREATE TRIGGER update_task_applications_updated_at BEFORE UPDATE ON task_applications
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- 14. Add foreign key constraints after tables are created
-ALTER TABLE task_applications 
-ADD CONSTRAINT task_applications_task_id_fkey 
-FOREIGN KEY (task_id) REFERENCES tasks(id);
 
 -- ✅ Database setup complete!
 -- Your BittieTasks database is now ready with:
@@ -209,3 +209,4 @@ FOREIGN KEY (task_id) REFERENCES tasks(id);
 -- - Storage bucket for photos
 -- - Performance indexes
 -- - Everyday platform tasks loaded
+-- - FIXED: No more foreign key type mismatch errors!
