@@ -148,17 +148,17 @@ export class ManualAuthManager {
       })
       
       if (error) {
-        console.log('ManualAuth: Token refresh failed:', error.message)
+        console.error('ManualAuth: Token refresh failed:', error)
         this.clearSession()
         return null
       }
       
       if (data.session) {
         this.saveSession(data.session)
-        return data.session
+        return this.getStoredSession()
       }
       
-      return null
+      return session
     } catch (error) {
       console.error('ManualAuth: Token refresh error:', error)
       this.clearSession()
