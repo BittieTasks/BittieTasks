@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useAuth } from '@/components/auth/AuthProvider'
+import { useAuth } from '@/components/auth/SimpleAuthProvider'
 import AuthenticatedApp from '@/components/AuthenticatedApp'
 
 type AppSection = 'dashboard' | 'solo' | 'community' | 'corporate' | 'barter' | 'profile' | 'settings'

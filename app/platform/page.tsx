@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '../../components/auth/AuthProvider'
+import { useAuth } from '../../components/auth/SimpleAuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -121,7 +121,7 @@ const platformTasks = [
 ]
 
 export default function PlatformTasksPage() {
-  const { user, isAuthenticated, isVerified } = useAuth()
+  const { user, isAuthenticated, loading } = useAuth()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -131,10 +131,10 @@ export default function PlatformTasksPage() {
   }, [])
 
   useEffect(() => {
-    if (mounted && !isAuthenticated) {
+    if (mounted && !loading && !isAuthenticated) {
       router.push('/auth')
     }
-  }, [mounted, isAuthenticated, router])
+  }, [mounted, loading, isAuthenticated, router])
 
   if (!mounted) return null
   if (!isAuthenticated) return null
@@ -203,19 +203,17 @@ export default function PlatformTasksPage() {
           </div>
         </div>
 
-        {/* Verification Notice */}
-        {!isVerified && (
-          <Card className="mb-6 border-yellow-200 bg-yellow-50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <Award className="h-5 w-5 text-yellow-600" />
-                <p className="text-yellow-800">
-                  <strong>Email verification required</strong> to complete platform tasks and receive payments.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Platform Notice */}
+        <Card className="mb-6 border-blue-200 bg-blue-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Award className="h-5 w-5 text-blue-600" />
+              <p className="text-blue-800">
+                <strong>Platform-funded tasks</strong> are paid directly by BittieTasks for immediate earnings.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -331,9 +329,8 @@ export default function PlatformTasksPage() {
                 <Button
                   className="w-full"
                   onClick={() => startTask(task.id)}
-                  disabled={!isVerified}
                 >
-                  {!isVerified ? 'Verify Email to Start' : 'Start Task'}
+                  Start Task
                 </Button>
               </CardContent>
             </Card>

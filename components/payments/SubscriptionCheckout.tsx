@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ArrowLeft, CreditCard, CheckCircle, AlertCircle } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from @/app/hooks/use-toast'
 
 interface SubscriptionCheckoutProps {
   planId: string

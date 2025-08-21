@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/components/auth/AuthProvider'
-import { useToast } from '@/hooks/use-toast'
+import { useAuth } from '@/components/auth/SimpleAuthProvider'
+import { useToast } from @/app/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { 
   Dialog, 

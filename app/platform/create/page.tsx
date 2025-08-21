@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '../../../components/auth/AuthProvider'
+import { useAuth } from '../../../components/auth/SimpleAuthProvider'
 import { supabase } from '../../../lib/supabase'
 import CleanLayout from '../../../components/CleanLayout'
 import { Button } from '../../../components/ui/button'
@@ -11,7 +11,7 @@ import { Input } from '../../../components/ui/input'
 import { Textarea } from '../../../components/ui/textarea'
 import { Label } from '../../../components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select'
-import { useToast } from '../../../hooks/use-toast'
+import { useToast } from '../@/app/hooks/use-toast'
 import { ArrowLeft, Coins, MapPin, Clock, Users } from 'lucide-react'
 
 interface CreateTaskForm {

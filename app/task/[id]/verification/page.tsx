@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PhotoVerification } from '@/components/verification/PhotoVerification'
 import { VerificationStatus } from '@/components/verification/VerificationStatus'
-import { useAuth } from '@/components/auth/AuthProvider'
+import { useAuth } from '@/components/auth/SimpleAuthProvider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 

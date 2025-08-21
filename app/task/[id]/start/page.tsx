@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useAuth } from '@/components/auth/AuthProvider'
+import { useAuth } from '@/components/auth/SimpleAuthProvider'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, Clock, DollarSign, ArrowRight } from 'lucide-react'
 import { everydayTasks } from '@/lib/everydayTasks'
 import { SoloTaskVerification } from '@/components/SoloTaskVerification'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from @/app/hooks/use-toast'
 
 export default function StartTaskPage() {
   const params = useParams()

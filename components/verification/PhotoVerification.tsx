@@ -7,8 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { useToast } from '@/hooks/use-toast'
-import { useAuth } from '@/components/auth/AuthProvider'
+import { useToast } from @/app/hooks/use-toast'
+import { useAuth } from '@/components/auth/SimpleAuthProvider'
 
 interface PhotoVerificationProps {
   taskId: string

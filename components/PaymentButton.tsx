@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
-import { useToast } from '../hooks/use-toast';
+import { useToast } from '@/app/hooks/use-toast';
 import { Coins } from 'lucide-react';
 
 interface PaymentButtonProps {

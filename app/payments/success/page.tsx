@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, ArrowRight, DollarSign, Calendar, MapPin } from 'lucide-react'
-import { useAuth } from '@/components/auth/AuthProvider'
+import { useAuth } from '@/components/auth/SimpleAuthProvider'
 import { formatCurrency } from '@/lib/fee-calculator'
 
 interface PaymentDetails {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/components/auth/AuthProvider'
+import { useAuth } from '@/components/auth/SimpleAuthProvider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -11,7 +11,7 @@ import {
   CheckCircle, AlertTriangle, Clock, Eye, Bot, User, Star,
   Search, Filter, ChevronDown, ArrowRight 
 } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from @/app/hooks/use-toast'
 
 interface VerificationData {
   id: string

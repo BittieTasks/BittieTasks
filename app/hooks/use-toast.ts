@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode } fr
 
 type ToastVariant = 'default' | 'destructive'
 
-interface Toast {
+export interface Toast {
   id: string
   title?: string
   description?: string

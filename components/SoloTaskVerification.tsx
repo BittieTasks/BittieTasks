@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { useAuth } from '@/components/auth/AuthProvider'
-import { useToast } from '@/hooks/use-toast'
+import { useAuth } from '@/components/auth/SimpleAuthProvider'
+import { useToast } from @/app/hooks/use-toast'
 
 interface SoloTaskVerificationProps {
   task: {

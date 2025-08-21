@@ -5,9 +5,9 @@ import { Clock, MapPin, Coins, Users, Star, ChevronRight, CheckCircle } from 'lu
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { useAuth } from '@/components/auth/AuthProvider'
+import { useAuth } from '@/components/auth/SimpleAuthProvider'
 import { useRouter } from 'next/navigation'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from @/app/hooks/use-toast'
 
 interface SoloTaskCardProps {
   task: {
