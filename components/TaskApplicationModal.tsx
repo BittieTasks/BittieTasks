@@ -130,9 +130,9 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
   const handleApply = async () => {
     setLoading(true)
     try {
-      // Use the unified auth system from ManualAuthManager
-      const { ManualAuthManager } = await import('@/lib/manual-auth')
-      const accessToken = ManualAuthManager.getAccessToken()
+      // Use the unified auth system
+      const { UnifiedAuth } = await import('@/lib/unified-auth')
+      const accessToken = await UnifiedAuth.getAccessToken()
       
       let headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -217,9 +217,9 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
 
     setLoading(true)
     try {
-      // Use the unified auth system from ManualAuthManager
-      const { ManualAuthManager } = await import('@/lib/manual-auth')
-      const accessToken = ManualAuthManager.getAccessToken()
+      // Use the unified auth system
+      const { UnifiedAuth } = await import('@/lib/unified-auth')
+      const accessToken = await UnifiedAuth.getAccessToken()
       
       let headers: Record<string, string> = {
         'Content-Type': 'application/json',

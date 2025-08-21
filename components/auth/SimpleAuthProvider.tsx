@@ -1,15 +1,16 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { SimpleAuth } from '@/lib/simple-auth'
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { UnifiedAuth } from '@/lib/unified-auth'
 
 interface AuthContextType {
   user: any | null
   loading: boolean
   isAuthenticated: boolean
-  signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string, userData?: any) => Promise<void>
+  signIn: (email: string, password: string) => Promise<{ success: boolean; needsEmailConfirmation?: boolean }>
+  signUp: (email: string, password: string, userData?: any) => Promise<{ success: boolean; needsEmailConfirmation?: boolean }>
   signOut: () => Promise<void>
+  refreshAuth: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -30,85 +31,124 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    // Check for existing session on mount
-    const checkAuth = () => {
-      try {
-        const session = SimpleAuth.getSession()
-        if (session) {
-          setUser(session.user)
-          console.log('SimpleAuth: Found existing session for:', session.user?.email)
-        } else {
-          console.log('SimpleAuth: No existing session found')
-        }
-      } catch (error) {
-        console.error('SimpleAuth: Error checking session:', error)
-      } finally {
-        setLoading(false)
+  // Initialize auth state
+  const initializeAuth = useCallback(async () => {
+    try {
+      console.log('UnifiedAuthProvider: Initializing authentication...')
+      const session = await UnifiedAuth.getSession()
+      
+      if (session?.user) {
+        setUser(session.user)
+        console.log('UnifiedAuthProvider: User authenticated:', session.user.email)
+      } else {
+        setUser(null)
+        console.log('UnifiedAuthProvider: No authenticated user found')
       }
+    } catch (error) {
+      console.error('UnifiedAuthProvider: Error initializing auth:', error)
+      setUser(null)
+    } finally {
+      setLoading(false)
     }
-
-    // Add delay to prevent conflicts with other Supabase instances
-    setTimeout(checkAuth, 100)
   }, [])
+
+  // Set up auth state listener
+  useEffect(() => {
+    console.log('UnifiedAuthProvider: Setting up auth state monitoring...')
+    
+    // Initialize auth on mount
+    initializeAuth()
+
+    // Set up auth state listener
+    const { data: { subscription } } = UnifiedAuth.onAuthStateChange((authUser) => {
+      console.log('UnifiedAuthProvider: Auth state changed:', authUser?.email || 'signed out')
+      setUser(authUser)
+      setLoading(false)
+    })
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription?.unsubscribe()
+    }
+  }, [initializeAuth])
 
   const signIn = async (email: string, password: string) => {
     try {
-      const result = await SimpleAuth.signIn(email, password)
+      console.log('UnifiedAuthProvider: Signing in user:', email)
+      setLoading(true)
+      
+      const result = await UnifiedAuth.signIn(email, password)
       setUser(result.user)
-      console.log('SimpleAuth: Sign in successful')
-    } catch (error) {
-      console.error('SimpleAuth: Sign in failed:', error)
-      throw error
+      
+      console.log('UnifiedAuthProvider: Sign in successful')
+      return { 
+        success: true, 
+        needsEmailConfirmation: result.needsEmailConfirmation 
+      }
+    } catch (error: any) {
+      console.error('UnifiedAuthProvider: Sign in failed:', error.message)
+      throw new Error(error.message || 'Sign in failed')
+    } finally {
+      setLoading(false)
     }
   }
 
   const signUp = async (email: string, password: string, userData?: any) => {
     try {
-      // Use the existing signup API endpoint
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          password,
-          firstName: userData?.firstName || '',
-          lastName: userData?.lastName || '',
-          phoneNumber: userData?.phoneNumber || null,
-        }),
-      })
-
-      const result = await response.json()
+      console.log('UnifiedAuthProvider: Signing up user:', email)
+      setLoading(true)
       
-      if (!response.ok) {
-        throw new Error(result.message || result.error || 'Signup failed')
+      const result = await UnifiedAuth.signUp(email, password, userData)
+      
+      // Only set user if we have a session (immediate confirmation)
+      if (result.session) {
+        setUser(result.user)
       }
       
-      console.log('SimpleAuth: Signup successful:', result)
-    } catch (error) {
-      console.error('SimpleAuth: Signup failed:', error)
-      throw error
+      console.log('UnifiedAuthProvider: Sign up successful')
+      return { 
+        success: true, 
+        needsEmailConfirmation: result.needsEmailConfirmation 
+      }
+    } catch (error: any) {
+      console.error('UnifiedAuthProvider: Sign up failed:', error.message)
+      throw new Error(error.message || 'Sign up failed')
+    } finally {
+      setLoading(false)
     }
   }
 
   const signOut = async () => {
     try {
-      await SimpleAuth.signOut()
+      console.log('UnifiedAuthProvider: Signing out user')
+      setLoading(true)
+      await UnifiedAuth.signOut()
       setUser(null)
-      console.log('SimpleAuth: Sign out completed')
-      
-      // Redirect to home page
-      setTimeout(() => {
-        window.location.href = '/'
-      }, 100)
     } catch (error) {
-      console.error('SimpleAuth: Sign out error:', error)
+      console.error('UnifiedAuthProvider: Sign out error:', error)
       setUser(null)
-      window.location.href = '/'
+    } finally {
+      setLoading(false)
     }
   }
 
-  const isAuthenticated = !!user && !!user.email
+  const refreshAuth = async () => {
+    try {
+      console.log('UnifiedAuthProvider: Refreshing authentication state')
+      await initializeAuth()
+    } catch (error) {
+      console.error('UnifiedAuthProvider: Error refreshing auth:', error)
+    }
+  }
+
+  const isAuthenticated = !!user?.id && !!user?.email
+
+  console.log('UnifiedAuthProvider: Current state:', {
+    hasUser: !!user,
+    userEmail: user?.email,
+    isAuthenticated,
+    loading
+  })
 
   return (
     <AuthContext.Provider value={{
@@ -118,6 +158,7 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       signIn,
       signUp,
       signOut,
+      refreshAuth,
     }}>
       {children}
     </AuthContext.Provider>
