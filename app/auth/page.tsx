@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '../../hooks/use-toast'
-import { useAuth } from '../../components/auth/AuthProvider'
+import { useAuth } from '../../components/auth/SimpleAuthProvider'
 import { Loader2, Mail, Lock, User, Eye, EyeOff } from 'lucide-react'
 
 export default function AuthPage() {

@@ -112,59 +112,73 @@ export function AuthProvider({ children }: AuthProviderProps) {
       clearTimeout(timeout)
     })
 
-    // Still listen to Supabase events for new sign-ins
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('AuthProvider: Auth state change:', {
-          event,
-          hasSession: !!session,
-          userEmail: session?.user?.email
-        })
-        
-        if (event === 'SIGNED_IN' && session?.user) {
-          console.log('AuthProvider: New sign-in detected, saving manually')
-          ManualAuthManager.saveSession(session)
-          setSession(session)
-          setUser(session.user)
-          setLoading(false)
+    // Listen to Supabase events for new sign-ins with error handling
+    let subscription: any = null
+    try {
+      const authListener = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          console.log('AuthProvider: Auth state change:', {
+            event,
+            hasSession: !!session,
+            userEmail: session?.user?.email
+          })
           
-          // Create user profile if needed
-          try {
-            await createUserProfile(session.user)
-          } catch (error) {
-            console.error('Error creating user profile:', error)
+          if (event === 'SIGNED_IN' && session?.user) {
+            console.log('AuthProvider: New sign-in detected, saving manually')
+            try {
+              ManualAuthManager.saveSession(session)
+              setSession(session)
+              setUser(session.user)
+              setLoading(false)
+              
+              // Create user profile if needed
+              try {
+                await createUserProfile(session.user)
+              } catch (error) {
+                console.error('Error creating user profile:', error)
+              }
+              
+              // Redirect to dashboard regardless of email confirmation status
+              const currentPath = window.location.pathname
+              if (!currentPath.startsWith('/subscribe') && 
+                  !currentPath.startsWith('/subscription/') &&
+                  !currentPath.startsWith('/dashboard') &&
+                  !currentPath.startsWith('/auth/callback')) {
+                console.log('Redirecting to dashboard from:', currentPath)
+                
+                setTimeout(() => {
+                  console.log('Executing redirect to dashboard...')
+                  window.location.href = '/dashboard'
+                }, 500)
+              } else {
+                console.log('Staying on current page:', currentPath)
+              }
+            } catch (saveError) {
+              console.error('Error saving session manually:', saveError)
+            }
           }
           
-          // Redirect to dashboard regardless of email confirmation status
-          // (email verification is handled separately)
-          const currentPath = window.location.pathname
-          if (!currentPath.startsWith('/subscribe') && 
-              !currentPath.startsWith('/subscription/') &&
-              !currentPath.startsWith('/dashboard') &&
-              !currentPath.startsWith('/auth/callback')) {
-            console.log('Redirecting to dashboard from:', currentPath)
-            
-            // Use shorter timeout and more reliable redirect
-            setTimeout(() => {
-              console.log('Executing redirect to dashboard...')
-              window.location.href = '/dashboard'
-            }, 500)
-          } else {
-            console.log('Staying on current page:', currentPath)
+          // Handle sign out
+          if (event === 'SIGNED_OUT') {
+            console.log('User signed out')
+            setUser(null)
+            setSession(null)
           }
         }
-        
-        // Handle sign out
-        if (event === 'SIGNED_OUT') {
-          console.log('User signed out')
-          setUser(null)
-          setSession(null)
-        }
-      }
-    )
+      )
+      subscription = authListener?.data?.subscription
+    } catch (authError) {
+      console.error('AuthProvider: Error setting up auth listener:', authError)
+    }
     
     return () => {
-      subscription.unsubscribe()
+      try {
+        if (subscription && typeof subscription.unsubscribe === 'function') {
+          subscription.unsubscribe()
+        }
+      } catch (cleanupError) {
+        console.log('AuthProvider: Cleanup error (expected):', cleanupError)
+      }
     }
   }, [mounted])
 
@@ -204,41 +218,37 @@ export function AuthProvider({ children }: AuthProviderProps) {
     console.log('AuthProvider signIn called with:', email)
     
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      // Use ManualAuthManager for more reliable sign-in
+      const data = await ManualAuthManager.signIn(email, password)
       
-      console.log('Sign in result:', { 
+      console.log('ManualAuth sign in result:', { 
         hasUser: !!data.user, 
         hasSession: !!data.session,
         hasAccessToken: !!data.session?.access_token,
         hasRefreshToken: !!data.session?.refresh_token,
-        tokenLength: data.session?.access_token?.length || 0,
-        error: error?.message 
+        userEmail: data.user?.email
       })
       
-      if (error) {
-        console.error('Sign in error details:', error)
-        
-        if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
-          throw new Error('Please verify your email before signing in. Check your email for the verification link.')
-        }
-        
-        throw new Error(error.message)
+      if (!data.session || !data.user) {
+        throw new Error('No session or user data returned from sign in')
       }
+
+      // Update AuthProvider state
+      setSession(data.session)
+      setUser(data.user)
+      setLoading(false)
+
+      console.log('Sign in successful, AuthProvider state updated')
       
-      // Manually save session if it exists but isn't persisting
-      if (data.session && !localStorage.getItem('sb-ttgbotlcbzmmyqawnjpj-auth-token')) {
-        console.log('AuthProvider: Manually persisting session to localStorage')
-        localStorage.setItem('sb-ttgbotlcbzmmyqawnjpj-auth-token', JSON.stringify(data.session))
-      }
-      
-      console.log('Sign in successful, user:', data.user?.email)
-      
+      return data
     } catch (error: any) {
-      console.error('Sign in failed:', error)
-      throw new Error(error.message || 'Sign in failed. Please try again.')
+      console.error('AuthProvider signIn error:', error)
+      
+      if (error.message?.includes('Email not confirmed') || error.message?.includes('email_not_confirmed')) {
+        throw new Error('Please verify your email before signing in. Check your email for the verification link.')
+      }
+      
+      throw error
     }
   }
 
@@ -277,39 +287,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
     console.log('AuthProvider signOut called')
     
     try {
-      // Clear manual auth session first
-      ManualAuthManager.clearSession()
-      console.log('Manual session cleared')
+      // Use ManualAuthManager for consistent sign out
+      await ManualAuthManager.signOut()
       
-      // Clear local state immediately  
+      // Clear AuthProvider state immediately
       setUser(null)
       setSession(null)
       setLoading(false)
       
-      // Try to clear Supabase session (don't let this block logout)
-      try {
-        const { error } = await supabase.auth.signOut()
-        if (error) {
-          console.warn('Supabase sign out error (continuing anyway):', error)
-        } else {
-          console.log('Supabase sign out successful')
-        }
-      } catch (supabaseError) {
-        console.warn('Supabase signOut failed (continuing anyway):', supabaseError)
-      }
+      console.log('Sign out completed successfully')
       
-      // Force redirect to home page
-      console.log('Redirecting to home page after logout')
-      window.location.href = '/'
+      // Force page redirect to clear any remaining state
+      setTimeout(() => {
+        window.location.href = '/'
+      }, 100)
       
-    } catch (error: any) {
-      console.error('Sign out failed:', error)
-      // Even on error, clear everything and redirect
-      ManualAuthManager.clearSession()
+    } catch (error) {
+      console.log('Sign out completed with errors (expected):', error)
+      
+      // Even if there are errors, ensure state is cleared
       setUser(null)
       setSession(null)
       setLoading(false)
-      window.location.href = '/'
+      
+      // Force redirect regardless
+      setTimeout(() => {
+        window.location.href = '/'
+      }, 100)
     }
   }
 
