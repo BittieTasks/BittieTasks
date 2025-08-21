@@ -1,3 +1,4 @@
 {
+  "/api/solo-tasks/route": "app/api/solo-tasks/route.js",
   "/page": "app/page.js"
 }
