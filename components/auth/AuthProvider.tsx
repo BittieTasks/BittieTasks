@@ -84,7 +84,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setUser(refreshedSession.user)
           }
         } else {
-          console.log('AuthProvider: No manual session found - user not authenticated')
+          console.log('AuthProvider: No manual session found - checking localStorage debug...')
+          console.log('AuthProvider localStorage debug:', {
+            hasLocalStorage: typeof localStorage !== 'undefined',
+            sessionKey: 'bittie_manual_session',
+            rawValue: typeof localStorage !== 'undefined' ? localStorage.getItem('bittie_manual_session') : 'undefined'
+          })
           setSession(null)
           setUser(null)
           setLoading(false) // Stop loading immediately - no need to check Supabase

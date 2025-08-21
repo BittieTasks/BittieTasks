@@ -27,25 +27,46 @@ export class ManualAuthManager {
     console.log('ManualAuth: Session saved manually', {
       hasAccessToken: !!session.access_token,
       hasRefreshToken: !!session.refresh_token,
-      expiresAt: session.expires_at
+      expiresAt: session.expires_at,
+      userEmail: session.user?.email,
+      sessionKey: SESSION_KEY
     })
+    
+    // Verify the save worked
+    const verification = localStorage.getItem(SESSION_KEY)
+    console.log('ManualAuth: Save verification:', verification ? 'Success - data written to localStorage' : 'Failed - no data in localStorage')
   }
   
   // Get session from manual storage
   static getStoredSession(): StoredSession | null {
     try {
+      console.log('ManualAuth: Attempting to get stored session...')
       const stored = localStorage.getItem(SESSION_KEY)
-      if (!stored) return null
+      console.log('ManualAuth: Raw localStorage value:', stored ? 'Found session data' : 'No data found')
+      
+      if (!stored) {
+        console.log('ManualAuth: No stored session found in localStorage')
+        return null
+      }
       
       const session = JSON.parse(stored) as StoredSession
+      console.log('ManualAuth: Parsed session:', {
+        hasAccessToken: !!session.access_token,
+        hasUser: !!session.user,
+        userEmail: session.user?.email,
+        expiresAt: session.expires_at,
+        currentTime: Date.now() / 1000,
+        isExpired: Date.now() / 1000 > session.expires_at
+      })
       
       // Check if expired
       if (Date.now() / 1000 > session.expires_at) {
-        console.log('ManualAuth: Stored session expired')
+        console.log('ManualAuth: Stored session expired, clearing...')
         this.clearSession()
         return null
       }
       
+      console.log('ManualAuth: Valid session found, returning user data')
       return session
     } catch (err) {
       console.error('ManualAuth: Error getting stored session:', err)
