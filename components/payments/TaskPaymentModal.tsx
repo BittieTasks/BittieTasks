@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Coins, AlertCircle, CheckCircle, Clock } from 'lucide-react'
-import { useToast } from @/app/hooks/use-toast'
+import { useToast } from '@/app/hooks/use-toast'
 
 interface TaskPaymentModalProps {
   isOpen: boolean

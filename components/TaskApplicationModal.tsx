@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { useToast } from @/app/hooks/use-toast'
+import { useToast } from '@/app/hooks/use-toast'
 import { Clock, MapPin, Users, Coins, Camera, Upload } from 'lucide-react'
 
 interface Task {

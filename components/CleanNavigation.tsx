@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useAuth } from './auth/AuthProvider'
+import { useAuth } from '@/components/auth/SimpleAuthProvider'
 import { Button } from '@/components/ui/button'
 import { 
   Home, 

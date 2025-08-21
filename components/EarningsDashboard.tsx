@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
-import { useToast } from @/app/hooks/use-toast'
+import { useToast } from '@/app/hooks/use-toast'
 import { TaskPaymentModal } from './TaskPaymentModal'
 import {
   DollarSign,

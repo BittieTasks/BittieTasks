@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Mail, RefreshCw, ArrowLeft, CheckCircle } from 'lucide-react'
-import { useToast } from @/app/hooks/use-toast'
+import { useToast } from '@/app/hooks/use-toast'
 import Link from 'next/link'
 
 export default function EmailVerificationRequired() {
