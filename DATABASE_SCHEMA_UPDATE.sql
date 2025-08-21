@@ -44,7 +44,7 @@ ADD COLUMN IF NOT EXISTS approved_by VARCHAR(255),
 ADD COLUMN IF NOT EXISTS rejection_reason TEXT,
 ADD COLUMN IF NOT EXISTS flagged_reason TEXT,
 ADD COLUMN IF NOT EXISTS risk_score INTEGER DEFAULT 0,
-ADD COLUMN IF NOT EXISTS earning_potential DECIMAL(8,2),
+-- earning_potential already exists from rename above
 ADD COLUMN IF NOT EXISTS current_participants INTEGER DEFAULT 0,
 ADD COLUMN IF NOT EXISTS duration VARCHAR(100),
 ADD COLUMN IF NOT EXISTS difficulty VARCHAR(20) DEFAULT 'medium',
@@ -58,14 +58,29 @@ ADD COLUMN IF NOT EXISTS seeking TEXT,
 ADD COLUMN IF NOT EXISTS trade_type VARCHAR(50),
 ADD COLUMN IF NOT EXISTS tags TEXT[];
 
--- Rename columns to match schema expectations
-ALTER TABLE tasks RENAME COLUMN created_by TO old_created_by;
-ALTER TABLE tasks RENAME COLUMN creator_id TO created_by;
-ALTER TABLE tasks RENAME COLUMN payout TO earning_potential;
-ALTER TABLE tasks RENAME COLUMN max_applications TO max_participants;
-
--- Drop the old column
-ALTER TABLE tasks DROP COLUMN IF EXISTS old_created_by;
+-- Handle column renames safely
+DO $$
+BEGIN
+    -- Rename payout to earning_potential if payout exists
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'payout') THEN
+        ALTER TABLE tasks RENAME COLUMN payout TO earning_potential;
+    END IF;
+    
+    -- Rename max_applications to max_participants if it exists
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'max_applications') THEN
+        ALTER TABLE tasks RENAME COLUMN max_applications TO max_participants;
+    END IF;
+    
+    -- Handle created_by rename if needed
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'created_by' AND data_type = 'character varying') THEN
+        -- If created_by exists but is VARCHAR, we need to handle this differently
+        ALTER TABLE tasks ADD COLUMN IF NOT EXISTS creator_id UUID;
+        -- Copy data if possible, or set to NULL for now
+        UPDATE tasks SET creator_id = NULL WHERE creator_id IS NULL;
+        -- Add foreign key constraint
+        ALTER TABLE tasks ADD CONSTRAINT tasks_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES users(id);
+    END IF;
+END $$;
 
 -- Create additional required tables
 
