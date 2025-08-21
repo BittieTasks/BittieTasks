@@ -54,7 +54,7 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
 
   // Set up auth state listener
   useEffect(() => {
-    console.log('UnifiedAuthProvider: Setting up auth state monitoring...')
+    console.log('SimpleAuthProvider: Setting up auth state monitoring...')
     
     // Initialize auth on mount
     initializeAuth()
@@ -74,19 +74,19 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      console.log('UnifiedAuthProvider: Signing in user:', email)
+      console.log('SimpleAuthProvider: Signing in user:', email)
       setLoading(true)
       
       const result = await SimpleSupabaseAuth.signIn(email, password)
       setUser(result.user)
       
-      console.log('UnifiedAuthProvider: Sign in successful')
+      console.log('SimpleAuthProvider: Sign in successful')
       return { 
         success: true, 
         needsEmailConfirmation: result.needsEmailConfirmation 
       }
     } catch (error: any) {
-      console.error('UnifiedAuthProvider: Sign in failed:', error.message)
+      console.error('SimpleAuthProvider: Sign in failed:', error.message)
       throw new Error(error.message || 'Sign in failed')
     } finally {
       setLoading(false)
@@ -95,7 +95,7 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
 
   const signUp = async (email: string, password: string, userData?: any) => {
     try {
-      console.log('UnifiedAuthProvider: Signing up user:', email)
+      console.log('SimpleAuthProvider: Signing up user:', email)
       setLoading(true)
       
       const result = await SimpleSupabaseAuth.signUp(email, password, userData)
