@@ -105,13 +105,13 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
         setUser(result.user)
       }
       
-      console.log('UnifiedAuthProvider: Sign up successful')
+      console.log('SimpleAuthProvider: Sign up successful')
       return { 
         success: true, 
         needsEmailConfirmation: result.needsEmailConfirmation 
       }
     } catch (error: any) {
-      console.error('UnifiedAuthProvider: Sign up failed:', error.message)
+      console.error('SimpleAuthProvider: Sign up failed:', error.message)
       throw new Error(error.message || 'Sign up failed')
     } finally {
       setLoading(false)
@@ -120,12 +120,12 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
 
   const signOut = async () => {
     try {
-      console.log('UnifiedAuthProvider: Signing out user')
+      console.log('SimpleAuthProvider: Signing out user')
       setLoading(true)
       await SimpleSupabaseAuth.signOut()
       setUser(null)
     } catch (error) {
-      console.error('UnifiedAuthProvider: Sign out error:', error)
+      console.error('SimpleAuthProvider: Sign out error:', error)
       setUser(null)
     } finally {
       setLoading(false)
@@ -134,16 +134,16 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
 
   const refreshAuth = async () => {
     try {
-      console.log('UnifiedAuthProvider: Refreshing authentication state')
+      console.log('SimpleAuthProvider: Refreshing authentication state')
       await initializeAuth()
     } catch (error) {
-      console.error('UnifiedAuthProvider: Error refreshing auth:', error)
+      console.error('SimpleAuthProvider: Error refreshing auth:', error)
     }
   }
 
   const isAuthenticated = !!user?.id && !!user?.email
 
-  console.log('UnifiedAuthProvider: Current state:', {
+  console.log('SimpleAuthProvider: Current state:', {
     hasUser: !!user,
     userEmail: user?.email,
     isAuthenticated,
