@@ -1,0 +1,60 @@
+[16:46:57.252] Running build in Washington, D.C., USA (East) – iad1
+[16:46:57.252] Build machine configuration: 4 cores, 8 GB
+[16:46:57.274] Cloning github.com/BittieTasks/BittieTasks (Branch: main, Commit: f7098d5)
+[16:46:57.764] Cloning completed: 489.000ms
+[16:47:03.005] Restored build cache from previous deployment (7cKSZvgYgjhkTSY5C8yMF9t1zsAA)
+[16:47:04.015] Running "vercel build"
+[16:47:04.438] Vercel CLI 46.0.2
+[16:47:04.795] Running "install" command: `npm install`...
+[16:47:07.081] 
+[16:47:07.082] changed 1 package, and audited 748 packages in 2s
+[16:47:07.082] 
+[16:47:07.082] 187 packages are looking for funding
+[16:47:07.082]   run `npm fund` for details
+[16:47:07.105] 
+[16:47:07.105] 5 vulnerabilities (1 low, 4 moderate)
+[16:47:07.106] 
+[16:47:07.106] To address issues that do not require attention, run:
+[16:47:07.106]   npm audit fix
+[16:47:07.106] 
+[16:47:07.106] To address all issues (including breaking changes), run:
+[16:47:07.106]   npm audit fix --force
+[16:47:07.106] 
+[16:47:07.106] Run `npm audit` for details.
+[16:47:07.141] Detected Next.js version: 15.4.6
+[16:47:07.142] Running "npm run build"
+[16:47:07.264] 
+[16:47:07.264] > bittietasks@1.0.0 build
+[16:47:07.265] > next build
+[16:47:07.265] 
+[16:47:08.097]    ▲ Next.js 15.4.6
+[16:47:08.097]    - Environments: .env.local
+[16:47:08.097] 
+[16:47:08.307]    Creating an optimized production build ...
+[16:47:22.601] Failed to compile.
+[16:47:22.601] 
+[16:47:22.602] app/layout.tsx
+[16:47:22.602] An error occurred in `next/font`.
+[16:47:22.602] 
+[16:47:22.602] Error: Cannot find module 'autoprefixer'
+[16:47:22.602] Require stack:
+[16:47:22.602] - /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
+[16:47:22.602] - /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/index.js
+[16:47:22.602] - /vercel/path0/node_modules/next/dist/build/webpack/config/index.js
+[16:47:22.602] - /vercel/path0/node_modules/next/dist/build/webpack-config.js
+[16:47:22.602] - /vercel/path0/node_modules/next/dist/build/webpack-build/impl.js
+[16:47:22.603] - /vercel/path0/node_modules/next/dist/compiled/jest-worker/processChild.js
+[16:47:22.603]     at Function.<anonymous> (node:internal/modules/cjs/loader:1365:15)
+[16:47:22.603]     at /vercel/path0/node_modules/next/dist/server/require-hook.js:57:36
+[16:47:22.603]     at Function.resolve (node:internal/modules/helpers:145:19)
+[16:47:22.603]     at loadPlugin (/vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:53:32)
+[16:47:22.603]     at /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:56
+[16:47:22.603]     at Array.map (<anonymous>)
+[16:47:22.603]     at getPostCssPlugins (/vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:47)
+[16:47:22.603]     at async /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/index.js:125:36
+[16:47:22.603]     at async /vercel/path0/node_modules/next/dist/build/webpack/loaders/next-font-loader/index.js:94:33
+[16:47:22.603]     at async Span.traceAsyncFn (/vercel/path0/node_modules/next/dist/trace/trace.js:157:20)
+[16:47:22.603] 
+[16:47:22.609] 
+[16:47:22.609] > Build failed because of webpack errors
+[16:47:22.631] Error: Command "npm run build" exited with 1
