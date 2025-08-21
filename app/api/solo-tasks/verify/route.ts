@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { everydayTasks } from '@/lib/everydayTasks'
 import Stripe from 'stripe'
+import OpenAI from 'openai'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,6 +12,11 @@ const supabase = createClient(
 // Initialize Stripe with secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-07-30.basil'
+})
+
+// Initialize OpenAI for real AI verification
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!
 })
 
 export async function POST(request: NextRequest) {
@@ -53,13 +59,97 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid authentication' }, { status: 401 })
     }
 
-    // AI verification simulation
-    const aiVerification = {
-      confidence: 85, // Good confidence score
-      approved: true,
-      analysis: `Task "${task.title}" appears to be completed successfully based on submitted evidence.`,
-      payout_amount: task.payout,
-      net_payout: Math.round(task.payout * 0.97) // 3% platform fee
+    // Real AI verification using OpenAI Vision
+    let aiVerification
+    try {
+      console.log('Starting AI verification for task:', task.title)
+      
+      // Prepare the verification prompt based on task type
+      const verificationPrompt = getTaskVerificationPrompt(task.id, task.title)
+      
+      let visionAnalysis = null
+      
+      // If it's a photo (base64), use OpenAI Vision
+      if (afterPhoto.startsWith('data:image/')) {
+        console.log('Analyzing photo with OpenAI Vision')
+        
+        const visionResponse = await openai.chat.completions.create({
+          model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [
+            {
+              role: "system",
+              content: "You are a professional task verification AI. Analyze images to verify task completion with high accuracy. Be strict but fair in your assessment."
+            },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: verificationPrompt
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: afterPhoto
+                  }
+                }
+              ]
+            }
+          ],
+          max_tokens: 500,
+          response_format: { type: "json_object" }
+        })
+
+        visionAnalysis = JSON.parse(visionResponse.choices[0].message.content || '{}')
+      }
+      // If it's text description, use text analysis
+      else {
+        console.log('Analyzing text description with OpenAI')
+        
+        const textResponse = await openai.chat.completions.create({
+          model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [
+            {
+              role: "system",
+              content: "You are a professional task verification AI. Analyze text descriptions to verify task completion. Be strict but fair in your assessment."
+            },
+            {
+              role: "user",
+              content: `${verificationPrompt}\n\nUser's description: "${afterPhoto}"`
+            }
+          ],
+          max_tokens: 300,
+          response_format: { type: "json_object" }
+        })
+
+        visionAnalysis = JSON.parse(textResponse.choices[0].message.content || '{}')
+      }
+
+      // Process AI response
+      aiVerification = {
+        confidence: Math.round(visionAnalysis.confidence || 0),
+        approved: visionAnalysis.approved === true && (visionAnalysis.confidence || 0) >= 70,
+        analysis: visionAnalysis.analysis || 'Unable to verify task completion',
+        reasons: visionAnalysis.reasons || [],
+        payout_amount: task.payout,
+        net_payout: Math.round(task.payout * 0.97) // 3% platform fee
+      }
+
+      console.log('AI verification result:', aiVerification)
+
+    } catch (aiError: any) {
+      console.error('AI verification failed:', aiError)
+      
+      // Fallback to manual review if AI fails
+      aiVerification = {
+        confidence: 0,
+        approved: false,
+        analysis: `AI verification unavailable. Task "${task.title}" requires manual review.`,
+        reasons: ['AI service temporarily unavailable'],
+        payout_amount: task.payout,
+        net_payout: Math.round(task.payout * 0.97),
+        requires_manual_review: true
+      }
     }
 
     let paymentResult = null
@@ -128,11 +218,13 @@ export async function POST(request: NextRequest) {
         status: aiVerification.confidence < 70 ? 'manual_review_required' : 'failed',
         note: aiVerification.confidence < 70 ? 'Task needs manual review before payment' : 'Verification failed'
       },
-      message: paymentResult?.status === 'processing' 
+      message: aiVerification.approved && paymentResult?.status === 'processing' 
         ? `Verification successful! Payment of $${aiVerification.net_payout} is being processed and will arrive in 1-2 business days.`
-        : paymentResult?.status === 'failed'
+        : aiVerification.approved && paymentResult?.status === 'failed'
         ? `Verification successful! Payment processing encountered an issue: ${paymentError}`
-        : `Verification requires manual review. Payment will be processed after approval.`
+        : aiVerification.approved
+        ? `Verification successful! Payment will be processed shortly.`
+        : `Verification failed. ${aiVerification.analysis} Please resubmit with better evidence.`
     })
 
   } catch (error: any) {
@@ -143,4 +235,44 @@ export async function POST(request: NextRequest) {
       details: error.message
     }, { status: 500 })
   }
+}
+
+// Helper function to generate task-specific verification prompts
+function getTaskVerificationPrompt(taskId: string, taskTitle: string): string {
+  const prompts: Record<string, string> = {
+    'platform-001': `Verify if this image shows COMPLETED LAUNDRY TASK:
+Required evidence: Clean, folded, and organized clothing/linens
+Look for: Neatly folded clothes, organized dresser/closet, clean laundry basket
+Reject: Dirty clothes, unfolded items, messy piles, unrelated images
+Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
+
+    'platform-002': `Verify if this image shows COMPLETED DISHWASHING TASK:
+Required evidence: Clean dishes, organized kitchen, sparkling surfaces
+Look for: Clean dishes in drying rack/cupboard, clean sink, organized kitchen
+Reject: Dirty dishes, messy kitchen, food remnants, unrelated images
+Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
+
+    'platform-003': `Verify if this image shows COMPLETED EXERCISE/WORKOUT:
+Required evidence: Exercise activity, workout equipment, fitness poses
+Look for: Person exercising, yoga mat, gym equipment, workout clothing, fitness activity
+Reject: Just standing around, not exercising, unrelated images, games/puzzles
+Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
+
+    'platform-004': `Verify if this image shows COMPLETED GROCERY SHOPPING:
+Required evidence: Groceries, shopping bags, food items, shopping receipts
+Look for: Fresh groceries, shopping bags, organized food items, receipts
+Reject: Empty bags, non-food items, restaurant food, unrelated images
+Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
+
+    'platform-005': `Verify if this image shows COMPLETED ORGANIZATION TASK:
+Required evidence: Organized spaces, tidy rooms, before/after improvement
+Look for: Clean organized areas, sorted items, tidy spaces, decluttered rooms
+Reject: Messy areas, disorganized spaces, no visible improvement, unrelated images
+Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`
+  }
+
+  return prompts[taskId] || `Verify if this image shows completion of "${taskTitle}":
+Analyze the image for evidence that this specific task has been completed successfully.
+Look for relevant task completion indicators and reject unrelated content.
+Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`
 }
