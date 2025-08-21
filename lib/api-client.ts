@@ -1,6 +1,6 @@
 'use client'
 
-import { UnifiedAuth } from './unified-auth'
+import { SimpleSupabaseAuth } from './simple-supabase-auth'
 
 interface ApiResponse<T = any> {
   data?: T
@@ -22,7 +22,7 @@ class ApiClient {
     }
 
     try {
-      const token = await UnifiedAuth.getAccessToken()
+      const token = await SimpleSupabaseAuth.getAccessToken()
       if (token) {
         headers['Authorization'] = `Bearer ${token}`
       }

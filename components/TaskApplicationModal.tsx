@@ -130,9 +130,9 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
   const handleApply = async () => {
     setLoading(true)
     try {
-      // Use the unified auth system
-      const { UnifiedAuth } = await import('@/lib/unified-auth')
-      const accessToken = await UnifiedAuth.getAccessToken()
+      // Use the simplified auth system
+      const { SimpleSupabaseAuth } = await import('@/lib/simple-supabase-auth')
+      const accessToken = await SimpleSupabaseAuth.getAccessToken()
       
       let headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -217,9 +217,9 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
 
     setLoading(true)
     try {
-      // Use the unified auth system
-      const { UnifiedAuth } = await import('@/lib/unified-auth')
-      const accessToken = await UnifiedAuth.getAccessToken()
+      // Use the simplified auth system
+      const { SimpleSupabaseAuth } = await import('@/lib/simple-supabase-auth')
+      const accessToken = await SimpleSupabaseAuth.getAccessToken()
       
       let headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -227,7 +227,7 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
 
       if (accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`
-        console.log('Using unified auth system for verification')
+        console.log('Using simplified auth system for verification')
       } else {
         console.error('No access token available for verification')
         toast({

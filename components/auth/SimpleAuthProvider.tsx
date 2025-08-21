@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
-import { UnifiedAuth } from '@/lib/unified-auth'
+import { SimpleSupabaseAuth } from '@/lib/simple-supabase-auth'
 
 interface AuthContextType {
   user: any | null
@@ -34,18 +34,18 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
   // Initialize auth state
   const initializeAuth = useCallback(async () => {
     try {
-      console.log('UnifiedAuthProvider: Initializing authentication...')
-      const session = await UnifiedAuth.getSession()
+      console.log('SimpleAuthProvider: Initializing authentication...')
+      const user = await SimpleSupabaseAuth.getCurrentUser()
       
-      if (session?.user) {
-        setUser(session.user)
-        console.log('UnifiedAuthProvider: User authenticated:', session.user.email)
+      if (user) {
+        setUser(user)
+        console.log('SimpleAuthProvider: User authenticated:', user.email)
       } else {
         setUser(null)
-        console.log('UnifiedAuthProvider: No authenticated user found')
+        console.log('SimpleAuthProvider: No authenticated user found')
       }
     } catch (error) {
-      console.error('UnifiedAuthProvider: Error initializing auth:', error)
+      console.error('SimpleAuthProvider: Error initializing auth:', error)
       setUser(null)
     } finally {
       setLoading(false)
@@ -60,8 +60,8 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
     initializeAuth()
 
     // Set up auth state listener
-    const { data: { subscription } } = UnifiedAuth.onAuthStateChange((authUser) => {
-      console.log('UnifiedAuthProvider: Auth state changed:', authUser?.email || 'signed out')
+    const { data: { subscription } } = SimpleSupabaseAuth.onAuthStateChange((authUser) => {
+      console.log('SimpleAuthProvider: Auth state changed:', authUser?.email || 'signed out')
       setUser(authUser)
       setLoading(false)
     })
@@ -77,7 +77,7 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       console.log('UnifiedAuthProvider: Signing in user:', email)
       setLoading(true)
       
-      const result = await UnifiedAuth.signIn(email, password)
+      const result = await SimpleSupabaseAuth.signIn(email, password)
       setUser(result.user)
       
       console.log('UnifiedAuthProvider: Sign in successful')
@@ -98,7 +98,7 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       console.log('UnifiedAuthProvider: Signing up user:', email)
       setLoading(true)
       
-      const result = await UnifiedAuth.signUp(email, password, userData)
+      const result = await SimpleSupabaseAuth.signUp(email, password, userData)
       
       // Only set user if we have a session (immediate confirmation)
       if (result.session) {
@@ -122,7 +122,7 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('UnifiedAuthProvider: Signing out user')
       setLoading(true)
-      await UnifiedAuth.signOut()
+      await SimpleSupabaseAuth.signOut()
       setUser(null)
     } catch (error) {
       console.error('UnifiedAuthProvider: Sign out error:', error)
