@@ -68,6 +68,25 @@ export async function GET(request: NextRequest) {
       activeError = error
     }
 
+    // Try to get solo task applications - these are the core functionality
+    let soloApplications = []
+    let soloError = null
+    try {
+      const result = await supabase
+        .from('task_applications')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('task_type', 'solo')
+        .order('created_at', { ascending: false })
+        .limit(20)
+      soloApplications = result.data || []
+      soloError = result.error
+      console.log('Dashboard API: Solo applications found:', soloApplications.length)
+    } catch (error: any) {
+      console.log('Dashboard API: Solo task applications query failed:', error.message)
+      soloError = error
+    }
+
     // Try to get completed task participants - gracefully handle if table doesn't exist  
     let completedParticipants = []
     let completedError = null
@@ -107,13 +126,14 @@ export async function GET(request: NextRequest) {
       userDataExists: !!userData,
       activeCount: activeParticipants.length,
       completedCount: completedParticipants.length,
+      soloCount: soloApplications.length,
       transactionCount: transactions.length,
-      hasErrors: !!(activeError || completedError || userError || transactionError)
+      hasErrors: !!(activeError || completedError || userError || transactionError || soloError)
     })
 
     // Enhance participants with task details from everydayTasks
     const enhanceWithTaskData = (participants: any[]) => {
-      return participants.map(participant => {
+      return participants.map((participant: any) => {
         const taskData = everydayTasks.find(task => task.id === participant.task_id)
         return {
           ...participant,
@@ -136,23 +156,51 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    const enhancedActiveTasks = enhanceWithTaskData(activeParticipants)
-    const enhancedCompletedTasks = enhanceWithTaskData(completedParticipants)
+    // Enhance solo tasks with task details
+    const enhancedSoloTasks = soloApplications.map((app: any) => {
+      const taskData = everydayTasks.find(task => task.id === app.task_id)
+      return {
+        ...app,
+        task: taskData ? {
+          id: taskData.id,
+          title: taskData.title,
+          category: taskData.category,
+          payout: taskData.payout,
+          time_estimate: taskData.time_estimate,
+          difficulty: taskData.difficulty
+        } : {
+          id: app.task_id,
+          title: app.task_title || 'Unknown Task',
+          category: 'Solo',
+          payout: app.payout_amount || 0,
+          time_estimate: 'Unknown',
+          difficulty: 'unknown'
+        }
+      }
+    })
 
-    // Calculate stats - handle database field name variations
-    const totalEarnings = userData?.totalEarnings || userData?.total_earnings || 0
-    const tasksCompleted = userData?.tasksCompleted || userData?.tasks_completed || 0
-    const activeTasks = enhancedActiveTasks.length
-    const avgEarning = tasksCompleted > 0 ? totalEarnings / tasksCompleted : 0
+    const enhancedActiveTasks = enhanceWithTaskData(activeParticipants || [])
+    const enhancedCompletedTasks = enhanceWithTaskData(completedParticipants || [])
+
+    // Calculate stats - include solo tasks
+    const totalEarnings = userData?.totalEarnings || 0
+    const tasksCompleted = userData?.tasksCompleted || 0
+    const soloTasksCompleted = enhancedSoloTasks.filter((task: any) => task.status === 'completed').length
+    const soloTasksApplied = enhancedSoloTasks.filter((task: any) => task.status === 'applied').length
+    const activeTasks = enhancedActiveTasks.length + soloTasksApplied
+    const totalTasksCompleted = tasksCompleted + soloTasksCompleted
+    const avgEarning = totalTasksCompleted > 0 ? totalEarnings / totalTasksCompleted : 0
 
     return NextResponse.json({
       success: true,
-      activeTasks: enhancedActiveTasks,
-      completedTasks: enhancedCompletedTasks,
+      activeTasks: [...enhancedActiveTasks, ...enhancedSoloTasks.filter((task: any) => task.status === 'applied')],
+      completedTasks: [...enhancedCompletedTasks, ...enhancedSoloTasks.filter((task: any) => task.status === 'completed')],
+      soloTasks: enhancedSoloTasks,
       transactions: transactions || [],
       stats: {
         totalEarnings: parseFloat(totalEarnings.toString()),
-        tasksCompleted,
+        tasksCompleted: totalTasksCompleted,
+        soloTasksCompleted,
         activeTasks,
         avgEarning: parseFloat(avgEarning.toFixed(2))
       }

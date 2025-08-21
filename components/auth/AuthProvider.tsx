@@ -272,21 +272,39 @@ export function AuthProvider({ children }: AuthProviderProps) {
     console.log('AuthProvider signOut called')
     
     try {
-      const { error } = await supabase.auth.signOut()
+      // Clear manual auth session first
+      ManualAuthManager.clearSession()
+      console.log('Manual session cleared')
       
-      if (error) {
-        console.error('Sign out error:', error)
-        throw new Error(error.message)
+      // Clear local state immediately  
+      setUser(null)
+      setSession(null)
+      setLoading(false)
+      
+      // Try to clear Supabase session (don't let this block logout)
+      try {
+        const { error } = await supabase.auth.signOut()
+        if (error) {
+          console.warn('Supabase sign out error (continuing anyway):', error)
+        } else {
+          console.log('Supabase sign out successful')
+        }
+      } catch (supabaseError) {
+        console.warn('Supabase signOut failed (continuing anyway):', supabaseError)
       }
       
-      console.log('Sign out successful')
-      
       // Force redirect to home page
+      console.log('Redirecting to home page after logout')
       window.location.href = '/'
       
     } catch (error: any) {
       console.error('Sign out failed:', error)
-      throw new Error(error.message || 'Sign out failed')
+      // Even on error, clear everything and redirect
+      ManualAuthManager.clearSession()
+      setUser(null)
+      setSession(null)
+      setLoading(false)
+      window.location.href = '/'
     }
   }
 
