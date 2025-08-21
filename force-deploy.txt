@@ -1,4 +1,0 @@
-FORCE DEPLOYMENT TRIGGER
-Timestamp: 2025-01-11 23:23:00
-Purpose: Force Vercel to deploy latest fixed commit c5a70a9
-Status: JSX syntax errors resolved, Next.js build working locally
