@@ -61,7 +61,7 @@ class ApiClient {
         // Handle authentication errors
         if (response.status === 401) {
           console.warn('ApiClient: Unauthorized request, clearing session')
-          await UnifiedAuth.signOut()
+          await SimpleSupabaseAuth.signOut()
           throw new Error('Authentication required. Please sign in again.')
         }
 
