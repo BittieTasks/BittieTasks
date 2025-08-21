@@ -35,40 +35,59 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
   const initializeAuth = useCallback(async () => {
     try {
       console.log('SimpleAuthProvider: Initializing authentication...')
-      const user = await SimpleSupabaseAuth.getCurrentUser()
+      const currentUser = await SimpleSupabaseAuth.getCurrentUser()
       
-      if (user) {
-        setUser(user)
-        console.log('SimpleAuthProvider: User authenticated:', user.email)
-      } else {
-        setUser(null)
-        console.log('SimpleAuthProvider: No authenticated user found')
+      const authState = {
+        hasUser: !!currentUser,
+        userEmail: currentUser?.email,
+        isAuthenticated: !!currentUser && !!currentUser.email,
+        loading: false
       }
+      
+      console.log('SimpleAuthProvider: Current state:', authState)
+      
+      setUser(currentUser)
+      setLoading(false)
     } catch (error) {
       console.error('SimpleAuthProvider: Error initializing auth:', error)
       setUser(null)
-    } finally {
       setLoading(false)
     }
   }, [])
 
   // Set up auth state listener
   useEffect(() => {
+    let mounted = true
+    
     console.log('SimpleAuthProvider: Setting up auth state monitoring...')
     
     // Initialize auth on mount
     initializeAuth()
 
     // Set up auth state listener
-    const { data: { subscription } } = SimpleSupabaseAuth.onAuthStateChange((authUser) => {
-      console.log('SimpleAuthProvider: Auth state changed:', authUser?.email || 'signed out')
-      setUser(authUser)
+    let subscription: any = null
+    
+    try {
+      const authListener = SimpleSupabaseAuth.onAuthStateChange((authUser) => {
+        if (!mounted) return
+        
+        console.log('SimpleAuthProvider: Auth state changed:', authUser?.email || 'signed out')
+        setUser(authUser)
+        setLoading(false)
+      })
+      
+      subscription = authListener?.data?.subscription
+    } catch (error) {
+      console.error('SimpleAuthProvider: Error setting up auth listener:', error)
       setLoading(false)
-    })
+    }
 
     // Cleanup subscription on unmount
     return () => {
-      subscription?.unsubscribe()
+      mounted = false
+      if (subscription && typeof subscription.unsubscribe === 'function') {
+        subscription.unsubscribe()
+      }
     }
   }, [initializeAuth])
 
