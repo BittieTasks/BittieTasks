@@ -1,0 +1,137 @@
+[14:09:43.201] Running build in Washington, D.C., USA (East) – iad1
+[14:09:43.201] Build machine configuration: 4 cores, 8 GB
+[14:09:43.219] Cloning github.com/BittieTasks/BittieTasks (Branch: main, Commit: aab7cef)
+[14:09:43.753] Cloning completed: 534.000ms
+[14:09:47.589] Restored build cache from previous deployment (2i3Wd7SHBpYSKroyTf8Rq96UzVTZ)
+[14:09:48.623] Running "vercel build"
+[14:09:49.061] Vercel CLI 46.0.2
+[14:09:49.432] Running "install" command: `npm install`...
+[14:09:51.650] 
+[14:09:51.651] up to date, audited 748 packages in 2s
+[14:09:51.651] 
+[14:09:51.651] 187 packages are looking for funding
+[14:09:51.651]   run `npm fund` for details
+[14:09:51.672] 
+[14:09:51.673] 5 vulnerabilities (1 low, 4 moderate)
+[14:09:51.673] 
+[14:09:51.673] To address issues that do not require attention, run:
+[14:09:51.673]   npm audit fix
+[14:09:51.673] 
+[14:09:51.673] To address all issues (including breaking changes), run:
+[14:09:51.673]   npm audit fix --force
+[14:09:51.673] 
+[14:09:51.673] Run `npm audit` for details.
+[14:09:51.708] Detected Next.js version: 15.4.6
+[14:09:51.708] Running "npm run build"
+[14:09:51.835] 
+[14:09:51.835] > bittietasks@1.0.0 build
+[14:09:51.836] > next build
+[14:09:51.836] 
+[14:09:52.630]    ▲ Next.js 15.4.6
+[14:09:52.631]    - Environments: .env.local
+[14:09:52.631] 
+[14:09:52.858]    Creating an optimized production build ...
+[14:10:01.724]  ⚠ Compiled with warnings in 7.0s
+[14:10:01.724] 
+[14:10:01.725] ./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
+[14:10:01.725] Critical dependency: the request of a dependency is an expression
+[14:10:01.725] 
+[14:10:01.725] Import trace for requested module:
+[14:10:01.725] ./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
+[14:10:01.725] ./node_modules/@supabase/realtime-js/dist/module/index.js
+[14:10:01.725] ./node_modules/@supabase/supabase-js/dist/module/index.js
+[14:10:01.725] ./app/api/solo-tasks/payout/route.ts
+[14:10:01.725] 
+[14:10:07.158] Failed to compile.
+[14:10:07.158] 
+[14:10:07.158] ./app/globals.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./app/globals.css
+[14:10:07.158] Error: Cannot find module 'autoprefixer'
+[14:10:07.158] Require stack:
+[14:10:07.158] - /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
+[14:10:07.158] - /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/index.js
+[14:10:07.159] - /vercel/path0/node_modules/next/dist/build/webpack/config/index.js
+[14:10:07.159] - /vercel/path0/node_modules/next/dist/build/webpack-config.js
+[14:10:07.159] - /vercel/path0/node_modules/next/dist/build/webpack-build/impl.js
+[14:10:07.159] - /vercel/path0/node_modules/next/dist/compiled/jest-worker/processChild.js
+[14:10:07.159]     at Function.<anonymous> (node:internal/modules/cjs/loader:1365:15)
+[14:10:07.159]     at /vercel/path0/node_modules/next/dist/server/require-hook.js:57:36
+[14:10:07.159]     at Function.resolve (node:internal/modules/helpers:145:19)
+[14:10:07.159]     at loadPlugin (/vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:53:32)
+[14:10:07.159]     at /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:56
+[14:10:07.159]     at Array.map (<anonymous>)
+[14:10:07.159]     at getPostCssPlugins (/vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:47)
+[14:10:07.160]     at async /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/index.js:125:36
+[14:10:07.160]     at async /vercel/path0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js:52:40
+[14:10:07.160]     at async Span.traceAsyncFn (/vercel/path0/node_modules/next/dist/trace/trace.js:157:20)
+[14:10:07.160] 
+[14:10:07.160] Import trace for requested module:
+[14:10:07.160] ./app/globals.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./app/globals.css
+[14:10:07.160] ./app/globals.css
+[14:10:07.160] 
+[14:10:07.160] ./app/globals.css
+[14:10:07.160] Error: Cannot find module 'autoprefixer'
+[14:10:07.160] Require stack:
+[14:10:07.160] - /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
+[14:10:07.160] - /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/index.js
+[14:10:07.160] - /vercel/path0/node_modules/next/dist/build/webpack/config/index.js
+[14:10:07.161] - /vercel/path0/node_modules/next/dist/build/webpack-config.js
+[14:10:07.161] - /vercel/path0/node_modules/next/dist/build/webpack-build/impl.js
+[14:10:07.161] - /vercel/path0/node_modules/next/dist/compiled/jest-worker/processChild.js
+[14:10:07.161]     at Function.<anonymous> (node:internal/modules/cjs/loader:1365:15)
+[14:10:07.161]     at /vercel/path0/node_modules/next/dist/server/require-hook.js:57:36
+[14:10:07.161]     at Function.resolve (node:internal/modules/helpers:145:19)
+[14:10:07.161]     at loadPlugin (/vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:53:32)
+[14:10:07.161]     at /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:56
+[14:10:07.161]     at Array.map (<anonymous>)
+[14:10:07.161]     at getPostCssPlugins (/vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:47)
+[14:10:07.161]     at async /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/index.js:125:36
+[14:10:07.161]     at async /vercel/path0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js:52:40
+[14:10:07.161]     at async Span.traceAsyncFn (/vercel/path0/node_modules/next/dist/trace/trace.js:157:20)
+[14:10:07.161]     at tryRunOrWebpackError (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:316119)
+[14:10:07.162]     at __webpack_require_module__ (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:131532)
+[14:10:07.162]     at __nested_webpack_require_161494__ (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:130967)
+[14:10:07.162]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:131824
+[14:10:07.162]     at symbolIterator (/vercel/path0/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+[14:10:07.163]     at done (/vercel/path0/node_modules/next/dist/compiled/neo-async/async.js:1:14824)
+[14:10:07.163]     at Hook.eval [as callAsync] (eval at create (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:14:9224), <anonymous>:15:1)
+[14:10:07.163]     at Hook.CALL_ASYNC_DELEGATE [as _callAsync] (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:14:6378)
+[14:10:07.163]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:130687
+[14:10:07.164]     at symbolIterator (/vercel/path0/node_modules/next/dist/compiled/neo-async/async.js:1:14402)
+[14:10:07.164] -- inner error --
+[14:10:07.164] Error: Cannot find module 'autoprefixer'
+[14:10:07.164] Require stack:
+[14:10:07.164] - /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
+[14:10:07.164] - /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/index.js
+[14:10:07.164] - /vercel/path0/node_modules/next/dist/build/webpack/config/index.js
+[14:10:07.164] - /vercel/path0/node_modules/next/dist/build/webpack-config.js
+[14:10:07.164] - /vercel/path0/node_modules/next/dist/build/webpack-build/impl.js
+[14:10:07.164] - /vercel/path0/node_modules/next/dist/compiled/jest-worker/processChild.js
+[14:10:07.164]     at Function.<anonymous> (node:internal/modules/cjs/loader:1365:15)
+[14:10:07.164]     at /vercel/path0/node_modules/next/dist/server/require-hook.js:57:36
+[14:10:07.164]     at Function.resolve (node:internal/modules/helpers:145:19)
+[14:10:07.165]     at loadPlugin (/vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:53:32)
+[14:10:07.165]     at /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:56
+[14:10:07.165]     at Array.map (<anonymous>)
+[14:10:07.165]     at getPostCssPlugins (/vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:47)
+[14:10:07.165]     at async /vercel/path0/node_modules/next/dist/build/webpack/config/blocks/css/index.js:125:36
+[14:10:07.165]     at async /vercel/path0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js:52:40
+[14:10:07.165]     at async Span.traceAsyncFn (/vercel/path0/node_modules/next/dist/trace/trace.js:157:20)
+[14:10:07.165]     at Object.<anonymous> (/vercel/path0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/vercel/path0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/vercel/path0/app/globals.css:1:7)
+[14:10:07.165]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:962717
+[14:10:07.165]     at Hook.eval [as call] (eval at create (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:14:9002), <anonymous>:7:1)
+[14:10:07.165]     at Hook.CALL_DELEGATE [as _call] (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:14:6272)
+[14:10:07.165]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:131565
+[14:10:07.165]     at tryRunOrWebpackError (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:316073)
+[14:10:07.165]     at __webpack_require_module__ (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:131532)
+[14:10:07.165]     at __nested_webpack_require_161494__ (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:130967)
+[14:10:07.165]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:29:131824
+[14:10:07.165]     at symbolIterator (/vercel/path0/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+[14:10:07.165] 
+[14:10:07.165] Generated code for /vercel/path0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/vercel/path0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/vercel/path0/app/globals.css
+[14:10:07.165] 
+[14:10:07.165] Import trace for requested module:
+[14:10:07.165] ./app/globals.css
+[14:10:07.165] 
+[14:10:07.165] 
+[14:10:07.166] > Build failed because of webpack errors
+[14:10:07.193] Error: Command "npm run build" exited with 1
