@@ -39,17 +39,24 @@ export default function HomePage() {
   }, [loading, isAuthenticated, user, router])
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-teal-400/20 to-blue-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+      </div>
+      
       {/* Navigation */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-teal-600 to-teal-700 rounded-lg flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-lg">B</span>
               </div>
-              <span className="text-xl font-semibold text-gray-900">BittieTasks</span>
+              <span className="text-xl font-semibold gradient-text">BittieTasks</span>
             </div>
             
             {/* Navigation Links */}
@@ -108,11 +115,11 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-16 relative z-10">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+          <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
             Little Tasks,
-            <span className="text-teal-600 block">Real Income</span>
+            <span className="bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent block">Real Income</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Connect with neighbors to share tasks, earn money, and build stronger communities. 
@@ -141,7 +148,7 @@ export default function HomePage() {
               <>
                 <button 
                   onClick={() => router.push('/auth')}
-                  className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-semibold rounded-lg transition-colors"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
                 >
                   Get Started
                   <ArrowRight size={20} className="ml-2" />
@@ -200,45 +207,45 @@ export default function HomePage() {
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <Card className="border-gray-200 hover:shadow-lg transition-shadow">
+          <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm card-hover">
             <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-md">
                 <Coins size={32} className="text-teal-600" />
               </div>
-              <CardTitle className="text-xl text-gray-900">Earn From Daily Life</CardTitle>
+              <CardTitle className="text-xl text-slate-900">Earn From Daily Life</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 text-center">
+              <p className="text-slate-600 text-center">
                 Transform daily tasks into income opportunities. Share errands, household help, 
                 pet care, and more with trusted neighbors.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-gray-200 hover:shadow-lg transition-shadow">
+          <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm card-hover">
             <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-md">
                 <Users size={32} className="text-green-600" />
               </div>
-              <CardTitle className="text-xl text-gray-900">Build Community</CardTitle>
+              <CardTitle className="text-xl text-slate-900">Build Community</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 text-center">
+              <p className="text-slate-600 text-center">
                 Connect with trusted neighbors, create lasting friendships, and build a 
                 supportive community through shared everyday experiences.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-gray-200 hover:shadow-lg transition-shadow">
+          <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm card-hover">
             <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-md">
                 <Target size={32} className="text-purple-600" />
               </div>
-              <CardTitle className="text-xl text-gray-900">Flexible Goals</CardTitle>
+              <CardTitle className="text-xl text-slate-900">Flexible Goals</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 text-center">
+              <p className="text-slate-600 text-center">
                 Set your own schedule, choose tasks that fit your lifestyle, and earn 
                 money on your terms while helping your community.
               </p>
@@ -247,10 +254,10 @@ export default function HomePage() {
         </div>
 
         {/* Value Proposition Section */}
-        <div className="bg-white rounded-2xl p-8 mb-16 border border-gray-200">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 mb-16 border border-slate-200 shadow-xl">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Turn Everyday Tasks Into Income</h2>
-            <p className="text-lg text-gray-600">A new way for adults to earn money while helping neighbors</p>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Turn Everyday Tasks Into Income</h2>
+            <p className="text-lg text-slate-600">A new way for adults to earn money while helping neighbors</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -274,7 +281,7 @@ export default function HomePage() {
         </div>
 
         {/* CTA Section */}
-        <div className="bg-teal-600 rounded-2xl p-12 text-center text-white">
+        <div className="bg-gradient-to-r from-teal-600 to-blue-600 rounded-2xl p-12 text-center text-white shadow-2xl">
           {isAuthenticated ? (
             <>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Welcome back!</h2>
@@ -308,7 +315,7 @@ export default function HomePage() {
       </main>
       
       {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 py-8">
+      <footer className="bg-white/80 backdrop-blur-sm border-t border-slate-200 py-8 relative z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-6 text-sm text-gray-500 mb-4">
