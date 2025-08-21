@@ -1,17 +1,5 @@
 // Simple authentication system to bypass runtime errors
-import { createClient } from '@supabase/supabase-js'
-
-let supabase: any = null
-
-function getSupabaseClient() {
-  if (!supabase) {
-    supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
-  }
-  return supabase
-}
+import { supabase } from './supabase'
 
 interface SimpleSession {
   access_token: string
@@ -63,8 +51,7 @@ export class SimpleAuth {
 
   static async signIn(email: string, password: string) {
     try {
-      const client = getSupabaseClient()
-      const { data, error } = await client.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -95,8 +82,7 @@ export class SimpleAuth {
   static async signOut() {
     try {
       this.clearSession()
-      const client = getSupabaseClient()
-      await client.auth.signOut()
+      await supabase.auth.signOut()
     } catch (error) {
       console.log('SimpleAuth: Sign out completed with errors:', error)
     }

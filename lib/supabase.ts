@@ -15,13 +15,14 @@ if (!supabaseUrl.startsWith('https://')) {
   throw new Error(`Invalid Supabase URL: ${supabaseUrl}. Should start with https://`)
 }
 
-// Only log once in development
-if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+// Only log once in development (reduced to prevent spam)
+if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined' && !(window as any).__supabase_logged) {
   console.log('Initializing Supabase client with:', {
     url: supabaseUrl,
     keyLength: supabaseAnonKey?.length,
     keyStart: supabaseAnonKey?.substring(0, 20)
   })
+  ;(window as any).__supabase_logged = true
 }
 
 // Client-side Supabase instance  
