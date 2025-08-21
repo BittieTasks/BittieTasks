@@ -16,7 +16,7 @@ Development Approach: User has no web development background - deliver polished,
 - **Framework**: Next.js 15 with React 18 and TypeScript.
 - **Styling**: Tailwind CSS combined with Radix UI components.
 - **State Management**: React Query for server state and built-in React state for UI.
-- **Authentication**: Manual authentication system with independent session management.
+- **Authentication**: Unified authentication system with robust session persistence and automatic token refresh.
 - **Responsive Design**: Mobile-first approach utilizing Tailwind's responsive utilities.
 - **User Onboarding**: A 3-step phone verification process (phone number entry → SMS code verification → profile creation).
 - **UI/UX Architecture**: Unified app interface with sidebar navigation, where all authenticated actions occur in one cohesive container without page reloads.
@@ -25,7 +25,7 @@ Development Approach: User has no web development background - deliver polished,
 ## Backend Architecture
 - **API Layer**: Next.js API routes implemented as serverless functions.
 - **Database ORM**: Drizzle ORM for type-safe database interactions.
-- **Authentication**: Supabase Auth, secured with Row Level Security (RLS) policies.
+- **Authentication**: Supabase Auth with unified session management, secured with Row Level Security (RLS) policies.
 - **File Storage**: Supabase Storage for media related to task verification.
 - **Real-time Features**: Supabase real-time subscriptions for live updates.
 
