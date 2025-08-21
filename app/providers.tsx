@@ -3,7 +3,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
 import { SimpleAuthProvider } from '@/components/auth/SimpleAuthProvider'
-import { WebSocketProvider } from '@/components/WebSocketProvider'
 import { Toaster } from '@/components/ui/toaster'
 import { ToastProvider } from '../hooks/use-toast'
 
@@ -21,10 +20,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <SimpleAuthProvider>
-          <WebSocketProvider>
-            {children}
-            <Toaster />
-          </WebSocketProvider>
+          {children}
+          <Toaster />
         </SimpleAuthProvider>
       </ToastProvider>
     </QueryClientProvider>

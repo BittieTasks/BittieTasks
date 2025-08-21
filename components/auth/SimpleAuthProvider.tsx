@@ -48,7 +48,8 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       }
     }
 
-    checkAuth()
+    // Add delay to prevent conflicts with other Supabase instances
+    setTimeout(checkAuth, 100)
   }, [])
 
   const signIn = async (email: string, password: string) => {
