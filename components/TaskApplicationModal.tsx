@@ -478,11 +478,11 @@ export default function TaskApplicationModal({ task, userId, isOpen: externalIsO
               <div className="text-xs text-gray-500 mt-2">
                 <p className="font-medium text-teal-600">📸 Take a clear photo showing task completion for instant AI verification and payment</p>
                 <div className="mt-1 space-y-1">
-                  <p><strong>Tips for better verification:</strong></p>
+                  <p><strong>Photo Requirements for {task.title}:</strong></p>
                   <ul className="list-disc list-inside space-y-1 ml-2">
-                    <li>Show the completed task clearly (organized space, finished items)</li>
-                    <li>Good lighting and focus help AI recognition</li>
-                    <li>Include task-specific items in the photo</li>
+                    {getTaskPhotoRequirements(task.id).map((req, idx) => (
+                      <li key={idx}>{req}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -528,4 +528,49 @@ function getTaskRequirements(taskId: string): string {
     'platform-005': 'organized spaces, tidy rooms, before/after comparison'
   }
   return requirements[taskId] || 'task completion evidence'
+}
+
+// Helper function to show specific photo requirements for each task type
+function getTaskPhotoRequirements(taskId: string): string[] {
+  const requirements: Record<string, string[]> = {
+    // BEFORE/AFTER TASKS - Need completion evidence
+    'platform-001': [
+      'AFTER photo: Show neatly folded and organized clothes',
+      'Good lighting to see clothing organization clearly',
+      'Include dresser/closet to show organization system'
+    ],
+    'platform-002': [
+      'AFTER photo: Show clean dishes and organized kitchen', 
+      'Clean sink with no dirty dishes visible',
+      'Organized counter space and dish rack/cupboard'
+    ],
+    'platform-005': [
+      'AFTER photo: Show organized and decluttered space',
+      'Clear before/after improvement visible',
+      'Everything sorted and in proper place'
+    ],
+    
+    // ACTIVITY TASKS - Single action photo
+    'platform-003': [
+      'Single photo: Show yourself actively exercising',
+      'Workout clothes and equipment visible',
+      'Clear exercise activity (yoga pose, gym workout, etc.)'
+    ],
+    'platform-004': [
+      'Single photo: Show groceries and shopping bags',
+      'Fresh food items and grocery store purchases',
+      'Shopping receipt if available'
+    ],
+    'platform-006': [
+      'Single photo: Show yourself walking/outdoors',
+      'Outdoor setting (park, trail, sidewalk)',
+      'Active movement or walking gear visible'
+    ]
+  }
+  
+  return requirements[taskId] || [
+    'Show clear evidence of task completion',
+    'Good lighting and focus for AI recognition',
+    'Include task-specific elements in photo'
+  ]
 }

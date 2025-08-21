@@ -240,34 +240,52 @@ export async function POST(request: NextRequest) {
 // Helper function to generate task-specific verification prompts
 function getTaskVerificationPrompt(taskId: string, taskTitle: string): string {
   const prompts: Record<string, string> = {
+    // BEFORE/AFTER TASKS - Require evidence of completion state
     'platform-001': `Verify if this image shows COMPLETED LAUNDRY TASK:
-Required evidence: Clean, folded, and organized clothing/linens
-Look for: Neatly folded clothes, organized dresser/closet, clean laundry basket
-Reject: Dirty clothes, unfolded items, messy piles, unrelated images
+Required evidence: Clean, folded, and organized clothing/linens (AFTER completion)
+Look for: Neatly folded clothes, organized dresser/closet, clean laundry basket, sorted garments
+Reject: Dirty clothes, unfolded items, messy piles, washing machines, unrelated images
+Verification type: AFTER photo showing completed organized laundry
 Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
 
     'platform-002': `Verify if this image shows COMPLETED DISHWASHING TASK:
-Required evidence: Clean dishes, organized kitchen, sparkling surfaces
-Look for: Clean dishes in drying rack/cupboard, clean sink, organized kitchen
-Reject: Dirty dishes, messy kitchen, food remnants, unrelated images
-Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
-
-    'platform-003': `Verify if this image shows COMPLETED EXERCISE/WORKOUT:
-Required evidence: Exercise activity, workout equipment, fitness poses
-Look for: Person exercising, yoga mat, gym equipment, workout clothing, fitness activity
-Reject: Just standing around, not exercising, unrelated images, games/puzzles
-Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
-
-    'platform-004': `Verify if this image shows COMPLETED GROCERY SHOPPING:
-Required evidence: Groceries, shopping bags, food items, shopping receipts
-Look for: Fresh groceries, shopping bags, organized food items, receipts
-Reject: Empty bags, non-food items, restaurant food, unrelated images
+Required evidence: Clean dishes, organized kitchen, sparkling surfaces (AFTER completion)
+Look for: Clean dishes in drying rack/cupboard, spotless sink, organized kitchen, no dirty dishes visible
+Reject: Dirty dishes, messy kitchen, food remnants, soap suds, unrelated images, puzzles, games
+Verification type: AFTER photo showing clean kitchen and dishes
 Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
 
     'platform-005': `Verify if this image shows COMPLETED ORGANIZATION TASK:
-Required evidence: Organized spaces, tidy rooms, before/after improvement
-Look for: Clean organized areas, sorted items, tidy spaces, decluttered rooms
+Required evidence: Organized spaces, tidy rooms, decluttered areas (AFTER completion)
+Look for: Clean organized areas, sorted items, tidy spaces, decluttered rooms, everything in place
 Reject: Messy areas, disorganized spaces, no visible improvement, unrelated images
+Verification type: AFTER photo showing organized/cleaned space
+Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
+
+    // ACTIVITY TASKS - Single photo showing the activity in progress or completed
+    'platform-003': `Verify if this image shows ACTIVE EXERCISE/WORKOUT:
+Required evidence: Person actively exercising, workout equipment in use, fitness activity
+Look for: Person in workout clothes exercising, yoga poses, gym equipment being used, active movement, sweat/effort
+Accept: Yoga poses, running, gym workouts, home exercises, stretching, fitness activities
+Reject: Just standing around, not exercising, street clothes, unrelated images, games/puzzles, sitting
+Verification type: Single photo showing active exercise or workout completion
+Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
+
+    'platform-004': `Verify if this image shows COMPLETED GROCERY SHOPPING:
+Required evidence: Fresh groceries, shopping bags, food purchases, shopping receipts
+Look for: Grocery bags with food items, fresh produce, packaged foods, shopping receipts, grocery store items
+Accept: Groceries at home, shopping bags, food haul, receipts from grocery stores
+Reject: Empty bags, non-food items, restaurant food, takeout, unrelated images
+Verification type: Single photo showing grocery haul or receipt
+Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`,
+
+    // MOVEMENT TASKS - Single photo showing the activity
+    'platform-006': `Verify if this image shows WALKING/OUTDOOR ACTIVITY:
+Required evidence: Person walking, outdoor setting, active movement, exercise clothing
+Look for: Person in motion outdoors, walking paths, parks, sidewalks, exercise attire, natural settings
+Accept: Walking photos, hiking, outdoor exercise, nature walks, active outdoor activities
+Reject: Indoor photos, sitting, driving, unrelated images, stationary poses
+Verification type: Single photo showing walking or outdoor activity
 Respond with JSON: {"approved": boolean, "confidence": number (0-100), "analysis": "detailed explanation", "reasons": ["specific observations"]}`
   }
 
