@@ -75,25 +75,13 @@ export async function POST(request: NextRequest) {
 
     console.log('User logged in successfully:', data.user.id)
 
-    // Create a fresh response with the session cookies
-    const successResponse = NextResponse.json({
+    // Return success with the cookies set by SSR client
+    return NextResponse.json({
       success: true,
       user: data.user,
       session: data.session,
       message: 'Login successful'
-    })
-
-    // Copy all cookies from the SSR client response
-    response.cookies.getAll().forEach(cookie => {
-      successResponse.cookies.set(cookie.name, cookie.value, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7 // 7 days
-      })
-    })
-
-    return successResponse
+    }, { headers: response.headers })
 
   } catch (error) {
     console.error('Login API error:', error)
