@@ -94,9 +94,18 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       setLoading(false)
     }
 
+    // Backup timeout to prevent infinite loading
+    const backupTimeout = setTimeout(() => {
+      if (mounted) {
+        console.log('SimpleAuthProvider: Backup timeout triggered, resolving loading state')
+        setLoading(false)
+      }
+    }, 3000) // 3 second timeout
+
     // Cleanup subscription on unmount
     return () => {
       mounted = false
+      clearTimeout(backupTimeout)
       if (subscription && typeof subscription.unsubscribe === 'function') {
         subscription.unsubscribe()
       }
@@ -110,8 +119,18 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       
       const result = await SimpleSupabaseAuth.signIn(email, password)
       
-      // Don't set user here - let the auth state listener handle it
-      console.log('SimpleAuthProvider: Sign in API call successful, waiting for auth state change')
+      // Set user immediately if we got one from the API
+      if (result.user && result.session) {
+        console.log('SimpleAuthProvider: Sign in successful, setting user immediately')
+        setUser(result.user)
+        setLoading(false)
+      } else {
+        console.log('SimpleAuthProvider: Sign in API call successful, waiting for auth state change')
+        // Fallback timeout in case auth state change doesn't fire
+        setTimeout(() => {
+          setLoading(false)
+        }, 2000)
+      }
       
       return { 
         success: true, 
