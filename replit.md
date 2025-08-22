@@ -23,7 +23,7 @@ Development Approach: User has no web development background - deliver polished,
 - **State Management**: React Query for server state and built-in React state for UI.
 - **Authentication**: Unified authentication system with robust session persistence and automatic token refresh.
 - **Responsive Design**: Mobile-first approach utilizing Tailwind's responsive utilities.
-- **User Onboarding**: A 3-step phone verification process (phone number entry → SMS code verification → profile creation).
+- **User Onboarding**: Streamlined email verification process (email signup → email verification → profile completion).
 - **UI/UX Architecture**: Unified app interface with sidebar navigation, where all authenticated actions occur in one cohesive container without page reloads.
 - **Navigation System**: AuthenticatedApp component with smooth section switching, unified task application flow, and persistent user state.
 

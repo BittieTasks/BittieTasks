@@ -96,9 +96,8 @@ export function EmailSignupForm({ onSuccess }: EmailSignupFormProps) {
           Join BittieTasks
         </CardTitle>
         <CardDescription>
-          {step === 'email' && 'Create your account with email'}
-          {step === 'verify' && 'Check your email for verification'}
-          {step === 'profile' && 'Complete your profile to start earning'}
+          {step === 'email' && 'Create your account to start earning'}
+          {step === 'verify' && 'Check your email for verification link'}
         </CardDescription>
       </CardHeader>
       
