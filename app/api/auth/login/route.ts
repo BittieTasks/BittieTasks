@@ -1,12 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
 export async function POST(request: NextRequest) {
+  let response = NextResponse.json({ message: 'Processing...' })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+        },
+        remove(name: string, options: CookieOptions) {
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+        },
+      },
+    }
+  )
+
   try {
     const { email, password } = await request.json()
 
@@ -17,7 +40,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Sign in with email and password
+    // Sign in with email and password using SSR client
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -52,29 +75,25 @@ export async function POST(request: NextRequest) {
 
     console.log('User logged in successfully:', data.user.id)
 
-    // Set session cookie for client persistence
-    const response = NextResponse.json({
+    // Create a fresh response with the session cookies
+    const successResponse = NextResponse.json({
       success: true,
       user: data.user,
       session: data.session,
       message: 'Login successful'
     })
 
-    // Set httpOnly cookie for session persistence
-    if (data.session) {
-      response.cookies.set('sb-session', JSON.stringify({
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token,
-        expires_at: data.session.expires_at
-      }), {
+    // Copy all cookies from the SSR client response
+    response.cookies.getAll().forEach(cookie => {
+      successResponse.cookies.set(cookie.name, cookie.value, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7 // 7 days
       })
-    }
+    })
 
-    return response
+    return successResponse
 
   } catch (error) {
     console.error('Login API error:', error)
