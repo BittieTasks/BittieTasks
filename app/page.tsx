@@ -26,16 +26,6 @@ export default function HomePage() {
   
   console.log('HomePage render - loading:', loading, 'user:', !!user, 'userEmail:', user?.email, 'isAuthenticated:', isAuthenticated)
   
-  // Auto-redirect authenticated users to dashboard
-  useEffect(() => {
-    // Wait for auth to fully load, then redirect authenticated users
-    if (!loading && isAuthenticated && user && user.email) {
-      console.log('HomePage: Auto-redirecting authenticated user to dashboard')
-      // Use window.location for more reliable navigation
-      window.location.href = '/dashboard'
-    }
-  }, [loading, isAuthenticated, user, router])
-  
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 relative overflow-hidden">
       {/* Animated Background Elements */}
