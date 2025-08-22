@@ -95,14 +95,14 @@ export default function HomePage() {
               ) : (
                 <div className="flex items-center space-x-3">
                   <Button
-                    onClick={() => router.push('/auth')}
+                    onClick={() => router.push('/auth/phone-login')}
                     variant="outline"
                     className="border-gray-300 text-gray-700 hover:bg-gray-50"
                   >
                     Sign In
                   </Button>
                   <Button
-                    onClick={() => router.push('/auth')}
+                    onClick={() => router.push('/auth/email-signup')}
                     className="bg-teal-600 hover:bg-teal-700 text-white"
                   >
                     Sign Up
@@ -147,7 +147,7 @@ export default function HomePage() {
             ) : (
               <>
                 <button 
-                  onClick={() => router.push('/auth')}
+                  onClick={() => router.push('/auth/email-signup')}
                   className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
                 >
                   Get Started
