@@ -32,13 +32,13 @@ export default function UnifiedAppRouter() {
     console.log('UnifiedAppRouter: pathname changed to', pathname, '-> section:', section)
   }, [pathname])
 
-  // Redirect unauthenticated users immediately
+  // Redirect unauthenticated users immediately  
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       const currentPath = pathname
-      if (currentPath !== '/auth' && currentPath !== '/' && currentPath !== '/sample-tasks' && currentPath !== '/subscribe' && !currentPath.startsWith('/subscription/')) {
-        console.log('UnifiedAppRouter: redirecting unauthenticated user from', currentPath, 'to auth')
-        router.replace(`/auth?redirect=${encodeURIComponent(currentPath)}`)
+      if (currentPath !== '/auth' && currentPath !== '/auth/login' && currentPath !== '/' && currentPath !== '/sample-tasks' && currentPath !== '/subscribe' && !currentPath.startsWith('/subscription/')) {
+        console.log('UnifiedAppRouter: redirecting unauthenticated user from', currentPath, 'to auth/login')
+        router.replace(`/auth/login?redirectTo=${encodeURIComponent(currentPath)}`)
       }
     }
   }, [authLoading, isAuthenticated, pathname, router])

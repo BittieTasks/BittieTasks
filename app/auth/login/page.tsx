@@ -60,8 +60,12 @@ export default function LoginPage() {
       
       console.log('Login successful, user:', result.user?.email)
       
+      // Check for redirect parameter from URL
+      const urlParams = new URLSearchParams(window.location.search)
+      const redirectTo = urlParams.get('redirectTo') || '/dashboard'
+      
       // Force full page reload to trigger middleware session detection
-      window.location.replace('/dashboard')
+      window.location.replace(redirectTo)
       
     } catch (err: any) {
       console.error('Login error:', err)
