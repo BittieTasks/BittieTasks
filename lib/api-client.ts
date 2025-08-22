@@ -99,7 +99,7 @@ class ApiClient {
 
   // Authentication specific methods
   async signIn(email: string, password: string) {
-    return this.post('/api/auth/signin', { email, password })
+    return this.post('/api/auth/login', { email, password })
   }
 
   async signUp(email: string, password: string, userData?: any) {
