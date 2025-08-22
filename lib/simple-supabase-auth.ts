@@ -7,21 +7,19 @@ export class SimpleSupabaseAuth {
   
   // Sign in with email/password
   static async signIn(email: string, password: string) {
+    console.log('SimpleSupabaseAuth: Signing in user:', email)
+    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
     if (error) {
+      console.error('SimpleSupabaseAuth: Sign in error:', error)
       throw new Error(error.message)
     }
 
-    // Store complete session in localStorage for persistence
-    if (data.session) {
-      localStorage.setItem('sb-session', JSON.stringify(data.session))
-      localStorage.setItem('sb-access-token', data.session.access_token)
-      localStorage.setItem('sb-refresh-token', data.session.refresh_token)
-    }
+    console.log('SimpleSupabaseAuth: Sign in successful, user:', data.user?.email, 'session:', !!data.session)
 
     return {
       user: data.user,
@@ -32,6 +30,8 @@ export class SimpleSupabaseAuth {
 
   // Sign up new user
   static async signUp(email: string, password: string, userData?: any) {
+    console.log('SimpleSupabaseAuth: Signing up user:', email)
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -41,15 +41,11 @@ export class SimpleSupabaseAuth {
     })
 
     if (error) {
+      console.error('SimpleSupabaseAuth: Sign up error:', error)
       throw new Error(error.message)
     }
 
-    // Store complete session in localStorage for persistence if available
-    if (data.session) {
-      localStorage.setItem('sb-session', JSON.stringify(data.session))
-      localStorage.setItem('sb-access-token', data.session.access_token)
-      localStorage.setItem('sb-refresh-token', data.session.refresh_token)
-    }
+    console.log('SimpleSupabaseAuth: Sign up successful, user:', data.user?.email, 'session:', !!data.session)
 
     return {
       user: data.user,
@@ -60,44 +56,23 @@ export class SimpleSupabaseAuth {
 
   // Sign out
   static async signOut() {
-    // Clear localStorage tokens
-    localStorage.removeItem('sb-access-token')
-    localStorage.removeItem('sb-refresh-token')
-    localStorage.removeItem('sb-session')
+    console.log('SimpleSupabaseAuth: Signing out user')
     
     const { error } = await supabase.auth.signOut()
     if (error) {
+      console.error('SimpleSupabaseAuth: Sign out error:', error)
       throw new Error(error.message)
     }
+    
+    console.log('SimpleSupabaseAuth: Sign out successful')
   }
 
-  // Get current session
+  // Get current session - let Supabase handle everything
   static async getSession() {
     const { data, error } = await supabase.auth.getSession()
     if (error) {
-      console.error('Error getting session:', error)
+      console.error('SimpleSupabaseAuth: Error getting session:', error)
       return null
-    }
-    
-    // If no session from Supabase, check localStorage
-    if (!data.session && typeof window !== 'undefined') {
-      const storedSession = localStorage.getItem('sb-session')
-      if (storedSession) {
-        try {
-          const session = JSON.parse(storedSession)
-          // Check if session is still valid
-          if (session.expires_at && new Date(session.expires_at * 1000) > new Date()) {
-            return session
-          } else {
-            // Clear expired session
-            localStorage.removeItem('sb-session')
-            localStorage.removeItem('sb-access-token')
-            localStorage.removeItem('sb-refresh-token')
-          }
-        } catch (e) {
-          console.error('Error parsing stored session:', e)
-        }
-      }
     }
     
     return data.session
@@ -107,7 +82,7 @@ export class SimpleSupabaseAuth {
   static async getCurrentUser() {
     const { data, error } = await supabase.auth.getUser()
     if (error) {
-      console.error('Error getting user:', error)
+      console.error('SimpleSupabaseAuth: Error getting user:', error)
       return null
     }
     return data.user
@@ -128,20 +103,7 @@ export class SimpleSupabaseAuth {
   // Auth state change listener
   static onAuthStateChange(callback: (user: User | null) => void) {
     return supabase.auth.onAuthStateChange((event, session) => {
-      console.log('SimpleSupabaseAuth: Auth state change event:', event, session?.user?.email || 'no user')
-      
-      // Store session in localStorage when auth state changes
-      if (session && typeof window !== 'undefined') {
-        localStorage.setItem('sb-session', JSON.stringify(session))
-        localStorage.setItem('sb-access-token', session.access_token)
-        localStorage.setItem('sb-refresh-token', session.refresh_token)
-      } else if (event === 'SIGNED_OUT' && typeof window !== 'undefined') {
-        // Clear localStorage on sign out
-        localStorage.removeItem('sb-session')
-        localStorage.removeItem('sb-access-token')
-        localStorage.removeItem('sb-refresh-token')
-      }
-      
+      console.log('SimpleSupabaseAuth: Auth state change:', event, session?.user?.email || 'no user')
       callback(session?.user || null)
     })
   }

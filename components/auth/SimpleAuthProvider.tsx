@@ -36,9 +36,14 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('SimpleAuthProvider: Initializing authentication...')
       
-      // Get session from Supabase directly (this checks both localStorage and cookies)
+      // Get session from Supabase directly
       const session = await SimpleSupabaseAuth.getSession()
-      console.log('SimpleAuthProvider: Session check:', session ? 'Found session' : 'No session')
+      console.log('SimpleAuthProvider: Session check result:', {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        userEmail: session?.user?.email,
+        expiresAt: session?.expires_at
+      })
       
       if (session?.user) {
         console.log('SimpleAuthProvider: Restoring user from session:', session.user.email)
@@ -47,19 +52,8 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
         return
       }
       
-      // Fallback: try to get current user directly
-      const currentUser = await SimpleSupabaseAuth.getCurrentUser()
-      
-      const authState = {
-        hasUser: !!currentUser,
-        userEmail: currentUser?.email,
-        isAuthenticated: !!currentUser && !!currentUser.email && !!currentUser.email_confirmed_at,
-        loading: false
-      }
-      
-      console.log('SimpleAuthProvider: Current state:', authState)
-      
-      setUser(currentUser)
+      console.log('SimpleAuthProvider: No valid session found, user not authenticated')
+      setUser(null)
       setLoading(false)
     } catch (error) {
       console.error('SimpleAuthProvider: Error initializing auth:', error)
@@ -84,7 +78,12 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       const authListener = SimpleSupabaseAuth.onAuthStateChange((authUser) => {
         if (!mounted) return
         
-        console.log('SimpleAuthProvider: Auth state changed:', authUser?.email || 'signed out')
+        console.log('SimpleAuthProvider: Auth state changed to:', {
+          hasUser: !!authUser,
+          email: authUser?.email,
+          emailConfirmed: authUser?.email_confirmed_at
+        })
+        
         setUser(authUser)
         setLoading(false)
       })
@@ -106,47 +105,43 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      console.log('SimpleAuthProvider: Signing in user:', email)
+      console.log('SimpleAuthProvider: Starting sign in for:', email)
       setLoading(true)
       
       const result = await SimpleSupabaseAuth.signIn(email, password)
-      setUser(result.user)
       
-      console.log('SimpleAuthProvider: Sign in successful')
+      // Don't set user here - let the auth state listener handle it
+      console.log('SimpleAuthProvider: Sign in API call successful, waiting for auth state change')
+      
       return { 
         success: true, 
         needsEmailConfirmation: result.needsEmailConfirmation 
       }
     } catch (error: any) {
       console.error('SimpleAuthProvider: Sign in failed:', error.message)
-      throw new Error(error.message || 'Sign in failed')
-    } finally {
       setLoading(false)
+      throw new Error(error.message || 'Sign in failed')
     }
   }
 
   const signUp = async (email: string, password: string, userData?: any) => {
     try {
-      console.log('SimpleAuthProvider: Signing up user:', email)
+      console.log('SimpleAuthProvider: Starting sign up for:', email)
       setLoading(true)
       
       const result = await SimpleSupabaseAuth.signUp(email, password, userData)
       
-      // Only set user if we have a session (immediate confirmation)
-      if (result.session) {
-        setUser(result.user)
-      }
+      // Don't set user here - let the auth state listener handle it
+      console.log('SimpleAuthProvider: Sign up API call successful')
       
-      console.log('SimpleAuthProvider: Sign up successful')
       return { 
         success: true, 
         needsEmailConfirmation: result.needsEmailConfirmation 
       }
     } catch (error: any) {
       console.error('SimpleAuthProvider: Sign up failed:', error.message)
-      throw new Error(error.message || 'Sign up failed')
-    } finally {
       setLoading(false)
+      throw new Error(error.message || 'Sign up failed')
     }
   }
 
