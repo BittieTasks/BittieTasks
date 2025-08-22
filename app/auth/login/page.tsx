@@ -14,7 +14,10 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isResending, setIsResending] = useState(false)
   const [error, setError] = useState('')
+  const [needsVerification, setNeedsVerification] = useState(false)
+  const [resendMessage, setResendMessage] = useState('')
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -37,7 +40,14 @@ export default function LoginPage() {
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || 'Login failed')
+        // Special handling for email verification needed
+        if (result.needsVerification) {
+          setError(result.error)
+          setNeedsVerification(true)
+        } else {
+          setError(result.error || 'Login failed')
+        }
+        return
       }
 
       // Redirect to dashboard on successful login
@@ -48,6 +58,41 @@ export default function LoginPage() {
       setError(err.message || 'Failed to log in')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      setError('Please enter your email address first')
+      return
+    }
+
+    setIsResending(true)
+    setResendMessage('')
+    
+    try {
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to resend verification email')
+      }
+
+      setResendMessage('Verification email sent! Check your inbox and spam folder.')
+      setError('')
+      
+    } catch (err: any) {
+      console.error('Resend verification error:', err)
+      setError(err.message || 'Failed to resend verification email')
+    } finally {
+      setIsResending(false)
     }
   }
 
@@ -69,6 +114,37 @@ export default function LoginPage() {
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            
+            {resendMessage && (
+              <Alert>
+                <AlertDescription className="text-green-700">{resendMessage}</AlertDescription>
+              </Alert>
+            )}
+            
+            {needsVerification && (
+              <Alert>
+                <AlertDescription className="space-y-2">
+                  <p>Email verification required. Check your inbox (including spam folder).</p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResendVerification}
+                    disabled={isResending}
+                    className="w-full"
+                  >
+                    {isResending ? (
+                      <>
+                        <Loader2 className="w-3 h-3 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      'Resend Verification Email'
+                    )}
+                  </Button>
+                </AlertDescription>
               </Alert>
             )}
             
@@ -116,11 +192,16 @@ export default function LoginPage() {
               )}
             </Button>
             
-            <div className="text-center text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link href="/auth/email-signup" className="text-teal-600 hover:text-teal-700 font-medium">
-                Sign up here
-              </Link>
+            <div className="text-center text-sm text-gray-600 space-y-2">
+              <div>
+                Don't have an account?{' '}
+                <Link href="/auth/email-signup" className="text-teal-600 hover:text-teal-700 font-medium">
+                  Sign up here
+                </Link>
+              </div>
+              <div className="text-xs text-gray-500">
+                ⚠️ You must verify your email before signing in. Check your inbox (including spam folder).
+              </div>
             </div>
           </CardFooter>
         </form>

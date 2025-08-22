@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { emailVerification } from '@/lib/email-verification'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,21 +17,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const result = await emailVerification.resendVerificationEmail(email)
+    // Resend email confirmation
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email
+    })
 
-    if (result.success) {
-      return NextResponse.json({
-        success: true,
-        message: 'Verification email sent successfully'
-      })
-    } else {
+    if (error) {
+      console.error('Resend verification error:', error)
       return NextResponse.json(
-        { error: result.error || 'Failed to send verification email. Please try again.' },
-        { status: 500 }
+        { error: error.message || 'Failed to resend verification email' },
+        { status: 400 }
       )
     }
+
+    console.log('Verification email resent to:', email)
+
+    return NextResponse.json({
+      success: true,
+      message: 'Verification email sent. Please check your inbox and spam folder.'
+    })
+
   } catch (error) {
-    console.error('Resend verification error:', error)
+    console.error('Resend verification API error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

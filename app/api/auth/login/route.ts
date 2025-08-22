@@ -25,6 +25,18 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Login error:', error)
+      
+      // Handle email not confirmed error specifically
+      if (error.message === 'Email not confirmed') {
+        return NextResponse.json(
+          { 
+            error: 'Please verify your email address first. Check your inbox (including spam folder) for the verification link.',
+            needsVerification: true 
+          },
+          { status: 400 }
+        )
+      }
+      
       return NextResponse.json(
         { error: error.message || 'Invalid email or password' },
         { status: 400 }
