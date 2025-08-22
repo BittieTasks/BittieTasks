@@ -11,16 +11,10 @@ export default function EmailSignupPage() {
         
         <EmailSignupForm />
         
-        <div className="text-center mt-6 space-y-2">
-          <p className="text-sm text-gray-600">
-            Prefer phone verification?{' '}
-            <a href="/auth/phone-signup" className="text-blue-600 hover:underline font-medium">
-              Sign up with phone
-            </a>
-          </p>
+        <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
-            <a href="/auth/phone-login" className="text-blue-600 hover:underline font-medium">
+            <a href="/auth/login" className="text-blue-600 hover:underline font-medium">
               Sign in here
             </a>
           </p>
