@@ -50,13 +50,18 @@ export default function LoginPage() {
         return
       }
 
-      // Session is automatically handled by Supabase client
+      // Store session data from API response
+      if (result.session) {
+        // Store session tokens in localStorage for client persistence
+        localStorage.setItem('sb-access-token', result.session.access_token)
+        localStorage.setItem('sb-refresh-token', result.session.refresh_token)
+        localStorage.setItem('sb-session', JSON.stringify(result.session))
+      }
+      
       console.log('Login successful, user:', result.user?.email)
       
-      // Small delay to ensure session is saved, then redirect
-      setTimeout(() => {
-        window.location.href = '/dashboard'
-      }, 500)
+      // Force full page reload to trigger middleware session detection
+      window.location.replace('/dashboard')
       
     } catch (err: any) {
       console.error('Login error:', err)

@@ -55,6 +55,7 @@ export class SimpleSupabaseAuth {
     // Clear localStorage tokens
     localStorage.removeItem('sb-access-token')
     localStorage.removeItem('sb-refresh-token')
+    localStorage.removeItem('sb-session')
     
     const { error } = await supabase.auth.signOut()
     if (error) {
@@ -69,6 +70,28 @@ export class SimpleSupabaseAuth {
       console.error('Error getting session:', error)
       return null
     }
+    
+    // If no session from Supabase, check localStorage
+    if (!data.session && typeof window !== 'undefined') {
+      const storedSession = localStorage.getItem('sb-session')
+      if (storedSession) {
+        try {
+          const session = JSON.parse(storedSession)
+          // Check if session is still valid
+          if (session.expires_at && new Date(session.expires_at * 1000) > new Date()) {
+            return session
+          } else {
+            // Clear expired session
+            localStorage.removeItem('sb-session')
+            localStorage.removeItem('sb-access-token')
+            localStorage.removeItem('sb-refresh-token')
+          }
+        } catch (e) {
+          console.error('Error parsing stored session:', e)
+        }
+      }
+    }
+    
     return data.session
   }
 
