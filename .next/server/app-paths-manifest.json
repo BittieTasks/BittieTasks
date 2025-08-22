@@ -1,1 +1,6 @@
-{}
+{
+  "/api/task-categories/route": "app/api/task-categories/route.js",
+  "/api/categories/route": "app/api/categories/route.js",
+  "/api/stripe/subscription-status/route": "app/api/stripe/subscription-status/route.js",
+  "/subscribe/page": "app/subscribe/page.js"
+}
