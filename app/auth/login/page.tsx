@@ -50,8 +50,13 @@ export default function LoginPage() {
         return
       }
 
-      // Redirect to dashboard on successful login
-      router.push('/dashboard')
+      // Set session in localStorage for client-side persistence
+      if (result.session) {
+        localStorage.setItem('supabase.auth.token', JSON.stringify(result.session))
+      }
+
+      // Force page reload to refresh auth state, then redirect to dashboard
+      window.location.href = '/dashboard'
       
     } catch (err: any) {
       console.error('Login error:', err)

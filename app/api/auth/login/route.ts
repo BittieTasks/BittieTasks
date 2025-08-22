@@ -52,12 +52,29 @@ export async function POST(request: NextRequest) {
 
     console.log('User logged in successfully:', data.user.id)
 
-    return NextResponse.json({
+    // Set session cookie for client persistence
+    const response = NextResponse.json({
       success: true,
       user: data.user,
       session: data.session,
       message: 'Login successful'
     })
+
+    // Set httpOnly cookie for session persistence
+    if (data.session) {
+      response.cookies.set('sb-session', JSON.stringify({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+        expires_at: data.session.expires_at
+      }), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7 // 7 days
+      })
+    }
+
+    return response
 
   } catch (error) {
     console.error('Login API error:', error)

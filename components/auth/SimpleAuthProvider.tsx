@@ -31,10 +31,25 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Initialize auth state
+  // Initialize auth state with session recovery
   const initializeAuth = useCallback(async () => {
     try {
       console.log('SimpleAuthProvider: Initializing authentication...')
+      
+      // First check for session in localStorage
+      const storedSession = localStorage.getItem('supabase.auth.token')
+      if (storedSession) {
+        try {
+          const sessionData = JSON.parse(storedSession)
+          // Restore session if it exists and hasn't expired
+          if (sessionData.expires_at && new Date(sessionData.expires_at * 1000) > new Date()) {
+            console.log('SimpleAuthProvider: Restoring session from localStorage')
+          }
+        } catch (e) {
+          localStorage.removeItem('supabase.auth.token')
+        }
+      }
+      
       const currentUser = await SimpleSupabaseAuth.getCurrentUser()
       
       const authState = {
@@ -142,10 +157,17 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       console.log('SimpleAuthProvider: Signing out user')
       setLoading(true)
       await SimpleSupabaseAuth.signOut()
+      // Clear localStorage session
+      localStorage.removeItem('supabase.auth.token')
       setUser(null)
+      // Redirect to home page after sign out
+      window.location.href = '/'
     } catch (error) {
       console.error('SimpleAuthProvider: Sign out error:', error)
+      // Even if API call fails, clear local state and redirect
+      localStorage.removeItem('supabase.auth.token')
       setUser(null)
+      window.location.href = '/'
     } finally {
       setLoading(false)
     }
