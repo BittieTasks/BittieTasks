@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useAuth } from './AuthProvider'
+import { useAuth } from './SimpleAuthProvider'
 
 interface ProtectedRouteProps {
   children: React.ReactNode

@@ -52,7 +52,7 @@ export default function CreateTask() {
   
   // Redirect to auth if not authenticated
   if (!authLoading && !isAuthenticated) {
-    router.push('/auth')
+    router.push('/auth/login')
     return null
   }
   
