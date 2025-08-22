@@ -1,27 +1,20 @@
-'use client'
+import { redirect } from 'next/navigation'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-
-export default function LoginRedirect() {
-  const router = useRouter()
-
-  useEffect(() => {
-    // Redirect /auth/login to /auth while preserving any query parameters
-    const urlParams = new URLSearchParams(window.location.search)
-    const queryString = urlParams.toString()
-    const redirectUrl = queryString ? `/auth?${queryString}` : '/auth'
-    
-    console.log('LoginRedirect: Redirecting from /auth/login to', redirectUrl)
-    router.replace(redirectUrl)
-  }, [router])
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Redirecting to sign in...</p>
-      </div>
-    </div>
-  )
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  // Server-side redirect to /auth with query parameters preserved
+  const resolvedParams = await searchParams
+  const params = new URLSearchParams()
+  
+  Object.entries(resolvedParams).forEach(([key, value]) => {
+    if (value) {
+      params.set(key, Array.isArray(value) ? value.join(',') : value)
+    }
+  })
+  
+  const redirectUrl = params.toString() ? `/auth?${params.toString()}` : '/auth'
+  redirect(redirectUrl)
 }
