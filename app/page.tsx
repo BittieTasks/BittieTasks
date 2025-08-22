@@ -79,6 +79,12 @@ export default function HomePage() {
               >
                 Sponsors
               </button>
+              <button 
+                onClick={() => router.push('/verification-test')}
+                className="text-gray-700 hover:text-teal-600 font-medium text-sm"
+              >
+                Test Verification
+              </button>
               
               {/* Authentication-aware navigation */}
               {isAuthenticated ? (
