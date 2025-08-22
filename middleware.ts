@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
 
   if (isProtectedPath && !session) {
     // Redirect to login if accessing protected route without session
-    const redirectUrl = new URL('/auth/login', request.url)
+    const redirectUrl = new URL('/auth', request.url)
     redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
   }

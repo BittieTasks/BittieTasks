@@ -105,15 +105,14 @@ export default function AuthPage() {
         description: 'You have been signed in successfully.',
       })
       
-      // Check for redirect after sign in
-      const redirectPath = localStorage.getItem('redirectAfterAuth')
-      if (!redirectPath) {
-        // Default redirect to dashboard if no specific redirect
-        setTimeout(() => {
-          router.push('/dashboard')
-        }, 1000)
-      }
-      // Otherwise let AuthProvider handle the specific redirect
+      // Check for redirect parameter from URL
+      const urlParams = new URLSearchParams(window.location.search)
+      const redirectTo = urlParams.get('redirectTo') || '/dashboard'
+      
+      // Redirect to intended destination
+      setTimeout(() => {
+        router.push(redirectTo)
+      }, 1000)
     } catch (error: any) {
       clearTimeout(timeoutId)
       console.error('handleSignIn error:', error)
