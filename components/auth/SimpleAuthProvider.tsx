@@ -36,26 +36,24 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('SimpleAuthProvider: Initializing authentication...')
       
-      // First check for session in localStorage
-      const storedSession = localStorage.getItem('supabase.auth.token')
-      if (storedSession) {
-        try {
-          const sessionData = JSON.parse(storedSession)
-          // Restore session if it exists and hasn't expired
-          if (sessionData.expires_at && new Date(sessionData.expires_at * 1000) > new Date()) {
-            console.log('SimpleAuthProvider: Restoring session from localStorage')
-          }
-        } catch (e) {
-          localStorage.removeItem('supabase.auth.token')
-        }
+      // Get session from Supabase directly (this checks both localStorage and cookies)
+      const session = await SimpleSupabaseAuth.getSession()
+      console.log('SimpleAuthProvider: Session check:', session ? 'Found session' : 'No session')
+      
+      if (session?.user) {
+        console.log('SimpleAuthProvider: Restoring user from session:', session.user.email)
+        setUser(session.user)
+        setLoading(false)
+        return
       }
       
+      // Fallback: try to get current user directly
       const currentUser = await SimpleSupabaseAuth.getCurrentUser()
       
       const authState = {
         hasUser: !!currentUser,
         userEmail: currentUser?.email,
-        isAuthenticated: !!currentUser && !!currentUser.email,
+        isAuthenticated: !!currentUser && !!currentUser.email && !!currentUser.email_confirmed_at,
         loading: false
       }
       
@@ -157,15 +155,12 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       console.log('SimpleAuthProvider: Signing out user')
       setLoading(true)
       await SimpleSupabaseAuth.signOut()
-      // Clear localStorage session
-      localStorage.removeItem('supabase.auth.token')
       setUser(null)
       // Redirect to home page after sign out
       window.location.href = '/'
     } catch (error) {
       console.error('SimpleAuthProvider: Sign out error:', error)
       // Even if API call fails, clear local state and redirect
-      localStorage.removeItem('supabase.auth.token')
       setUser(null)
       window.location.href = '/'
     } finally {
@@ -182,7 +177,11 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  const isAuthenticated = !!user?.id && !!user?.email
+  // For development, allow unconfirmed emails to be authenticated
+  // In production, require email confirmation
+  const isAuthenticated = !!user?.id && !!user?.email && (
+    process.env.NODE_ENV === 'development' || !!user?.email_confirmed_at
+  )
 
   console.log('SimpleAuthProvider: Current state:', {
     hasUser: !!user,

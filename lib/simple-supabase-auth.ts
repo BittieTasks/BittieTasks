@@ -16,6 +16,12 @@ export class SimpleSupabaseAuth {
       throw new Error(error.message)
     }
 
+    // Store session in localStorage for persistence
+    if (data.session) {
+      localStorage.setItem('sb-access-token', data.session.access_token)
+      localStorage.setItem('sb-refresh-token', data.session.refresh_token)
+    }
+
     return {
       user: data.user,
       session: data.session,
@@ -46,6 +52,10 @@ export class SimpleSupabaseAuth {
 
   // Sign out
   static async signOut() {
+    // Clear localStorage tokens
+    localStorage.removeItem('sb-access-token')
+    localStorage.removeItem('sb-refresh-token')
+    
     const { error } = await supabase.auth.signOut()
     if (error) {
       throw new Error(error.message)

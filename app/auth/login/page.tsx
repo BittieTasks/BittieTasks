@@ -50,13 +50,13 @@ export default function LoginPage() {
         return
       }
 
-      // Set session in localStorage for client-side persistence
-      if (result.session) {
-        localStorage.setItem('supabase.auth.token', JSON.stringify(result.session))
-      }
-
-      // Force page reload to refresh auth state, then redirect to dashboard
-      window.location.href = '/dashboard'
+      // Session is automatically handled by Supabase client
+      console.log('Login successful, user:', result.user?.email)
+      
+      // Small delay to ensure session is saved, then redirect
+      setTimeout(() => {
+        window.location.href = '/dashboard'
+      }, 500)
       
     } catch (err: any) {
       console.error('Login error:', err)
