@@ -42,25 +42,29 @@ export function EmailSignupForm({ onSuccess }: EmailSignupFormProps) {
         throw new Error('Password must be at least 6 characters')
       }
 
-      const result = await signUp(email, password, {
-        first_name: firstName,
-        last_name: lastName
+      // Make direct API call to ensure it works
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          firstName,
+          lastName
+        }),
       })
 
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Signup failed')
+      }
+
       if (result.success) {
-        if (result.needsEmailConfirmation) {
-          setSuccess('Check your email for a verification link!')
-          setStep('verify')
-        } else {
-          setSuccess('Account created successfully! Welcome to BittieTasks!')
-          setTimeout(() => {
-            if (onSuccess) {
-              onSuccess()
-            } else {
-              router.push('/dashboard')
-            }
-          }, 1500)
-        }
+        setSuccess('Account created successfully! Check your email for verification.')
+        setStep('verify')
       }
     } catch (err: any) {
       console.error('Email signup error:', err)

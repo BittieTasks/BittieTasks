@@ -58,20 +58,22 @@ export function PhoneSignupForm({ onSuccess }: PhoneSignupFormProps) {
       const formattedPhone = `+1${phoneNumber.replace(/\D/g, '')}`
       console.log('Sending SMS to:', formattedPhone)
       
-      // Use Supabase's built-in SMS authentication
-      const { supabase } = await import('@/lib/supabase')
-      console.log('Supabase client loaded')
-      
-      const { data, error } = await supabase.auth.signInWithOtp({
-        phone: formattedPhone,
+      // Make direct API call to test SMS sending
+      const response = await fetch('/api/auth/send-phone-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phoneNumber: formattedPhone
+        }),
       })
 
-      console.log('SMS response:', { data, error })
+      const result = await response.json()
+      console.log('SMS API response:', result)
 
-      if (error) {
-        console.error('SMS error details:', error)
-        // More detailed error message for debugging
-        throw new Error(`SMS Error: ${error.message} (Code: ${error.status || 'unknown'})`)
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to send verification code')
       }
 
       setSuccess('Verification code sent! Check your text messages.')
