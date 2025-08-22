@@ -16,8 +16,9 @@ export class SimpleSupabaseAuth {
       throw new Error(error.message)
     }
 
-    // Store session in localStorage for persistence
+    // Store complete session in localStorage for persistence
     if (data.session) {
+      localStorage.setItem('sb-session', JSON.stringify(data.session))
       localStorage.setItem('sb-access-token', data.session.access_token)
       localStorage.setItem('sb-refresh-token', data.session.refresh_token)
     }
@@ -41,6 +42,13 @@ export class SimpleSupabaseAuth {
 
     if (error) {
       throw new Error(error.message)
+    }
+
+    // Store complete session in localStorage for persistence if available
+    if (data.session) {
+      localStorage.setItem('sb-session', JSON.stringify(data.session))
+      localStorage.setItem('sb-access-token', data.session.access_token)
+      localStorage.setItem('sb-refresh-token', data.session.refresh_token)
     }
 
     return {
@@ -120,6 +128,20 @@ export class SimpleSupabaseAuth {
   // Auth state change listener
   static onAuthStateChange(callback: (user: User | null) => void) {
     return supabase.auth.onAuthStateChange((event, session) => {
+      console.log('SimpleSupabaseAuth: Auth state change event:', event, session?.user?.email || 'no user')
+      
+      // Store session in localStorage when auth state changes
+      if (session && typeof window !== 'undefined') {
+        localStorage.setItem('sb-session', JSON.stringify(session))
+        localStorage.setItem('sb-access-token', session.access_token)
+        localStorage.setItem('sb-refresh-token', session.refresh_token)
+      } else if (event === 'SIGNED_OUT' && typeof window !== 'undefined') {
+        // Clear localStorage on sign out
+        localStorage.removeItem('sb-session')
+        localStorage.removeItem('sb-access-token')
+        localStorage.removeItem('sb-refresh-token')
+      }
+      
       callback(session?.user || null)
     })
   }
