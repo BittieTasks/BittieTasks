@@ -36,13 +36,17 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('SimpleAuthProvider: Initializing authentication...')
       
+      // Force refresh the session first
+      const { data: refreshedSession } = await SimpleSupabaseAuth.refreshSession()
+      
       // Get session from Supabase directly
       const session = await SimpleSupabaseAuth.getSession()
       console.log('SimpleAuthProvider: Session check result:', {
         hasSession: !!session,
         hasUser: !!session?.user,
         userEmail: session?.user?.email,
-        expiresAt: session?.expires_at
+        expiresAt: session?.expires_at,
+        refreshed: !!refreshedSession
       })
       
       if (session?.user) {

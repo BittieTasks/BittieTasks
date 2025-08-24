@@ -100,6 +100,12 @@ export class SimpleSupabaseAuth {
     return session?.access_token || null
   }
 
+  // Refresh session
+  static async refreshSession() {
+    console.log('SimpleSupabaseAuth: Refreshing session')
+    return await supabase.auth.refreshSession()
+  }
+
   // Auth state change listener
   static onAuthStateChange(callback: (user: User | null) => void) {
     return supabase.auth.onAuthStateChange((event, session) => {
