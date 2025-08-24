@@ -195,10 +195,11 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  // For development, allow unconfirmed emails to be authenticated
-  // In production, require email confirmation
+  // Check authentication - support both Supabase and custom verification
   const isAuthenticated = !!user?.id && !!user?.email && (
-    process.env.NODE_ENV === 'development' || !!user?.email_confirmed_at
+    process.env.NODE_ENV === 'development' || 
+    !!user?.email_confirmed_at || 
+    !!user?.user_metadata?.email_verified
   )
 
   console.log('SimpleAuthProvider: Current state:', {
