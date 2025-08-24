@@ -18,7 +18,7 @@ function createSupabaseAdmin() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json()
+    const { email, userId } = await request.json()
 
     if (!email) {
       return NextResponse.json(
@@ -42,11 +42,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const user = users.users.find(u => u.email === email)
+    // Use provided userId or find by email
+    let user
+    if (userId) {
+      user = users.users.find(u => u.id === userId)
+    } else {
+      user = users.users.find(u => u.email === email)
+    }
     
     if (!user) {
       return NextResponse.json(
-        { error: 'User not found with that email address' },
+        { error: 'User not found' },
         { status: 404 }
       )
     }

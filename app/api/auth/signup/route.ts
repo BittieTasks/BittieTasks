@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
       email: email,
       password,
       options: {
+        emailRedirectTo: undefined, // Disable Supabase email confirmation
         data: {
           first_name: firstName,
           last_name: lastName,

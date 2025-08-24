@@ -28,7 +28,7 @@ async function sendVerificationEmail(to: string, verificationUrl: string): Promi
     
     const msg = {
       to,
-      from: 'noreply@bittietasks.com', // Use verified SendGrid sender
+      from: 'noreply@em9217.bittietasks.com', // Use verified SendGrid sender
       subject: 'Verify Your BittieTasks Account',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -109,8 +109,10 @@ export class SimpleEmailVerification {
         return { success: false, error: 'Failed to store verification token' }
       }
 
-      // Create verification URL - use production domain www.bittietasks.com
-      const baseUrl = 'https://www.bittietasks.com'
+      // Create verification URL - use current domain
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://www.bittietasks.com' 
+        : 'http://localhost:5000'
       const verificationUrl = `${baseUrl}/verify-email?token=${token}`
       
       console.log('Generated verification URL:', verificationUrl)
