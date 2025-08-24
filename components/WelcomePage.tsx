@@ -128,11 +128,11 @@ export default function WelcomePage() {
   const router = useRouter()
 
   const handleSignUp = () => {
-    router.push('/auth/signup')
+    router.push('/auth')
   }
 
   const handleLogin = () => {
-    router.push('/auth/login')
+    router.push('/auth')
   }
 
   const handleViewTasks = () => {
