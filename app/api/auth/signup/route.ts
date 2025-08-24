@@ -74,25 +74,24 @@ export async function POST(request: NextRequest) {
 
     const supabaseAdmin = getSupabaseAdmin()
     
-    // Create user using admin client with email-first approach
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    // Create user using regular client - simpler and more reliable
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase.auth.signUp({
       email: email,
       password,
-      phone: phoneNumber || null, // Phone is optional
-      email_confirm: false, // Email needs verification
-      phone_confirm: phoneNumber ? false : true, // Phone verification optional
-      user_metadata: {
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: phoneNumber || null,
-        email: email,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          phone_number: phoneNumber || null,
+        }
       }
     })
 
     if (error) {
-      console.error('Supabase admin auth error:', error)
+      console.error('Supabase signup error:', error)
       return NextResponse.json(
-        { error: error.message },
+        { error: error.message || 'Failed to create account' },
         { status: 400 }
       )
     }
