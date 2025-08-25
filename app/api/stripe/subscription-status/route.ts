@@ -12,59 +12,51 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    // Get user subscription details from database
-    const { data: userProfile, error: profileError } = await supabase
-      .from('users')
-      .select(`
-        subscriptionTier,
-        subscriptionStatus,
-        monthlyTaskLimit,
-        monthlyTasksCompleted,
-        totalEarnings,
-        prioritySupport,
-        adFree,
-        premiumBadge,
-        stripeCustomerId,
-        stripeSubscriptionId,
-        subscriptionStartDate,
-        subscriptionEndDate
-      `)
-      .eq('id', user.id)
-      .single();
-
-    if (profileError) {
-      return NextResponse.json(
-        { error: 'User profile not found' },
-        { status: 404 }
-      );
-    }
+    // Return mock subscription data since database tables don't exist yet
+    // This allows the frontend to work while you set up the database
+    console.log('Using mock subscription data - database tables need to be created');
+    
+    const userProfile = {
+      subscription_tier: 'free',
+      subscription_status: 'active',
+      monthly_task_limit: 5,
+      monthly_tasks_completed: 0,
+      total_earnings: '0.00',
+      priority_support: false,
+      ad_free: false,
+      premium_badge: false,
+      stripe_customer_id: null,
+      stripe_subscription_id: null,
+      subscription_start_date: null,
+      subscription_end_date: null
+    };
 
     // Calculate platform fee based on subscription tier
     let platformFee = 0.10; // 10% for free
-    if (userProfile.subscriptionTier === 'pro') {
+    if (userProfile.subscription_tier === 'pro') {
       platformFee = 0.07; // 7% for pro
-    } else if (userProfile.subscriptionTier === 'premium') {
+    } else if (userProfile.subscription_tier === 'premium') {
       platformFee = 0.05; // 5% for premium
     }
 
     return NextResponse.json({
       subscription: {
-        tier: userProfile.subscriptionTier || 'free',
-        status: userProfile.subscriptionStatus || 'active',
-        monthlyTaskLimit: userProfile.monthlyTaskLimit || 5,
-        monthlyTasksCompleted: userProfile.monthlyTasksCompleted || 0,
-        totalEarnings: userProfile.totalEarnings || '0.00',
+        tier: userProfile.subscription_tier || 'free',
+        status: userProfile.subscription_status || 'active',
+        monthlyTaskLimit: userProfile.monthly_task_limit || 5,
+        monthlyTasksCompleted: userProfile.monthly_tasks_completed || 0,
+        totalEarnings: userProfile.total_earnings || '0.00',
         platformFee: platformFee,
         features: {
-          prioritySupport: userProfile.prioritySupport || false,
-          adFree: userProfile.adFree || false,
-          premiumBadge: userProfile.premiumBadge || false
+          prioritySupport: userProfile.priority_support || false,
+          adFree: userProfile.ad_free || false,
+          premiumBadge: userProfile.premium_badge || false
         },
         billing: {
-          customerId: userProfile.stripeCustomerId,
-          subscriptionId: userProfile.stripeSubscriptionId,
-          startDate: userProfile.subscriptionStartDate,
-          endDate: userProfile.subscriptionEndDate
+          customerId: userProfile.stripe_customer_id,
+          subscriptionId: userProfile.stripe_subscription_id,
+          startDate: userProfile.subscription_start_date,
+          endDate: userProfile.subscription_end_date
         }
       }
     });

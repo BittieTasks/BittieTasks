@@ -15,13 +15,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
+    // Simplified query without foreign key relationships for now
     let query = supabase
       .from('tasks')
-      .select(`
-        *,
-        creator:users!tasks_creator_id_fkey(id, email, phone),
-        category:categories(id, name)
-      `)
+      .select('*')
       .eq('status', 'open')
       .order('created_at', { ascending: false })
 

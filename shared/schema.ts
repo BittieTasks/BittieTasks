@@ -517,12 +517,109 @@ export const userFormSchema = z.object({
 
 
 
-// Update existing tasks relations to include messages
-export const tasksRelations = relations(tasks, ({ many }) => ({
+// Complete relations for all tables - needed for Drizzle joins to work
+export const usersRelations = relations(users, ({ many }) => ({
+  createdTasks: many(tasks, { relationName: "taskCreator" }),
+  taskParticipations: many(taskParticipants),
+  transactions: many(transactions),
+  achievements: many(userAchievements),
+  sentMessages: many(messages, { relationName: "messageSender" }),
+  receivedMessages: many(messages, { relationName: "messageReceiver" }),
+  verificationHistory: many(userVerificationHistory),
+  earnings: many(userEarnings),
+}));
+
+export const tasksRelations = relations(tasks, ({ one, many }) => ({
+  creator: one(users, {
+    fields: [tasks.creatorId],
+    references: [users.id],
+    relationName: "taskCreator"
+  }),
+  category: one(categories, {
+    fields: [tasks.categoryId],
+    references: [categories.id]
+  }),
   participants: many(taskParticipants),
   verifications: many(taskCompletionSubmissions),
+  verificationRequirements: many(taskVerificationRequirements),
   transactions: many(transactions),
   messages: many(messages),
+  approvalLogs: many(taskApprovalLogs),
+  payments: many(payments),
+  aiVerifications: many(taskVerifications),
+}));
+
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  tasks: many(tasks),
+}));
+
+export const taskParticipantsRelations = relations(taskParticipants, ({ one }) => ({
+  task: one(tasks, {
+    fields: [taskParticipants.taskId],
+    references: [tasks.id]
+  }),
+  user: one(users, {
+    fields: [taskParticipants.userId],
+    references: [users.id]
+  }),
+}));
+
+export const transactionsRelations = relations(transactions, ({ one }) => ({
+  user: one(users, {
+    fields: [transactions.userId],
+    references: [users.id]
+  }),
+  task: one(tasks, {
+    fields: [transactions.taskId],
+    references: [tasks.id]
+  }),
+}));
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+  sender: one(users, {
+    fields: [messages.senderId],
+    references: [users.id],
+    relationName: "messageSender"
+  }),
+  receiver: one(users, {
+    fields: [messages.receiverId],
+    references: [users.id],
+    relationName: "messageReceiver"
+  }),
+  task: one(tasks, {
+    fields: [messages.taskId],
+    references: [tasks.id]
+  }),
+}));
+
+export const taskCompletionSubmissionsRelations = relations(taskCompletionSubmissions, ({ one }) => ({
+  task: one(tasks, {
+    fields: [taskCompletionSubmissions.taskId],
+    references: [tasks.id]
+  }),
+  user: one(users, {
+    fields: [taskCompletionSubmissions.userId],
+    references: [users.id]
+  }),
+  participant: one(taskParticipants, {
+    fields: [taskCompletionSubmissions.participantId],
+    references: [taskParticipants.id]
+  }),
+}));
+
+export const achievementsRelations = relations(achievements, ({ many }) => ({
+  userAchievements: many(userAchievements),
+}));
+
+export const userAchievementsRelations = relations(userAchievements, ({ one }) => ({
+  user: one(users, {
+    fields: [userAchievements.userId],
+    references: [users.id]
+  }),
+  achievement: one(achievements, {
+    fields: [userAchievements.achievementId],
+    references: [achievements.id]
+  }),
 }));
 
 // Type exports for forms
