@@ -12,51 +12,71 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    // Return mock subscription data since database tables don't exist yet
-    // This allows the frontend to work while you set up the database
-    console.log('Using mock subscription data - database tables need to be created');
-    
-    const userProfile = {
-      subscription_tier: 'free',
-      subscription_status: 'active',
-      monthly_task_limit: 5,
-      monthly_tasks_completed: 0,
-      total_earnings: '0.00',
-      priority_support: false,
-      ad_free: false,
-      premium_badge: false,
-      stripe_customer_id: null,
-      stripe_subscription_id: null,
-      subscription_start_date: null,
-      subscription_end_date: null
-    };
+    // Get user subscription details from database, create profile if doesn't exist
+    let { data: userProfile, error: profileError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    // If user profile doesn't exist, create it with default values
+    if (profileError && profileError.code === 'PGRST116') {
+      const { data: newProfile, error: createError } = await supabase
+        .from('users')
+        .insert({
+          id: user.id,
+          email: user.email,
+          phone_number: user.phone || '', 
+          first_name: user.user_metadata?.first_name || '',
+          last_name: user.user_metadata?.last_name || ''
+        })
+        .select('*')
+        .single();
+
+      if (createError) {
+        console.error('Error creating user profile:', createError);
+        return NextResponse.json(
+          { error: 'Failed to create user profile' },
+          { status: 500 }
+        );
+      }
+      
+      userProfile = newProfile;
+    } else if (profileError) {
+      console.error('Error fetching user profile:', profileError);
+      return NextResponse.json(
+        { error: 'Failed to fetch user profile' },
+        { status: 500 }
+      );
+    }
 
     // Calculate platform fee based on subscription tier
     let platformFee = 0.10; // 10% for free
-    if (userProfile.subscription_tier === 'pro') {
+    const tier = userProfile?.subscription_tier || 'free';
+    if (tier === 'pro') {
       platformFee = 0.07; // 7% for pro
-    } else if (userProfile.subscription_tier === 'premium') {
+    } else if (tier === 'premium') {
       platformFee = 0.05; // 5% for premium
     }
 
     return NextResponse.json({
       subscription: {
-        tier: userProfile.subscription_tier || 'free',
-        status: userProfile.subscription_status || 'active',
-        monthlyTaskLimit: userProfile.monthly_task_limit || 5,
-        monthlyTasksCompleted: userProfile.monthly_tasks_completed || 0,
-        totalEarnings: userProfile.total_earnings || '0.00',
+        tier: tier,
+        status: userProfile?.subscription_status || 'active',
+        monthlyTaskLimit: userProfile?.monthly_task_limit || 5,
+        monthlyTasksCompleted: userProfile?.monthly_tasks_completed || 0,
+        totalEarnings: userProfile?.total_earnings || '0.00',
         platformFee: platformFee,
         features: {
-          prioritySupport: userProfile.priority_support || false,
-          adFree: userProfile.ad_free || false,
-          premiumBadge: userProfile.premium_badge || false
+          prioritySupport: userProfile?.priority_support || false,
+          adFree: userProfile?.ad_free || false,
+          premiumBadge: userProfile?.premium_badge || false
         },
         billing: {
-          customerId: userProfile.stripe_customer_id,
-          subscriptionId: userProfile.stripe_subscription_id,
-          startDate: userProfile.subscription_start_date,
-          endDate: userProfile.subscription_end_date
+          customerId: userProfile?.stripe_customer_id || null,
+          subscriptionId: userProfile?.stripe_subscription_id || null,
+          startDate: userProfile?.subscription_start_date || null,
+          endDate: userProfile?.subscription_end_date || null
         }
       }
     });
