@@ -1,7 +1,6 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
-import { SimpleSupabaseAuth } from '@/lib/simple-supabase-auth'
 
 interface AuthContextType {
   user: any | null
@@ -31,89 +30,38 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Initialize auth state with session recovery
+  // Initialize auth state using SSR API endpoint
   const initializeAuth = useCallback(async () => {
     try {
-      console.log('SimpleAuthProvider: Initializing authentication...')
+      console.log('SimpleAuthProvider: Initializing authentication with SSR...')
       
-      // Force refresh the session first
-      const { data: refreshedSession } = await SimpleSupabaseAuth.refreshSession()
-      
-      // Get session from Supabase directly
-      const session = await SimpleSupabaseAuth.getSession()
-      console.log('SimpleAuthProvider: Session check result:', {
-        hasSession: !!session,
-        hasUser: !!session?.user,
-        userEmail: session?.user?.email,
-        expiresAt: session?.expires_at,
-        refreshed: !!refreshedSession
+      // Use SSR API endpoint to get current user (respects server-side session)
+      const response = await fetch('/api/auth/user', {
+        method: 'GET',
+        credentials: 'include', // Include cookies for SSR session
       })
       
-      if (session?.user) {
-        console.log('SimpleAuthProvider: Restoring user from session:', session.user.email)
-        setUser(session.user)
-        setLoading(false)
-        return
+      if (response.ok) {
+        const user = await response.json()
+        console.log('SimpleAuthProvider: Current user from SSR:', user?.email || 'none')
+        setUser(user)
+      } else {
+        console.log('SimpleAuthProvider: No authenticated user found (status:', response.status, ')')
+        setUser(null)
       }
       
-      console.log('SimpleAuthProvider: No valid session found, user not authenticated')
-      setUser(null)
       setLoading(false)
     } catch (error) {
-      console.error('SimpleAuthProvider: Error initializing auth:', error)
+      console.error('SimpleAuthProvider: Error getting current user:', error)
       setUser(null)
       setLoading(false)
     }
   }, [])
 
-  // Set up auth state listener
+  // Initialize auth on mount (SSR approach doesn't need auth state listener)
   useEffect(() => {
-    let mounted = true
-    
-    console.log('SimpleAuthProvider: Setting up auth state monitoring...')
-    
-    // Initialize auth on mount
+    console.log('SimpleAuthProvider: Setting up SSR-based authentication...')
     initializeAuth()
-
-    // Set up auth state listener
-    let subscription: any = null
-    
-    try {
-      const authListener = SimpleSupabaseAuth.onAuthStateChange((authUser) => {
-        if (!mounted) return
-        
-        console.log('SimpleAuthProvider: Auth state changed to:', {
-          hasUser: !!authUser,
-          email: authUser?.email,
-          emailConfirmed: authUser?.email_confirmed_at
-        })
-        
-        setUser(authUser)
-        setLoading(false)
-      })
-      
-      subscription = authListener?.data?.subscription
-    } catch (error) {
-      console.error('SimpleAuthProvider: Error setting up auth listener:', error)
-      setLoading(false)
-    }
-
-    // Backup timeout to prevent infinite loading
-    const backupTimeout = setTimeout(() => {
-      if (mounted) {
-        console.log('SimpleAuthProvider: Backup timeout triggered, resolving loading state')
-        setLoading(false)
-      }
-    }, 3000) // 3 second timeout
-
-    // Cleanup subscription on unmount
-    return () => {
-      mounted = false
-      clearTimeout(backupTimeout)
-      if (subscription && typeof subscription.unsubscribe === 'function') {
-        subscription.unsubscribe()
-      }
-    }
   }, [initializeAuth])
 
   const signIn = async (email: string, password: string) => {
@@ -121,24 +69,26 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       console.log('SimpleAuthProvider: Starting sign in for:', email)
       setLoading(true)
       
-      const result = await SimpleSupabaseAuth.signIn(email, password)
+      // Use the SSR API endpoint instead of direct Supabase client
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
       
-      // Set user immediately if we got one from the API
-      if (result.user && result.session) {
-        console.log('SimpleAuthProvider: Sign in successful, setting user immediately')
-        setUser(result.user)
-        setLoading(false)
-      } else {
-        console.log('SimpleAuthProvider: Sign in API call successful, waiting for auth state change')
-        // Fallback timeout in case auth state change doesn't fire
-        setTimeout(() => {
-          setLoading(false)
-        }, 2000)
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Sign in failed')
       }
+      
+      // Refresh auth state after successful login
+      await initializeAuth()
+      setLoading(false)
       
       return { 
         success: true, 
-        needsEmailConfirmation: result.needsEmailConfirmation 
+        needsEmailConfirmation: false // SSR handles email confirmation
       }
     } catch (error: any) {
       console.error('SimpleAuthProvider: Sign in failed:', error.message)
@@ -152,14 +102,29 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       console.log('SimpleAuthProvider: Starting sign up for:', email)
       setLoading(true)
       
-      const result = await SimpleSupabaseAuth.signUp(email, password, userData)
+      // Use the SSR API endpoint instead of direct Supabase client
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          firstName: userData?.firstName,
+          lastName: userData?.lastName
+        }),
+      })
       
-      // Don't set user here - let the auth state listener handle it
-      console.log('SimpleAuthProvider: Sign up API call successful')
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Sign up failed')
+      }
+      
+      setLoading(false)
       
       return { 
         success: true, 
-        needsEmailConfirmation: result.needsEmailConfirmation 
+        needsEmailConfirmation: true 
       }
     } catch (error: any) {
       console.error('SimpleAuthProvider: Sign up failed:', error.message)
@@ -172,7 +137,10 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('SimpleAuthProvider: Signing out user')
       setLoading(true)
-      await SimpleSupabaseAuth.signOut()
+      
+      // Use the SSR API endpoint for consistent session management
+      await fetch('/api/auth/logout', { method: 'POST' })
+      
       setUser(null)
       // Redirect to home page after sign out
       window.location.href = '/'
@@ -195,12 +163,8 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  // Check authentication - support both Supabase and custom verification
-  const isAuthenticated = !!user?.id && !!user?.email && (
-    process.env.NODE_ENV === 'development' || 
-    !!user?.email_confirmed_at || 
-    !!user?.user_metadata?.email_verified
-  )
+  // Check authentication - user exists and has valid data
+  const isAuthenticated = !!user?.id && !!user?.email
 
   console.log('SimpleAuthProvider: Current state:', {
     hasUser: !!user,

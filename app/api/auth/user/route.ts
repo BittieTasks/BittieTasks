@@ -1,27 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
 export async function GET(request: NextRequest) {
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          // Cannot set cookies in GET request
+        },
+        remove(name: string, options: CookieOptions) {
+          // Cannot remove cookies in GET request
+        },
+      },
+    }
+  )
+
   try {
-    // Get authorization token from header
-    const authHeader = request.headers.get('authorization') || ''
-    const token = authHeader.replace('Bearer ', '')
-
-    if (!token) {
-      console.log('API /auth/user: No authorization token provided')
-      return NextResponse.json({ error: 'No authorization token' }, { status: 401 })
+    // Get the current session and user using SSR cookies
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    
+    if (sessionError) {
+      console.error('Error getting session:', sessionError)
+      return NextResponse.json({ error: 'Session error' }, { status: 401 })
     }
 
-    // Create Supabase client with the token
-    const supabase = createServerClient(request)
-    
-    // Get user using the provided token
-    const { data: { user }, error } = await supabase.auth.getUser(token)
-    
-    if (error || !user) {
-      console.log('API /auth/user: Invalid token or user not found:', error?.message)
-      return NextResponse.json({ error: 'Invalid authentication' }, { status: 401 })
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'No authenticated user' }, { status: 401 })
     }
+
+    const user = session.user
 
     // Return comprehensive user data
     const userData = {
