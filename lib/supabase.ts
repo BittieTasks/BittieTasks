@@ -101,7 +101,7 @@ function getAuthHeaderFromCookies(request: NextRequest | Request): string {
 export const createServiceClient = () => {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
   // Use fallback URL for production compatibility
-  const serverUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || supabaseUrl
+  const serverUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || supabaseUrl || 'https://placeholder.supabase.co'
   
   if (!serviceRoleKey) {
     console.error('SUPABASE_SERVICE_ROLE_KEY missing. Available keys:', Object.keys(process.env).filter(k => k.includes('SUPABASE')))
