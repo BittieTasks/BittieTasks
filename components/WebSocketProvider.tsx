@@ -26,29 +26,26 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const wsUrl = `${protocol}//${window.location.host}/ws`
     
-    console.log('Connecting to WebSocket:', wsUrl)
     const socket = new WebSocket(wsUrl)
 
     socket.onopen = () => {
-      console.log('WebSocket connected')
       setIsConnected(true)
     }
 
     socket.onclose = (event) => {
-      console.log('WebSocket disconnected:', event.code, event.reason)
       setIsConnected(false)
       
-      // Attempt reconnection after 3 seconds
-      setTimeout(() => {
-        if (!ws || ws.readyState === WebSocket.CLOSED) {
-          console.log('Attempting to reconnect WebSocket...')
-          setWs(new WebSocket(wsUrl))
-        }
-      }, 3000)
+      // Only attempt reconnection in development
+      if (process.env.NODE_ENV === 'development') {
+        setTimeout(() => {
+          if (!ws || ws.readyState === WebSocket.CLOSED) {
+            setWs(new WebSocket(wsUrl))
+          }
+        }, 5000) // Increased to 5 seconds to be less aggressive
+      }
     }
 
     socket.onerror = (error) => {
-      console.error('WebSocket error:', error)
       setIsConnected(false)
     }
 
@@ -59,7 +56,10 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         const callbacks = subscribers.get(channel) || []
         callbacks.forEach(callback => callback(message.data))
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error)
+        // Silently handle parsing errors in production
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error parsing WebSocket message:', error)
+        }
       }
     }
 

@@ -33,8 +33,6 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
   // Initialize auth state using SSR API endpoint
   const initializeAuth = useCallback(async () => {
     try {
-      console.log('SimpleAuthProvider: Initializing authentication with SSR...')
-      
       // Use SSR API endpoint to get current user (respects server-side session)
       const response = await fetch('/api/auth/user', {
         method: 'GET',
@@ -43,16 +41,17 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       
       if (response.ok) {
         const user = await response.json()
-        console.log('SimpleAuthProvider: Current user from SSR:', user?.email || 'none')
         setUser(user)
       } else {
-        console.log('SimpleAuthProvider: No authenticated user found (status:', response.status, ')')
         setUser(null)
       }
       
       setLoading(false)
     } catch (error) {
-      console.error('SimpleAuthProvider: Error getting current user:', error)
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('SimpleAuthProvider: Error getting current user:', error)
+      }
       setUser(null)
       setLoading(false)
     }
@@ -60,13 +59,11 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
 
   // Initialize auth on mount (SSR approach doesn't need auth state listener)
   useEffect(() => {
-    console.log('SimpleAuthProvider: Setting up SSR-based authentication...')
     initializeAuth()
   }, [initializeAuth])
 
   const signIn = async (email: string, password: string) => {
     try {
-      console.log('SimpleAuthProvider: Starting sign in for:', email)
       setLoading(true)
       
       // Use the SSR API endpoint instead of direct Supabase client
@@ -91,7 +88,6 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
         needsEmailConfirmation: false // SSR handles email confirmation
       }
     } catch (error: any) {
-      console.error('SimpleAuthProvider: Sign in failed:', error.message)
       setLoading(false)
       throw new Error(error.message || 'Sign in failed')
     }
@@ -99,7 +95,6 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
 
   const signUp = async (email: string, password: string, userData?: any) => {
     try {
-      console.log('SimpleAuthProvider: Starting sign up for:', email)
       setLoading(true)
       
       // Use the SSR API endpoint instead of direct Supabase client
@@ -127,7 +122,6 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
         needsEmailConfirmation: true 
       }
     } catch (error: any) {
-      console.error('SimpleAuthProvider: Sign up failed:', error.message)
       setLoading(false)
       throw new Error(error.message || 'Sign up failed')
     }
@@ -135,7 +129,6 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
 
   const signOut = async () => {
     try {
-      console.log('SimpleAuthProvider: Signing out user')
       setLoading(true)
       
       // Use the SSR API endpoint for consistent session management
@@ -145,7 +138,6 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       // Redirect to home page after sign out
       window.location.href = '/'
     } catch (error) {
-      console.error('SimpleAuthProvider: Sign out error:', error)
       // Even if API call fails, clear local state and redirect
       setUser(null)
       window.location.href = '/'
@@ -156,22 +148,15 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
 
   const refreshAuth = async () => {
     try {
-      console.log('SimpleAuthProvider: Refreshing authentication state')
       await initializeAuth()
     } catch (error) {
-      console.error('SimpleAuthProvider: Error refreshing auth:', error)
+      // Silently handle refresh errors
     }
   }
 
   // Check authentication - user exists and has valid data
   const isAuthenticated = !!user?.id && !!user?.email
 
-  console.log('SimpleAuthProvider: Current state:', {
-    hasUser: !!user,
-    userEmail: user?.email,
-    isAuthenticated,
-    loading
-  })
 
   return (
     <AuthContext.Provider value={{
