@@ -14,28 +14,10 @@ export async function OPTIONS(request: NextRequest) {
   return addCorsHeaders(new NextResponse(null, { status: 200 }))
 }
 
-// Regular client for general operations - only create when needed
-function getSupabaseClient() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    throw new Error('NEXT_PUBLIC_SUPABASE_URL is required')
-  }
-  if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    throw new Error('NEXT_PUBLIC_SUPABASE_ANON_KEY is required')
-  }
-  
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  )
-}
-
-// Admin client with service role key for bypassing restrictions
-function getSupabaseAdmin() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    throw new Error('NEXT_PUBLIC_SUPABASE_URL is required')
-  }
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required')
+// Standardized admin client function
+function createSupabaseAdmin() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Missing required Supabase environment variables')
   }
   
   return createClient(
@@ -72,8 +54,8 @@ export async function POST(request: NextRequest) {
     // For email-first verification, skip phone verification requirement
     // Users can still provide phone for optional features later
     
-    // For testing - create user with admin client and mark as verified immediately
-    const supabaseAdmin = getSupabaseAdmin()
+    // Create user with admin client and mark as verified immediately
+    const supabaseAdmin = createSupabaseAdmin()
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email: email,
       password,
@@ -88,8 +70,17 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Supabase signup error:', error)
+      
+      // Handle specific error cases for better UX
+      let errorMessage = 'Failed to create account'
+      if (error.message.includes('already registered') || error.message.includes('already exists')) {
+        errorMessage = 'An account with this email already exists. Please sign in instead.'
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
       return NextResponse.json(
-        { error: error.message || 'Failed to create account' },
+        { error: errorMessage },
         { status: 400 }
       )
     }
@@ -110,8 +101,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       user: data.user,
-      message: 'Account created successfully! Please check your email for verification.',
-      needsVerification: true
+      message: 'Account created successfully! You can now sign in.',
+      needsVerification: false
     })
   } catch (error) {
     console.error('Sign up error:', error)

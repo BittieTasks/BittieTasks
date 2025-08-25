@@ -142,7 +142,7 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       
       return { 
         success: true, 
-        needsEmailConfirmation: true 
+        needsEmailConfirmation: false // Users are auto-verified for testing
       }
     } catch (error: any) {
       setLoading(false)

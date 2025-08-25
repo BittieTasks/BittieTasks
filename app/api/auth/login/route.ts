@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         name: 'sb-access-token',
         value: data.session.access_token,
         httpOnly: true,
-        secure: false, // Allow HTTP in development
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         maxAge,
         path: '/',
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
         name: 'sb-refresh-token', 
         value: data.session.refresh_token,
         httpOnly: true,
-        secure: false, // Allow HTTP in development
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         maxAge,
         path: '/',

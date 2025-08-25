@@ -23,8 +23,6 @@ export default function AuthPage() {
     lastName: '',
   })
   const [activeTab, setActiveTab] = useState('signin')
-  const [resendEmail, setResendEmail] = useState('')
-  const [resendLoading, setResendLoading] = useState(false)
   
   const { signIn, signUp, isAuthenticated, loading: authLoading } = useAuth()
   const { toast } = useToast()
@@ -71,49 +69,6 @@ export default function AuthPage() {
     }))
   }
 
-  const handleResendVerification = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!resendEmail) {
-      toast({
-        title: 'Email Required',
-        description: 'Please enter your email address to resend verification.',
-        variant: 'destructive',
-      })
-      return
-    }
-    
-    setResendLoading(true)
-    
-    try {
-      const response = await fetch('/api/auth/resend-verification', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: resendEmail }),
-      })
-      
-      if (response.ok) {
-        toast({
-          title: 'Verification Email Sent',
-          description: 'Please check your email for the verification link.',
-        })
-        setResendEmail('')
-      } else {
-        toast({
-          title: 'Failed to Send Email',
-          description: 'Please try again or contact support if the problem persists.',
-          variant: 'destructive',
-        })
-      }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to send verification email. Please try again.',
-        variant: 'destructive',
-      })
-    } finally {
-      setResendLoading(false)
-    }
-  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -451,38 +406,6 @@ export default function AuthPage() {
             </CardContent>
           </Card>
 
-          {/* Resend Verification */}
-          <Card className="bg-white shadow-lg border border-gray-200 mt-6">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">Need to Resend Verification Email?</CardTitle>
-              <CardDescription>
-                If you didn't receive your verification email, enter your email below to request a new one.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleResendVerification} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="resendEmail">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="resendEmail"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={resendEmail}
-                      onChange={(e) => setResendEmail(e.target.value)}
-                      className="pl-10 input-clean"
-                      required
-                    />
-                  </div>
-                </div>
-                <Button type="submit" className="w-full" variant="outline" disabled={resendLoading}>
-                  {resendLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Resend Verification Email
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
 
           {/* Footer */}
           <div className="text-center mt-8">
