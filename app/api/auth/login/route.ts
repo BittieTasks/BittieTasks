@@ -81,20 +81,22 @@ export async function POST(request: NextRequest) {
         name: 'sb-access-token',
         value: data.session.access_token,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: false, // Allow HTTP in development
         sameSite: 'lax',
         maxAge,
-        path: '/'
+        path: '/',
+        domain: undefined // Let browser determine domain
       })
 
       response.cookies.set({
         name: 'sb-refresh-token', 
         value: data.session.refresh_token,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: false, // Allow HTTP in development
         sameSite: 'lax',
         maxAge,
-        path: '/'
+        path: '/',
+        domain: undefined // Let browser determine domain
       })
     }
 
