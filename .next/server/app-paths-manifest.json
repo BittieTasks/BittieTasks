@@ -1,6 +1,7 @@
 {
   "/api/auth/login/route": "app/api/auth/login/route.js",
-  "/api/stripe/subscription-status/route": "app/api/stripe/subscription-status/route.js",
-  "/api/auth/user/route": "app/api/auth/user/route.js",
-  "/api/tasks/route": "app/api/tasks/route.js"
+  "/api/tasks/route": "app/api/tasks/route.js",
+  "/api/auth/send-verification/route": "app/api/auth/send-verification/route.js",
+  "/api/messages/[taskId]/route": "app/api/messages/[taskId]/route.js",
+  "/api/stripe/subscription-status/route": "app/api/stripe/subscription-status/route.js"
 }
