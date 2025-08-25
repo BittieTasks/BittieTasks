@@ -38,11 +38,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 })
 
 // Server-side Supabase instance for API routes
-// Uses cookies/headers automatically for authentication
+// Uses session cookies for authentication (consistent with login system)
 export const createServerClient = (request: NextRequest | Request) => {
-  // Get the authorization header for Supabase auth
-  const authHeader = request.headers.get('authorization') || request.headers.get('Authorization') || ''
-  
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       autoRefreshToken: false,
@@ -50,10 +47,33 @@ export const createServerClient = (request: NextRequest | Request) => {
     },
     global: {
       headers: {
-        Authorization: authHeader
+        // Set authorization header from session cookies if available
+        Authorization: getAuthHeaderFromCookies(request)
       }
     }
   })
+}
+
+// Helper function to extract auth token from session cookies
+function getAuthHeaderFromCookies(request: NextRequest | Request): string {
+  // For NextRequest (Next.js API routes)
+  if ('cookies' in request && typeof request.cookies.get === 'function') {
+    const accessToken = request.cookies.get('sb-access-token')?.value
+    if (accessToken) {
+      return `Bearer ${accessToken}`
+    }
+  }
+  
+  // For standard Request objects, parse cookie header manually
+  const cookieHeader = request.headers.get('cookie')
+  if (cookieHeader) {
+    const match = cookieHeader.match(/sb-access-token=([^;]+)/)
+    if (match && match[1]) {
+      return `Bearer ${match[1]}`
+    }
+  }
+  
+  return ''
 }
 
 // Service role client for admin operations (separate function)

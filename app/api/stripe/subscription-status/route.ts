@@ -1,30 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { createServerClient } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get authenticated user
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { error: 'Authorization required' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.substring(7);
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const supabase = createServerClient(request)
     
+    // Get current user using session cookies (consistent with other routes)
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Invalid authentication' },
-        { status: 401 }
-      );
+      console.error('GET /api/stripe/subscription-status auth error:', authError?.message)
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
     // Get user subscription details from database
