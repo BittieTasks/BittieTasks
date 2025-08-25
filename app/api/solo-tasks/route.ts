@@ -1,26 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { everydayTasks } from '@/lib/everydayTasks'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { createServerClient } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Solo tasks GET endpoint called')
+    const supabase = createServerClient(request)
     
-    // Return all available solo tasks
+    // Get current user using Supabase auth
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      console.error('GET /api/solo-tasks auth error:', authError?.message)
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
+
+    console.log('Solo tasks GET endpoint called for user:', user.id)
+    
+    // Query real database for solo tasks - only approved tasks
+    const { data: tasks, error } = await supabase
+      .from('tasks')
+      .select(`
+        *,
+        creator:users!tasks_creator_id_fkey(id, email, first_name, last_name)
+      `)
+      .eq('type', 'solo')
+      .eq('status', 'open')
+      .eq('approval_status', 'approved')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching solo tasks from database:', error)
+      return NextResponse.json({ error: 'Failed to fetch solo tasks' }, { status: 500 })
+    }
+
+    console.log(`Found ${tasks?.length || 0} real solo tasks in database`)
+    
+    // Return real database tasks
     const response = {
       success: true,
-      tasks: everydayTasks.map(task => ({
-        ...task,
-        platform_funded: true,
-        completion_limit: 5, // Daily limit per user
-        verification_type: 'photo'
-      })),
-      total: everydayTasks.length
+      tasks: tasks || [],
+      total: tasks?.length || 0
     }
     
     return NextResponse.json(response)
@@ -36,7 +53,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('Solo task application endpoint called')
+    const supabase = createServerClient(request)
+    
+    // Get current user using Supabase auth
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      console.error('POST /api/solo-tasks auth error:', authError?.message)
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
 
     const body = await request.json()
     const { taskId, task_id, applicationMessage, application_message } = body
@@ -46,30 +70,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Task ID is required' }, { status: 400 })
     }
 
-    // Validate task exists
-    const task = everydayTasks.find(t => t.id === actualTaskId)
-    if (!task) {
-      return NextResponse.json({ error: 'Solo task not found' }, { status: 404 })
-    }
-
-    // Get user from authorization header
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader) {
-      return NextResponse.json({ error: 'Authorization required' }, { status: 401 })
-    }
-
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user } } = await supabase.auth.getUser(token)
-    
-    if (!user) {
-      return NextResponse.json({ error: 'Invalid authentication' }, { status: 401 })
-    }
-
     console.log('Processing solo task application:', {
       userId: user.id,
-      taskId: actualTaskId,
-      taskTitle: task.title
+      taskId: actualTaskId
     })
+
+    // Validate task exists in database
+    const { data: task, error: taskError } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('id', actualTaskId)
+      .eq('type', 'solo')
+      .eq('status', 'open')
+      .eq('approval_status', 'approved')
+      .single()
+
+    if (taskError || !task) {
+      return NextResponse.json({ error: 'Solo task not found or not available' }, { status: 404 })
+    }
 
     // Check daily completion limit
     const today = new Date().toISOString().split('T')[0]
@@ -94,19 +112,21 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Create application record
+    // Create application record using real task data
+    const payoutAmount = parseFloat(task.earning_potential) || 0
+    const platformFee = Math.round(payoutAmount * 0.03 * 100) / 100 // 3% fee
+    const netPayout = Math.round((payoutAmount - platformFee) * 100) / 100
+
     const applicationData = {
-      id: `solo_${Date.now()}_${user.id.slice(-8)}`,
       user_id: user.id,
       task_id: actualTaskId,
       task_title: task.title,
       task_type: 'solo',
       status: 'applied',
       application_message: applicationMessage || application_message || 'Applied for solo task',
-      payout_amount: task.payout,
-      platform_fee: Math.round(task.payout * 0.03), // 3% fee
-      net_payout: Math.round(task.payout * 0.97),
-      created_at: new Date().toISOString(),
+      payout_amount: payoutAmount,
+      platform_fee: platformFee,
+      net_payout: netPayout,
       deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hour deadline
     }
 
@@ -129,7 +149,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       application: application,
-      message: `Successfully applied for "${task.title}". Complete the task and submit verification to earn $${task.payout}.`,
+      message: `Successfully applied for "${task.title}". Complete the task and submit verification to earn $${payoutAmount}.`,
       next_step: 'verification_required'
     })
 

@@ -60,26 +60,26 @@ export default function SoloTasksSection() {
     }
   })
 
-  // Transform everyday tasks to match component interface
-  const transformEverydayTask = (task: any): Task => ({
+  // Transform database tasks to match component interface
+  const transformDatabaseTask = (task: any): Task => ({
     id: task.id,
     title: task.title,
     description: task.description,
-    category: task.category,
+    category: task.category_id || 'Solo',
     type: 'solo',
-    payout: task.net_payout || task.payout,
-    location: task.location_type === 'home' ? 'Your Home' : 'Local Area',
-    time_commitment: task.time_estimate,
-    requirements: task.materials_needed || [],
+    payout: parseFloat(task.earning_potential) || 0,
+    location: task.location || task.city || 'Local Area',
+    time_commitment: task.duration || '1-3 hours',
+    requirements: task.requirements ? task.requirements.split(',') : ['Smartphone', 'Camera'],
     platform_funded: true,
-    completion_limit: task.daily_limit || 5,
+    completion_limit: task.max_participants || 5,
     verification_type: 'photo',
-    current_participants: task.daily_completed || 0,
-    max_participants: task.daily_limit || 5
+    current_participants: task.current_participants || 0,
+    max_participants: task.max_participants || 5
   })
 
-  // Use solo tasks from API response
-  const availableTasks = apiResponse?.tasks ? apiResponse.tasks.map(transformEverydayTask) : []
+  // Use solo tasks from real database API response
+  const availableTasks = apiResponse?.tasks ? apiResponse.tasks.map(transformDatabaseTask) : []
 
   const handleApplyToTask = (task: Task) => {
     console.log('Solo task application - Auth check:', {

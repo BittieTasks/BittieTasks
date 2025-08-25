@@ -1,7 +1,11 @@
-// Complete set of 25 everyday adult tasks for Solo category
-// These are activities that most adults do regularly regardless of age or skill level
+// ⚠️ DEPRECATED MOCK DATA - DO NOT USE IN PRODUCTION! ⚠️
+// This file contains mock data that was replaced with real database queries
+// BittieTasks now uses LIVE database data via /api/solo-tasks and /api/tasks
+// This file is kept for reference only - DO NOT IMPORT OR USE
 
 import { TaskData } from './taskData'
+
+// WARNING: This is MOCK DATA - BittieTasks uses REAL database data now!
 
 export const everydayTasks: TaskData[] = [
   // Daily Household Tasks (8 tasks)
