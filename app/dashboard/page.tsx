@@ -4,8 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function DashboardPage() {
-  // This page should use the unified app router with sidebar navigation
-  // Redirect to use the proper navigation system
+  // This is the main dashboard page that loads the unified app interface
   const router = useRouter()
   
   useEffect(() => {

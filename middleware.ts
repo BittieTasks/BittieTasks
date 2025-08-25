@@ -64,7 +64,9 @@ export async function middleware(request: NextRequest) {
   if (isProtectedPath && !session) {
     // Redirect to login if accessing protected route without session
     const redirectUrl = new URL('/auth', request.url)
-    redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname)
+    // Optimize redirect: if accessing /dashboard, redirect to /dashboard-app instead to avoid double redirect
+    const targetPath = request.nextUrl.pathname === '/dashboard' ? '/dashboard-app' : request.nextUrl.pathname
+    redirectUrl.searchParams.set('redirectTo', targetPath)
     return NextResponse.redirect(redirectUrl)
   }
 
