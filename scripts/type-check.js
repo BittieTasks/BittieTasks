@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// Simple type-check script for Vercel deployment
-const { execSync } = require('child_process');
+// Simple type-check script for Vercel deployment  
+import { execSync } from 'child_process';
 
 try {
   console.log('Running TypeScript type check...');
