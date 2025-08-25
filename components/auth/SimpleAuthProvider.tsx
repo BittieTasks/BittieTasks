@@ -135,12 +135,16 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       await fetch('/api/auth/logout', { method: 'POST' })
       
       setUser(null)
-      // Redirect to home page after sign out
-      window.location.href = '/'
+      // Use Next.js router for client-side navigation
+      if (typeof window !== 'undefined') {
+        window.location.href = '/'
+      }
     } catch (error) {
       // Even if API call fails, clear local state and redirect
       setUser(null)
-      window.location.href = '/'
+      if (typeof window !== 'undefined') {
+        window.location.href = '/'
+      }
     } finally {
       setLoading(false)
     }

@@ -1,16 +1,20 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+
 export default function BoldWelcomePage() {
+  const router = useRouter()
+  
   const handleSignUp = () => {
-    window.location.href = '/auth'
+    router.push('/auth')
   }
 
   const handleLogin = () => {
-    window.location.href = '/auth' 
+    router.push('/auth') 
   }
 
   const handleViewTasks = () => {
-    window.location.href = '/platform'
+    router.push('/platform')
   }
 
   return (
