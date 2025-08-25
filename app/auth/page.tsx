@@ -143,9 +143,11 @@ export default function AuthPage() {
       const urlParams = new URLSearchParams(window.location.search)
       const redirectTo = urlParams.get('redirectTo') || '/dashboard'
       
-      // Redirect to intended destination immediately - no timeout needed
-      console.log('Redirecting authenticated user to:', redirectTo)
-      router.replace(redirectTo)
+      // Wait a moment for auth state to stabilize before redirecting
+      setTimeout(() => {
+        console.log('Redirecting authenticated user to:', redirectTo)
+        router.replace(redirectTo)
+      }, 200)
     } catch (error: any) {
       clearTimeout(timeoutId)
       console.error('handleSignIn error:', error)

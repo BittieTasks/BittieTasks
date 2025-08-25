@@ -37,6 +37,7 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
       const response = await fetch('/api/auth/user', {
         method: 'GET',
         credentials: 'include', // Include cookies for SSR session
+        cache: 'no-cache', // Force fresh request to read latest cookies
       })
       
       if (response.ok) {
@@ -79,9 +80,31 @@ export function SimpleAuthProvider({ children }: AuthProviderProps) {
         throw new Error(data.error || 'Sign in failed')
       }
       
-      // Refresh auth state after successful login
-      await initializeAuth()
+      // Set user data from login response immediately for instant auth state
+      if (data.user) {
+        setUser({
+          id: data.user.id,
+          email: data.user.email,
+          phone: data.user.phone,
+          email_confirmed_at: data.user.email_confirmed_at,
+          phone_confirmed_at: data.user.phone_confirmed_at,
+          user_metadata: data.user.user_metadata || {},
+          app_metadata: data.user.app_metadata || {},
+          created_at: data.user.created_at,
+          last_sign_in_at: data.user.last_sign_in_at,
+          isEmailVerified: !!data.user.email_confirmed_at,
+          isPhoneVerified: !!data.user.phone_confirmed_at,
+          firstName: data.user.user_metadata?.first_name || '',
+          lastName: data.user.user_metadata?.last_name || ''
+        })
+      }
+      
       setLoading(false)
+      
+      // Schedule auth refresh to happen after browser processes cookies
+      setTimeout(() => {
+        initializeAuth()
+      }, 100)
       
       return { 
         success: true, 
