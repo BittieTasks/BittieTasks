@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useAuth } from './auth/AuthProvider'
+import { useAuth } from './auth/SimpleAuthProvider'
 import { Button } from '@/components/ui/button'
 import { 
   Home, 
@@ -31,7 +31,7 @@ const navigationItems = [
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const { user, signOut, isVerified } = useAuth()
+  const { user, signOut } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
 
@@ -91,11 +91,7 @@ export default function Navigation() {
 
             {/* User Menu */}
             <div className="hidden md:flex items-center space-x-3">
-              {!isVerified && (
-                <div className="badge-warning">
-                  Email verification required
-                </div>
-              )}
+              {/* Email verification badge removed */}
               
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
@@ -146,11 +142,7 @@ export default function Navigation() {
             </div>
 
             {/* Verification Status */}
-            {!isVerified && (
-              <div className="badge-warning text-center py-2">
-                Email verification required
-              </div>
-            )}
+            {/* Email verification badge removed */}
 
             {/* Navigation Links */}
             <div className="space-y-2">

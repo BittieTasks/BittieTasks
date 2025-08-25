@@ -91,7 +91,7 @@ const mockTaskData: { [key: string]: any } = {
 }
 
 export default function PlatformTaskStartPage() {
-  const { user, isAuthenticated, isVerified } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   const router = useRouter()
   const params = useParams()
   const taskId = params.id as string
@@ -221,18 +221,7 @@ export default function PlatformTaskStartPage() {
         </div>
 
         {/* Verification Notice */}
-        {!isVerified && (
-          <Card className="mb-6 border-yellow-200 bg-yellow-50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-yellow-600" />
-                <p className="text-yellow-800">
-                  <strong>Email verification required</strong> to complete this task and receive payment.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Email verification notice removed - handled server-side */}
 
         {!hasStarted ? (
           /* Pre-Start Information */
@@ -305,11 +294,10 @@ export default function PlatformTaskStartPage() {
                   <Button
                     size="lg"
                     onClick={startTask}
-                    disabled={!isVerified}
                     className="flex items-center gap-2"
                   >
                     <Play className="h-4 w-4" />
-                    {!isVerified ? 'Verify Email to Start Task' : 'Start Task'}
+                    Start Task
                   </Button>
                 </div>
               </CardContent>

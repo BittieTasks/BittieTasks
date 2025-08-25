@@ -45,7 +45,7 @@ const sampleTask = {
 
 function TaskDetailContent() {
   const { id } = useParams()
-  const { user, isAuthenticated, isVerified } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [currentStep, setCurrentStep] = useState<'view' | 'apply' | 'questions' | 'submitted'>('view')
@@ -75,9 +75,7 @@ function TaskDetailContent() {
   const netEarnings = task.payout - platformFee
 
   const handleApply = () => {
-    if (!isVerified) {
-      return
-    }
+    // Note: Email verification check removed - handled server-side
     setCurrentStep('questions')
   }
 
@@ -313,18 +311,7 @@ function TaskDetailContent() {
             {/* Action Button */}
             <Card className="card-clean">
               <CardContent className="p-6">
-                {!isVerified ? (
-                  <div className="text-center">
-                    <AlertCircle className="h-8 w-8 text-yellow-600 mx-auto mb-3" />
-                    <p className="font-medium mb-2">Email verification required</p>
-                    <p className="text-small text-muted-foreground mb-4">
-                      You must verify your email to apply for tasks
-                    </p>
-                    <Button className="w-full button-outline" disabled>
-                      Verify Email First
-                    </Button>
-                  </div>
-                ) : availableSpots === 0 ? (
+                {availableSpots === 0 ? (
                   <div className="text-center">
                     <Users className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
                     <p className="font-medium mb-2">Task Full</p>

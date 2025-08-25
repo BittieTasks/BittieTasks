@@ -35,7 +35,7 @@ const footerItems = [
 export default function CleanNavigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const { user, signOut, isVerified } = useAuth()
+  const { user, signOut } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
 

@@ -1,11 +1,11 @@
 'use client'
 
-import { useAuth } from './AuthProvider'
+import { useAuth } from './SimpleAuthProvider'
 import { supabase } from '../../lib/supabase'
 import { useEffect, useState } from 'react'
 
 export function AuthDebug() {
-  const { user, session, loading, isAuthenticated } = useAuth()
+  const { user, loading, isAuthenticated } = useAuth()
   const [envCheck, setEnvCheck] = useState<any>({})
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export function AuthDebug() {
       <div className="space-y-1">
         <div>Loading: {loading ? 'Yes' : 'No'}</div>
         <div>User: {user ? user.email : 'None'}</div>
-        <div>Session: {session ? 'Exists' : 'None'}</div>
+        <div>Session: {user ? 'Active' : 'None'}</div>
         <div>Authenticated: {isAuthenticated ? 'Yes' : 'No'}</div>
         <div>URL: {envCheck.hasUrl ? '✓' : '✗'}</div>
         <div>Key: {envCheck.hasKey ? '✓' : '✗'}</div>

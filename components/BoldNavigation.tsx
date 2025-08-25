@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useAuth } from './auth/AuthProvider'
+import { useAuth } from './auth/SimpleAuthProvider'
 import { 
   Home, 
   Search, 
@@ -30,7 +30,7 @@ const navigationItems = [
 export default function BoldNavigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const { user, signOut, isVerified } = useAuth()
+  const { user, signOut } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
 
@@ -151,19 +151,7 @@ export default function BoldNavigation() {
 
             {/* User Menu - Desktop */}
             <div style={{ display: 'none', alignItems: 'center', gap: '12px' }} className="hidden md:flex">
-              {!isVerified && (
-                <span style={{ 
-                  background: 'rgba(251, 191, 36, 0.2)', 
-                  color: 'rgb(251, 191, 36)', 
-                  padding: '4px 12px', 
-                  borderRadius: '20px', 
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  border: '1px solid rgba(251, 191, 36, 0.3)'
-                }}>
-                  Verify Email
-                </span>
-              )}
+              {/* Email verification status removed */}
               
               <button
                 onClick={handleSignOut}
@@ -244,21 +232,7 @@ export default function BoldNavigation() {
             
             {/* Mobile User Actions */}
             <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '16px', marginTop: '16px' }}>
-              {!isVerified && (
-                <div style={{ 
-                  background: 'rgba(251, 191, 36, 0.2)', 
-                  color: 'rgb(251, 191, 36)', 
-                  padding: '12px 16px', 
-                  borderRadius: '12px', 
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  border: '1px solid rgba(251, 191, 36, 0.3)',
-                  marginBottom: '12px',
-                  textAlign: 'center'
-                }}>
-                  Please verify your email
-                </div>
-              )}
+              {/* Email verification status removed */}
               
               <button
                 onClick={() => {

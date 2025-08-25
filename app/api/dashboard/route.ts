@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Try to get active task participants - gracefully handle if table doesn't exist
-    let activeParticipants = []
+    let activeParticipants: any[] = []
     let activeError = null
     try {
       const result = await supabase
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Try to get solo task applications - these are the core functionality
-    let soloApplications = []
+    let soloApplications: any[] = []
     let soloError = null
     try {
       const result = await supabase
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Try to get completed task participants - gracefully handle if table doesn't exist  
-    let completedParticipants = []
+    let completedParticipants: any[] = []
     let completedError = null
     try {
       const result = await supabase
@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Try to get recent transactions - gracefully handle if table doesn't exist
-    let transactions = []
+    let transactions: any[] = []
     let transactionError = null
     try {
       const result = await supabase
