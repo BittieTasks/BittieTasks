@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
 export async function POST(request: NextRequest) {
-  let response = NextResponse.json({ message: 'Processing...' })
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -13,18 +11,10 @@ export async function POST(request: NextRequest) {
           return request.cookies.get(name)?.value
         },
         set(name: string, value: string, options: CookieOptions) {
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
+          // We'll set cookies on the final response, not here
         },
         remove(name: string, options: CookieOptions) {
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
+          // We'll handle cookie removal on the final response
         },
       },
     }
@@ -75,13 +65,40 @@ export async function POST(request: NextRequest) {
 
     console.log('User logged in successfully:', data.user.id)
 
-    // Return success with the cookies set by SSR client
-    return NextResponse.json({
+    // Create the response with session cookies
+    const response = NextResponse.json({
       success: true,
       user: data.user,
       session: data.session,
       message: 'Login successful'
-    }, { headers: response.headers })
+    })
+
+    // Manually set the essential session cookies for persistence
+    if (data.session) {
+      const maxAge = 30 * 24 * 60 * 60 // 30 days
+      
+      response.cookies.set({
+        name: 'sb-access-token',
+        value: data.session.access_token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge,
+        path: '/'
+      })
+
+      response.cookies.set({
+        name: 'sb-refresh-token', 
+        value: data.session.refresh_token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge,
+        path: '/'
+      })
+    }
+
+    return response
 
   } catch (error) {
     console.error('Login API error:', error)

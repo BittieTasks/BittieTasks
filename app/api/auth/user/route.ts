@@ -2,38 +2,45 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
 export async function GET(request: NextRequest) {
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          // Cannot set cookies in GET request
-        },
-        remove(name: string, options: CookieOptions) {
-          // Cannot remove cookies in GET request
-        },
-      },
-    }
-  )
-
   try {
-    // Get the current session and user using SSR cookies
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-    
-    if (sessionError) {
-      console.error('Error getting session:', sessionError)
-      return NextResponse.json({ error: 'Session error' }, { status: 401 })
-    }
+    // Check for manual session cookies first
+    const accessToken = request.cookies.get('sb-access-token')?.value
+    const refreshToken = request.cookies.get('sb-refresh-token')?.value
 
-    if (!session || !session.user) {
+    if (!accessToken) {
       return NextResponse.json({ error: 'No authenticated user' }, { status: 401 })
     }
 
-    const user = session.user
+    // Create Supabase client with the stored session tokens
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            // Cannot set cookies in GET request
+          },
+          remove(name: string, options: CookieOptions) {
+            // Cannot remove cookies in GET request
+          },
+        },
+      }
+    )
+
+    // Set the session manually using the stored tokens
+    const { data, error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken || ''
+    })
+
+    if (error || !data.session?.user) {
+      return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
+    }
+
+    const user = data.session.user
 
     // Return comprehensive user data
     const userData = {
@@ -53,7 +60,6 @@ export async function GET(request: NextRequest) {
       lastName: user.user_metadata?.last_name || ''
     }
 
-    console.log('API /auth/user: User data fetched successfully:', user.email)
     return NextResponse.json(userData)
 
   } catch (error: any) {

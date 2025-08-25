@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
 export async function POST(request: NextRequest) {
-  let response = NextResponse.json({ message: 'Signed out successfully' })
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -13,18 +11,10 @@ export async function POST(request: NextRequest) {
           return request.cookies.get(name)?.value
         },
         set(name: string, value: string, options: CookieOptions) {
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
+          // We'll handle cookies in the response
         },
         remove(name: string, options: CookieOptions) {
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
+          // We'll handle cookie removal in the response
         },
       },
     }
@@ -36,13 +26,60 @@ export async function POST(request: NextRequest) {
     
     if (error) {
       console.error('Sign out error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
     }
-    
+
+    // Create response and clear session cookies
+    const response = NextResponse.json({ message: 'Signed out successfully' })
+
+    // Clear the session cookies
+    response.cookies.set({
+      name: 'sb-access-token',
+      value: '',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 0,
+      path: '/'
+    })
+
+    response.cookies.set({
+      name: 'sb-refresh-token',
+      value: '',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 0,
+      path: '/'
+    })
+
     return response
     
   } catch (error) {
     console.error('Error in /api/auth/logout:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    
+    // Create error response but still clear cookies
+    const response = NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    
+    response.cookies.set({
+      name: 'sb-access-token',
+      value: '',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 0,
+      path: '/'
+    })
+
+    response.cookies.set({
+      name: 'sb-refresh-token',
+      value: '',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 0,
+      path: '/'
+    })
+
+    return response
   }
 }
