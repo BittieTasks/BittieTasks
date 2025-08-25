@@ -54,8 +54,32 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session if expired
-  const { data: { session } } = await supabase.auth.getSession()
+  // Check for manual session cookies (matches our login API approach)
+  const accessToken = request.cookies.get('sb-access-token')?.value
+  const refreshToken = request.cookies.get('sb-refresh-token')?.value
+  
+  let session = null
+  
+  // If we have tokens, try to set the session manually
+  if (accessToken && refreshToken) {
+    try {
+      const { data, error } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+      })
+      if (!error && data.session) {
+        session = data.session
+      }
+    } catch (error) {
+      console.log('Middleware: Error setting session from cookies:', error)
+    }
+  }
+  
+  // Fallback to regular getSession if manual approach didn't work
+  if (!session) {
+    const { data } = await supabase.auth.getSession()
+    session = data.session
+  }
 
   // Protected routes that require authentication
   const protectedPaths = ['/dashboard', '/platform/create', '/api/billing', '/api/upgrade']

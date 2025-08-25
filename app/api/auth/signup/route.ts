@@ -71,21 +71,18 @@ export async function POST(request: NextRequest) {
 
     // For email-first verification, skip phone verification requirement
     // Users can still provide phone for optional features later
-
-    const supabaseAdmin = getSupabaseAdmin()
     
-    // Create user using regular client - simpler and more reliable
-    const supabase = getSupabaseClient()
-    const { data, error } = await supabase.auth.signUp({
+    // For testing - create user with admin client and mark as verified immediately
+    const supabaseAdmin = getSupabaseAdmin()
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email: email,
       password,
-      options: {
-        emailRedirectTo: undefined, // Disable Supabase email confirmation
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          phone_number: phoneNumber || null,
-        }
+      email_confirm: true, // Mark as verified immediately for testing
+      user_metadata: {
+        first_name: firstName,
+        last_name: lastName,
+        phone_number: phoneNumber || null,
+        email_verified: true
       }
     })
 
