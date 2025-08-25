@@ -18,56 +18,14 @@
       "assets": [],
       "env": {
         "__NEXT_BUILD_ID": "development",
-        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "FItdr06RFUOrPj5ItkNwygNu7nToHs8jd3YXK8hWXeg=",
-        "__NEXT_PREVIEW_MODE_ID": "e1af0a6f6e23eefbdfa0014fd6e1391e",
-        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "bf03a4cb97f7a28458e71f584d3c1098e21ef43f56e25eb2a4e4d0b4c6fc067c",
-        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "919746f664f5f69d9ada54912eb0309cfa8a779f4fc35b9bd791f3249bf7d8d4"
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "miV8zGRADxm0qNw6h5XAZeOwcwDFwz1SWcR+cb12S78=",
+        "__NEXT_PREVIEW_MODE_ID": "2921b58d355cc0766794e01262ce2921",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "6062c40f81ffcc1e15c3c7fbff32e9b6ea1fcadcd0a2c7635f891aebbd6c93e3",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "703b0fc8bb982529a2c00dd9b0a35c8e6dc3c9efdcf6d6aa0613780f147cf684"
       }
     }
   },
-  "functions": {
-    "/icon/route": {
-      "files": [
-        "server/middleware-build-manifest.js",
-        "server/middleware-react-loadable-manifest.js",
-        "server/next-font-manifest.js",
-        "server/interception-route-rewrite-manifest.js",
-        "server/edge-runtime-webpack.js",
-        "server/app/icon/route.js"
-      ],
-      "name": "app/icon/route",
-      "page": "/icon/route",
-      "matchers": [
-        {
-          "regexp": "^/icon$",
-          "originalSource": "/icon"
-        }
-      ],
-      "wasm": [
-        {
-          "name": "wasm_77d9faebf7af9e421806970ce10a58e9d83116d7",
-          "filePath": "server/edge-chunks/wasm_77d9faebf7af9e421806970ce10a58e9d83116d7.wasm"
-        },
-        {
-          "name": "wasm_ef4866ecae192fd87727067cf2c0c0cf9fb8b020",
-          "filePath": "server/edge-chunks/wasm_ef4866ecae192fd87727067cf2c0c0cf9fb8b020.wasm"
-        }
-      ],
-      "assets": [
-        {
-          "name": "noto-sans-v27-latin-regular.5dda3fca77107598.ttf",
-          "filePath": "server/edge-chunks/asset_noto-sans-v27-latin-regular.5dda3fca77107598.ttf"
-        }
-      ],
-      "env": {
-        "__NEXT_BUILD_ID": "development",
-        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "FItdr06RFUOrPj5ItkNwygNu7nToHs8jd3YXK8hWXeg=",
-        "__NEXT_PREVIEW_MODE_ID": "e1af0a6f6e23eefbdfa0014fd6e1391e",
-        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "bf03a4cb97f7a28458e71f584d3c1098e21ef43f56e25eb2a4e4d0b4c6fc067c",
-        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "919746f664f5f69d9ada54912eb0309cfa8a779f4fc35b9bd791f3249bf7d8d4"
-      }
-    }
-  },
+  "functions": {},
   "sortedMiddleware": [
     "/"
   ]
