@@ -34,7 +34,7 @@ export default function AuthPage() {
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
       const urlParams = new URLSearchParams(window.location.search)
-      const redirectTo = urlParams.get('redirectTo') || '/dashboard-app'
+      const redirectTo = urlParams.get('redirectTo') || '/dashboard'
       console.log('AuthPage: Authenticated user detected, redirecting to:', redirectTo)
       router.replace(redirectTo)
     }
@@ -141,7 +141,7 @@ export default function AuthPage() {
       
       // Check for redirect parameter from URL
       const urlParams = new URLSearchParams(window.location.search)
-      const redirectTo = urlParams.get('redirectTo') || '/dashboard-app'
+      const redirectTo = urlParams.get('redirectTo') || '/dashboard'
       
       // Redirect to intended destination immediately - no timeout needed
       console.log('Redirecting authenticated user to:', redirectTo)
