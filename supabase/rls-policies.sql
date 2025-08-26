@@ -1,3 +1,35 @@
+-- Drop all existing policies first to avoid conflicts
+DROP POLICY IF EXISTS "Users can view own profile" ON users;
+DROP POLICY IF EXISTS "Users can update own profile" ON users;
+DROP POLICY IF EXISTS "Users can insert own profile" ON users;
+DROP POLICY IF EXISTS "Admin can view all users" ON users;
+DROP POLICY IF EXISTS "Anyone can view task categories" ON task_categories;
+DROP POLICY IF EXISTS "Admin can manage task categories" ON task_categories;
+DROP POLICY IF EXISTS "Anyone can view active tasks" ON tasks;
+DROP POLICY IF EXISTS "Users can create own tasks" ON tasks;
+DROP POLICY IF EXISTS "Users can update own tasks" ON tasks;
+DROP POLICY IF EXISTS "Users can delete own tasks" ON tasks;
+DROP POLICY IF EXISTS "Admin can manage all tasks" ON tasks;
+DROP POLICY IF EXISTS "Users can view own completions" ON task_completions;
+DROP POLICY IF EXISTS "Users can create own completions" ON task_completions;
+DROP POLICY IF EXISTS "Users can update own completions" ON task_completions;
+DROP POLICY IF EXISTS "Task creators can view completions" ON task_completions;
+DROP POLICY IF EXISTS "Admin can view all completions" ON task_completions;
+DROP POLICY IF EXISTS "Users can view received messages" ON messages;
+DROP POLICY IF EXISTS "Users can view sent messages" ON messages;
+DROP POLICY IF EXISTS "Users can send messages" ON messages;
+DROP POLICY IF EXISTS "Users can update sent messages" ON messages;
+DROP POLICY IF EXISTS "Users can update received messages" ON messages;
+DROP POLICY IF EXISTS "Users can view own achievements" ON user_achievements;
+DROP POLICY IF EXISTS "Admin can manage achievements" ON user_achievements;
+DROP POLICY IF EXISTS "Users can update own achievements" ON user_achievements;
+DROP POLICY IF EXISTS "Anyone can view achievement definitions" ON achievement_definitions;
+DROP POLICY IF EXISTS "Admin can manage achievement definitions" ON achievement_definitions;
+DROP POLICY IF EXISTS "Anyone can view daily challenges" ON daily_challenges;
+DROP POLICY IF EXISTS "Admin can manage daily challenges" ON daily_challenges;
+DROP POLICY IF EXISTS "Users can view own challenges" ON user_challenges;
+DROP POLICY IF EXISTS "Users can update own challenges" ON user_challenges;
+
 -- Enable Row Level Security on all tables
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_categories ENABLE ROW LEVEL SECURITY;
