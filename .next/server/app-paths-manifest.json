@@ -1,1 +1,4 @@
-{}
+{
+  "/api/database/setup/route": "app/api/database/setup/route.js",
+  "/api/database/check-schema/route": "app/api/database/check-schema/route.js"
+}

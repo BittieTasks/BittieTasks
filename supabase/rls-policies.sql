@@ -86,15 +86,15 @@ CREATE POLICY "Anyone can view active tasks" ON tasks
 
 -- Users can create their own tasks
 CREATE POLICY "Users can create own tasks" ON tasks
-    FOR INSERT WITH CHECK (auth.uid() = creator_id OR creator_id IS NULL);
+    FOR INSERT WITH CHECK (auth.uid() = created_by OR created_by IS NULL);
 
 -- Users can update their own tasks
 CREATE POLICY "Users can update own tasks" ON tasks
-    FOR UPDATE USING (auth.uid() = creator_id);
+    FOR UPDATE USING (auth.uid() = created_by);
 
 -- Users can delete their own tasks
 CREATE POLICY "Users can delete own tasks" ON tasks
-    FOR DELETE USING (auth.uid() = creator_id);
+    FOR DELETE USING (auth.uid() = created_by);
 
 -- Admin can manage all tasks
 CREATE POLICY "Admin can manage all tasks" ON tasks
@@ -125,7 +125,7 @@ CREATE POLICY "Task creators can view completions" ON task_completions
         EXISTS (
             SELECT 1 FROM tasks 
             WHERE tasks.id = task_completions.task_id 
-            AND tasks.creator_id = auth.uid()
+            AND tasks.created_by = auth.uid()
         )
     );
 
