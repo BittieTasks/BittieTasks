@@ -1,7 +1,12 @@
 -- Drop all existing policies first to avoid conflicts
 DROP POLICY IF EXISTS "Users can view own profile" ON users;
-DROP POLICY IF EXISTS "Users can update own profile" ON users;
+DROP POLICY IF EXISTS "Users can update own profile" ON users; 
 DROP POLICY IF EXISTS "Users can insert own profile" ON users;
+DROP POLICY IF EXISTS "Users can view their own profile" ON users;
+DROP POLICY IF EXISTS "Users can update their own profile" ON users;
+DROP POLICY IF EXISTS "Users can create tasks" ON tasks;
+DROP POLICY IF EXISTS "Users can view their own tasks" ON tasks;
+DROP POLICY IF EXISTS "Anyone can view approved tasks" ON tasks;
 DROP POLICY IF EXISTS "Admin can view all users" ON users;
 DROP POLICY IF EXISTS "Anyone can view task categories" ON task_categories;
 DROP POLICY IF EXISTS "Admin can manage task categories" ON task_categories;
