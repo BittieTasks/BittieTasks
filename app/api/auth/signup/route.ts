@@ -54,17 +54,17 @@ export async function POST(request: NextRequest) {
     // For email-first verification, skip phone verification requirement
     // Users can still provide phone for optional features later
     
-    // Create user with admin client and mark as verified immediately
+    // Create user with admin client - email verification required
     const supabaseAdmin = createSupabaseAdmin()
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email: email,
       password,
-      email_confirm: true, // Mark as verified immediately for testing
+      email_confirm: false, // Require email verification
       user_metadata: {
         first_name: firstName,
         last_name: lastName,
         phone_number: phoneNumber || null,
-        email_verified: true
+        email_verified: false // Email not verified until confirmed
       }
     })
 
@@ -101,8 +101,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       user: data.user,
-      message: 'Account created successfully! You can now sign in.',
-      needsVerification: false
+      message: 'Account created successfully! Please check your email to verify your account before signing in.',
+      needsVerification: true
     })
   } catch (error) {
     console.error('Sign up error:', error)

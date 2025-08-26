@@ -63,7 +63,7 @@ export function EmailSignupForm({ onSuccess }: EmailSignupFormProps) {
       }
 
       if (result.success) {
-        setSuccess('Account created successfully! Check your email for verification.')
+        setSuccess('Account created successfully! You must verify your email before you can sign in or use the platform.')
         setStep('verify')
       }
     } catch (err: any) {
@@ -182,7 +182,7 @@ export function EmailSignupForm({ onSuccess }: EmailSignupFormProps) {
                   We sent a verification link to <strong>{email}</strong>
                 </p>
                 <p className="text-sm text-gray-500 mt-2">
-                  Click the link in the email to complete your account setup
+                  Click the link in the email to verify your account. You must verify your email before you can sign in or use any platform features.
                 </p>
               </div>
               <Button
