@@ -2,13 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '../../components/auth/SimpleAuthProvider'
-import { PhoneSignInForm } from '@/components/auth/PhoneSignInForm'
-import { PhoneSignUpForm } from '@/components/auth/PhoneSignUpForm'
+import { SimplePhoneAuthForm } from '@/components/auth/SimplePhoneAuthForm'
 
 export default function AuthPage() {
-  const [activeTab, setActiveTab] = useState('signin')
   const { isAuthenticated, loading: authLoading } = useAuth()
   const router = useRouter()
 
@@ -65,27 +62,8 @@ export default function AuthPage() {
             </p>
           </div>
 
-          {/* Auth Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="signin" data-testid="tab-signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup" data-testid="tab-signup">Sign Up</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="signin">
-              <PhoneSignInForm 
-                onSuccess={handleAuthSuccess}
-                onSwitchToSignUp={() => setActiveTab('signup')}
-              />
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <PhoneSignUpForm 
-                onSuccess={() => setActiveTab('signin')}
-                onSwitchToSignIn={() => setActiveTab('signin')}
-              />
-            </TabsContent>
-          </Tabs>
+          {/* Simple Auth Form */}
+          <SimplePhoneAuthForm onSuccess={handleAuthSuccess} />
 
           {/* Footer */}
           <div className="text-center mt-8">
