@@ -1,1 +1,3 @@
-{}
+{
+  "/api/auth/phone-signup/route": "app/api/auth/phone-signup/route.js"
+}
