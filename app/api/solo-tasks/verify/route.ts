@@ -59,12 +59,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid authentication' }, { status: 401 })
     }
 
-    // Require email verification for task completion
-    if (!user.email_confirmed_at) {
+    // Require phone verification for task completion
+    if (!user.phone_confirmed_at) {
       return NextResponse.json({ 
-        error: 'Email verification required',
-        message: 'Please verify your email address before completing tasks',
-        code: 'EMAIL_NOT_VERIFIED'
+        error: 'Phone verification required',
+        message: 'Please verify your phone number before completing tasks',
+        code: 'PHONE_NOT_VERIFIED'
       }, { status: 403 })
     }
 

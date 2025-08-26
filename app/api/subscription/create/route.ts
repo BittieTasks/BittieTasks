@@ -51,11 +51,11 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
     
-    if (!user.email_confirmed_at) {
-      console.error('Email not verified for user:', user.id)
+    if (!user.phone_confirmed_at) {
+      console.error('Phone not verified for user:', user.id)
       return NextResponse.json({ 
-        error: 'Email verification required',
-        details: 'Please verify your email before subscribing' 
+        error: 'Phone verification required',
+        details: 'Please verify your phone number before subscribing' 
       }, { status: 400 })
     }
 

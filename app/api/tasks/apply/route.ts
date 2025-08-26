@@ -12,12 +12,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    // Require email verification for task applications
-    if (!user.email_confirmed_at) {
+    // Require phone verification for task applications
+    if (!user.phone_confirmed_at) {
       return NextResponse.json({ 
-        error: 'Email verification required',
-        message: 'Please verify your email address before applying to tasks',
-        code: 'EMAIL_NOT_VERIFIED'
+        error: 'Phone verification required',
+        message: 'Please verify your phone number before applying to tasks',
+        code: 'PHONE_NOT_VERIFIED'
       }, { status: 403 })
     }
 
