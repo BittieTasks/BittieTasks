@@ -1,97 +1,83 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-
-// Mock database for now - will connect to real database later
-let tasks: any[] = [
-  {
-    id: 'task_demo_1',
-    title: 'Help with grocery shopping',
-    description: 'Need someone to help me carry groceries from the store to my apartment',
-    type: 'community',
-    category: 'shopping',
-    createdBy: '+16036611164',
-    createdByName: 'Demo User',
-    status: 'open',
-    earningPotential: 15.00,
-    maxParticipants: 1,
-    currentParticipants: 0,
-    location: 'Manchester, NH',
-    duration: '30 minutes',
-    difficulty: 'easy',
-    createdAt: new Date('2025-08-26')
-  },
-  {
-    id: 'task_demo_2',
-    title: 'Trade: Baking for Yard Work',
-    description: 'I can bake fresh cookies and bread for someone who can help rake my yard',
-    type: 'barter',
-    category: 'trade',
-    createdBy: '+16036611164',
-    createdByName: 'Demo User',
-    status: 'open',
-    offering: 'Fresh baked goods (cookies, bread, muffins)',
-    seeking: 'Yard work - raking leaves and basic cleanup',
-    tradeType: 'service_for_service',
-    maxParticipants: 1,
-    currentParticipants: 0,
-    location: 'Manchester, NH',
-    duration: '2 hours',
-    difficulty: 'medium',
-    createdAt: new Date('2025-08-25')
-  },
-  {
-    id: 'task_demo_3',
-    title: 'Complete simple data entry task',
-    description: 'Platform-funded task to enter product information from a list into our database',
-    type: 'solo',
-    category: 'data-entry',
-    createdBy: 'platform',
-    createdByName: 'BittieTasks Platform',
-    status: 'open',
-    earningPotential: 12.00,
-    maxParticipants: 5,
-    currentParticipants: 2,
-    location: 'Remote/Online',
-    duration: '45 minutes',
-    difficulty: 'easy',
-    createdAt: new Date('2025-08-24')
-  }
-]
+import { createServiceClient } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type')
-    const location = searchParams.get('location')
     const category = searchParams.get('category')
+    const difficulty = searchParams.get('difficulty')
+    const location = searchParams.get('location')
 
-    let filteredTasks = tasks
+    const supabase = createServiceClient()
+    
+    // Build query for tasks with creator information
+    let query = supabase
+      .from('tasks')
+      .select(`
+        *,
+        creator:users!created_by(id, phone_number, first_name, last_name, location)
+      `)
+      .eq('status', 'open')
+      .order('created_at', { ascending: false })
 
-    // Filter by type
+    // Apply filters - Only allow community and barter types for user-created tasks
     if (type && type !== 'all') {
-      filteredTasks = filteredTasks.filter(task => task.type === type)
+      if (type === 'community') {
+        query = query.eq('type', 'peer_to_peer')
+      } else if (type === 'barter') {
+        query = query.eq('type', 'barter')
+      }
+    } else {
+      // Only show community and barter tasks (no solo/platform tasks)
+      query = query.in('type', ['peer_to_peer', 'barter'])
     }
 
-    // Filter by location
-    if (location) {
-      filteredTasks = filteredTasks.filter(task => 
-        task.location?.toLowerCase().includes(location.toLowerCase())
-      )
+    if (category && category !== 'all') {
+      query = query.eq('category_id', category)
+    }
+    if (difficulty && difficulty !== 'all') {
+      query = query.eq('difficulty', difficulty)
+    }
+    if (location && location !== 'all') {
+      query = query.ilike('location', `%${location}%`)
     }
 
-    // Filter by category
-    if (category) {
-      filteredTasks = filteredTasks.filter(task => task.category === category)
+    const { data: tasks, error } = await query
+
+    if (error) {
+      console.error('Database error:', error)
+      return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 })
     }
 
-    return NextResponse.json(filteredTasks)
+    // Transform data to match frontend expectations
+    const transformedTasks = tasks?.map(task => ({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      type: task.type === 'peer_to_peer' ? 'community' : task.type,
+      category: task.category_id,
+      createdBy: task.creator?.phone_number,
+      createdByName: `${task.creator?.first_name || ''} ${task.creator?.last_name || ''}`.trim() || 'User',
+      status: task.status,
+      earningPotential: parseFloat(task.earning_potential || '0'),
+      maxParticipants: task.max_participants,
+      currentParticipants: task.current_participants,
+      location: task.location,
+      duration: task.duration,
+      difficulty: task.difficulty,
+      // Barter-specific fields
+      offering: task.offering,
+      seeking: task.seeking,
+      tradeType: task.trade_type,
+      createdAt: task.created_at
+    })) || []
 
+    return NextResponse.json({ tasks: transformedTasks })
   } catch (error) {
     console.error('Error fetching tasks:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch tasks' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 })
   }
 }
 
@@ -112,7 +98,7 @@ export async function POST(request: NextRequest) {
     const {
       title,
       description,
-      type, // 'solo', 'community', 'barter'
+      type, // Only 'community' and 'barter' allowed for user creation
       category,
       earningPotential,
       maxParticipants,
@@ -135,10 +121,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate task type
-    if (!['solo', 'community', 'barter'].includes(type)) {
+    // RESTRICTED: Only allow community and barter tasks for user creation
+    if (!['community', 'barter'].includes(type)) {
       return NextResponse.json(
-        { error: 'Invalid task type. Must be solo, community, or barter' },
+        { error: 'Only community and barter tasks can be created by users' },
         { status: 400 }
       )
     }
@@ -151,44 +137,89 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // For solo/community tasks, require earning potential
-    if ((type === 'solo' || type === 'community') && !earningPotential) {
+    // For community tasks, require earning potential
+    if (type === 'community' && !earningPotential) {
       return NextResponse.json(
-        { error: 'Solo and community tasks require earning potential' },
+        { error: 'Community tasks require earning potential' },
         { status: 400 }
       )
     }
 
-    const newTask = {
-      id: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    const supabase = createServiceClient()
+
+    // Get user from database using phone number
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('phone_number', phoneAuth.value)
+      .single()
+
+    if (userError || !userData) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Prepare task data for database
+    const taskData = {
       title,
       description,
-      type,
-      category: category || 'general',
-      createdBy: phoneAuth.value,
-      createdByName: `${user.firstName} ${user.lastName}`.trim(),
+      type: type === 'community' ? 'peer_to_peer' : 'barter',
+      category_id: category || null,
+      created_by: userData.id,
       status: 'open',
-      earningPotential: type === 'barter' ? null : parseFloat(earningPotential),
-      maxParticipants: maxParticipants || 1,
-      currentParticipants: 0,
+      earning_potential: type === 'barter' ? null : parseFloat(earningPotential),
+      max_participants: maxParticipants || 1,
+      current_participants: 0,
       location,
       duration,
       difficulty: difficulty || 'medium',
       requirements,
       offering: type === 'barter' ? offering : null,
       seeking: type === 'barter' ? seeking : null,
-      tradeType: type === 'barter' ? tradeType : null,
-      scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
-      tags: tags || [],
-      createdAt: new Date(),
-      updatedAt: new Date()
+      trade_type: type === 'barter' ? tradeType : null,
+      scheduled_date: scheduledDate ? new Date(scheduledDate) : null,
+      tags: tags || []
     }
 
-    tasks.push(newTask)
+    // Insert task into database
+    const { data: newTask, error: insertError } = await supabase
+      .from('tasks')
+      .insert(taskData)
+      .select(`
+        *,
+        creator:users!created_by(id, phone_number, first_name, last_name, location)
+      `)
+      .single()
+
+    if (insertError) {
+      console.error('Database insert error:', insertError)
+      return NextResponse.json({ error: 'Failed to create task' }, { status: 500 })
+    }
+
+    // Transform response to match frontend expectations
+    const transformedTask = {
+      id: newTask.id,
+      title: newTask.title,
+      description: newTask.description,
+      type: newTask.type === 'peer_to_peer' ? 'community' : newTask.type,
+      category: newTask.category_id,
+      createdBy: newTask.creator?.phone_number,
+      createdByName: `${newTask.creator?.first_name || ''} ${newTask.creator?.last_name || ''}`.trim() || 'User',
+      status: newTask.status,
+      earningPotential: parseFloat(newTask.earning_potential || '0'),
+      maxParticipants: newTask.max_participants,
+      currentParticipants: newTask.current_participants,
+      location: newTask.location,
+      duration: newTask.duration,
+      difficulty: newTask.difficulty,
+      offering: newTask.offering,
+      seeking: newTask.seeking,
+      tradeType: newTask.trade_type,
+      createdAt: newTask.created_at
+    }
 
     return NextResponse.json({ 
       success: true, 
-      task: newTask,
+      task: transformedTask,
       message: 'Task created successfully!' 
     })
 

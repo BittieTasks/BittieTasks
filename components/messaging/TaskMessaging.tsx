@@ -9,9 +9,10 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { useToast } from '@/app/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Send, Clock, CheckCircle2, MessageCircle } from 'lucide-react'
+import { Send, Clock, CheckCircle2, MessageCircle, Wifi, WifiOff } from 'lucide-react'
+import { useWebSocket } from '@/hooks/useWebSocket'
 
 interface TaskMessage {
   id: string
@@ -42,27 +43,21 @@ export default function TaskMessaging({ taskId, taskTitle, isOpen, onOpenChange 
   const queryClient = useQueryClient()
   const [message, setMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [typingUsers, setTypingUsers] = useState<string[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const typingTimeoutRef = useRef<NodeJS.Timeout>()
+  
+  // WebSocket connection
+  const { socket, isConnected, sendMessage: sendWebSocketMessage } = useWebSocket()
 
   // Fetch messages for this task
   const { data: messagesData, isLoading, error } = useQuery({
-    queryKey: [`/api/messages/${taskId}`],
+    queryKey: [`/api/tasks/${taskId}/messages`],
     enabled: !!taskId && !!user,
-    refetchInterval: 3000, // Poll for new messages every 3 seconds
+    refetchInterval: isConnected ? false : 10000, // Only poll if WebSocket disconnected
     queryFn: async () => {
-      const { supabase } = await import('@/lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session?.access_token) {
-        throw new Error('No session')
-      }
-
-      const response = await fetch(`/api/messages/${taskId}`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      })
+      const response = await fetch(`/api/tasks/${taskId}/messages`)
 
       if (!response.ok) {
         throw new Error('Failed to fetch messages')
@@ -78,18 +73,30 @@ export default function TaskMessaging({ taskId, taskTitle, isOpen, onOpenChange 
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      const { supabase } = await import('@/lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session?.access_token) {
-        throw new Error('No session')
+      // Try WebSocket first
+      if (isConnected && user?.id) {
+        const success = sendWebSocketMessage({
+          type: 'send_message',
+          payload: {
+            taskId,
+            content,
+            messageType: 'text'
+          },
+          taskId,
+          userId: user.id,
+          timestamp: new Date().toISOString()
+        })
+
+        if (success) {
+          return { success: true, method: 'websocket' }
+        }
       }
 
-      const response = await fetch(`/api/messages/${taskId}`, {
+      // Fallback to HTTP API
+      const response = await fetch(`/api/tasks/${taskId}/messages`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           content,
@@ -104,10 +111,13 @@ export default function TaskMessaging({ taskId, taskTitle, isOpen, onOpenChange 
 
       return response.json()
     },
-    onSuccess: () => {
-      // Refresh messages immediately
-      queryClient.invalidateQueries({ queryKey: [`/api/messages/${taskId}`] })
+    onSuccess: (data) => {
+      // Only refresh via query if not using WebSocket
+      if (data.method !== 'websocket') {
+        queryClient.invalidateQueries({ queryKey: [`/api/tasks/${taskId}/messages`] })
+      }
       setMessage('')
+      stopTyping()
       inputRef.current?.focus()
     },
     onError: (error: any) => {
@@ -119,12 +129,126 @@ export default function TaskMessaging({ taskId, taskTitle, isOpen, onOpenChange 
     }
   })
 
+  // WebSocket event handling
+  useEffect(() => {
+    if (!socket || !isConnected || !user?.id) return
+
+    // Join task room
+    sendWebSocketMessage({
+      type: 'join_task_room',
+      payload: { taskId },
+      taskId,
+      userId: user.id,
+      timestamp: new Date().toISOString()
+    })
+
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const message = JSON.parse(event.data)
+        
+        switch (message.type) {
+          case 'message_received':
+            // Add new message to the list
+            queryClient.setQueryData([`/api/tasks/${taskId}/messages`], (old: TaskMessage[] = []) => {
+              // Avoid duplicates
+              if (old.some(m => m.id === message.payload.id)) return old
+              return [...old, message.payload].sort((a, b) => 
+                new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+              )
+            })
+            break
+            
+          case 'typing_indicator':
+            if (message.payload.userId !== user.id) {
+              if (message.payload.isTyping) {
+                setTypingUsers(prev => 
+                  prev.includes(message.payload.userName) 
+                    ? prev 
+                    : [...prev, message.payload.userName]
+                )
+              } else {
+                setTypingUsers(prev => 
+                  prev.filter(userName => userName !== message.payload.userName)
+                )
+              }
+            }
+            break
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error)
+      }
+    }
+
+    socket.addEventListener('message', handleMessage)
+    
+    return () => {
+      socket.removeEventListener('message', handleMessage)
+      // Leave task room on cleanup
+      sendWebSocketMessage({
+        type: 'leave_task_room',
+        payload: { taskId },
+        taskId,
+        userId: user.id,
+        timestamp: new Date().toISOString()
+      })
+    }
+  }, [socket, isConnected, taskId, user?.id, sendWebSocketMessage, queryClient])
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }, [messages])
+
+  // Handle typing indicators
+  const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value)
+    
+    if (!isTyping && e.target.value.length > 0 && isConnected && user?.id) {
+      setIsTyping(true)
+      sendWebSocketMessage({
+        type: 'typing_indicator',
+        payload: {
+          taskId,
+          userId: user.id,
+          isTyping: true,
+          userName: `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User'
+        },
+        taskId,
+        userId: user.id,
+        timestamp: new Date().toISOString()
+      })
+    }
+
+    // Clear existing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current)
+    }
+
+    // Set new timeout to stop typing
+    typingTimeoutRef.current = setTimeout(() => {
+      stopTyping()
+    }, 1000)
+  }
+
+  const stopTyping = () => {
+    if (isTyping && isConnected && user?.id) {
+      setIsTyping(false)
+      sendWebSocketMessage({
+        type: 'typing_indicator',
+        payload: {
+          taskId,
+          userId: user.id,
+          isTyping: false,
+          userName: `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User'
+        },
+        taskId,
+        userId: user.id,
+        timestamp: new Date().toISOString()
+      })
+    }
+  }
 
   // Handle sending message
   const handleSendMessage = () => {
@@ -183,6 +307,17 @@ export default function TaskMessaging({ taskId, taskTitle, isOpen, onOpenChange 
             <div className="flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-blue-600" />
               <CardTitle className="text-lg font-semibold">Task Messages</CardTitle>
+              {isConnected ? (
+                <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                  <Wifi className="w-3 h-3 mr-1" />
+                  Live
+                </Badge>
+              ) : (
+                <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700">
+                  <WifiOff className="w-3 h-3 mr-1" />
+                  Offline
+                </Badge>
+              )}
             </div>
             <Button
               variant="ghost"
@@ -260,6 +395,34 @@ export default function TaskMessaging({ taskId, taskTitle, isOpen, onOpenChange 
                   </div>
                 )
               })}
+              
+              {/* Typing Indicators */}
+              {typingUsers.length > 0 && (
+                <div className="flex justify-start">
+                  <div className="flex flex-row items-end max-w-[80%] gap-2">
+                    <Avatar className="w-8 h-8">
+                      <AvatarFallback className="text-xs">
+                        ⌨️
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="relative">
+                      <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-2xl">
+                        <div className="flex items-center gap-1">
+                          <div className="flex gap-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" />
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-75" />
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-150" />
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1 text-left">
+                        {typingUsers.join(', ')} typing...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <div ref={messagesEndRef} />
             </div>
           )}
@@ -273,10 +436,10 @@ export default function TaskMessaging({ taskId, taskTitle, isOpen, onOpenChange 
             <Input
               ref={inputRef}
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={handleTyping}
               onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              disabled={sendMessageMutation.isPending}
+              placeholder={isConnected ? "Type your message..." : "Connecting..."}
+              disabled={sendMessageMutation.isPending || !isConnected}
               className="flex-1"
             />
             <Button

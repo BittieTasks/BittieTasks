@@ -60,9 +60,11 @@ export default function TasksPage() {
       
       const response = await fetch(url)
       const data = await response.json()
-      setTasks(data)
+      // Handle new API response format
+      setTasks(data.tasks || [])
     } catch (error) {
       console.error('Error fetching tasks:', error)
+      setTasks([])
     } finally {
       setLoading(false)
     }
@@ -180,9 +182,8 @@ export default function TasksPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4" data-testid="tabs-task-types">
+        <TabsList className="grid w-full grid-cols-3" data-testid="tabs-task-types">
           <TabsTrigger value="all" data-testid="tab-all-tasks">All Tasks</TabsTrigger>
-          <TabsTrigger value="solo" data-testid="tab-solo-tasks">Solo (3% fee)</TabsTrigger>
           <TabsTrigger value="community" data-testid="tab-community-tasks">Community (7% fee)</TabsTrigger>
           <TabsTrigger value="barter" data-testid="tab-barter-tasks">Barter (No fees)</TabsTrigger>
         </TabsList>

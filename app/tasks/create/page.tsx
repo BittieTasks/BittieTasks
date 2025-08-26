@@ -11,11 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowLeft, DollarSign, Users, Clock, MapPin, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import AiTaskAssistant from "@/components/task/AiTaskAssistant"
 
 export default function CreateTaskPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [taskType, setTaskType] = useState<'solo' | 'community' | 'barter'>('community')
+  const [taskType, setTaskType] = useState<'community' | 'barter'>('community')
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -34,6 +35,14 @@ export default function CreateTaskPage() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleAiUpdate = (updates: any) => {
+    setFormData(prev => ({ ...prev, ...updates }))
+  }
+
+  const handleAiSuggestions = (suggestions: any) => {
+    setFormData(prev => ({ ...prev, ...suggestions }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -138,13 +147,12 @@ export default function CreateTaskPage() {
           </CardHeader>
           <CardContent>
             <Tabs value={taskType} onValueChange={(value: any) => setTaskType(value)} data-testid="tabs-task-type">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="solo" data-testid="tab-solo">Solo (3%)</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="community" data-testid="tab-community">Community (7%)</TabsTrigger>
                 <TabsTrigger value="barter" data-testid="tab-barter">Barter (Free)</TabsTrigger>
               </TabsList>
               
-              {['solo', 'community', 'barter'].map(type => {
+              {['community', 'barter'].map(type => {
                 const info = getTaskTypeInfo(type)
                 return (
                   <TabsContent key={type} value={type} className="mt-4">
@@ -164,6 +172,19 @@ export default function CreateTaskPage() {
             </Tabs>
           </CardContent>
         </Card>
+
+        {/* AI Task Assistant */}
+        <AiTaskAssistant
+          taskType={taskType}
+          currentData={{
+            title: formData.title,
+            description: formData.description,
+            offering: formData.offering,
+            seeking: formData.seeking
+          }}
+          onUpdateData={handleAiUpdate}
+          onApplySuggestions={handleAiSuggestions}
+        />
 
         {/* Basic Information */}
         <Card data-testid="card-basic-info">

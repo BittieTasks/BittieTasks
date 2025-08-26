@@ -25,19 +25,22 @@ export async function POST(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    const { message } = await request.json()
+    const { applicationResponses } = await request.json()
 
     // Check if user already applied
     const { data: existingApplication } = await supabaseDb
       .from('task_participants')
-      .select('id')
+      .select('id, status')
       .eq('task_id', taskId)
       .eq('user_id', user.id)
       .single()
 
     if (existingApplication) {
       return NextResponse.json(
-        { error: 'You have already applied to this task' },
+        { 
+          error: 'Already applied',
+          message: `You have already applied to this task (Status: ${existingApplication.status})`
+        },
         { status: 400 }
       )
     }
@@ -74,8 +77,8 @@ export async function POST(
         task_id: taskId,
         user_id: user.id,
         status: 'applied',
-        application_message: message || null,
-        applied_at: new Date().toISOString()
+        application_responses: applicationResponses || null,
+        joined_at: new Date().toISOString()
       })
       .select()
       .single()
@@ -92,7 +95,11 @@ export async function POST(
       })
       .eq('id', taskId)
 
-    return NextResponse.json({ application })
+    return NextResponse.json({
+      success: true,
+      application,
+      message: 'Application submitted successfully! The task creator will review your application.'
+    })
   } catch (error: any) {
     console.error('Error applying to task:', error)
     return NextResponse.json(

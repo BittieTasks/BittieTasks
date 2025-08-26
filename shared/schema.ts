@@ -25,6 +25,7 @@ export const transactionStatusEnum = pgEnum('transaction_status', ['pending', 'p
 export const verificationMethodEnum = pgEnum('verification_method', ['photo', 'video', 'gps_tracking', 'time_tracking', 'community_verification', 'receipt_upload', 'social_proof']);
 export const verificationStatusEnum = pgEnum('verification_status', ['pending', 'auto_verified', 'manual_review', 'verified', 'rejected', 'requires_additional_proof']);
 export const revenueStreamEnum = pgEnum('revenue_stream', ['peer_to_peer', 'corporate_partnership', 'platform_funded']);
+export const participantStatusEnum = pgEnum('participant_status', ['applied', 'accepted', 'completed', 'cancelled', 'expired', 'verified']);
 
 // Session storage table (required for authentication)
 export const sessions = pgTable(
@@ -162,10 +163,17 @@ export const taskParticipants = pgTable("task_participants", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   taskId: varchar("task_id").references(() => tasks.id).notNull(),
   userId: varchar("user_id").references(() => users.id).notNull(),
-  status: varchar("status").default('joined'), // joined, completed, cancelled, expired
+  status: participantStatusEnum("status").default('applied'), // applied, accepted, completed, verified, cancelled, expired
   earnedAmount: decimal("earned_amount", { precision: 8, scale: 2 }),
   joinedAt: timestamp("joined_at").defaultNow(),
+  acceptedAt: timestamp("accepted_at"),
   completedAt: timestamp("completed_at"),
+  // Application data
+  applicationResponses: jsonb("application_responses"), // Array of responses to screening questions
+  rejectionReason: text("rejection_reason"),
+  verificationPhoto: text("verification_photo"), // URL to completion verification photo
+  completionNotes: text("completion_notes"),
+  verifiedAt: timestamp("verified_at"),
   // Time limit fields
   deadline: timestamp("deadline"),
   reminderSent: boolean("reminder_sent").default(false),
