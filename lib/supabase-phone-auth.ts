@@ -32,6 +32,7 @@ export class SupabasePhoneAuthService {
       
       // Normalize phone number to E.164 format
       const normalizedPhone = this.normalizePhoneNumber(phoneNumber)
+      console.log('Attempting to send OTP to:', normalizedPhone)
       
       // Use Supabase's built-in phone auth
       const { error } = await supabase.auth.signInWithOtp({
@@ -40,6 +41,17 @@ export class SupabasePhoneAuthService {
 
       if (error) {
         console.error('Supabase phone verification error:', error)
+        console.error('Error details:', JSON.stringify(error, null, 2))
+        
+        // Provide more specific error messages
+        if (error.message.includes('Phone provider not configured')) {
+          return { success: false, error: 'Phone authentication is not properly configured. Please contact support.' }
+        } else if (error.message.includes('Invalid phone number')) {
+          return { success: false, error: 'Invalid phone number format. Please use a valid US phone number.' }
+        } else if (error.message.includes('Rate limit')) {
+          return { success: false, error: 'Too many attempts. Please wait a few minutes before trying again.' }
+        }
+        
         return { success: false, error: error.message || 'Failed to send verification code' }
       }
 
@@ -96,6 +108,7 @@ export class SupabasePhoneAuthService {
     try {
       const supabase = createSupabaseClient()
       const normalizedPhone = this.normalizePhoneNumber(phoneNumber)
+      console.log('Attempting signup for phone:', normalizedPhone)
       
       // Check if user already exists
       const existingUser = await this.isPhoneVerified(normalizedPhone)
@@ -116,9 +129,14 @@ export class SupabasePhoneAuthService {
 
       if (error) {
         console.error('Supabase phone signup error:', error)
+        console.error('Error details:', JSON.stringify(error, null, 2))
         
         if (error.message.includes('Signup disabled')) {
           return { success: false, error: 'Phone signup is currently disabled. Please contact support.' }
+        } else if (error.message.includes('Phone provider not configured')) {
+          return { success: false, error: 'Phone authentication is not properly configured. Please contact support.' }
+        } else if (error.message.includes('Rate limit')) {
+          return { success: false, error: 'Too many attempts. Please wait a few minutes before trying again.' }
         }
         
         return { success: false, error: error.message || 'Failed to send verification code' }
@@ -138,6 +156,7 @@ export class SupabasePhoneAuthService {
     try {
       const supabase = createSupabaseClient()
       const normalizedPhone = this.normalizePhoneNumber(phoneNumber)
+      console.log('Attempting login for phone:', normalizedPhone)
       
       // Send OTP for sign in
       const { error } = await supabase.auth.signInWithOtp({
@@ -146,9 +165,14 @@ export class SupabasePhoneAuthService {
 
       if (error) {
         console.error('Supabase phone login error:', error)
+        console.error('Error details:', JSON.stringify(error, null, 2))
         
         if (error.message.includes('User not found')) {
           return { success: false, error: 'No account found with this phone number. Please sign up first.' }
+        } else if (error.message.includes('Phone provider not configured')) {
+          return { success: false, error: 'Phone authentication is not properly configured. Please contact support.' }
+        } else if (error.message.includes('Rate limit')) {
+          return { success: false, error: 'Too many attempts. Please wait a few minutes before trying again.' }
         }
         
         return { success: false, error: error.message || 'Failed to send verification code' }
