@@ -52,6 +52,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
+    // Require email verification for task creation
+    if (!user.email_confirmed_at) {
+      return NextResponse.json({ 
+        error: 'Email verification required',
+        message: 'Please verify your email address before creating tasks',
+        code: 'EMAIL_NOT_VERIFIED'
+      }, { status: 403 })
+    }
+
     const body = await request.json()
     console.log('API: Creating task with data:', body)
     

@@ -62,6 +62,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
+    // Require email verification for task applications
+    if (!user.email_confirmed_at) {
+      return NextResponse.json({ 
+        error: 'Email verification required',
+        message: 'Please verify your email address before applying to tasks',
+        code: 'EMAIL_NOT_VERIFIED'
+      }, { status: 403 })
+    }
+
     const body = await request.json()
     const { taskId, task_id, applicationMessage, application_message } = body
     const actualTaskId = taskId || task_id
