@@ -50,6 +50,13 @@ export default function HomePage() {
             {/* Navigation Links */}
             <div className="flex items-center space-x-6">
               <button 
+                onClick={() => router.push('/tasks')}
+                className="text-gray-700 hover:text-teal-600 font-medium"
+                data-testid="nav-tasks"
+              >
+                Tasks
+              </button>
+              <button 
                 onClick={() => router.push('/earnings')}
                 className="text-gray-700 hover:text-teal-600 font-medium"
               >
