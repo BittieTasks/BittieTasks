@@ -45,21 +45,21 @@ ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
 -- Users table policies
 -- Users can only see and update their own profile
 CREATE POLICY "Users can view own profile" ON users
-    FOR SELECT USING (auth.uid() = id);
+    FOR SELECT USING (auth.uid()::text = id);
 
 CREATE POLICY "Users can update own profile" ON users
-    FOR UPDATE USING (auth.uid() = id);
+    FOR UPDATE USING (auth.uid()::text = id);
 
 -- Allow user creation during signup (handled by Supabase Auth)
 CREATE POLICY "Users can insert own profile" ON users
-    FOR INSERT WITH CHECK (auth.uid() = id);
+    FOR INSERT WITH CHECK (auth.uid()::text = id);
 
 -- Admin users can view all users (for admin dashboard)
 CREATE POLICY "Admin can view all users" ON users
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM users 
-            WHERE id = auth.uid() 
+            WHERE id = auth.uid()::text 
             AND email IN ('admin@bittietasks.com', 'admin@taskparent.com')
         )
     );
@@ -74,7 +74,7 @@ CREATE POLICY "Admin can manage task categories" ON task_categories
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM users 
-            WHERE id = auth.uid() 
+            WHERE id = auth.uid()::text 
             AND email IN ('admin@bittietasks.com', 'admin@taskparent.com')
         )
     );
@@ -86,22 +86,22 @@ CREATE POLICY "Anyone can view active tasks" ON tasks
 
 -- Users can create their own tasks
 CREATE POLICY "Users can create own tasks" ON tasks
-    FOR INSERT WITH CHECK (auth.uid() = created_by OR created_by IS NULL);
+    FOR INSERT WITH CHECK (auth.uid()::text = created_by OR created_by IS NULL);
 
 -- Users can update their own tasks
 CREATE POLICY "Users can update own tasks" ON tasks
-    FOR UPDATE USING (auth.uid() = created_by);
+    FOR UPDATE USING (auth.uid()::text = created_by);
 
 -- Users can delete their own tasks
 CREATE POLICY "Users can delete own tasks" ON tasks
-    FOR DELETE USING (auth.uid() = created_by);
+    FOR DELETE USING (auth.uid()::text = created_by);
 
 -- Admin can manage all tasks
 CREATE POLICY "Admin can manage all tasks" ON tasks
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM users 
-            WHERE id = auth.uid() 
+            WHERE id = auth.uid()::text 
             AND email IN ('admin@bittietasks.com', 'admin@taskparent.com')
         )
     );
@@ -109,15 +109,15 @@ CREATE POLICY "Admin can manage all tasks" ON tasks
 -- Task Completions policies
 -- Users can view their own task completions
 CREATE POLICY "Users can view own completions" ON task_completions
-    FOR SELECT USING (auth.uid() = user_id);
+    FOR SELECT USING (auth.uid()::text = user_id);
 
 -- Users can create their own task completions
 CREATE POLICY "Users can create own completions" ON task_completions
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
+    FOR INSERT WITH CHECK (auth.uid()::text = user_id);
 
 -- Users can update their own task completions
 CREATE POLICY "Users can update own completions" ON task_completions
-    FOR UPDATE USING (auth.uid() = user_id);
+    FOR UPDATE USING (auth.uid()::text = user_id);
 
 -- Task creators can view completions for their tasks
 CREATE POLICY "Task creators can view completions" ON task_completions
@@ -125,7 +125,7 @@ CREATE POLICY "Task creators can view completions" ON task_completions
         EXISTS (
             SELECT 1 FROM tasks 
             WHERE tasks.id = task_completions.task_id 
-            AND tasks.created_by = auth.uid()
+            AND tasks.created_by = auth.uid()::text
         )
     );
 
@@ -134,7 +134,7 @@ CREATE POLICY "Admin can view all completions" ON task_completions
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM users 
-            WHERE id = auth.uid() 
+            WHERE id = auth.uid()::text 
             AND email IN ('admin@bittietasks.com', 'admin@taskparent.com')
         )
     );
@@ -142,28 +142,28 @@ CREATE POLICY "Admin can view all completions" ON task_completions
 -- Messages policies
 -- Users can view messages sent to them
 CREATE POLICY "Users can view received messages" ON messages
-    FOR SELECT USING (auth.uid() = to_user_id);
+    FOR SELECT USING (auth.uid()::text = to_user_id);
 
 -- Users can view messages they sent
 CREATE POLICY "Users can view sent messages" ON messages
-    FOR SELECT USING (auth.uid() = from_user_id);
+    FOR SELECT USING (auth.uid()::text = from_user_id);
 
 -- Users can send messages
 CREATE POLICY "Users can send messages" ON messages
-    FOR INSERT WITH CHECK (auth.uid() = from_user_id);
+    FOR INSERT WITH CHECK (auth.uid()::text = from_user_id);
 
 -- Users can update their sent messages (for read status, etc.)
 CREATE POLICY "Users can update sent messages" ON messages
-    FOR UPDATE USING (auth.uid() = from_user_id);
+    FOR UPDATE USING (auth.uid()::text = from_user_id);
 
 -- Recipients can mark messages as read
 CREATE POLICY "Recipients can mark messages read" ON messages
-    FOR UPDATE USING (auth.uid() = to_user_id);
+    FOR UPDATE USING (auth.uid()::text = to_user_id);
 
 -- User Achievements policies
 -- Users can view their own achievements
 CREATE POLICY "Users can view own achievements" ON user_achievements
-    FOR SELECT USING (auth.uid() = user_id);
+    FOR SELECT USING (auth.uid()::text = user_id);
 
 -- System can create achievements for users (via backend)
 CREATE POLICY "System can create achievements" ON user_achievements
@@ -171,7 +171,7 @@ CREATE POLICY "System can create achievements" ON user_achievements
 
 -- Users can update their achievement visibility
 CREATE POLICY "Users can update own achievements" ON user_achievements
-    FOR UPDATE USING (auth.uid() = user_id);
+    FOR UPDATE USING (auth.uid()::text = user_id);
 
 -- Achievement Definitions policies
 -- All authenticated users can view achievement definitions
@@ -183,7 +183,7 @@ CREATE POLICY "Admin can manage achievements" ON achievement_definitions
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM users 
-            WHERE id = auth.uid() 
+            WHERE id = auth.uid()::text 
             AND email IN ('admin@bittietasks.com', 'admin@taskparent.com')
         )
     );
@@ -198,7 +198,7 @@ CREATE POLICY "Admin can manage daily challenges" ON daily_challenges
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM users 
-            WHERE id = auth.uid() 
+            WHERE id = auth.uid()::text 
             AND email IN ('admin@bittietasks.com', 'admin@taskparent.com')
         )
     );
@@ -206,7 +206,7 @@ CREATE POLICY "Admin can manage daily challenges" ON daily_challenges
 -- User Challenges policies
 -- Users can view their own assigned challenges
 CREATE POLICY "Users can view own challenges" ON user_challenges
-    FOR SELECT USING (auth.uid() = user_id);
+    FOR SELECT USING (auth.uid()::text = user_id);
 
 -- System can assign challenges to users
 CREATE POLICY "System can assign challenges" ON user_challenges
@@ -214,7 +214,7 @@ CREATE POLICY "System can assign challenges" ON user_challenges
 
 -- Users can update their own challenges (completion, reflection)
 CREATE POLICY "Users can update own challenges" ON user_challenges
-    FOR UPDATE USING (auth.uid() = user_id);
+    FOR UPDATE USING (auth.uid()::text = user_id);
 
 -- Sessions policies (for express-session if needed)
 -- Users can only access their own sessions
