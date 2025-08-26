@@ -82,7 +82,7 @@ CREATE POLICY "Admin can manage task categories" ON task_categories
 -- Tasks policies
 -- All authenticated users can view active tasks
 CREATE POLICY "Anyone can view active tasks" ON tasks
-    FOR SELECT USING (auth.role() = 'authenticated' AND is_active = true);
+    FOR SELECT USING (auth.role() = 'authenticated' AND status IN ('open', 'in_progress'));
 
 -- Users can create their own tasks
 CREATE POLICY "Users can create own tasks" ON tasks
@@ -191,7 +191,7 @@ CREATE POLICY "Admin can manage achievements" ON achievement_definitions
 -- Daily Challenges policies
 -- All authenticated users can view active daily challenges
 CREATE POLICY "Anyone can view daily challenges" ON daily_challenges
-    FOR SELECT USING (auth.role() = 'authenticated' AND is_active = true);
+    FOR SELECT USING (auth.role() = 'authenticated' AND active = true);
 
 -- Only admins can manage daily challenges
 CREATE POLICY "Admin can manage daily challenges" ON daily_challenges
