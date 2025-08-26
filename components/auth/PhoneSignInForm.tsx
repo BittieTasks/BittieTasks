@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Phone, AlertCircle } from "lucide-react"
-import { useToast } from "@/app/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import { useAuth } from '@/components/auth/SimpleAuthProvider'
 
 interface PhoneSignInFormProps {

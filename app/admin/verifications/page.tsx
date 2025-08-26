@@ -11,7 +11,7 @@ import {
   CheckCircle, AlertTriangle, Clock, Eye, Bot, User, Star,
   Search, Filter, ChevronDown, ArrowRight 
 } from 'lucide-react'
-import { useToast } from '@/app/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 
 interface VerificationData {
   id: string
