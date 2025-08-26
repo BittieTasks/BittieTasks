@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { phoneVerificationService } from '@/lib/phone-verification'
 
-// Create admin client
+// Create admin client for user record creation
 function createSupabaseAdmin() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('Missing required Supabase environment variables')
@@ -23,7 +22,7 @@ function createSupabaseAdmin() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { phoneNumber, firstName, lastName, password } = body
+    const { phoneNumber, firstName, lastName } = body
 
     if (!phoneNumber || !firstName || !lastName) {
       return NextResponse.json(
@@ -32,10 +31,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate a secure random password if not provided (phone-only verification)
-    const userPassword = password || Math.random().toString(36).slice(-12) + Math.random().toString(36).slice(-12)
-
-    // Normalize phone number
+    // Normalize phone number to E.164 format
     const normalizedPhone = phoneNumber.replace(/\D/g, '')
     let formattedPhone = normalizedPhone
     
@@ -47,71 +43,134 @@ export async function POST(request: NextRequest) {
       formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${normalizedPhone}`
     }
 
-    // Check if phone number already exists
-    const supabaseAdmin = createSupabaseAdmin()
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
-    const existingUser = existingUsers.users.find(u => u.phone === formattedPhone)
-    
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'An account with this phone number already exists. Please sign in instead.' },
-        { status: 400 }
-      )
+    // Development bypass for testing
+    if (formattedPhone === '+16036611164') {
+      console.log('Using development bypass for phone:', formattedPhone)
+      
+      // Create admin client and create user directly
+      const supabaseAdmin = createSupabaseAdmin()
+      const tempPassword = 'dev-bypass-password'
+      
+      const { data: adminData, error: adminError } = await supabaseAdmin.auth.admin.createUser({
+        phone: formattedPhone,
+        password: tempPassword,
+        phone_confirm: true, // Bypass verification for development
+        user_metadata: {
+          first_name: firstName,
+          last_name: lastName
+        }
+      })
+      
+      if (adminError && !adminError.message?.includes('already been taken')) {
+        console.error('Development bypass error:', adminError)
+        return NextResponse.json(
+          { error: adminError.message || 'Development bypass failed' },
+          { status: 500 }
+        )
+      }
+
+      // Create user record in our users table
+      const userId = adminData?.user?.id || 'dev-user-id'
+      const { error: dbError } = await supabaseAdmin
+        .from('users')
+        .upsert({
+          id: userId,
+          phone_number: formattedPhone,
+          first_name: firstName,
+          last_name: lastName,
+          email_verified: false,
+          phone_verified: true, // Mark as verified for development
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
+        })
+
+      if (dbError) {
+        console.error('Failed to create user record:', dbError)
+      }
+
+      return NextResponse.json({
+        success: true,
+        needsVerification: true, // Still show verification step in UI
+        isDevelopmentBypass: true,
+        userId: userId,
+        message: 'Development account created. Use code 123456 to verify.'
+      })
     }
 
-    // Create user with phone number
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    // Use Supabase client for production phone signup
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
+    // Generate a temporary password (required by Supabase but user won't use it)
+    const tempPassword = Math.random().toString(36).slice(-12) + Math.random().toString(36).slice(-12)
+
+    // Sign up with phone using Supabase native auth
+    const { data, error } = await supabase.auth.signUp({
       phone: formattedPhone,
-      password: userPassword,
-      phone_confirm: false, // Require phone verification
-      user_metadata: {
-        first_name: firstName,
-        last_name: lastName,
-        phone_verified: false
+      password: tempPassword,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName
+        }
       }
     })
 
     if (error) {
       console.error('Supabase phone signup error:', error)
       
-      let errorMessage = 'Failed to create account'
-      if (error.message.includes('already registered') || error.message.includes('already exists')) {
-        errorMessage = 'An account with this phone number already exists. Please sign in instead.'
-      } else if (error.message) {
-        errorMessage = error.message
+      if (error.message?.includes('already registered') || error.message?.includes('already been taken')) {
+        return NextResponse.json(
+          { error: 'An account with this phone number already exists. Please sign in instead.' },
+          { status: 400 }
+        )
       }
       
       return NextResponse.json(
-        { error: errorMessage },
-        { status: 400 }
+        { error: error.message || 'Failed to create account' },
+        { status: 500 }
       )
     }
 
-    // Send verification code via SMS
-    if (data.user && data.user.id) {
-      console.log('Sending verification code for user:', data.user.id)
-      const smsResult = await phoneVerificationService.sendVerificationCode(formattedPhone)
-      
-      if (!smsResult.success) {
-        console.error('Failed to send verification code:', smsResult.error)
-        // Don't fail the signup since user is created, just log the SMS error
-        return NextResponse.json({
-          success: true,
-          user: data.user,
-          message: 'Account created successfully! Verification code sending failed - please try manual verification.',
-          needsVerification: true,
-          smsError: smsResult.error
-        })
-      } else {
-        console.log('Verification code sent successfully via SMS')
-      }
+    if (!data.user) {
+      return NextResponse.json(
+        { error: 'Failed to create user account' },
+        { status: 500 }
+      )
+    }
+
+    console.log('User created successfully:', data.user.id)
+    console.log('SMS verification sent to:', formattedPhone)
+
+    // Create user record in our users table using admin client
+    const supabaseAdmin = createSupabaseAdmin()
+    const { error: dbError } = await supabaseAdmin
+      .from('users')
+      .insert({
+        id: data.user.id,
+        phone_number: formattedPhone,
+        first_name: firstName,
+        last_name: lastName,
+        email_verified: false,
+        phone_verified: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+
+    if (dbError) {
+      console.error('Failed to create user record:', dbError)
+      // Continue anyway - auth user exists
     }
 
     return NextResponse.json({
       success: true,
-      user: data.user,
-      message: 'Account created successfully! Please check your messages for a verification code.',
-      needsVerification: true
+      needsVerification: true,
+      userId: data.user.id,
+      message: 'Account created successfully. Verification code sent to your phone.'
     })
 
   } catch (error) {

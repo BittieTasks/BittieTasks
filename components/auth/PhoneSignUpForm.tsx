@@ -109,12 +109,12 @@ export function PhoneSignUpForm({ onSuccess, onSwitchToSignIn }: PhoneSignUpForm
 
       const phoneDigits = formData.phoneNumber.replace(/\D/g, '')
 
-      const response = await fetch('/api/auth/supabase-verify-phone', {
+      const response = await fetch('/api/auth/verify-phone', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phoneNumber: phoneDigits,
-          code: verificationCode
+          verificationCode: verificationCode
         })
       })
 
