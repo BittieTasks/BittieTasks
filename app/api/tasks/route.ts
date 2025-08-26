@@ -58,8 +58,7 @@ export async function POST(request: NextRequest) {
     // Validate the task data with proper location fields
     const taskData = {
       ...body,
-      creatorId: user.id, // Ensure creator is current user
-      creator_id: user.id, // Supabase field name
+      created_by: user.id, // Actual database field name
       status: 'open',
       currentParticipants: 0,
       current_participants: 0,
@@ -80,7 +79,7 @@ export async function POST(request: NextRequest) {
       .insert(validatedData)
       .select(`
         *,
-        creator:users!tasks_creator_id_fkey(id, email, phone),
+        creator:users!tasks_created_by_fkey(id, email, phone),
         category:categories(id, name)
       `)
       .single()

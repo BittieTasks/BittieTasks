@@ -119,7 +119,7 @@ export const tasks = pgTable("tasks", {
   title: varchar("title").notNull(),
   description: text("description").notNull(),
   categoryId: varchar("category_id").references(() => categories.id),
-  creatorId: varchar("creator_id").references(() => users.id).notNull(),
+  createdBy: varchar("created_by").references(() => users.id),
   type: taskTypeEnum("type").default('shared'),
   status: taskStatusEnum("status").default('open'),
   // Approval system fields
@@ -531,7 +531,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 
 export const tasksRelations = relations(tasks, ({ one, many }) => ({
   creator: one(users, {
-    fields: [tasks.creatorId],
+    fields: [tasks.createdBy],
     references: [users.id],
     relationName: "taskCreator"
   }),
