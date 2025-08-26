@@ -127,6 +127,20 @@ export class PhoneVerificationService {
       const normalizedPhone = normalizePhoneNumber(phoneNumber)
       const supabase = createSupabaseAdmin()
       
+      // TEMP: Development bypass for phone (603) 661-1164
+      if (normalizedPhone === '+16036611164' && code === '123456') {
+        console.log('TEMP: Using development bypass for verification')
+        
+        // Mark any existing verification as used to clean up
+        await supabase
+          .from('phone_verification_codes')
+          .update({ verified: true })
+          .eq('phone_number', normalizedPhone)
+          .eq('verified', false)
+        
+        return { success: true }
+      }
+      
       // Find valid verification code
       const { data: verificationData, error: verificationError } = await supabase
         .from('phone_verification_codes')
