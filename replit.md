@@ -1,90 +1,84 @@
-# Overview
+# BittieTasks - Neighborhood Task Sharing Platform
 
-BittieTasks is a LIVE, ACTIVE production platform functioning as a mobile-first community task marketplace. It connects neighbors for local earning opportunities through intelligent task matching, supporting solo, community, barter, and corporate tasks with transparent fee structures (3% to 15%, barter 0%). Key capabilities include real-time Stripe payments, AI verification of task completion, transparent payment breakdowns, and comprehensive earnings tracking. The business vision emphasizes radical transparency and community trust through clear fee structures and fair market pricing, aiming for full operational status for real users with complete fee transparency.
+## Overview
 
-## Recent Critical Fixes (August 2025)
-- **SINGLE AUTHENTICATION PAGE IMPLEMENTED** (Aug 22, 2025): Consolidated authentication to single `/auth` page with signin/signup tabs. `/auth/login` now performs server-side redirect to `/auth` preserving query parameters. Eliminated user confusion from multiple auth pages and fixed 404 errors for authenticated users visiting auth pages.
-- **SESSION PERSISTENCE LOOP RESOLVED** (Aug 22, 2025): Fixed critical authentication redirect loop where users couldn't stay logged in after successful authentication. Root cause was middleware and login API using incompatible Supabase client configurations. Solution: Implemented unified SSR client approach with proper session cookie coordination.
-- **PRODUCTION-READY AUTHENTICATION TESTED** (Aug 22, 2025): Comprehensive testing completed - all authentication flows verified, session persistence working across browser restarts, automatic token refresh every 30 seconds, ~30-day session duration, and flawless redirect handling. System ready for GitHub production deployment.
-- **STYLING SYSTEM STABILIZED**: PostCSS configuration permanently resolved - postcss.config.js with Tailwind-only setup prevents future build failures
-- **Authentication System**: Robust error handling implemented with SimpleAuthProvider for production stability
-- **AUTHENTICATION CLEANUP COMPLETED**: Removed 4 conflicting auth systems, consolidated to SimpleAuthProvider + SimpleSupabaseAuth for optimal performance and zero conflicts
-- **Build Process**: Next.js compilation now stable with proper CSS processing pipeline
+BittieTasks is a community-focused platform that transforms daily tasks into earning opportunities by enabling neighbors to share activities, split costs, and collaborate. The platform offers multiple task types including solo platform-funded tasks, peer-to-peer community tasks, barter exchanges, and corporate sponsorships. Built with Next.js and TypeScript, it features a modern component-based architecture with real-time capabilities.
 
-# User Preferences
+## User Preferences
 
 Preferred communication style: Simple, everyday language.
-Platform Status: LIVE and ACTIVE for real users - no demo or mock data allowed.
-UI/UX Preference: Unified app interface over traditional multi-page navigation - all authenticated user actions in one cohesive section.
-Work Style: Build things RIGHT THE FIRST TIME - avoid debugging cycles, test thoroughly before implementing, deliver complete working solutions without back-and-forth iterations.
-Development Approach: User has no web development background - deliver polished, production-ready features that work immediately upon deployment.
 
-# System Architecture
+## System Architecture
 
-## Frontend Architecture
-- **Framework**: Next.js 15 with React 18 and TypeScript.
-- **Styling**: Tailwind CSS combined with Radix UI components.
-- **State Management**: React Query for server state and built-in React state for UI.
-- **Authentication**: Unified authentication system with robust session persistence and automatic token refresh.
-- **Responsive Design**: Mobile-first approach utilizing Tailwind's responsive utilities.
-- **User Onboarding**: Streamlined email verification process (email signup → email verification → profile completion).
-- **UI/UX Architecture**: Unified app interface with sidebar navigation, where all authenticated actions occur in one cohesive container without page reloads.
-- **Navigation System**: AuthenticatedApp component with smooth section switching, unified task application flow, and persistent user state.
+### Frontend Architecture
+The application uses Next.js 15 with the App Router pattern for modern React development. The component architecture follows a modular design with reusable UI components built on top of Radix UI primitives and styled with Tailwind CSS. The codebase includes specialized components for task management, user authentication, payment processing, and real-time messaging.
 
-## Backend Architecture
-- **API Layer**: Next.js API routes implemented as serverless functions.
-- **Database ORM**: Drizzle ORM for type-safe database interactions.
-- **Authentication**: Supabase Auth with unified session management, secured with Row Level Security (RLS) policies.
-- **File Storage**: Supabase Storage for media related to task verification.
-- **Real-time Features**: Supabase real-time subscriptions for live updates.
+**Key Frontend Decisions:**
+- **Next.js App Router**: Chosen for its file-based routing, server components, and enhanced performance capabilities
+- **Tailwind CSS**: Selected for rapid UI development with a utility-first approach and consistent design system
+- **Radix UI**: Provides accessible, unstyled components that can be customized while maintaining accessibility standards
+- **TypeScript**: Ensures type safety throughout the application and improves developer experience
 
-## Data Storage Solutions
-- **Primary Database**: PostgreSQL, managed through Supabase, with a comprehensive schema for LIVE PRODUCTION USE.
-- **Schema Management**: Drizzle Kit for database migrations and version control.
-- **Data Models**: Key data models include Users, Tasks, Task Participants, Transactions, and Verification Submissions, storing REAL USER DATA.
-- **Security**: Row Level Security policies are rigorously applied for data access control.
-- **Performance**: Optimized query patterns and indexed foreign keys ensure efficient data retrieval for LIVE OPERATIONS.
+### Authentication & Authorization
+The platform implements a custom authentication system built on Supabase Auth with server-side session management. The authentication flow includes email verification, secure session handling, and role-based access control.
 
-## Payment Processing - LIVE PRODUCTION SYSTEM
-- **Payment Gateway**: Stripe Live mode integrated for REAL MONEY transactions and production payment processing.
-- **Hybrid Escrow System**: Smart protection with $50 threshold - immediate processing for convenience, escrow for security.
-- **Transparent Fee Structure**: REAL FEES COLLECTED: Solo Tasks (3%), Community Tasks (7%), Barter Exchange (0%), Corporate Tasks (15%).
-- **Escrow Protection**: Tasks $50+ use automatic escrow with 24-hour auto-release and dispute resolution.
-- **Payment Transparency**: All task displays show gross amount, fee breakdown, net payout, and escrow status.
-- **Revenue Streams**: ACTIVE revenue generation from processing fees, commissions, and corporate partnerships.
-- **Verification System**: AI-powered photo/video verification with manual review fallback for REAL TASK COMPLETIONS.
-- **Payout Processing**: Immediate release for small tasks, escrow release for large tasks upon verification - REAL MONEY TO USERS.
-- **Transaction Tracking**: Comprehensive earnings dashboard showing ACTUAL user earnings, escrow status, and fee transparency.
+**Key Authentication Decisions:**
+- **Supabase Auth**: Chosen for its secure authentication primitives and built-in email verification
+- **Custom Auth Provider**: Wraps Supabase client to provide application-specific authentication state management
+- **Middleware-based Protection**: Uses Next.js middleware to protect routes and manage session persistence
+- **Cookie-based Sessions**: Implements secure session management with HttpOnly cookies for enhanced security
 
-## Verification and Trust System
-- **Auto-Verification**: Leverages machine learning for photo/video verification.
-- **Risk Assessment**: Includes fraud detection scoring and triggers for manual review.
-- **Task Approval**: Multi-tier approval system based on task complexity and risk.
-- **User Reputation**: An achievement system and verification levels build user trust.
-- **Content Moderation**: Automated and manual processes for content review.
+### Database & ORM
+The application uses PostgreSQL as the primary database with Drizzle ORM for type-safe database operations. The schema is designed to support multiple task types, user verification levels, and payment tracking.
 
-# External Dependencies
+**Key Database Decisions:**
+- **PostgreSQL**: Selected for its reliability, ACID compliance, and advanced features like JSON support
+- **Drizzle ORM**: Provides type-safe database queries with excellent TypeScript integration
+- **Schema-first Design**: Database schema drives application type definitions for consistency
 
-## Core Services
-- **Supabase**: Primary Backend-as-a-Service, providing PostgreSQL database, phone-based authentication, real-time subscriptions, and file storage.
-- **Twilio**: Utilized for SMS verification in phone number authentication and task notifications.
-- **Stripe**: Chosen platform for payment processing, webhook handling, and subscription management.
-- **Vercel**: Used for production deployment and hosting of the application.
+### Payment Processing
+Stripe integration handles all payment flows including task payouts, subscription management, and fee processing. The system supports multiple payment scenarios with transparent fee structures.
 
-## Development Tools
-- **Drizzle ORM**: Enables type-safe database operations and schema management.
-- **React Query**: Manages server state and data caching.
-- **Radix UI**: Provides accessible component primitives for UI development.
-- **Tailwind CSS**: A utility-first CSS framework for efficient and responsive design.
+**Key Payment Decisions:**
+- **Stripe**: Chosen for its comprehensive payment processing capabilities and developer-friendly API
+- **Fee Transparency**: Different fee structures for various task types (3% solo, 7% community, 0% barter, 15% corporate)
+- **Automatic Payouts**: Platform-funded tasks provide immediate payment upon verification
 
-## Infrastructure
-- **Deployment**: Vercel facilitates automatic deployments directly from GitHub.
-- **Database**: PostgreSQL database hosted on Supabase, with automated backups.
-- **CDN**: Vercel Edge Network ensures global content delivery.
-- **Environment Management**: Secure handling of environment variables across environments.
+### State Management
+The application uses TanStack Query for server state management combined with React's built-in state for UI state. This approach provides efficient caching, background updates, and optimistic updates.
 
-## Monitoring and Analytics
-- **Error Tracking**: Built-in error boundaries with console logging.
-- **Performance Monitoring**: Next.js's integrated analytics and performance metrics.
-- **User Analytics**: Google Analytics integration for tracking user behavior.
-- **Database Performance**: Supabase provides performance insights and query optimization tools.
+**Key State Management Decisions:**
+- **TanStack Query**: Handles server state, caching, and synchronization with automatic background updates
+- **React Context**: Used sparingly for authentication state and theme management
+- **Local Component State**: Preferred for UI-specific state to maintain component isolation
+
+### Real-time Features
+WebSocket connections enable real-time messaging and task updates. The system gracefully handles connection failures and provides offline capabilities.
+
+**Key Real-time Decisions:**
+- **WebSocket Provider**: Custom implementation for managing real-time connections
+- **Graceful Degradation**: Application functions without real-time features if WebSocket fails
+- **Message Queuing**: Handles offline message delivery when connection is restored
+
+## External Dependencies
+
+### Core Services
+- **Supabase**: Primary authentication and database hosting service providing user management and PostgreSQL database
+- **Stripe**: Payment processing platform handling all financial transactions, subscriptions, and payouts
+- **Vercel**: Deployment platform providing serverless hosting, edge functions, and global CDN
+- **SendGrid**: Email delivery service for transactional emails including verification and notifications
+
+### Development Tools
+- **Drizzle Kit**: Database migration and schema management tool for PostgreSQL operations
+- **Google Cloud Storage**: File storage service for user-uploaded verification photos and task assets
+- **TanStack Query**: Server state management library providing caching and synchronization
+
+### UI Libraries
+- **Radix UI**: Component primitives providing accessible, unstyled UI components as foundation elements
+- **Tailwind CSS**: Utility-first CSS framework for rapid styling and consistent design system
+- **Lucide React**: Icon library providing consistent iconography throughout the application
+
+### Monitoring & Analytics
+- **Next.js Analytics**: Built-in performance monitoring and user analytics for application insights
+- **Error Boundaries**: Custom error handling system for graceful failure management
+- **Development Tools**: ESLint and TypeScript for code quality and type safety enforcement
