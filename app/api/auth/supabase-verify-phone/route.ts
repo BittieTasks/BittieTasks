@@ -23,12 +23,39 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({
+    // Create response with session cookies for automatic login
+    const response = NextResponse.json({
       success: true,
-      message: 'Phone number verified successfully! You can now sign in.',
-      session: verificationResult.session,
-      redirectUrl: '/auth?tab=signin'
+      message: 'Phone number verified successfully! You are now logged in.',
+      session: verificationResult.session
     })
+
+    // Set session cookies for persistence (30 days)
+    if (verificationResult.session) {
+      const maxAge = 30 * 24 * 60 * 60 // 30 days
+      
+      response.cookies.set({
+        name: 'sb-access-token',
+        value: verificationResult.session.access_token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge,
+        path: '/',
+      })
+
+      response.cookies.set({
+        name: 'sb-refresh-token', 
+        value: verificationResult.session.refresh_token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge,
+        path: '/',
+      })
+    }
+
+    return response
     
   } catch (error: any) {
     console.error('Supabase phone verification error:', error)

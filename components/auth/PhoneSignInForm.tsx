@@ -15,13 +15,13 @@ interface PhoneSignInFormProps {
 }
 
 export function PhoneSignInForm({ onSuccess, onSwitchToSignUp }: PhoneSignInFormProps) {
+  const [step, setStep] = useState<'signin' | 'verify'>('signin')
   const [formData, setFormData] = useState({
-    phoneNumber: '',
-    password: ''
+    phoneNumber: ''
   })
+  const [verificationCode, setVerificationCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [needsVerification, setNeedsVerification] = useState(false)
   const { toast } = useToast()
   const { refreshAuth } = useAuth()
 
@@ -48,12 +48,11 @@ export function PhoneSignInForm({ onSuccess, onSwitchToSignUp }: PhoneSignInForm
     e.preventDefault()
     setLoading(true)
     setError('')
-    setNeedsVerification(false)
 
     try {
       // Basic validation
-      if (!formData.phoneNumber || !formData.password) {
-        setError('Phone number and password are required')
+      if (!formData.phoneNumber) {
+        setError('Phone number is required')
         return
       }
 
@@ -68,32 +67,23 @@ export function PhoneSignInForm({ onSuccess, onSwitchToSignUp }: PhoneSignInForm
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phoneNumber: phoneDigits,
-          password: formData.password
+          phoneNumber: phoneDigits
         })
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        if (data.needsVerification) {
-          setNeedsVerification(true)
-          setError('Please verify your phone number first. Check your messages for the verification code.')
-        } else {
-          setError(data.error || 'Sign in failed')
-        }
+        setError(data.error || 'Failed to send verification code')
         return
       }
 
-      if (data.success) {
+      if (data.success && data.needsVerification) {
+        setStep('verify')
         toast({
-          title: "Welcome back!",
-          description: "You've successfully signed in.",
+          title: "Verification Code Sent",
+          description: "Check your messages for the login code.",
         })
-        
-        // Refresh auth state
-        await refreshAuth()
-        onSuccess?.()
       }
 
     } catch (error) {
@@ -104,45 +94,153 @@ export function PhoneSignInForm({ onSuccess, onSwitchToSignUp }: PhoneSignInForm
     }
   }
 
-  const handlePasswordlessSignIn = async () => {
+  const handleVerification = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
     setError('')
 
     try {
-      const phoneDigits = formData.phoneNumber.replace(/\D/g, '')
-      if (phoneDigits.length !== 10) {
-        setError('Please enter a valid 10-digit phone number')
+      if (!verificationCode || verificationCode.length !== 6) {
+        setError('Please enter the 6-digit verification code')
         return
       }
 
-      // Request SMS verification code for passwordless login
-      const response = await fetch('/api/auth/supabase-phone-login', {
+      const phoneDigits = formData.phoneNumber.replace(/\D/g, '')
+
+      const response = await fetch('/api/auth/supabase-verify-phone', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phoneNumber: phoneDigits,
-          verificationCode: 'request' // Special flag for passwordless
+          code: verificationCode
         })
       })
 
       const data = await response.json()
 
-      if (data.needsOTPVerification) {
+      if (!response.ok) {
+        setError(data.error || 'Verification failed')
+        return
+      }
+
+      if (data.success) {
         toast({
-          title: "Verification Code Sent",
-          description: "Check your messages for the login code.",
+          title: "Welcome back!",
+          description: "You've successfully signed in.",
         })
-        // Could add verification step here
-      } else if (data.error) {
-        setError(data.error)
+        
+        // Refresh auth state and reload page
+        if (typeof window !== 'undefined') {
+          window.location.reload()
+        }
+        onSuccess?.()
       }
 
     } catch (error) {
-      console.error('Passwordless sign in error:', error)
+      console.error('Verification error:', error)
       setError('Network error. Please try again.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const resendCode = async () => {
+    setLoading(true)
+    try {
+      const phoneDigits = formData.phoneNumber.replace(/\D/g, '')
+      const response = await fetch('/api/auth/supabase-phone-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phoneNumber: phoneDigits
+        })
+      })
+
+      if (response.ok) {
+        toast({
+          title: "Code Resent",
+          description: "Check your messages for the new verification code.",
+        })
+      }
+    } catch (error) {
+      console.error('Resend error:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (step === 'verify') {
+    return (
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Phone className="h-6 w-6 text-green-600" />
+            <CardTitle className="text-2xl">Verify Your Phone</CardTitle>
+          </div>
+          <CardDescription>
+            We sent a 6-digit code to {formData.phoneNumber}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleVerification} className="space-y-4">
+            {error && (
+              <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 rounded-md">
+                <AlertCircle className="h-4 w-4" />
+                {error}
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <Label htmlFor="code">Verification Code</Label>
+              <Input
+                id="code"
+                type="text"
+                placeholder="123456"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                maxLength={6}
+                className="text-center text-2xl tracking-widest"
+                data-testid="input-verification-code"
+              />
+            </div>
+
+            <Button type="submit" className="w-full" disabled={loading} data-testid="button-verify-code">
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </Button>
+
+            <div className="text-center">
+              <Button 
+                type="button" 
+                variant="link" 
+                onClick={resendCode}
+                disabled={loading}
+                data-testid="button-resend-code"
+              >
+                Didn't receive a code? Resend
+              </Button>
+            </div>
+
+            <div className="text-center">
+              <Button 
+                type="button" 
+                variant="link" 
+                onClick={() => setStep('signin')}
+                data-testid="button-back-to-signin"
+              >
+                ← Back to Sign In
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
@@ -153,7 +251,7 @@ export function PhoneSignInForm({ onSuccess, onSwitchToSignUp }: PhoneSignInForm
           <CardTitle className="text-2xl">Welcome Back</CardTitle>
         </div>
         <CardDescription>
-          Sign in with your phone number and password
+          Enter your phone number to receive a verification code
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -162,17 +260,6 @@ export function PhoneSignInForm({ onSuccess, onSwitchToSignUp }: PhoneSignInForm
             <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 rounded-md">
               <AlertCircle className="h-4 w-4" />
               {error}
-              {needsVerification && (
-                <Button 
-                  type="button" 
-                  variant="link" 
-                  className="p-0 h-auto text-red-600 underline"
-                  onClick={onSwitchToSignUp}
-                  data-testid="link-verify-phone"
-                >
-                  Verify now
-                </Button>
-              )}
             </div>
           )}
           
@@ -188,40 +275,16 @@ export function PhoneSignInForm({ onSuccess, onSwitchToSignUp }: PhoneSignInForm
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-              data-testid="input-password"
-            />
-          </div>
-
           <Button type="submit" className="w-full" disabled={loading} data-testid="button-sign-in">
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing In...
+                Sending Code...
               </>
             ) : (
-              'Sign In'
+              'Send Verification Code'
             )}
           </Button>
-
-          <div className="text-center">
-            <Button 
-              type="button" 
-              variant="link"
-              onClick={handlePasswordlessSignIn}
-              disabled={loading || !formData.phoneNumber}
-              data-testid="button-passwordless-signin"
-            >
-              Sign in with SMS code instead
-            </Button>
-          </div>
 
           <div className="text-center">
             <Button 

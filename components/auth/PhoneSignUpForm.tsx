@@ -18,8 +18,7 @@ export function PhoneSignUpForm({ onSuccess, onSwitchToSignIn }: PhoneSignUpForm
   const [formData, setFormData] = useState({
     phoneNumber: '',
     firstName: '',
-    lastName: '',
-    password: ''
+    lastName: ''
   })
   const [verificationCode, setVerificationCode] = useState('')
   const [loading, setLoading] = useState(false)
@@ -52,13 +51,8 @@ export function PhoneSignUpForm({ onSuccess, onSwitchToSignIn }: PhoneSignUpForm
 
     try {
       // Basic validation
-      if (!formData.phoneNumber || !formData.firstName || !formData.lastName || !formData.password) {
+      if (!formData.phoneNumber || !formData.firstName || !formData.lastName) {
         setError('All fields are required')
-        return
-      }
-
-      if (formData.password.length < 6) {
-        setError('Password must be at least 6 characters')
         return
       }
 
@@ -75,8 +69,7 @@ export function PhoneSignUpForm({ onSuccess, onSwitchToSignIn }: PhoneSignUpForm
         body: JSON.stringify({
           phoneNumber: phoneDigits,
           firstName: formData.firstName,
-          lastName: formData.lastName,
-          password: formData.password
+          lastName: formData.lastName
         })
       })
 
@@ -134,9 +127,14 @@ export function PhoneSignUpForm({ onSuccess, onSwitchToSignIn }: PhoneSignUpForm
 
       if (data.success) {
         toast({
-          title: "Phone Verified!",
-          description: "Your account is ready. You can now sign in.",
+          title: "Welcome to BittieTasks!",
+          description: "Your account is ready and you're now logged in.",
         })
+        
+        // Refresh auth state 
+        if (typeof window !== 'undefined') {
+          window.location.reload()
+        }
         onSuccess?.()
       }
 
@@ -158,8 +156,7 @@ export function PhoneSignUpForm({ onSuccess, onSwitchToSignIn }: PhoneSignUpForm
         body: JSON.stringify({
           phoneNumber: phoneDigits,
           firstName: formData.firstName,
-          lastName: formData.lastName,
-          password: formData.password
+          lastName: formData.lastName
         })
       })
 
@@ -307,17 +304,6 @@ export function PhoneSignUpForm({ onSuccess, onSwitchToSignIn }: PhoneSignUpForm
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="At least 6 characters"
-              value={formData.password}
-              onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-              data-testid="input-password"
-            />
-          </div>
 
           <Button type="submit" className="w-full" disabled={loading} data-testid="button-create-account">
             {loading ? (

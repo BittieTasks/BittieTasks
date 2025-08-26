@@ -4,7 +4,7 @@ import { supabasePhoneAuth } from '@/lib/supabase-phone-auth'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { phoneNumber, firstName, lastName, password } = body
+    const { phoneNumber, firstName, lastName } = body
 
     if (!phoneNumber || !firstName || !lastName) {
       return NextResponse.json(
@@ -13,15 +13,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!password || password.length < 6) {
-      return NextResponse.json(
-        { error: 'Password must be at least 6 characters' },
-        { status: 400 }
-      )
-    }
-
-    // Create user with phone and password
-    const signupResult = await supabasePhoneAuth.signUpWithPhone(phoneNumber, password, {
+    // Sign up with phone only (passwordless) - this automatically sends OTP
+    const signupResult = await supabasePhoneAuth.signUpWithPhone(phoneNumber, {
       firstName,
       lastName
     })
@@ -33,25 +26,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Send verification code
-    const verificationResult = await supabasePhoneAuth.sendVerificationCode(phoneNumber)
-    
-    if (!verificationResult.success) {
-      console.error('Failed to send verification code:', verificationResult.error)
-      // Don't fail the signup since user is created, just log the SMS error
-      return NextResponse.json({
-        success: true,
-        user: signupResult.user,
-        message: 'Account created successfully! Verification code sending failed - please try manual verification.',
-        needsVerification: true,
-        smsError: verificationResult.error
-      })
-    }
-
     return NextResponse.json({
       success: true,
-      user: signupResult.user,
-      message: 'Account created successfully! Please check your messages for a verification code.',
+      message: 'Verification code sent! Please check your messages.',
       needsVerification: true
     })
 

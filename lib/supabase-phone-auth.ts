@@ -91,21 +91,25 @@ export class SupabasePhoneAuthService {
     }
   }
 
-  // Sign up with phone and password
-  async signUpWithPhone(phoneNumber: string, password: string, userData?: { firstName?: string; lastName?: string }): Promise<{ success: boolean; error?: string; user?: any }> {
+  // Sign up with phone only (passwordless)
+  async signUpWithPhone(phoneNumber: string, userData?: { firstName?: string; lastName?: string }): Promise<{ success: boolean; error?: string; needsVerification?: boolean }> {
     try {
       const supabase = createSupabaseClient()
       const normalizedPhone = this.normalizePhoneNumber(phoneNumber)
       
-      // Create user with phone and password
-      const { data, error } = await supabase.auth.signUp({
+      // Check if user already exists
+      const existingUser = await this.isPhoneVerified(normalizedPhone)
+      if (existingUser) {
+        return { success: false, error: 'An account with this phone number already exists. Please sign in instead.' }
+      }
+      
+      // Use Supabase's OTP signup (passwordless)
+      const { error } = await supabase.auth.signInWithOtp({
         phone: normalizedPhone,
-        password: password,
         options: {
           data: {
             first_name: userData?.firstName,
-            last_name: userData?.lastName,
-            phone_verified: false
+            last_name: userData?.lastName
           }
         }
       })
@@ -113,63 +117,49 @@ export class SupabasePhoneAuthService {
       if (error) {
         console.error('Supabase phone signup error:', error)
         
-        if (error.message.includes('already registered')) {
-          return { success: false, error: 'An account with this phone number already exists. Please sign in instead.' }
+        if (error.message.includes('Signup disabled')) {
+          return { success: false, error: 'Phone signup is currently disabled. Please contact support.' }
         }
         
-        return { success: false, error: error.message || 'Failed to create account' }
+        return { success: false, error: error.message || 'Failed to send verification code' }
       }
 
-      if (!data.user) {
-        return { success: false, error: 'Failed to create account' }
-      }
-
-      console.log('User created successfully:', data.user.id)
-      return { success: true, user: data.user }
+      console.log('Verification code sent for signup to:', normalizedPhone)
+      return { success: true, needsVerification: true }
       
     } catch (error: any) {
-      console.error('Error creating user:', error)
-      return { success: false, error: error.message || 'Failed to create account' }
+      console.error('Error signing up:', error)
+      return { success: false, error: error.message || 'Failed to send verification code' }
     }
   }
 
-  // Sign in with phone and password
-  async signInWithPhone(phoneNumber: string, password: string): Promise<{ success: boolean; error?: string; session?: any; user?: any }> {
+  // Sign in with phone only (passwordless)
+  async signInWithPhone(phoneNumber: string): Promise<{ success: boolean; error?: string; needsVerification?: boolean }> {
     try {
       const supabase = createSupabaseClient()
       const normalizedPhone = this.normalizePhoneNumber(phoneNumber)
       
-      // Sign in with phone and password
-      const { data, error } = await supabase.auth.signInWithPassword({
-        phone: normalizedPhone,
-        password: password
+      // Send OTP for sign in
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: normalizedPhone
       })
 
       if (error) {
         console.error('Supabase phone login error:', error)
         
-        if (error.message.includes('Phone not confirmed')) {
-          return { 
-            success: false, 
-            error: 'Please verify your phone number first. Check your messages for the verification code.',
-          }
-        } else if (error.message.includes('Invalid login credentials')) {
-          return { success: false, error: 'Invalid phone number or password' }
+        if (error.message.includes('User not found')) {
+          return { success: false, error: 'No account found with this phone number. Please sign up first.' }
         }
         
-        return { success: false, error: error.message || 'Sign in failed' }
+        return { success: false, error: error.message || 'Failed to send verification code' }
       }
 
-      if (!data.session || !data.user) {
-        return { success: false, error: 'Sign in failed' }
-      }
-
-      console.log('User signed in successfully:', data.user.id)
-      return { success: true, session: data.session, user: data.user }
+      console.log('Verification code sent for login to:', normalizedPhone)
+      return { success: true, needsVerification: true }
       
     } catch (error: any) {
       console.error('Error signing in:', error)
-      return { success: false, error: error.message || 'Sign in failed' }
+      return { success: false, error: error.message || 'Failed to send verification code' }
     }
   }
 
