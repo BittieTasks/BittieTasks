@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabasePhoneAuth } from '@/lib/supabase-phone-auth'
+import { phoneVerificationService } from '@/lib/phone-verification'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,12 +13,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Send OTP for passwordless login
-    const loginResult = await supabasePhoneAuth.signInWithPhone(phoneNumber)
-
-    if (!loginResult.success) {
+    // Check if phone is verified (user exists)
+    const isVerified = await phoneVerificationService.isPhoneVerified(phoneNumber)
+    if (!isVerified) {
       return NextResponse.json(
-        { error: loginResult.error },
+        { error: 'No account found with this phone number. Please sign up first.' },
+        { status: 400 }
+      )
+    }
+
+    // Send verification code for login
+    const result = await phoneVerificationService.sendVerificationCode(phoneNumber)
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error },
         { status: 400 }
       )
     }
@@ -30,7 +39,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Supabase phone login API error:', error)
+    console.error('Phone login API error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

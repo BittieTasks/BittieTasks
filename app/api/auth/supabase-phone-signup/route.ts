@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabasePhoneAuth } from '@/lib/supabase-phone-auth'
+import { phoneVerificationService } from '@/lib/phone-verification'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,15 +13,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Sign up with phone only (passwordless) - this automatically sends OTP
-    const signupResult = await supabasePhoneAuth.signUpWithPhone(phoneNumber, {
-      firstName,
-      lastName
-    })
-
-    if (!signupResult.success) {
+    // Check if phone is already verified
+    const isVerified = await phoneVerificationService.isPhoneVerified(phoneNumber)
+    if (isVerified) {
       return NextResponse.json(
-        { error: signupResult.error },
+        { error: 'An account with this phone number already exists. Please sign in instead.' },
+        { status: 400 }
+      )
+    }
+
+    // Send verification code via Twilio
+    const result = await phoneVerificationService.sendVerificationCode(phoneNumber)
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error },
         { status: 400 }
       )
     }
@@ -33,7 +39,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Supabase phone signup error:', error)
+    console.error('Phone signup error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
