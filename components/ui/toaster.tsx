@@ -1,6 +1,6 @@
 'use client'
 
-import { useToast, Toast } from '@/app/hooks/use-toast'
+import { useToast, Toast } from '@/hooks/use-toast'
 import { X, CheckCircle, AlertCircle } from 'lucide-react'
 
 export function Toaster() {
