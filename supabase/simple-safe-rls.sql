@@ -1,5 +1,5 @@
--- FINAL WORKING RLS POLICIES - Handles all UUID/VARCHAR type conflicts
--- Uses careful text casting for every single comparison
+-- SIMPLE SAFE RLS POLICIES - Direct comparisons only
+-- No complex casting or COALESCE operations
 
 -- Clean slate - drop all existing policies
 DO $$ 
@@ -48,41 +48,35 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- USERS TABLE POLICIES - Safe text casting
+-- USERS TABLE POLICIES - Try direct comparison first
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users') THEN
+        -- Direct comparison - let PostgreSQL handle the types
         CREATE POLICY "users_own_profile_read" ON users
             FOR SELECT USING (
-                COALESCE(id, '')::text = COALESCE(auth.uid(), '')::text
+                (id IS NOT NULL AND auth.uid() IS NOT NULL AND id = auth.uid())
+                OR (id IS NULL AND auth.uid() IS NULL)
             );
             
         CREATE POLICY "users_own_profile_write" ON users
             FOR UPDATE USING (
-                COALESCE(id, '')::text = COALESCE(auth.uid(), '')::text
+                (id IS NOT NULL AND auth.uid() IS NOT NULL AND id = auth.uid())
+                OR (id IS NULL AND auth.uid() IS NULL)
             );
             
         CREATE POLICY "users_own_profile_create" ON users
             FOR INSERT WITH CHECK (
-                COALESCE(id, '')::text = COALESCE(auth.uid(), '')::text
-            );
-            
-        -- Admin access
-        CREATE POLICY "admin_users_manage" ON users
-            FOR ALL USING (
-                EXISTS (
-                    SELECT 1 FROM users 
-                    WHERE COALESCE(id, '')::text = COALESCE(auth.uid(), '')::text 
-                    AND (email ILIKE '%admin%' OR email = 'admin@bittietasks.com')
-                )
+                (id IS NOT NULL AND auth.uid() IS NOT NULL AND id = auth.uid())
+                OR (id IS NULL AND auth.uid() IS NULL)
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASKS TABLE POLICIES - Safe text casting
+-- TASKS TABLE POLICIES - Direct comparisons only
 -- ============================================================================
 
 DO $$
@@ -94,7 +88,7 @@ BEGIN
                 auth.role() = 'authenticated' 
                 AND (
                     approval_status = 'approved' 
-                    OR COALESCE(created_by, '')::text = COALESCE(auth.uid(), '')::text
+                    OR (created_by IS NOT NULL AND auth.uid() IS NOT NULL AND created_by = auth.uid())
                 )
             );
             
@@ -103,7 +97,7 @@ BEGIN
             FOR INSERT WITH CHECK (
                 auth.role() = 'authenticated' 
                 AND (
-                    COALESCE(created_by, '')::text = COALESCE(auth.uid(), '')::text 
+                    (created_by IS NOT NULL AND auth.uid() IS NOT NULL AND created_by = auth.uid())
                     OR created_by IS NULL
                 )
             );
@@ -111,31 +105,21 @@ BEGIN
         -- Users can update their own tasks
         CREATE POLICY "tasks_update_own" ON tasks
             FOR UPDATE USING (
-                COALESCE(created_by, '')::text = COALESCE(auth.uid(), '')::text 
+                (created_by IS NOT NULL AND auth.uid() IS NOT NULL AND created_by = auth.uid())
                 AND (approval_status = 'pending' OR approval_status IS NULL)
             );
             
         -- Users can delete their own tasks
         CREATE POLICY "tasks_delete_own" ON tasks
             FOR DELETE USING (
-                COALESCE(created_by, '')::text = COALESCE(auth.uid(), '')::text 
+                (created_by IS NOT NULL AND auth.uid() IS NOT NULL AND created_by = auth.uid())
                 AND (approval_status = 'pending' OR approval_status IS NULL)
-            );
-            
-        -- Admin can manage all tasks
-        CREATE POLICY "admin_tasks_full_access" ON tasks
-            FOR ALL USING (
-                EXISTS (
-                    SELECT 1 FROM users 
-                    WHERE COALESCE(users.id, '')::text = COALESCE(auth.uid(), '')::text 
-                    AND (email ILIKE '%admin%' OR email = 'admin@bittietasks.com')
-                )
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK PARTICIPANTS - Simplified safe policies
+-- TASK PARTICIPANTS - Direct comparisons only
 -- ============================================================================
 
 DO $$
@@ -144,25 +128,25 @@ BEGIN
         -- Users can view their own participations
         CREATE POLICY "participants_own_view" ON task_participants
             FOR SELECT USING (
-                COALESCE(user_id, '')::text = COALESCE(auth.uid(), '')::text
+                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
             );
             
-        -- Users can join tasks (simplified check)
+        -- Users can join tasks
         CREATE POLICY "participants_join_tasks" ON task_participants
             FOR INSERT WITH CHECK (
-                COALESCE(user_id, '')::text = COALESCE(auth.uid(), '')::text
+                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
             );
             
         -- Users can update their own participation
         CREATE POLICY "participants_update_own" ON task_participants
             FOR UPDATE USING (
-                COALESCE(user_id, '')::text = COALESCE(auth.uid(), '')::text
+                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK MESSAGES - Simplified safe policies
+-- TASK MESSAGES - Direct comparisons only
 -- ============================================================================
 
 DO $$
@@ -171,25 +155,25 @@ BEGIN
         -- Users can view messages they sent
         CREATE POLICY "messages_own_view" ON task_messages
             FOR SELECT USING (
-                COALESCE(sender_id, '')::text = COALESCE(auth.uid(), '')::text
+                (sender_id IS NOT NULL AND auth.uid() IS NOT NULL AND sender_id = auth.uid())
             );
             
         -- Users can send messages
         CREATE POLICY "messages_send_own" ON task_messages
             FOR INSERT WITH CHECK (
-                COALESCE(sender_id, '')::text = COALESCE(auth.uid(), '')::text
+                (sender_id IS NOT NULL AND auth.uid() IS NOT NULL AND sender_id = auth.uid())
             );
             
         -- Users can update their own messages
         CREATE POLICY "messages_update_own" ON task_messages
             FOR UPDATE USING (
-                COALESCE(sender_id, '')::text = COALESCE(auth.uid(), '')::text
+                (sender_id IS NOT NULL AND auth.uid() IS NOT NULL AND sender_id = auth.uid())
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK VERIFICATIONS - Simplified safe policies
+-- TASK VERIFICATIONS - Direct comparisons only
 -- ============================================================================
 
 DO $$
@@ -198,25 +182,25 @@ BEGIN
         -- Users can view their own verifications
         CREATE POLICY "verifications_own_view" ON task_verifications
             FOR SELECT USING (
-                COALESCE(user_id, '')::text = COALESCE(auth.uid(), '')::text
+                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
             );
             
         -- Users can create their own verifications
         CREATE POLICY "verifications_create_own" ON task_verifications
             FOR INSERT WITH CHECK (
-                COALESCE(user_id, '')::text = COALESCE(auth.uid(), '')::text
+                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
             );
             
         -- Users can update their own verifications
         CREATE POLICY "verifications_update_own" ON task_verifications
             FOR UPDATE USING (
-                COALESCE(user_id, '')::text = COALESCE(auth.uid(), '')::text
+                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- USER PRESENCE - Simplified safe policies
+-- USER PRESENCE - Direct comparisons only
 -- ============================================================================
 
 DO $$
@@ -229,13 +213,13 @@ BEGIN
         -- Users can manage their own presence
         CREATE POLICY "presence_manage_own" ON user_presence
             FOR ALL USING (
-                COALESCE(user_id, '')::text = COALESCE(auth.uid(), '')::text
+                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- PAYMENTS - Simplified safe policies
+-- PAYMENTS - Direct comparisons only
 -- ============================================================================
 
 DO $$
@@ -244,7 +228,7 @@ BEGIN
         -- Users can view their own payments
         CREATE POLICY "payments_own_view" ON payments
             FOR SELECT USING (
-                COALESCE(user_id, '')::text = COALESCE(auth.uid(), '')::text
+                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
             );
             
         -- System can create payments
@@ -254,7 +238,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- USER EARNINGS - Simplified safe policies
+-- USER EARNINGS - Direct comparisons only
 -- ============================================================================
 
 DO $$
@@ -263,7 +247,7 @@ BEGIN
         -- Users can view their own earnings
         CREATE POLICY "earnings_own_view" ON user_earnings
             FOR SELECT USING (
-                COALESCE(user_id, '')::text = COALESCE(auth.uid(), '')::text
+                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
             );
             
         -- System can create earnings
@@ -273,7 +257,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- MESSAGES - Simplified safe policies (if different from task_messages)
+-- MESSAGES - Direct comparisons only (if different from task_messages)
 -- ============================================================================
 
 DO $$
@@ -282,14 +266,14 @@ BEGIN
         -- Users can view their own messages
         CREATE POLICY "direct_messages_own_view" ON messages
             FOR SELECT USING (
-                COALESCE(sender_id, '')::text = COALESCE(auth.uid(), '')::text
-                OR COALESCE(receiver_id, '')::text = COALESCE(auth.uid(), '')::text
+                (sender_id IS NOT NULL AND auth.uid() IS NOT NULL AND sender_id = auth.uid())
+                OR (receiver_id IS NOT NULL AND auth.uid() IS NOT NULL AND receiver_id = auth.uid())
             );
             
         -- Users can send messages
         CREATE POLICY "direct_messages_send_own" ON messages
             FOR INSERT WITH CHECK (
-                COALESCE(sender_id, '')::text = COALESCE(auth.uid(), '')::text
+                (sender_id IS NOT NULL AND auth.uid() IS NOT NULL AND sender_id = auth.uid())
             );
     END IF;
 END $$;
@@ -347,4 +331,4 @@ BEGIN
 END $$;
 
 -- Success message
-SELECT 'Final working RLS policies applied successfully!' AS status;
+SELECT 'Simple safe RLS policies applied successfully!' AS status;
