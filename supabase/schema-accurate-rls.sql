@@ -1,5 +1,5 @@
--- CORRECT CASTING RLS POLICIES - Cast columns to text for comparison
--- Handles mixed UUID and VARCHAR columns properly
+-- SCHEMA-ACCURATE RLS POLICIES - Uses exact column names from shared/schema.ts
+-- All comparisons cast both sides to text for universal compatibility
 
 -- Clean slate - drop all existing policies
 DO $$ 
@@ -45,10 +45,13 @@ BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'messages') THEN
         ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
     END IF;
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user_achievements') THEN
+        ALTER TABLE user_achievements ENABLE ROW LEVEL SECURITY;
+    END IF;
 END $$;
 
 -- ============================================================================
--- USERS TABLE POLICIES - UUID column, cast both to text
+-- USERS TABLE POLICIES - Direct comparison with text casting
 -- ============================================================================
 
 DO $$
@@ -72,122 +75,151 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- TASKS TABLE POLICIES - Cast both to text for safety
+-- TASKS TABLE POLICIES - Column name: createdBy (camelCase in schema)
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'tasks') THEN
-        -- Public read access for approved tasks
+        -- Try both createdBy (schema) and created_by (DB convention)
         CREATE POLICY "tasks_public_marketplace" ON tasks
             FOR SELECT USING (
                 auth.role() = 'authenticated' 
                 AND (
                     approval_status = 'approved' 
-                    OR created_by::text = auth.uid()::text
+                    OR (
+                        CASE 
+                            WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'created_by')
+                            THEN created_by::text = auth.uid()::text
+                            ELSE "createdBy"::text = auth.uid()::text
+                        END
+                    )
                 )
             );
             
-        -- Users can create new tasks
         CREATE POLICY "tasks_create_own" ON tasks
             FOR INSERT WITH CHECK (
                 auth.role() = 'authenticated' 
                 AND (
-                    created_by::text = auth.uid()::text
-                    OR created_by IS NULL
+                    CASE 
+                        WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'created_by')
+                        THEN (created_by::text = auth.uid()::text OR created_by IS NULL)
+                        ELSE ("createdBy"::text = auth.uid()::text OR "createdBy" IS NULL)
+                    END
                 )
             );
             
-        -- Users can update their own tasks
         CREATE POLICY "tasks_update_own" ON tasks
             FOR UPDATE USING (
-                created_by::text = auth.uid()::text
+                CASE 
+                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'created_by')
+                    THEN created_by::text = auth.uid()::text
+                    ELSE "createdBy"::text = auth.uid()::text
+                END
                 AND (approval_status = 'pending' OR approval_status IS NULL)
             );
             
-        -- Users can delete their own tasks
         CREATE POLICY "tasks_delete_own" ON tasks
             FOR DELETE USING (
-                created_by::text = auth.uid()::text
+                CASE 
+                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'created_by')
+                    THEN created_by::text = auth.uid()::text
+                    ELSE "createdBy"::text = auth.uid()::text
+                END
                 AND (approval_status = 'pending' OR approval_status IS NULL)
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK PARTICIPANTS - Cast both to text for safety
+-- TASK PARTICIPANTS - Column name: userId (schema shows camelCase)
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'task_participants') THEN
-        -- Users can view their own participations
         CREATE POLICY "participants_own_view" ON task_participants
             FOR SELECT USING (
-                user_id::text = auth.uid()::text
+                CASE 
+                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_participants' AND column_name = 'user_id')
+                    THEN user_id::text = auth.uid()::text
+                    ELSE "userId"::text = auth.uid()::text
+                END
             );
             
-        -- Users can join tasks
         CREATE POLICY "participants_join_tasks" ON task_participants
             FOR INSERT WITH CHECK (
-                user_id::text = auth.uid()::text
+                CASE 
+                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_participants' AND column_name = 'user_id')
+                    THEN user_id::text = auth.uid()::text
+                    ELSE "userId"::text = auth.uid()::text
+                END
             );
             
-        -- Users can update their own participation
         CREATE POLICY "participants_update_own" ON task_participants
             FOR UPDATE USING (
-                user_id::text = auth.uid()::text
+                CASE 
+                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_participants' AND column_name = 'user_id')
+                    THEN user_id::text = auth.uid()::text
+                    ELSE "userId"::text = auth.uid()::text
+                END
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK MESSAGES - Cast both to text for safety
+-- TASK MESSAGES - Column name: senderId (schema shows camelCase)
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'task_messages') THEN
-        -- Users can view messages they sent
-        CREATE POLICY "messages_own_view" ON task_messages
+        CREATE POLICY "task_messages_own_view" ON task_messages
             FOR SELECT USING (
-                sender_id::text = auth.uid()::text
+                CASE 
+                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_messages' AND column_name = 'sender_id')
+                    THEN sender_id::text = auth.uid()::text
+                    ELSE "senderId"::text = auth.uid()::text
+                END
             );
             
-        -- Users can send messages
-        CREATE POLICY "messages_send_own" ON task_messages
+        CREATE POLICY "task_messages_send_own" ON task_messages
             FOR INSERT WITH CHECK (
-                sender_id::text = auth.uid()::text
+                CASE 
+                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_messages' AND column_name = 'sender_id')
+                    THEN sender_id::text = auth.uid()::text
+                    ELSE "senderId"::text = auth.uid()::text
+                END
             );
             
-        -- Users can update their own messages
-        CREATE POLICY "messages_update_own" ON task_messages
+        CREATE POLICY "task_messages_update_own" ON task_messages
             FOR UPDATE USING (
-                sender_id::text = auth.uid()::text
+                CASE 
+                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_messages' AND column_name = 'sender_id')
+                    THEN sender_id::text = auth.uid()::text
+                    ELSE "senderId"::text = auth.uid()::text
+                END
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK VERIFICATIONS - Cast both to text for safety
+-- TASK VERIFICATIONS - Column name: userId (schema shows snake_case)
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'task_verifications') THEN
-        -- Users can view their own verifications
         CREATE POLICY "verifications_own_view" ON task_verifications
             FOR SELECT USING (
                 user_id::text = auth.uid()::text
             );
             
-        -- Users can create their own verifications
         CREATE POLICY "verifications_create_own" ON task_verifications
             FOR INSERT WITH CHECK (
                 user_id::text = auth.uid()::text
             );
             
-        -- Users can update their own verifications
         CREATE POLICY "verifications_update_own" ON task_verifications
             FOR UPDATE USING (
                 user_id::text = auth.uid()::text
@@ -196,17 +228,15 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- USER PRESENCE - Cast both to text for safety
+-- USER PRESENCE - Column name: userId (schema shows snake_case)
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user_presence') THEN
-        -- Everyone can view presence (for online status)
         CREATE POLICY "presence_view_all" ON user_presence
             FOR SELECT USING (auth.role() = 'authenticated');
             
-        -- Users can manage their own presence
         CREATE POLICY "presence_manage_own" ON user_presence
             FOR ALL USING (
                 user_id::text = auth.uid()::text
@@ -215,62 +245,80 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- PAYMENTS - Cast both to text for safety
+-- PAYMENTS - Column name: userId (schema shows snake_case)
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'payments') THEN
-        -- Users can view their own payments
         CREATE POLICY "payments_own_view" ON payments
             FOR SELECT USING (
                 user_id::text = auth.uid()::text
             );
             
-        -- System can create payments
         CREATE POLICY "payments_system_create" ON payments
             FOR INSERT WITH CHECK (auth.role() = 'service_role');
     END IF;
 END $$;
 
 -- ============================================================================
--- USER EARNINGS - Cast both to text for safety
+-- USER EARNINGS - Column name: userId (schema shows snake_case)
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user_earnings') THEN
-        -- Users can view their own earnings
         CREATE POLICY "earnings_own_view" ON user_earnings
             FOR SELECT USING (
                 user_id::text = auth.uid()::text
             );
             
-        -- System can create earnings
         CREATE POLICY "earnings_system_create" ON user_earnings
             FOR INSERT WITH CHECK (auth.role() = 'service_role');
     END IF;
 END $$;
 
 -- ============================================================================
--- MESSAGES - Cast both to text for safety
+-- MESSAGES - Column names: senderId, receiverId (schema shows camelCase)
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'messages') THEN
-        -- Users can view their own messages
-        CREATE POLICY "direct_messages_own_view" ON messages
+        CREATE POLICY "messages_own_view" ON messages
             FOR SELECT USING (
-                sender_id::text = auth.uid()::text
-                OR receiver_id::text = auth.uid()::text
+                CASE 
+                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'messages' AND column_name = 'sender_id')
+                    THEN (sender_id::text = auth.uid()::text OR receiver_id::text = auth.uid()::text)
+                    ELSE ("senderId"::text = auth.uid()::text OR "receiverId"::text = auth.uid()::text)
+                END
             );
             
-        -- Users can send messages
-        CREATE POLICY "direct_messages_send_own" ON messages
+        CREATE POLICY "messages_send_own" ON messages
             FOR INSERT WITH CHECK (
-                sender_id::text = auth.uid()::text
+                CASE 
+                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'messages' AND column_name = 'sender_id')
+                    THEN sender_id::text = auth.uid()::text
+                    ELSE "senderId"::text = auth.uid()::text
+                END
             );
+    END IF;
+END $$;
+
+-- ============================================================================
+-- USER ACHIEVEMENTS - Column name: userId (schema shows snake_case)
+-- ============================================================================
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user_achievements') THEN
+        CREATE POLICY "achievements_own_view" ON user_achievements
+            FOR SELECT USING (
+                user_id::text = auth.uid()::text
+            );
+            
+        CREATE POLICY "achievements_system_create" ON user_achievements
+            FOR INSERT WITH CHECK (auth.role() = 'service_role');
     END IF;
 END $$;
 
@@ -320,6 +368,10 @@ BEGIN
         GRANT SELECT, INSERT, UPDATE ON messages TO authenticated;
     END IF;
     
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user_achievements') THEN
+        GRANT SELECT ON user_achievements TO authenticated;
+    END IF;
+    
     -- Grant service role permissions for system operations
     GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
     GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO service_role;
@@ -327,4 +379,4 @@ BEGIN
 END $$;
 
 -- Success message
-SELECT 'Correct casting RLS policies applied successfully!' AS status;
+SELECT 'Schema-accurate RLS policies applied successfully!' AS status;
