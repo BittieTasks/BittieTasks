@@ -1,12 +1,24 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../components/auth/SimpleAuthProvider'
 import { SimplePhoneAuthForm } from '@/components/auth/SimplePhoneAuthForm'
 
 export default function AuthPage() {
-  const { isAuthenticated, loading: authLoading } = useAuth()
+  // Simplified auth state with error handling
+  let isAuthenticated = false
+  let authLoading = false
+  
+  try {
+    const authState = useAuth()
+    isAuthenticated = authState.isAuthenticated
+    authLoading = authState.loading
+  } catch (error) {
+    console.log('Auth provider error in AuthPage, using fallback state')
+    // Use fallback state
+  }
+  
   const router = useRouter()
 
   // Redirect authenticated users away from auth page
