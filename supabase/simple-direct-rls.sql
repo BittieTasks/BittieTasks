@@ -1,5 +1,5 @@
--- SCHEMA-ACCURATE RLS POLICIES - Uses exact column names from shared/schema.ts
--- All comparisons cast both sides to text for universal compatibility
+-- SIMPLE DIRECT RLS POLICIES - Uses actual database column names
+-- Based on error messages showing: created_by, user_id, sender_id, receiver_id
 
 -- Clean slate - drop all existing policies
 DO $$ 
@@ -51,7 +51,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- USERS TABLE POLICIES - Direct comparison with text casting
+-- USERS TABLE POLICIES - Direct ID comparison
 -- ============================================================================
 
 DO $$
@@ -75,64 +75,50 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- TASKS TABLE POLICIES - Column name: createdBy (camelCase in schema)
+-- TASKS TABLE POLICIES - Using created_by (actual column name)
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'tasks') THEN
-        -- Try both createdBy (schema) and created_by (DB convention)
+        -- Public read access for approved tasks
         CREATE POLICY "tasks_public_marketplace" ON tasks
             FOR SELECT USING (
                 auth.role() = 'authenticated' 
                 AND (
                     approval_status = 'approved' 
-                    OR (
-                        CASE 
-                            WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'created_by')
-                            THEN created_by::text = auth.uid()::text
-                            ELSE "createdBy"::text = auth.uid()::text
-                        END
-                    )
+                    OR created_by::text = auth.uid()::text
                 )
             );
             
+        -- Users can create new tasks
         CREATE POLICY "tasks_create_own" ON tasks
             FOR INSERT WITH CHECK (
                 auth.role() = 'authenticated' 
                 AND (
-                    CASE 
-                        WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'created_by')
-                        THEN (created_by::text = auth.uid()::text OR created_by IS NULL)
-                        ELSE ("createdBy"::text = auth.uid()::text OR "createdBy" IS NULL)
-                    END
+                    created_by::text = auth.uid()::text
+                    OR created_by IS NULL
                 )
             );
             
+        -- Users can update their own tasks
         CREATE POLICY "tasks_update_own" ON tasks
             FOR UPDATE USING (
-                CASE 
-                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'created_by')
-                    THEN created_by::text = auth.uid()::text
-                    ELSE "createdBy"::text = auth.uid()::text
-                END
+                created_by::text = auth.uid()::text
                 AND (approval_status = 'pending' OR approval_status IS NULL)
             );
             
+        -- Users can delete their own tasks
         CREATE POLICY "tasks_delete_own" ON tasks
             FOR DELETE USING (
-                CASE 
-                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks' AND column_name = 'created_by')
-                    THEN created_by::text = auth.uid()::text
-                    ELSE "createdBy"::text = auth.uid()::text
-                END
+                created_by::text = auth.uid()::text
                 AND (approval_status = 'pending' OR approval_status IS NULL)
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK PARTICIPANTS - Column name: userId (schema shows camelCase)
+-- TASK PARTICIPANTS - Using user_id (snake_case)
 -- ============================================================================
 
 DO $$
@@ -140,35 +126,23 @@ BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'task_participants') THEN
         CREATE POLICY "participants_own_view" ON task_participants
             FOR SELECT USING (
-                CASE 
-                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_participants' AND column_name = 'user_id')
-                    THEN user_id::text = auth.uid()::text
-                    ELSE "userId"::text = auth.uid()::text
-                END
+                user_id::text = auth.uid()::text
             );
             
         CREATE POLICY "participants_join_tasks" ON task_participants
             FOR INSERT WITH CHECK (
-                CASE 
-                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_participants' AND column_name = 'user_id')
-                    THEN user_id::text = auth.uid()::text
-                    ELSE "userId"::text = auth.uid()::text
-                END
+                user_id::text = auth.uid()::text
             );
             
         CREATE POLICY "participants_update_own" ON task_participants
             FOR UPDATE USING (
-                CASE 
-                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_participants' AND column_name = 'user_id')
-                    THEN user_id::text = auth.uid()::text
-                    ELSE "userId"::text = auth.uid()::text
-                END
+                user_id::text = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK MESSAGES - Column name: senderId (schema shows camelCase)
+-- TASK MESSAGES - Using sender_id (snake_case)
 -- ============================================================================
 
 DO $$
@@ -176,35 +150,23 @@ BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'task_messages') THEN
         CREATE POLICY "task_messages_own_view" ON task_messages
             FOR SELECT USING (
-                CASE 
-                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_messages' AND column_name = 'sender_id')
-                    THEN sender_id::text = auth.uid()::text
-                    ELSE "senderId"::text = auth.uid()::text
-                END
+                sender_id::text = auth.uid()::text
             );
             
         CREATE POLICY "task_messages_send_own" ON task_messages
             FOR INSERT WITH CHECK (
-                CASE 
-                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_messages' AND column_name = 'sender_id')
-                    THEN sender_id::text = auth.uid()::text
-                    ELSE "senderId"::text = auth.uid()::text
-                END
+                sender_id::text = auth.uid()::text
             );
             
         CREATE POLICY "task_messages_update_own" ON task_messages
             FOR UPDATE USING (
-                CASE 
-                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'task_messages' AND column_name = 'sender_id')
-                    THEN sender_id::text = auth.uid()::text
-                    ELSE "senderId"::text = auth.uid()::text
-                END
+                sender_id::text = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK VERIFICATIONS - Column name: userId (schema shows snake_case)
+-- TASK VERIFICATIONS - Using user_id (snake_case)
 -- ============================================================================
 
 DO $$
@@ -228,7 +190,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- USER PRESENCE - Column name: userId (schema shows snake_case)
+-- USER PRESENCE - Using user_id (snake_case)
 -- ============================================================================
 
 DO $$
@@ -245,7 +207,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- PAYMENTS - Column name: userId (schema shows snake_case)
+-- PAYMENTS - Using user_id (snake_case)
 -- ============================================================================
 
 DO $$
@@ -262,7 +224,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- USER EARNINGS - Column name: userId (schema shows snake_case)
+-- USER EARNINGS - Using user_id (snake_case)
 -- ============================================================================
 
 DO $$
@@ -279,7 +241,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- MESSAGES - Column names: senderId, receiverId (schema shows camelCase)
+-- MESSAGES - Using sender_id, receiver_id (snake_case)
 -- ============================================================================
 
 DO $$
@@ -287,26 +249,19 @@ BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'messages') THEN
         CREATE POLICY "messages_own_view" ON messages
             FOR SELECT USING (
-                CASE 
-                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'messages' AND column_name = 'sender_id')
-                    THEN (sender_id::text = auth.uid()::text OR receiver_id::text = auth.uid()::text)
-                    ELSE ("senderId"::text = auth.uid()::text OR "receiverId"::text = auth.uid()::text)
-                END
+                sender_id::text = auth.uid()::text
+                OR receiver_id::text = auth.uid()::text
             );
             
         CREATE POLICY "messages_send_own" ON messages
             FOR INSERT WITH CHECK (
-                CASE 
-                    WHEN EXISTS (SELECT column_name FROM information_schema.columns WHERE table_name = 'messages' AND column_name = 'sender_id')
-                    THEN sender_id::text = auth.uid()::text
-                    ELSE "senderId"::text = auth.uid()::text
-                END
+                sender_id::text = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- USER ACHIEVEMENTS - Column name: userId (schema shows snake_case)
+-- USER ACHIEVEMENTS - Using user_id (snake_case)
 -- ============================================================================
 
 DO $$
@@ -323,7 +278,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- GRANT ESSENTIAL PERMISSIONS - Only for existing tables
+-- GRANT ESSENTIAL PERMISSIONS
 -- ============================================================================
 
 -- Grant usage on schema
@@ -379,4 +334,4 @@ BEGIN
 END $$;
 
 -- Success message
-SELECT 'Schema-accurate RLS policies applied successfully!' AS status;
+SELECT 'Simple direct RLS policies applied successfully!' AS status;
