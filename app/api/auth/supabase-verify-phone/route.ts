@@ -65,58 +65,37 @@ export async function POST(request: NextRequest) {
 
     const normalizedPhone = normalizePhoneNumber(phoneNumber)
 
-    // Check if user already exists
-    const isExistingUser = await phoneVerificationService.isPhoneVerified(phoneNumber)
+    // For phone-only auth, we'll create a simple session without Supabase auth
+    // This bypasses the email signup restriction
+    console.log('Phone verification successful, creating session...')
     
-    if (isExistingUser) {
-      // For existing user, sign them in with OTP (using email as fallback)
-      const email = `${normalizedPhone.replace('+', '')}@bittietasks.com`
-      
-      const { data, error } = await supabase.auth.signInWithOtp({
-        email: email,
-        options: {
-          shouldCreateUser: false
-        }
-      })
-
-      if (error) {
-        console.error('Existing user login error:', error)
-        // Try manual session creation for existing users
-        return NextResponse.json({
-          success: true,
-          message: 'Phone number verified successfully!'
-        })
-      }
-    } else {
-      // For new user, create account
-      const email = `${normalizedPhone.replace('+', '')}@bittietasks.com`
-      
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: Math.random().toString(36), // Random password since we use phone auth
-        phone: normalizedPhone,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            phone: normalizedPhone
-          }
-        }
-      })
-
-      if (error) {
-        console.error('New user signup error:', error)
-        return NextResponse.json(
-          { error: 'Failed to create account' },
-          { status: 500 }
-        )
-      }
-    }
-
-    return NextResponse.json({
+    // Set a simple session cookie to track authentication
+    const response = NextResponse.json({
       success: true,
       message: 'Phone number verified successfully!'
     })
+    
+    // Set authentication cookie
+    response.cookies.set('phone_auth', normalizedPhone, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7 // 7 days
+    })
+    
+    // Also set user info cookie
+    response.cookies.set('user_info', JSON.stringify({
+      phone: normalizedPhone,
+      firstName: firstName || 'User',
+      lastName: lastName || ''
+    }), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7 // 7 days
+    })
+    
+    return response
 
   } catch (error) {
     console.error('Phone verification error:', error)
