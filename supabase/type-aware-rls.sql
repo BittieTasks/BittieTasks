@@ -1,5 +1,5 @@
--- SIMPLE SAFE RLS POLICIES - Direct comparisons only
--- No complex casting or COALESCE operations
+-- TYPE-AWARE RLS POLICIES - Cast auth.uid() to text for VARCHAR columns
+-- Handles the VARCHAR vs UUID mismatch properly
 
 -- Clean slate - drop all existing policies
 DO $$ 
@@ -48,35 +48,31 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- USERS TABLE POLICIES - Try direct comparison first
+-- USERS TABLE POLICIES - Assume VARCHAR ID (cast auth.uid() to text)
 -- ============================================================================
 
 DO $$
 BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users') THEN
-        -- Direct comparison - let PostgreSQL handle the types
         CREATE POLICY "users_own_profile_read" ON users
             FOR SELECT USING (
-                (id IS NOT NULL AND auth.uid() IS NOT NULL AND id = auth.uid())
-                OR (id IS NULL AND auth.uid() IS NULL)
+                id = auth.uid()::text
             );
             
         CREATE POLICY "users_own_profile_write" ON users
             FOR UPDATE USING (
-                (id IS NOT NULL AND auth.uid() IS NOT NULL AND id = auth.uid())
-                OR (id IS NULL AND auth.uid() IS NULL)
+                id = auth.uid()::text
             );
             
         CREATE POLICY "users_own_profile_create" ON users
             FOR INSERT WITH CHECK (
-                (id IS NOT NULL AND auth.uid() IS NOT NULL AND id = auth.uid())
-                OR (id IS NULL AND auth.uid() IS NULL)
+                id = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASKS TABLE POLICIES - Direct comparisons only
+-- TASKS TABLE POLICIES - Assume VARCHAR created_by (cast auth.uid() to text)
 -- ============================================================================
 
 DO $$
@@ -88,7 +84,7 @@ BEGIN
                 auth.role() = 'authenticated' 
                 AND (
                     approval_status = 'approved' 
-                    OR (created_by IS NOT NULL AND auth.uid() IS NOT NULL AND created_by = auth.uid())
+                    OR created_by = auth.uid()::text
                 )
             );
             
@@ -97,7 +93,7 @@ BEGIN
             FOR INSERT WITH CHECK (
                 auth.role() = 'authenticated' 
                 AND (
-                    (created_by IS NOT NULL AND auth.uid() IS NOT NULL AND created_by = auth.uid())
+                    created_by = auth.uid()::text
                     OR created_by IS NULL
                 )
             );
@@ -105,21 +101,21 @@ BEGIN
         -- Users can update their own tasks
         CREATE POLICY "tasks_update_own" ON tasks
             FOR UPDATE USING (
-                (created_by IS NOT NULL AND auth.uid() IS NOT NULL AND created_by = auth.uid())
+                created_by = auth.uid()::text
                 AND (approval_status = 'pending' OR approval_status IS NULL)
             );
             
         -- Users can delete their own tasks
         CREATE POLICY "tasks_delete_own" ON tasks
             FOR DELETE USING (
-                (created_by IS NOT NULL AND auth.uid() IS NOT NULL AND created_by = auth.uid())
+                created_by = auth.uid()::text
                 AND (approval_status = 'pending' OR approval_status IS NULL)
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK PARTICIPANTS - Direct comparisons only
+-- TASK PARTICIPANTS - Assume VARCHAR user_id (cast auth.uid() to text)
 -- ============================================================================
 
 DO $$
@@ -128,25 +124,25 @@ BEGIN
         -- Users can view their own participations
         CREATE POLICY "participants_own_view" ON task_participants
             FOR SELECT USING (
-                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
+                user_id = auth.uid()::text
             );
             
         -- Users can join tasks
         CREATE POLICY "participants_join_tasks" ON task_participants
             FOR INSERT WITH CHECK (
-                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
+                user_id = auth.uid()::text
             );
             
         -- Users can update their own participation
         CREATE POLICY "participants_update_own" ON task_participants
             FOR UPDATE USING (
-                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
+                user_id = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK MESSAGES - Direct comparisons only
+-- TASK MESSAGES - Assume VARCHAR sender_id (cast auth.uid() to text)
 -- ============================================================================
 
 DO $$
@@ -155,25 +151,25 @@ BEGIN
         -- Users can view messages they sent
         CREATE POLICY "messages_own_view" ON task_messages
             FOR SELECT USING (
-                (sender_id IS NOT NULL AND auth.uid() IS NOT NULL AND sender_id = auth.uid())
+                sender_id = auth.uid()::text
             );
             
         -- Users can send messages
         CREATE POLICY "messages_send_own" ON task_messages
             FOR INSERT WITH CHECK (
-                (sender_id IS NOT NULL AND auth.uid() IS NOT NULL AND sender_id = auth.uid())
+                sender_id = auth.uid()::text
             );
             
         -- Users can update their own messages
         CREATE POLICY "messages_update_own" ON task_messages
             FOR UPDATE USING (
-                (sender_id IS NOT NULL AND auth.uid() IS NOT NULL AND sender_id = auth.uid())
+                sender_id = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK VERIFICATIONS - Direct comparisons only
+-- TASK VERIFICATIONS - Assume VARCHAR user_id (cast auth.uid() to text)
 -- ============================================================================
 
 DO $$
@@ -182,25 +178,25 @@ BEGIN
         -- Users can view their own verifications
         CREATE POLICY "verifications_own_view" ON task_verifications
             FOR SELECT USING (
-                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
+                user_id = auth.uid()::text
             );
             
         -- Users can create their own verifications
         CREATE POLICY "verifications_create_own" ON task_verifications
             FOR INSERT WITH CHECK (
-                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
+                user_id = auth.uid()::text
             );
             
         -- Users can update their own verifications
         CREATE POLICY "verifications_update_own" ON task_verifications
             FOR UPDATE USING (
-                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
+                user_id = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- USER PRESENCE - Direct comparisons only
+-- USER PRESENCE - Assume VARCHAR user_id (cast auth.uid() to text)
 -- ============================================================================
 
 DO $$
@@ -213,13 +209,13 @@ BEGIN
         -- Users can manage their own presence
         CREATE POLICY "presence_manage_own" ON user_presence
             FOR ALL USING (
-                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
+                user_id = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- PAYMENTS - Direct comparisons only
+-- PAYMENTS - Assume VARCHAR user_id (cast auth.uid() to text)
 -- ============================================================================
 
 DO $$
@@ -228,7 +224,7 @@ BEGIN
         -- Users can view their own payments
         CREATE POLICY "payments_own_view" ON payments
             FOR SELECT USING (
-                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
+                user_id = auth.uid()::text
             );
             
         -- System can create payments
@@ -238,7 +234,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- USER EARNINGS - Direct comparisons only
+-- USER EARNINGS - Assume VARCHAR user_id (cast auth.uid() to text)
 -- ============================================================================
 
 DO $$
@@ -247,7 +243,7 @@ BEGIN
         -- Users can view their own earnings
         CREATE POLICY "earnings_own_view" ON user_earnings
             FOR SELECT USING (
-                (user_id IS NOT NULL AND auth.uid() IS NOT NULL AND user_id = auth.uid())
+                user_id = auth.uid()::text
             );
             
         -- System can create earnings
@@ -257,7 +253,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- MESSAGES - Direct comparisons only (if different from task_messages)
+-- MESSAGES - Assume VARCHAR sender_id/receiver_id (cast auth.uid() to text)
 -- ============================================================================
 
 DO $$
@@ -266,14 +262,14 @@ BEGIN
         -- Users can view their own messages
         CREATE POLICY "direct_messages_own_view" ON messages
             FOR SELECT USING (
-                (sender_id IS NOT NULL AND auth.uid() IS NOT NULL AND sender_id = auth.uid())
-                OR (receiver_id IS NOT NULL AND auth.uid() IS NOT NULL AND receiver_id = auth.uid())
+                sender_id = auth.uid()::text
+                OR receiver_id = auth.uid()::text
             );
             
         -- Users can send messages
         CREATE POLICY "direct_messages_send_own" ON messages
             FOR INSERT WITH CHECK (
-                (sender_id IS NOT NULL AND auth.uid() IS NOT NULL AND sender_id = auth.uid())
+                sender_id = auth.uid()::text
             );
     END IF;
 END $$;
@@ -331,4 +327,4 @@ BEGIN
 END $$;
 
 -- Success message
-SELECT 'Simple safe RLS policies applied successfully!' AS status;
+SELECT 'Type-aware RLS policies applied successfully!' AS status;
