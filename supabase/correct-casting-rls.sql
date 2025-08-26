@@ -1,5 +1,5 @@
--- TYPE-AWARE RLS POLICIES - Cast auth.uid() to text for VARCHAR columns
--- Handles the VARCHAR vs UUID mismatch properly
+-- CORRECT CASTING RLS POLICIES - Cast columns to text for comparison
+-- Handles mixed UUID and VARCHAR columns properly
 
 -- Clean slate - drop all existing policies
 DO $$ 
@@ -48,7 +48,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- USERS TABLE POLICIES - Assume VARCHAR ID (cast auth.uid() to text)
+-- USERS TABLE POLICIES - UUID column, cast both to text
 -- ============================================================================
 
 DO $$
@@ -56,23 +56,23 @@ BEGIN
     IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users') THEN
         CREATE POLICY "users_own_profile_read" ON users
             FOR SELECT USING (
-                id = auth.uid()::text
+                id::text = auth.uid()::text
             );
             
         CREATE POLICY "users_own_profile_write" ON users
             FOR UPDATE USING (
-                id = auth.uid()::text
+                id::text = auth.uid()::text
             );
             
         CREATE POLICY "users_own_profile_create" ON users
             FOR INSERT WITH CHECK (
-                id = auth.uid()::text
+                id::text = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASKS TABLE POLICIES - Assume VARCHAR created_by (cast auth.uid() to text)
+-- TASKS TABLE POLICIES - Cast both to text for safety
 -- ============================================================================
 
 DO $$
@@ -84,7 +84,7 @@ BEGIN
                 auth.role() = 'authenticated' 
                 AND (
                     approval_status = 'approved' 
-                    OR created_by = auth.uid()::text
+                    OR created_by::text = auth.uid()::text
                 )
             );
             
@@ -93,7 +93,7 @@ BEGIN
             FOR INSERT WITH CHECK (
                 auth.role() = 'authenticated' 
                 AND (
-                    created_by = auth.uid()::text
+                    created_by::text = auth.uid()::text
                     OR created_by IS NULL
                 )
             );
@@ -101,21 +101,21 @@ BEGIN
         -- Users can update their own tasks
         CREATE POLICY "tasks_update_own" ON tasks
             FOR UPDATE USING (
-                created_by = auth.uid()::text
+                created_by::text = auth.uid()::text
                 AND (approval_status = 'pending' OR approval_status IS NULL)
             );
             
         -- Users can delete their own tasks
         CREATE POLICY "tasks_delete_own" ON tasks
             FOR DELETE USING (
-                created_by = auth.uid()::text
+                created_by::text = auth.uid()::text
                 AND (approval_status = 'pending' OR approval_status IS NULL)
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK PARTICIPANTS - Assume VARCHAR user_id (cast auth.uid() to text)
+-- TASK PARTICIPANTS - Cast both to text for safety
 -- ============================================================================
 
 DO $$
@@ -124,25 +124,25 @@ BEGIN
         -- Users can view their own participations
         CREATE POLICY "participants_own_view" ON task_participants
             FOR SELECT USING (
-                user_id = auth.uid()::text
+                user_id::text = auth.uid()::text
             );
             
         -- Users can join tasks
         CREATE POLICY "participants_join_tasks" ON task_participants
             FOR INSERT WITH CHECK (
-                user_id = auth.uid()::text
+                user_id::text = auth.uid()::text
             );
             
         -- Users can update their own participation
         CREATE POLICY "participants_update_own" ON task_participants
             FOR UPDATE USING (
-                user_id = auth.uid()::text
+                user_id::text = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK MESSAGES - Assume VARCHAR sender_id (cast auth.uid() to text)
+-- TASK MESSAGES - Cast both to text for safety
 -- ============================================================================
 
 DO $$
@@ -151,25 +151,25 @@ BEGIN
         -- Users can view messages they sent
         CREATE POLICY "messages_own_view" ON task_messages
             FOR SELECT USING (
-                sender_id = auth.uid()::text
+                sender_id::text = auth.uid()::text
             );
             
         -- Users can send messages
         CREATE POLICY "messages_send_own" ON task_messages
             FOR INSERT WITH CHECK (
-                sender_id = auth.uid()::text
+                sender_id::text = auth.uid()::text
             );
             
         -- Users can update their own messages
         CREATE POLICY "messages_update_own" ON task_messages
             FOR UPDATE USING (
-                sender_id = auth.uid()::text
+                sender_id::text = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- TASK VERIFICATIONS - Assume VARCHAR user_id (cast auth.uid() to text)
+-- TASK VERIFICATIONS - Cast both to text for safety
 -- ============================================================================
 
 DO $$
@@ -178,25 +178,25 @@ BEGIN
         -- Users can view their own verifications
         CREATE POLICY "verifications_own_view" ON task_verifications
             FOR SELECT USING (
-                user_id = auth.uid()::text
+                user_id::text = auth.uid()::text
             );
             
         -- Users can create their own verifications
         CREATE POLICY "verifications_create_own" ON task_verifications
             FOR INSERT WITH CHECK (
-                user_id = auth.uid()::text
+                user_id::text = auth.uid()::text
             );
             
         -- Users can update their own verifications
         CREATE POLICY "verifications_update_own" ON task_verifications
             FOR UPDATE USING (
-                user_id = auth.uid()::text
+                user_id::text = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- USER PRESENCE - Assume VARCHAR user_id (cast auth.uid() to text)
+-- USER PRESENCE - Cast both to text for safety
 -- ============================================================================
 
 DO $$
@@ -209,13 +209,13 @@ BEGIN
         -- Users can manage their own presence
         CREATE POLICY "presence_manage_own" ON user_presence
             FOR ALL USING (
-                user_id = auth.uid()::text
+                user_id::text = auth.uid()::text
             );
     END IF;
 END $$;
 
 -- ============================================================================
--- PAYMENTS - Assume VARCHAR user_id (cast auth.uid() to text)
+-- PAYMENTS - Cast both to text for safety
 -- ============================================================================
 
 DO $$
@@ -224,7 +224,7 @@ BEGIN
         -- Users can view their own payments
         CREATE POLICY "payments_own_view" ON payments
             FOR SELECT USING (
-                user_id = auth.uid()::text
+                user_id::text = auth.uid()::text
             );
             
         -- System can create payments
@@ -234,7 +234,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- USER EARNINGS - Assume VARCHAR user_id (cast auth.uid() to text)
+-- USER EARNINGS - Cast both to text for safety
 -- ============================================================================
 
 DO $$
@@ -243,7 +243,7 @@ BEGIN
         -- Users can view their own earnings
         CREATE POLICY "earnings_own_view" ON user_earnings
             FOR SELECT USING (
-                user_id = auth.uid()::text
+                user_id::text = auth.uid()::text
             );
             
         -- System can create earnings
@@ -253,7 +253,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- MESSAGES - Assume VARCHAR sender_id/receiver_id (cast auth.uid() to text)
+-- MESSAGES - Cast both to text for safety
 -- ============================================================================
 
 DO $$
@@ -262,14 +262,14 @@ BEGIN
         -- Users can view their own messages
         CREATE POLICY "direct_messages_own_view" ON messages
             FOR SELECT USING (
-                sender_id = auth.uid()::text
-                OR receiver_id = auth.uid()::text
+                sender_id::text = auth.uid()::text
+                OR receiver_id::text = auth.uid()::text
             );
             
         -- Users can send messages
         CREATE POLICY "direct_messages_send_own" ON messages
             FOR INSERT WITH CHECK (
-                sender_id = auth.uid()::text
+                sender_id::text = auth.uid()::text
             );
     END IF;
 END $$;
@@ -327,4 +327,4 @@ BEGIN
 END $$;
 
 -- Success message
-SELECT 'Type-aware RLS policies applied successfully!' AS status;
+SELECT 'Correct casting RLS policies applied successfully!' AS status;
