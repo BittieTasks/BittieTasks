@@ -32,12 +32,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!password || password.length < 6) {
-      return NextResponse.json(
-        { error: 'Password must be at least 6 characters' },
-        { status: 400 }
-      )
-    }
+    // Generate a secure random password if not provided (phone-only verification)
+    const userPassword = password || Math.random().toString(36).slice(-12) + Math.random().toString(36).slice(-12)
 
     // Normalize phone number
     const normalizedPhone = phoneNumber.replace(/\D/g, '')
@@ -66,7 +62,7 @@ export async function POST(request: NextRequest) {
     // Create user with phone number
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       phone: formattedPhone,
-      password,
+      password: userPassword,
       phone_confirm: false, // Require phone verification
       user_metadata: {
         first_name: firstName,

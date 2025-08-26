@@ -63,7 +63,7 @@ export function PhoneSignUpForm({ onSuccess, onSwitchToSignIn }: PhoneSignUpForm
         return
       }
 
-      const response = await fetch('/api/auth/supabase-phone-signup', {
+      const response = await fetch('/api/auth/phone-signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -150,7 +150,7 @@ export function PhoneSignUpForm({ onSuccess, onSwitchToSignIn }: PhoneSignUpForm
     setLoading(true)
     try {
       const phoneDigits = formData.phoneNumber.replace(/\D/g, '')
-      const response = await fetch('/api/auth/supabase-phone-signup', {
+      const response = await fetch('/api/auth/phone-signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
