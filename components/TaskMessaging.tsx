@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Send, MessageCircle, Users, X } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiRequest } from '@/lib/queryClient'
-import { useToast } from '@/app/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import type { Message } from '@shared/schema'
 
 interface TaskMessagingProps {

@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/components/auth/SimpleAuthProvider'
 import { useRouter } from 'next/navigation'
-import { useToast } from '@/app/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 
 interface SoloTaskCardProps {
   task: {

@@ -6,7 +6,7 @@ import { useAuth } from '@/components/auth/SimpleAuthProvider'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useToast } from '@/app/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { 
   Home, Users, Building2, ArrowRightLeft, User, Settings, 
   Menu, X, ChevronRight, Loader2, Crown

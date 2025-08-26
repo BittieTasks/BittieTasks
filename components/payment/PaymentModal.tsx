@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, CreditCard, CheckCircle, AlertTriangle, DollarSign } from 'lucide-react'
-import { useToast } from '@/app/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/components/auth/SimpleAuthProvider'
 import FeeBreakdown from './FeeBreakdown'
 import { EscrowStatus } from './EscrowStatus'
