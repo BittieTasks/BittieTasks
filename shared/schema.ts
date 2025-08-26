@@ -113,13 +113,13 @@ export const categories = pgTable("categories", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Tasks table
+// Tasks table - CORRECTED to match actual database structure
 export const tasks = pgTable("tasks", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   title: varchar("title").notNull(),
   description: text("description").notNull(),
   categoryId: varchar("category_id").references(() => categories.id),
-  createdBy: varchar("created_by").references(() => users.id),
+  createdBy: varchar("created_by").references(() => users.id), // Matches actual DB field name
   type: taskTypeEnum("type").default('shared'),
   status: taskStatusEnum("status").default('open'),
   // Approval system fields
@@ -348,6 +348,79 @@ export const taskVerifications = pgTable('task_verifications', {
   reviewedAt: timestamp('reviewed_at'),
 });
 
+// Task messages table - CONSOLIDATED from setup scripts
+export const taskMessages = pgTable('task_messages', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`), // Consistent VARCHAR instead of UUID
+  taskId: varchar('task_id').references(() => tasks.id).notNull(),
+  senderId: varchar('sender_id').references(() => users.id).notNull(),
+  messageType: varchar('message_type', { 
+    enum: ['text', 'image', 'file'] 
+  }).default('text'),
+  content: text('content').notNull(),
+  fileUrl: varchar('file_url'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  readAt: timestamp('read_at'),
+  isSystemMessage: boolean('is_system_message').default(false),
+});
+
+// User presence table - CONSOLIDATED from setup scripts
+export const userPresence = pgTable('user_presence', {
+  userId: varchar('user_id').primaryKey().references(() => users.id),
+  isOnline: boolean('is_online').default(false),
+  lastSeen: timestamp('last_seen').defaultNow(),
+  currentTaskId: varchar('current_task_id').references(() => tasks.id),
+});
+
+// Payment tables - CORRECTED to use VARCHAR consistently
+export const payments = pgTable('payments', {
+  id: varchar('id').primaryKey(), // Stripe payment intent ID
+  taskId: varchar('task_id').references(() => tasks.id), // CORRECTED from UUID
+  userId: varchar('user_id').references(() => users.id), // CORRECTED from UUID  
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  platformFee: decimal('platform_fee', { precision: 10, scale: 2 }).notNull(),
+  processingFee: decimal('processing_fee', { precision: 10, scale: 2 }).notNull(),
+  netAmount: decimal('net_amount', { precision: 10, scale: 2 }).notNull(),
+  taskType: varchar('task_type').notNull(), // 'solo', 'community', 'barter', 'corporate'
+  status: varchar('status').notNull().default('pending'), // 'pending', 'completed', 'failed', 'requires_action', 'escrowed', 'released'
+  stripePaymentIntentId: varchar('stripe_payment_intent_id'),
+  stripeChargeId: varchar('stripe_charge_id'),
+  feeBreakdown: jsonb('fee_breakdown'), // Detailed fee calculation
+  failureReason: text('failure_reason'),
+  isEscrow: varchar('is_escrow').default('false'), // 'true' for escrow payments, 'false' for immediate
+  escrowedAt: timestamp('escrowed_at'),
+  releaseScheduledAt: timestamp('release_scheduled_at'), // Auto-release timestamp
+  releasedAt: timestamp('released_at'),
+  disputeStatus: varchar('dispute_status'), // 'none', 'pending', 'resolved'
+  disputeReason: text('dispute_reason'),
+  disputedAt: timestamp('disputed_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+  completedAt: timestamp('completed_at'),
+  failedAt: timestamp('failed_at')
+});
+
+// User earnings tracking for transparent reporting - CORRECTED to use VARCHAR
+export const userEarnings = pgTable('user_earnings', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`), // CORRECTED from UUID
+  userId: varchar('user_id').references(() => users.id).notNull(), // CORRECTED from UUID
+  taskId: varchar('task_id').references(() => tasks.id), // CORRECTED from UUID
+  paymentId: varchar('payment_id').references(() => payments.id),
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(), // Net amount earned
+  taskType: varchar('task_type').notNull(),
+  earnedAt: timestamp('earned_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
+// Platform fee tracking for business analytics - CORRECTED to use VARCHAR
+export const platformFees = pgTable('platform_fees', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`), // CORRECTED from UUID
+  paymentId: varchar('payment_id').references(() => payments.id).notNull(),
+  taskType: varchar('task_type').notNull(),
+  feeAmount: decimal('fee_amount', { precision: 10, scale: 2 }).notNull(),
+  feePercentage: decimal('fee_percentage', { precision: 5, scale: 2 }).notNull(),
+  collectedAt: timestamp('collected_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
 // Corporate sponsors
 export const sponsors = pgTable("sponsors", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -364,38 +437,6 @@ export const sponsors = pgTable("sponsors", {
 });
 
 // Task approval logs
-// Payments table for transparent fee tracking
-export const payments = pgTable('payments', {
-  id: varchar('id').primaryKey(), // Stripe payment intent ID
-  taskId: varchar('task_id').references(() => tasks.id),
-  userId: varchar('user_id').references(() => users.id),
-  amount: varchar('amount').notNull(), // Store as string to avoid decimal precision issues
-  platformFee: varchar('platform_fee').notNull(),
-  processingFee: varchar('processing_fee').notNull(),
-  netAmount: varchar('net_amount').notNull(),
-  taskType: varchar('task_type').notNull(), // 'solo', 'community', 'barter', 'corporate'
-  status: varchar('status').notNull().default('pending'), // 'pending', 'completed', 'failed', 'requires_action'
-  stripePaymentIntentId: varchar('stripe_payment_intent_id'),
-  stripeChargeId: varchar('stripe_charge_id'),
-  feeBreakdown: jsonb('fee_breakdown'), // Detailed fee calculation
-  failureReason: varchar('failure_reason'),
-  createdAt: timestamp('created_at').defaultNow(),
-  completedAt: timestamp('completed_at'),
-  failedAt: timestamp('failed_at')
-});
-
-// User earnings tracking for transparent reporting
-export const userEarnings = pgTable('user_earnings', {
-  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar('user_id').references(() => users.id).notNull(),
-  taskId: varchar('task_id').references(() => tasks.id),
-  paymentId: varchar('payment_id').references(() => payments.id),
-  amount: varchar('amount').notNull(), // Net amount earned
-  taskType: varchar('task_type').notNull(),
-  earnedAt: timestamp('earned_at').defaultNow(),
-  createdAt: timestamp('created_at').defaultNow()
-});
-
 export const taskApprovalLogs = pgTable("task_approval_logs", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   taskId: varchar("task_id").references(() => tasks.id).notNull(),
@@ -435,6 +476,11 @@ export type TaskCompletionSubmission = typeof taskCompletionSubmissions.$inferSe
 export type UserVerificationHistory = typeof userVerificationHistory.$inferSelect;
 export type CorporateVerificationSettings = typeof corporateVerificationSettings.$inferSelect;
 export type TaskVerification = typeof taskVerifications.$inferSelect;
+export type TaskMessage = typeof taskMessages.$inferSelect;
+export type UserPresence = typeof userPresence.$inferSelect;
+export type Payment = typeof payments.$inferSelect;
+export type UserEarning = typeof userEarnings.$inferSelect;
+export type PlatformFee = typeof platformFees.$inferSelect;
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
