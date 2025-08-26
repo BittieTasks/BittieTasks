@@ -22,7 +22,21 @@ import {
 
 export default function HomePage() {
   const router = useRouter()
-  const { user, isAuthenticated, loading } = useAuth()
+  
+  // Simplified auth state with error handling
+  let user = null
+  let isAuthenticated = false
+  let loading = false
+  
+  try {
+    const authState = useAuth()
+    user = authState.user
+    isAuthenticated = authState.isAuthenticated
+    loading = authState.loading
+  } catch (error) {
+    console.log('Auth provider error, using fallback state')
+    // Use fallback state
+  }
   
   console.log('HomePage render - loading:', loading, 'user:', !!user, 'userEmail:', user?.email, 'isAuthenticated:', isAuthenticated)
   
