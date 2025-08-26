@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       .delete(tasks)
       .where(and(
         eq(tasks.type, 'solo'),
-        eq(tasks.creatorId, 'platform')
+        eq(tasks.createdBy, 'platform')
       ))
 
     // Insert real solo tasks for production
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         type: 'solo',
         status: 'open',
         approvalStatus: 'approved',
-        creatorId: 'platform',
+        createdBy: 'platform',
         reviewTier: 'auto_approved'
       },
       {
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         type: 'solo',
         status: 'open',
         approvalStatus: 'approved',
-        creatorId: 'platform',
+        createdBy: 'platform',
         reviewTier: 'auto_approved'
       },
       {
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
         type: 'solo',
         status: 'open',
         approvalStatus: 'approved',
-        creatorId: 'platform',
+        createdBy: 'platform',
         reviewTier: 'auto_approved'
       },
       {
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
         type: 'solo',
         status: 'open',
         approvalStatus: 'approved',
-        creatorId: 'platform',
+        createdBy: 'platform',
         reviewTier: 'auto_approved'
       },
       {
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
         type: 'solo',
         status: 'open',
         approvalStatus: 'approved',
-        creatorId: 'platform',
+        createdBy: 'platform',
         reviewTier: 'auto_approved'
       }
     ]
