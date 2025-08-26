@@ -64,7 +64,7 @@ export function PhoneSignInForm({ onSuccess, onSwitchToSignUp }: PhoneSignInForm
         return
       }
 
-      const response = await fetch('/api/auth/phone-login', {
+      const response = await fetch('/api/auth/supabase-phone-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -116,7 +116,7 @@ export function PhoneSignInForm({ onSuccess, onSwitchToSignUp }: PhoneSignInForm
       }
 
       // Request SMS verification code for passwordless login
-      const response = await fetch('/api/auth/phone-login', {
+      const response = await fetch('/api/auth/supabase-phone-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
