@@ -5,15 +5,18 @@ import { Providers } from './providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
+// Use environment-based URL for metadata to avoid hardcoded production URLs
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000'
+
 export const metadata: Metadata = {
   title: 'BittieTasks - Turn Daily Tasks Into Earning Opportunities',
   description: 'Turn your daily tasks into earning opportunities. Share activities with neighbors, split costs, and build community while making money together.',
   keywords: 'task sharing, community earnings, parent income, neighborhood tasks, skill exchange',
-  metadataBase: new URL('https://www.bittietasks.com'),
+  metadataBase: new URL(baseUrl),
   openGraph: {
     title: 'BittieTasks - Turn Daily Tasks Into Earning Opportunities',
     description: 'Transform daily tasks into income opportunities through community sharing.',
-    url: 'https://www.bittietasks.com',
+    url: baseUrl,
     siteName: 'BittieTasks',
     type: 'website',
   },
