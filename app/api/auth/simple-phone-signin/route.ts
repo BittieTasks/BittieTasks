@@ -44,9 +44,24 @@ export async function POST(request: NextRequest) {
 
     const supabaseAdmin = createSupabaseAdmin()
     
-    // Find user by phone number
+    // Find user by phone number - check multiple formats
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
-    const existingUser = existingUsers.users.find(u => u.phone === formattedPhone)
+    console.log('Looking for phone:', formattedPhone)
+    console.log('All users phones:', existingUsers.users.map(u => ({ id: u.id, phone: u.phone })))
+    
+    const existingUser = existingUsers.users.find(u => {
+      const userPhone = u.phone
+      if (!userPhone) return false
+      
+      // Try exact match first
+      if (userPhone === formattedPhone) return true
+      
+      // Try normalized comparison
+      const normalizedUserPhone = userPhone.replace(/\D/g, '')
+      const normalizedSearchPhone = formattedPhone.replace(/\D/g, '')
+      
+      return normalizedUserPhone === normalizedSearchPhone
+    })
     
     if (!existingUser) {
       return NextResponse.json(
