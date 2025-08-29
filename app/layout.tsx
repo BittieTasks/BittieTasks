@@ -5,8 +5,8 @@ import { Providers } from './providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
-// Use environment-based URL for metadata to avoid hardcoded production URLs
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000'
+// Use production URL for live deployment
+const baseUrl = 'https://www.bittietasks.com'
 
 export const metadata: Metadata = {
   title: 'BittieTasks - Turn Daily Tasks Into Earning Opportunities',

@@ -104,10 +104,8 @@ export class EmailVerificationServiceFixed {
         return { success: false, error: 'Failed to store verification token' }
       }
 
-      // Create verification URL
-      const baseUrl = process.env.NODE_ENV === 'development' 
-        ? 'http://localhost:5000' 
-        : 'https://www.bittietasks.com'
+      // Create verification URL - use production URL for live deployment  
+      const baseUrl = 'https://www.bittietasks.com'
       const verificationUrl = `${baseUrl}/verify-email?token=${token}`
       
       // Send email

@@ -109,10 +109,8 @@ export class SimpleEmailVerification {
         return { success: false, error: 'Failed to store verification token' }
       }
 
-      // Create verification URL - use current domain
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://www.bittietasks.com' 
-        : 'http://localhost:5000'
+      // Create verification URL - use production URL for live deployment
+      const baseUrl = 'https://www.bittietasks.com'
       const verificationUrl = `${baseUrl}/verify-email?token=${token}`
       
       console.log('Generated verification URL:', verificationUrl)
