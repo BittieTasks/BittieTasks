@@ -102,9 +102,18 @@ export function SimplePhoneAuthForm({ onSuccess }: SimplePhoneAuthFormProps) {
           description: mode === 'signup' ? "Welcome to BittieTasks!" : "Welcome back!",
         })
         
-        // Redirect to dashboard after successful authentication
+        // Redirect after successful authentication
         setTimeout(() => {
-          window.location.href = '/dashboard'
+          // Check for redirect parameter from URL
+          const urlParams = new URLSearchParams(window.location.search)
+          const redirectTo = urlParams.get('redirectTo') || '/dashboard'
+          
+          // Ensure we redirect locally, not to external URLs
+          if (redirectTo.startsWith('/')) {
+            window.location.href = redirectTo
+          } else {
+            window.location.href = '/dashboard'
+          }
         }, 1000)
         
         onSuccess?.()
