@@ -72,16 +72,30 @@ export async function POST(request: NextRequest) {
 
     console.log('User found, signin successful for:', formattedPhone)
 
-    // Create a proper session for the user
-    const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.admin.generateLink({
-      type: 'magiclink',
-      email: `${existingUser.id}@phone.local`,
-      options: {
-        redirectTo: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:5000'
-      }
+    // Create a session by signing the user in directly
+    const tempPassword = Math.random().toString(36).slice(-12) + Math.random().toString(36).slice(-12)
+    
+    // Update user with a temp password for signin
+    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+      existingUser.id,
+      { password: tempPassword }
+    )
+    
+    if (updateError) {
+      console.error('Failed to update user password:', updateError)
+      return NextResponse.json(
+        { error: 'Failed to prepare signin' },
+        { status: 500 }
+      )
+    }
+
+    // Sign in with the temp password to get real tokens
+    const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.signInWithPassword({
+      phone: formattedPhone,
+      password: tempPassword
     })
 
-    if (sessionError || !sessionData.properties?.action_link) {
+    if (sessionError || !sessionData.session) {
       console.error('Session creation error:', sessionError)
       return NextResponse.json(
         { error: 'Failed to create session' },
@@ -89,14 +103,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Extract session tokens from the magic link
-    const actionLink = sessionData.properties.action_link
-    const url = new URL(actionLink)
-    const accessToken = url.searchParams.get('access_token')
-    const refreshToken = url.searchParams.get('refresh_token')
+    const accessToken = sessionData.session.access_token
+    const refreshToken = sessionData.session.refresh_token
 
     if (!accessToken || !refreshToken) {
-      console.error('Missing tokens in magic link')
+      console.error('Missing tokens in session')
       return NextResponse.json(
         { error: 'Failed to create session tokens' },
         { status: 500 }
