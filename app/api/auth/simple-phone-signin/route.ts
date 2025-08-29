@@ -72,16 +72,39 @@ export async function POST(request: NextRequest) {
 
     console.log('User found, signin successful for:', formattedPhone)
 
-    // Generate a magic link for auto-signin
+    // Create a proper session for the user
     const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
-      email: `${existingUser.id}@phone.local`, // Temporary email for session
+      email: `${existingUser.id}@phone.local`,
       options: {
         redirectTo: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:5000'
       }
     })
 
-    return NextResponse.json({
+    if (sessionError || !sessionData.properties?.action_link) {
+      console.error('Session creation error:', sessionError)
+      return NextResponse.json(
+        { error: 'Failed to create session' },
+        { status: 500 }
+      )
+    }
+
+    // Extract session tokens from the magic link
+    const actionLink = sessionData.properties.action_link
+    const url = new URL(actionLink)
+    const accessToken = url.searchParams.get('access_token')
+    const refreshToken = url.searchParams.get('refresh_token')
+
+    if (!accessToken || !refreshToken) {
+      console.error('Missing tokens in magic link')
+      return NextResponse.json(
+        { error: 'Failed to create session tokens' },
+        { status: 500 }
+      )
+    }
+
+    // Create the response with session cookies
+    const response = NextResponse.json({
       success: true,
       verified: true,
       userId: existingUser.id,
@@ -92,6 +115,25 @@ export async function POST(request: NextRequest) {
         user_metadata: existingUser.user_metadata
       }
     })
+
+    // Set session cookies
+    response.cookies.set('sb-access-token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/'
+    })
+
+    response.cookies.set('sb-refresh-token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      path: '/'
+    })
+
+    return response
 
   } catch (error) {
     console.error('Phone signin error:', error)

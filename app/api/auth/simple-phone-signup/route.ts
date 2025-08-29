@@ -120,19 +120,61 @@ export async function POST(request: NextRequest) {
     // Auto-signin the user by creating a session
     const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
-      email: `${data.user.id}@phone.local`, // Temporary email for session
+      email: `${data.user.id}@phone.local`,
       options: {
         redirectTo: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:5000'
       }
     })
 
-    return NextResponse.json({
+    if (sessionError || !sessionData.properties?.action_link) {
+      console.error('Session creation error:', sessionError)
+      return NextResponse.json(
+        { error: 'Account created but failed to sign in automatically' },
+        { status: 500 }
+      )
+    }
+
+    // Extract session tokens from the magic link
+    const actionLink = sessionData.properties.action_link
+    const url = new URL(actionLink)
+    const accessToken = url.searchParams.get('access_token')
+    const refreshToken = url.searchParams.get('refresh_token')
+
+    if (!accessToken || !refreshToken) {
+      console.error('Missing tokens in magic link')
+      return NextResponse.json(
+        { error: 'Account created but failed to sign in automatically' },
+        { status: 500 }
+      )
+    }
+
+    // Create the response with session cookies
+    const response = NextResponse.json({
       success: true,
       verified: true,
       userId: data.user.id,
       message: 'Account created and verified successfully!',
       autoSignIn: true
     })
+
+    // Set session cookies
+    response.cookies.set('sb-access-token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/'
+    })
+
+    response.cookies.set('sb-refresh-token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      path: '/'
+    })
+
+    return response
 
   } catch (error) {
     console.error('Phone signup error:', error)

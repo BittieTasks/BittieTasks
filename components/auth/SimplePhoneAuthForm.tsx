@@ -102,9 +102,9 @@ export function SimplePhoneAuthForm({ onSuccess }: SimplePhoneAuthFormProps) {
           description: mode === 'signup' ? "Welcome to BittieTasks!" : "Welcome back!",
         })
         
-        // Refresh the page to update auth state
+        // Redirect to dashboard after successful authentication
         setTimeout(() => {
-          window.location.reload()
+          window.location.href = '/dashboard'
         }, 1000)
         
         onSuccess?.()
