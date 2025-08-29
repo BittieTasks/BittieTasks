@@ -79,10 +79,13 @@ export async function POST(request: NextRequest) {
     // Create a session by signing the user in directly
     const tempPassword = 'TempPass123!' + Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-4)
     
-    // Update user with a temp password for signin
+    // Update user with a temp password AND confirm phone for signin
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
       existingUser.id,
-      { password: tempPassword }
+      { 
+        password: tempPassword,
+        phone_confirm: true // Ensure phone is confirmed for existing users
+      }
     )
     
     if (updateError) {

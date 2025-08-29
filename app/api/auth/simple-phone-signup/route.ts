@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
       phone: formattedPhone,
       password: tempPassword,
       phone_confirm: true, // Mark as confirmed to skip SMS verification
+      email_confirm: false, // No email verification needed
       user_metadata: {
         first_name: firstName,
         last_name: lastName
@@ -102,6 +103,22 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('User created successfully:', data.user.id)
+
+    // Explicitly confirm the user's phone to ensure they're verified
+    try {
+      const { error: confirmError } = await supabaseAdmin.auth.admin.updateUserById(
+        data.user.id,
+        { phone_confirm: true }
+      )
+      
+      if (confirmError) {
+        console.log('Phone confirmation warning:', confirmError.message)
+      } else {
+        console.log('Phone confirmed for user:', data.user.id)
+      }
+    } catch (e) {
+      console.log('Phone confirmation step skipped')
+    }
 
     // Create user record in our users table (skip if table structure doesn't match)
     try {
