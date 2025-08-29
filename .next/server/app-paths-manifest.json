@@ -1,1 +1,5 @@
-{}
+{
+  "/api/auth/simple-phone-signin/route": "app/api/auth/simple-phone-signin/route.js",
+  "/api/auth/user/route": "app/api/auth/user/route.js",
+  "/dashboard/page": "app/dashboard/page.js"
+}

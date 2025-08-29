@@ -56,6 +56,10 @@ export async function POST(request: NextRequest) {
       // Try exact match first
       if (userPhone === formattedPhone) return true
       
+      // Supabase stores phone without + prefix, so check that too
+      if (userPhone === formattedPhone.slice(1)) return true
+      if ('+' + userPhone === formattedPhone) return true
+      
       // Try normalized comparison
       const normalizedUserPhone = userPhone.replace(/\D/g, '')
       const normalizedSearchPhone = formattedPhone.replace(/\D/g, '')
@@ -73,7 +77,7 @@ export async function POST(request: NextRequest) {
     console.log('User found, signin successful for:', formattedPhone)
 
     // Create a session by signing the user in directly
-    const tempPassword = Math.random().toString(36).slice(-12) + Math.random().toString(36).slice(-12)
+    const tempPassword = 'TempPass123!' + Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-4)
     
     // Update user with a temp password for signin
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
