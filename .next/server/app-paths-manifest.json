@@ -1,3 +1,4 @@
 {
+  "/api/auth/simple-phone-signin/route": "app/api/auth/simple-phone-signin/route.js",
   "/page": "app/page.js"
 }

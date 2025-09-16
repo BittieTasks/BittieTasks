@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { smsService } from '@/lib/sms-service'
 
 // Simple in-memory rate limiting (upgrade to Redis for production)
 const requestCounts = new Map<string, { count: number; lastReset: number }>()
@@ -116,36 +117,13 @@ export async function POST(request: NextRequest) {
     )
 
     if (!otp) {
-      // Step 1: Send OTP for signup
+      // Step 1: Send OTP for signup using our custom SMS service
       console.log('Sending OTP to phone:', formattedPhone.replace(/\d/g, 'X')) // Privacy: mask digits
       
-      // Generate a strong password that meets Supabase requirements (we won't use it for phone auth)
-      const strongPassword = 'TempPass123!@#' + Math.random().toString(36).slice(-8).toUpperCase()
+      // Use our custom SMS service instead of Supabase's broken SMS
+      const smsResult = await smsService.sendOtp(formattedPhone)
       
-      const { data, error } = await supabase.auth.signUp({
-        phone: formattedPhone,
-        password: strongPassword, // Strong password to satisfy Supabase requirements
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName
-          }
-        }
-      })
-
-      if (error) {
-        console.error('Phone signup OTP error:', error)
-        
-        // Always return identical response to prevent enumeration
-        return NextResponse.json(
-          { 
-            success: true,
-            message: 'If eligible, a verification code will be sent.'
-          },
-          { status: 200 }
-        )
-      }
-
+      // Always return identical response regardless of outcome (prevents enumeration)
       return NextResponse.json({
         success: true,
         message: 'If eligible, a verification code will be sent.'
@@ -154,16 +132,11 @@ export async function POST(request: NextRequest) {
       // Step 2: Verify OTP and complete signup
       console.log('Verifying OTP for phone:', formattedPhone.replace(/\d/g, 'X')) // Privacy: mask digits
       
-      const { data, error } = await supabase.auth.verifyOtp({
-        phone: formattedPhone,
-        token: otp,
-        type: 'sms'
-      })
-
-      if (error || !data.session || !data.user) {
-        // Log specific error server-side only, never expose to client
-        if (error) console.error('OTP verification error:', error)
-        if (!data.session || !data.user) console.error('OTP verification failed: no session/user')
+      // Verify OTP using our custom service
+      const otpResult = smsService.verifyOtp(formattedPhone, otp)
+      
+      if (!otpResult.success) {
+        console.log('OTP verification failed for phone:', formattedPhone.replace(/\d/g, 'X'))
         
         // Always return identical generic error
         return NextResponse.json(
@@ -172,9 +145,86 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      console.log('User created and verified successfully:', data.user.id)
+      // OTP verified! Now create the user in Supabase with a strong password
+      console.log('OTP verified, creating user account')
+      const strongPassword = 'TempPass123!@#' + Math.random().toString(36).slice(-8).toUpperCase()
+      
+      const { data, error } = await supabase.auth.signUp({
+        phone: formattedPhone,
+        password: strongPassword,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName
+          }
+        }
+      })
 
-      // Create user record in our users table (if needed)
+      if (error || !data.user) {
+        console.error('User creation error after OTP verification:', error)
+        
+        // Return generic error - don't expose specific creation issues
+        return NextResponse.json(
+          { error: 'Account creation failed. Please try again.' },
+          { status: 500 }
+        )
+      }
+
+      // Use service role client to confirm the phone number
+      const serviceRoleSupabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+          cookies: {
+            get(name: string) {
+              return request.cookies.get(name)?.value
+            },
+            set(name: string, value: string, options: CookieOptions) {
+              // Cannot set cookies here
+            },
+            remove(name: string, options: CookieOptions) {
+              // Cannot remove cookies here  
+            },
+          },
+        }
+      )
+
+      const { error: confirmError } = await serviceRoleSupabase.auth.admin.updateUserById(
+        data.user.id,
+        { phone_confirm: true }
+      )
+
+      if (confirmError) {
+        console.error('Phone confirmation error:', confirmError)
+      }
+
+      console.log('User created and verified successfully:', data.user.id)
+      
+      // After phone confirmation, sign in the user to create a proper session
+      const { data: sessionData, error: sessionError } = await supabase.auth.signInWithPassword({
+        phone: formattedPhone,
+        password: strongPassword
+      })
+
+      if (sessionError || !sessionData.session || !sessionData.user) {
+        console.error('Session creation after signup error:', sessionError)
+        // User is created but not logged in - still return success
+        return NextResponse.json({
+          success: true,
+          verified: true,
+          userId: data.user.id,
+          message: 'Account created successfully! Please try signing in.',
+          user: {
+            id: data.user.id,
+            phone: data.user.phone,
+            user_metadata: data.user.user_metadata
+          }
+        })
+      }
+
+      console.log('User session created successfully after signup')
+
+      // Create user record in our users table (if needed) using the new session
       try {
         const userCreateSupabase = createServerClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -182,7 +232,7 @@ export async function POST(request: NextRequest) {
           {
             global: {
               headers: {
-                Authorization: `Bearer ${data.session.access_token}`
+                Authorization: `Bearer ${sessionData.session.access_token}`
               }
             },
             cookies: {
@@ -196,7 +246,7 @@ export async function POST(request: NextRequest) {
         const { error: dbError } = await userCreateSupabase
           .from('users')
           .insert({
-            id: data.user.id,
+            id: sessionData.user.id,
             phone_number: formattedPhone,
             first_name: firstName,
             last_name: lastName,
@@ -215,17 +265,17 @@ export async function POST(request: NextRequest) {
       const response = NextResponse.json({
         success: true,
         verified: true,
-        userId: data.user.id,
+        userId: sessionData.user.id,
         message: 'Account created and verified successfully!',
         user: {
-          id: data.user.id,
-          phone: data.user.phone,
-          user_metadata: data.user.user_metadata
+          id: sessionData.user.id,
+          phone: sessionData.user.phone,
+          user_metadata: sessionData.user.user_metadata
         }
       })
 
-      // Set session cookies
-      response.cookies.set('sb-access-token', data.session.access_token, {
+      // Set proper Supabase session cookies
+      response.cookies.set('sb-access-token', sessionData.session.access_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -233,7 +283,7 @@ export async function POST(request: NextRequest) {
         path: '/'
       })
 
-      response.cookies.set('sb-refresh-token', data.session.refresh_token, {
+      response.cookies.set('sb-refresh-token', sessionData.session.refresh_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',

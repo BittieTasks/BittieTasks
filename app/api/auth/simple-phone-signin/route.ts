@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { smsService } from '@/lib/sms-service'
 
 // Simple in-memory rate limiting (upgrade to Redis for production)
 const requestCounts = new Map<string, { count: number; lastReset: number }>()
@@ -116,26 +117,13 @@ export async function POST(request: NextRequest) {
     )
 
     if (!otp) {
-      // Step 1: Send OTP for signin
+      // Step 1: Send OTP for signin using our custom SMS service
       console.log('Sending OTP to phone:', formattedPhone.replace(/\d/g, 'X')) // Privacy: mask digits
       
-      const { data, error } = await supabase.auth.signInWithOtp({
-        phone: formattedPhone
-      })
-
-      if (error) {
-        console.error('Phone signin OTP error:', error)
-        
-        // Always return identical response to prevent enumeration
-        return NextResponse.json(
-          { 
-            success: true,
-            message: 'If eligible, a verification code will be sent.'
-          },
-          { status: 200 }
-        )
-      }
-
+      // Use our custom SMS service instead of Supabase's broken SMS
+      const smsResult = await smsService.sendOtp(formattedPhone)
+      
+      // Always return identical response regardless of outcome (prevents enumeration)
       return NextResponse.json({
         success: true,
         message: 'If eligible, a verification code will be sent.'
@@ -144,16 +132,11 @@ export async function POST(request: NextRequest) {
       // Step 2: Verify OTP and complete signin
       console.log('Verifying OTP for phone:', formattedPhone.replace(/\d/g, 'X')) // Privacy: mask digits
       
-      const { data, error } = await supabase.auth.verifyOtp({
-        phone: formattedPhone,
-        token: otp,
-        type: 'sms'
-      })
-
-      if (error || !data.session || !data.user) {
-        // Log specific error server-side only, never expose to client
-        if (error) console.error('OTP verification error:', error)
-        if (!data.session || !data.user) console.error('OTP verification failed: no session/user')
+      // Verify OTP using our custom service
+      const otpResult = smsService.verifyOtp(formattedPhone, otp)
+      
+      if (!otpResult.success) {
+        console.log('OTP verification failed for phone:', formattedPhone.replace(/\d/g, 'X'))
         
         // Always return identical generic error
         return NextResponse.json(
@@ -162,23 +145,102 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      console.log('User signed in successfully:', data.user.id)
+      // OTP verified! Now sign in the existing user
+      console.log('OTP verified, signing in user')
+      
+      // Use the service role client to find and sign in the user
+      const serviceRoleSupabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+          cookies: {
+            get(name: string) {
+              return request.cookies.get(name)?.value
+            },
+            set(name: string, value: string, options: CookieOptions) {
+              // Cannot set cookies here
+            },
+            remove(name: string, options: CookieOptions) {
+              // Cannot remove cookies here  
+            },
+          },
+        }
+      )
+
+      // Find user by phone number
+      const { data: users, error: findError } = await serviceRoleSupabase.auth.admin.listUsers({
+        page: 1,
+        perPage: 1000 // Get all users to search for phone
+      })
+
+      if (findError || !users) {
+        console.error('Error finding user by phone:', findError)
+        return NextResponse.json(
+          { error: 'Invalid or expired verification code' },
+          { status: 400 }
+        )
+      }
+
+      // Find user with matching phone number
+      const user = users.users.find(u => u.phone === formattedPhone)
+      
+      if (!user) {
+        console.log('User not found for phone:', formattedPhone.replace(/\d/g, 'X'))
+        return NextResponse.json(
+          { error: 'Invalid or expired verification code' },
+          { status: 400 }
+        )
+      }
+
+      // Create a proper Supabase session using signInWithPassword
+      // First, we need to generate a temporary password for this user
+      const tempPassword = 'TempOTP_' + Math.random().toString(36).slice(-12) + '!'
+      
+      // Update user with temporary password
+      const { error: updateError } = await serviceRoleSupabase.auth.admin.updateUserById(
+        user.id,
+        { password: tempPassword }
+      )
+
+      if (updateError) {
+        console.error('Password update error:', updateError)
+        return NextResponse.json(
+          { error: 'Sign in failed. Please try again.' },
+          { status: 500 }
+        )
+      }
+
+      // Now sign in with the temporary password to create a real session
+      const { data: sessionData, error: sessionError } = await supabase.auth.signInWithPassword({
+        phone: formattedPhone,
+        password: tempPassword
+      })
+
+      if (sessionError || !sessionData.session || !sessionData.user) {
+        console.error('Session creation error:', sessionError)
+        return NextResponse.json(
+          { error: 'Sign in failed. Please try again.' },
+          { status: 500 }
+        )
+      }
+
+      console.log('User signed in successfully:', sessionData.user.id)
 
       // Create the response with session cookies
       const response = NextResponse.json({
         success: true,
         verified: true,
-        userId: data.user.id,
+        userId: sessionData.user.id,
         message: 'Signed in successfully!',
         user: {
-          id: data.user.id,
-          phone: data.user.phone,
-          user_metadata: data.user.user_metadata
+          id: sessionData.user.id,
+          phone: sessionData.user.phone,
+          user_metadata: sessionData.user.user_metadata
         }
       })
 
-      // Set session cookies
-      response.cookies.set('sb-access-token', data.session.access_token, {
+      // Set proper Supabase session cookies
+      response.cookies.set('sb-access-token', sessionData.session.access_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -186,7 +248,7 @@ export async function POST(request: NextRequest) {
         path: '/'
       })
 
-      response.cookies.set('sb-refresh-token', data.session.refresh_token, {
+      response.cookies.set('sb-refresh-token', sessionData.session.refresh_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
