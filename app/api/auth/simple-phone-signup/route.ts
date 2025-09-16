@@ -1,27 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
-function createSupabaseAdmin() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Missing required Supabase environment variables')
+// Simple in-memory rate limiting (upgrade to Redis for production)
+const requestCounts = new Map<string, { count: number; lastReset: number }>()
+
+function isRateLimited(identifier: string, limit: number = 5, windowMs: number = 15 * 60 * 1000): boolean {
+  const now = Date.now()
+  const current = requestCounts.get(identifier)
+  
+  if (!current || now - current.lastReset > windowMs) {
+    requestCounts.set(identifier, { count: 1, lastReset: now })
+    return false
   }
   
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }
-  )
+  if (current.count >= limit) {
+    return true
+  }
+  
+  current.count++
+  return false
 }
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting by IP
+    const clientIP = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    
+    if (isRateLimited(`signup:${clientIP}`, 5, 15 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+    
     const body = await request.json()
-    const { phoneNumber, firstName, lastName } = body
+    const { phoneNumber, firstName, lastName, otp } = body
 
     if (!phoneNumber || !firstName || !lastName) {
       return NextResponse.json(
@@ -30,168 +43,206 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Normalize phone number
+    // Validate and normalize phone number
     const normalizedPhone = phoneNumber.replace(/\D/g, '')
-    let formattedPhone = normalizedPhone
+    let formattedPhone: string
     
+    // Must be valid US phone number (10 digits, or 11 starting with 1)
     if (normalizedPhone.length === 10) {
+      // Validate area code and exchange code
+      const areaCode = normalizedPhone.substring(0, 3)
+      const exchangeCode = normalizedPhone.substring(3, 6)
+      
+      if (areaCode.startsWith('0') || areaCode.startsWith('1') || 
+          exchangeCode.startsWith('0') || exchangeCode.startsWith('1')) {
+        return NextResponse.json(
+          { error: 'Please enter a valid US phone number' },
+          { status: 400 }
+        )
+      }
+      
+      // Reject obvious test numbers
+      if (areaCode === '555' || areaCode === '000' || areaCode === '111') {
+        return NextResponse.json(
+          { error: 'Please enter a real phone number, not a test number' },
+          { status: 400 }
+        )
+      }
+      
       formattedPhone = `+1${normalizedPhone}`
     } else if (normalizedPhone.length === 11 && normalizedPhone.startsWith('1')) {
+      const areaCode = normalizedPhone.substring(1, 4)
+      const exchangeCode = normalizedPhone.substring(4, 7)
+      
+      if (areaCode.startsWith('0') || areaCode.startsWith('1') || 
+          exchangeCode.startsWith('0') || exchangeCode.startsWith('1')) {
+        return NextResponse.json(
+          { error: 'Please enter a valid US phone number' },
+          { status: 400 }
+        )
+      }
+      
+      if (areaCode === '555' || areaCode === '000' || areaCode === '111') {
+        return NextResponse.json(
+          { error: 'Please enter a real phone number, not a test number' },
+          { status: 400 }
+        )
+      }
+      
       formattedPhone = `+${normalizedPhone}`
     } else {
-      formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${normalizedPhone}`
-    }
-
-    const supabaseAdmin = createSupabaseAdmin()
-    
-    // Check if user exists - robust phone comparison
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
-    console.log('Signup - checking for existing phone:', formattedPhone)
-    
-    const existingUser = existingUsers.users.find(u => {
-      const userPhone = u.phone
-      if (!userPhone) return false
-      
-      // Try exact match first
-      if (userPhone === formattedPhone) return true
-      
-      // Supabase stores phone without + prefix, so check that too
-      if (userPhone === formattedPhone.slice(1)) return true
-      if ('+' + userPhone === formattedPhone) return true
-      
-      // Try normalized comparison
-      const normalizedUserPhone = userPhone.replace(/\D/g, '')
-      const normalizedSearchPhone = formattedPhone.replace(/\D/g, '')
-      
-      return normalizedUserPhone === normalizedSearchPhone
-    })
-    
-    if (existingUser) {
       return NextResponse.json(
-        { error: 'An account with this phone number already exists. Please sign in instead.' },
+        { error: 'Please enter a valid 10-digit US phone number' },
         { status: 400 }
       )
     }
 
-    // Create user directly with admin client (verified for simplicity)
-    const tempPassword = 'TempPass123!' + Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-4)
-    
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
-      phone: formattedPhone,
-      password: tempPassword,
-      phone_confirm: true, // Mark as confirmed to skip SMS verification
-      email_confirm: false, // No email verification needed
-      user_metadata: {
-        first_name: firstName,
-        last_name: lastName
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            // Cannot set cookies in POST request without response
+          },
+          remove(name: string, options: CookieOptions) {
+            // Cannot remove cookies in POST request without response
+          },
+        },
       }
-    })
+    )
 
-    if (error) {
-      console.error('User creation error:', error)
-      return NextResponse.json(
-        { error: error.message || 'Failed to create account' },
-        { status: 500 }
-      )
-    }
-
-    if (!data.user) {
-      return NextResponse.json(
-        { error: 'Failed to create user account' },
-        { status: 500 }
-      )
-    }
-
-    console.log('User created successfully:', data.user.id)
-
-    // Explicitly confirm the user's phone to ensure they're verified
-    try {
-      const { error: confirmError } = await supabaseAdmin.auth.admin.updateUserById(
-        data.user.id,
-        { phone_confirm: true }
-      )
+    if (!otp) {
+      // Step 1: Send OTP for signup
+      console.log('Sending OTP to phone:', formattedPhone.replace(/\d/g, 'X')) // Privacy: mask digits
       
-      if (confirmError) {
-        console.log('Phone confirmation warning:', confirmError.message)
-      } else {
-        console.log('Phone confirmed for user:', data.user.id)
-      }
-    } catch (e) {
-      console.log('Phone confirmation step skipped')
-    }
+      // Generate a strong password that meets Supabase requirements (we won't use it for phone auth)
+      const strongPassword = 'TempPass123!@#' + Math.random().toString(36).slice(-8).toUpperCase()
+      
+      const { data, error } = await supabase.auth.signUp({
+        phone: formattedPhone,
+        password: strongPassword, // Strong password to satisfy Supabase requirements
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName
+          }
+        }
+      })
 
-    // Create user record in our users table (skip if table structure doesn't match)
-    try {
-      const { error: dbError } = await supabaseAdmin
-        .from('users')
-        .insert({
+      if (error) {
+        console.error('Phone signup OTP error:', error)
+        
+        // Always return identical response to prevent enumeration
+        return NextResponse.json(
+          { 
+            success: true,
+            message: 'If eligible, a verification code will be sent.'
+          },
+          { status: 200 }
+        )
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'If eligible, a verification code will be sent.'
+      })
+    } else {
+      // Step 2: Verify OTP and complete signup
+      console.log('Verifying OTP for phone:', formattedPhone.replace(/\d/g, 'X')) // Privacy: mask digits
+      
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone: formattedPhone,
+        token: otp,
+        type: 'sms'
+      })
+
+      if (error || !data.session || !data.user) {
+        // Log specific error server-side only, never expose to client
+        if (error) console.error('OTP verification error:', error)
+        if (!data.session || !data.user) console.error('OTP verification failed: no session/user')
+        
+        // Always return identical generic error
+        return NextResponse.json(
+          { error: 'Invalid or expired verification code' },
+          { status: 400 }
+        )
+      }
+
+      console.log('User created and verified successfully:', data.user.id)
+
+      // Create user record in our users table (if needed)
+      try {
+        const userCreateSupabase = createServerClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            global: {
+              headers: {
+                Authorization: `Bearer ${data.session.access_token}`
+              }
+            },
+            cookies: {
+              get() { return undefined },
+              set() {},
+              remove() {},
+            },
+          }
+        )
+
+        const { error: dbError } = await userCreateSupabase
+          .from('users')
+          .insert({
+            id: data.user.id,
+            phone_number: formattedPhone,
+            first_name: firstName,
+            last_name: lastName,
+            phone_verified: true,
+            verified: true
+          })
+
+        if (dbError) {
+          console.log('User table insertion skipped (table may not exist or have different structure):', dbError.message)
+        }
+      } catch (e) {
+        console.log('User table insertion skipped - continuing with authentication')
+      }
+
+      // Create the response with session cookies
+      const response = NextResponse.json({
+        success: true,
+        verified: true,
+        userId: data.user.id,
+        message: 'Account created and verified successfully!',
+        user: {
           id: data.user.id,
-          phone_number: formattedPhone,
-          first_name: firstName,
-          last_name: lastName,
-          phone_verified: true,
-          verified: true
-        })
+          phone: data.user.phone,
+          user_metadata: data.user.user_metadata
+        }
+      })
 
-      if (dbError) {
-        console.log('User table insertion skipped (table may not exist or have different structure):', dbError.message)
-      }
-    } catch (e) {
-      console.log('User table insertion skipped - continuing with authentication')
+      // Set session cookies
+      response.cookies.set('sb-access-token', data.session.access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: '/'
+      })
+
+      response.cookies.set('sb-refresh-token', data.session.refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        path: '/'
+      })
+
+      return response
     }
-
-    // Auto-signin the user by signing in directly
-    const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.signInWithPassword({
-      phone: formattedPhone,
-      password: tempPassword
-    })
-
-    if (sessionError || !sessionData.session) {
-      console.error('Session creation error:', sessionError)
-      return NextResponse.json(
-        { error: 'Account created but failed to sign in automatically' },
-        { status: 500 }
-      )
-    }
-
-    const accessToken = sessionData.session.access_token
-    const refreshToken = sessionData.session.refresh_token
-
-    if (!accessToken || !refreshToken) {
-      console.error('Missing tokens in session')
-      return NextResponse.json(
-        { error: 'Account created but failed to sign in automatically' },
-        { status: 500 }
-      )
-    }
-
-    // Create the response with session cookies
-    const response = NextResponse.json({
-      success: true,
-      verified: true,
-      userId: data.user.id,
-      message: 'Account created and verified successfully!',
-      autoSignIn: true
-    })
-
-    // Set session cookies
-    response.cookies.set('sb-access-token', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/'
-    })
-
-    response.cookies.set('sb-refresh-token', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-      path: '/'
-    })
-
-    return response
 
   } catch (error) {
     console.error('Phone signup error:', error)
